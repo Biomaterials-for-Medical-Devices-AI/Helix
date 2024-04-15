@@ -4,6 +4,7 @@
 import argparse
 import os
 import sys
+from typing import Dict
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -41,6 +42,13 @@ class BaseOptions:
             default=False,
             help="Flag for feature importance",
         ),
+        self.parser.add_argument(
+            "--random_state",
+            type=int,
+            default=1221,
+            help="Random seed for reproducibility",
+            required=False,
+        )
 
                 
         self.initialized = True
@@ -49,5 +57,25 @@ class BaseOptions:
         if not self.initialized:
             self.initialize()
         self._opt = self.parser.parse_args()
+        args = vars(self._opt)
+        self._print(args)
 
         return self._opt
+    
+    def _print(self, args: Dict) -> None:
+        """
+        Prints the arguments passed to the script
+
+        Parameters
+        ----------
+        args: dict
+            The arguments to print
+
+        Returns
+        -------
+        None
+        """
+        print("------------ Options -------------")
+        for k, v in args.items():
+            print(f"{str(k)}: {str(v)}")
+        print("-------------- End ---------------")
