@@ -1,14 +1,12 @@
 
 
+import ast
 import os
 import sys
-import ast
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from base_options import BaseOptions
-
-
 
 
 class FIOptions(BaseOptions):
@@ -31,13 +29,6 @@ class FIOptions(BaseOptions):
             default={'Permutation Importance': False,
                      'SHAP': False,},
             help="Feature importance methods to use",
-        ),
-
-        self.parser.add_argument(
-            "--random_state",
-            type=int,
-            default=42,
-            help="Random state for reproducibility",
         ),
 
         self.parser.add_argument(
