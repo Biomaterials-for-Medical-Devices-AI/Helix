@@ -34,7 +34,7 @@ def calculate_permutation_importance(model, model_type, X, y, opt: argparse.Name
     if opt.save_feature_importance_plots:
         # Plot bar plot - sort values in descending order and plot top n features
         # rotate x-axis labels for better readability
-        permutation_importance_df.sort_values(by=0, ascending=False).head(opt.num_features_to_plot_pi).plot(kind='bar', legend=False)
+        permutation_importance_df.sort_values(by=0, ascending=False).head(opt.num_features_to_plot).plot(kind='bar', legend=False)
         # rotate x-axis labels for better readability
         plt.xticks(rotation=opt.angle_rotate_xaxis_labels)
         plt.title(f'Permutation Importance - {model_type}')
@@ -76,13 +76,13 @@ def calculate_shap_values(model, model_type, X, opt: argparse.Namespace):
 
     if  opt.save_feature_importance_plots:
         # Plot bee swarm plot
-        shap.plots.beeswarm(shap_values, max_display=opt.num_features_to_plot_shap,show=False)
+        shap.plots.beeswarm(shap_values, max_display=opt.num_features_to_plot,show=False)
         plt.yticks(rotation=opt.angle_rotate_yaxis_labels)
         plt.savefig(f"{directory}shap_beeswarm.png")
         plt.show()
   
         #Plot bar plot
-        shap.plots.bar(shap_values, max_display=opt.num_features_to_plot_shap, show=False)
+        shap.plots.bar(shap_values, max_display=opt.num_features_to_plot, show=False)
         plt.yticks(rotation=opt.angle_rotate_yaxis_labels)
         plt.savefig(f"{directory}shap_bar.png")
         plt.show()
