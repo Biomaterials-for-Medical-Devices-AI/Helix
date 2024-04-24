@@ -18,7 +18,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--data_path",
             type=str,
-            default="machine_learning/granular_surface_macrophage.csv",
+            default="machine_learning/data/granular_surface_macrophage.csv",
             help="Path to the data",
             required=False,
         )
@@ -50,7 +50,7 @@ class MLOptions(BaseOptions):
             default={
                 "Linear Model": True,
                 "Random Forest": True,
-                },
+            },
             help="Model types to use",
         )
 
@@ -59,10 +59,17 @@ class MLOptions(BaseOptions):
             type=str,
             default="MinMax",
             help="Normalization method: Standardization or MinMax",
-            choices=["Standardization", "MinMax", 'None'],
+            choices=["Standardization", "MinMax", "None"],
             required=False,
         )
 
+        self.parser.add_argument(
+            "--log_dir",
+            type=str,
+            default="./logs/ml",
+            help="Path to the directory to store logs",
+            required=False,
+        )
 
         ######## New Parameters to be added above this line ########
         self._is_train = True
