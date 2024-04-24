@@ -18,7 +18,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--data_path",
             type=str,
-            default="machine_learning/data_clean.csv",
+            default="machine_learning/granular_surface_macrophage.csv",
             help="Path to the data",
             required=False,
         )
@@ -26,7 +26,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--problem_type",
             type=str,
-            default="classification",
+            default="regression",
             help="Problem type: classification or regression",
             choices=["classification", "regression"],
             required=False,
@@ -48,12 +48,19 @@ class MLOptions(BaseOptions):
             "--model_types",
             type=lambda x: ast.literal_eval(x),
             default={
-                "Logistic Regression": False, 
-                "Random Forest": False,
-                "XGBoost": False,
-                "Neural Network": False,
+                "Linear Model": True,
+                "Random Forest": True,
                 },
             help="Model types to use",
+        )
+
+        self.parser.add_argument(
+            "--normalization",
+            type=str,
+            default="MinMax",
+            help="Normalization method: Standardization or MinMax",
+            choices=["Standardization", "MinMax", 'None'],
+            required=False,
         )
 
 
