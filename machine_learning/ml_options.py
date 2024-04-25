@@ -48,8 +48,8 @@ class MLOptions(BaseOptions):
             "--model_types",
             type=lambda x: ast.literal_eval(x),
             default={
-                "Linear Model": True,
-                "Random Forest": True,
+                "Linear Model": {"use": True, "params": {"fit_intercept": False}},
+                "Random Forest": {"use": True, "params": {"fit_intercept": True}},
             },
             help="Model types to use",
         )

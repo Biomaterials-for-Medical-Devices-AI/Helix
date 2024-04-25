@@ -26,5 +26,5 @@ def run() -> None:
     # Load data
     data = load_data(data_path, data_split, seed, logger=logger)
     learner = Learner(opt, logger=logger)
-    res = learner.fit(data)
-    # print(res)
+    res, metric_res = learner.fit(data)
+    logger.info(f"Results: \n{metric_res}")
