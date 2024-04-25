@@ -5,7 +5,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-def load_data(path: str, data_split: Dict, random_state: int = 1221) -> pd.DataFrame:
+def load_data(
+    path: str, data_split: Dict, random_state: int = 1221, logger: object = None
+) -> pd.DataFrame:
     """
     Load data from a csv file
 
@@ -20,6 +22,9 @@ def load_data(path: str, data_split: Dict, random_state: int = 1221) -> pd.DataF
     random_state: int
         The random state to use for reproducibility
 
+    logger: object
+        The logger to use for logging
+
     Returns
     -------
     pd.DataFrame
@@ -30,13 +35,25 @@ def load_data(path: str, data_split: Dict, random_state: int = 1221) -> pd.DataF
     X = df.iloc[:, :-1]
     y = df.iloc[:, -1]
     if data_split["type"].lower() == "holdout":
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=data_split["test_size"], random_state=random_state)
+        logger.info(
+            f"Using holdout data split with test size {data_split['test_size']}"
+        )
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=data_split["test_size"], random_state=random_state
+        )
         return X_train, X_test, y_train, y_test
     else:
         return (df,)
-    
-def normalise_data(X_train: pd.DataFrame, X_test: pd.DataFrame, normalization: str = 'Standardization', numerical_cols: str = 'all') -> pd.DataFrame:
-    '''
+
+
+def normalise_data(
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    normalization: str = "Standardization",
+    numerical_cols: str = "all",
+    logger: object = None,
+) -> pd.DataFrame:
+    """
     Normalise data using MinMaxScaler
 
     Parameters
@@ -52,27 +69,35 @@ def normalise_data(X_train: pd.DataFrame, X_test: pd.DataFrame, normalization: s
            'minmax' : Scales features to 0-1
     numerical_cols : str or list
         List of numerical columns to normalise
+        Options:
+            'all' : Normalise all columns
+            list : Normalise only the columns in the list
+            'none' : Do not normalise any columns
+    logger : object
+        The logger to use for logging
 
     Returns
     -------
     X : pd.DataFrame
         Dataframe of normalised data
-    '''
-    if normalization.lower() == 'none':
+    """
+    if normalization.lower() == "none":
         return X_train, X_test, None
-   
-    print(f'Normalising data using {normalization}...')
 
-    if normalization.lower() =='standardization':
+    logger.info(f"Normalising data using {normalization}...")
+
+    if normalization.lower() == "standardization":
         from sklearn.preprocessing import StandardScaler
+
         scaler = StandardScaler()
-    elif normalization.lower() =='minmax':
+    elif normalization.lower() == "minmax":
         from sklearn.preprocessing import MinMaxScaler
+
         scaler = MinMaxScaler()
     else:
         raise ValueError("normalization must be either'Standardization' or'MinMax'.")
 
-    if numerical_cols == 'all':
+    if numerical_cols == "all":
         numerical_cols = X_train.columns
     elif type(numerical_cols) == list:
         numerical_cols = numerical_cols

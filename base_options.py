@@ -8,6 +8,7 @@ from typing import Dict
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+
 class BaseOptions:
     """
     Base options - parent class for all options
@@ -50,7 +51,6 @@ class BaseOptions:
             required=False,
         )
 
-                
         self.initialized = True
 
     def parse(self):
@@ -61,7 +61,7 @@ class BaseOptions:
         self._print(args)
 
         return self._opt
-    
+
     def _print(self, args: Dict) -> None:
         """
         Prints the arguments passed to the script
