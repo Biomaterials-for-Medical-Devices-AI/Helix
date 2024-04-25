@@ -31,7 +31,15 @@ class FeatureImportanceOptions(BaseOptions):
             help="Feature importance methods to use",
         ),
 
-        
+        self.parser.add_argument(
+            "--feature_importance_ensemble",
+            type=lambda x: ast.literal_eval(x),
+            default={'Mean': True,
+                     'Majority': False,
+                     'Fuzzy': False,},
+            help="Feature importance ensemble methods to use",
+
+        ),        
 
         self.parser.add_argument(
             "--save_feature_importance_results",
@@ -54,6 +62,39 @@ class FeatureImportanceOptions(BaseOptions):
             help="Flag to save feature importance plots",
         ),
 
+        self.parser.add_argument(
+            "--num_features_to_plot",
+            type=int,
+            default=5,
+            help="Number of top important features to plot for Permutation Importance",
+        ),
+        self.parser.add_argument(
+            "--angle_rotate_yaxis_labels",
+            type=int,
+            default=60,
+            help="Angle to rotate y-axis labels for better readability",
+        ),
+        self.parser.add_argument(
+            "--angle_rotate_xaxis_labels",
+            type=int,
+            default=10,
+            help="Angle to rotate x-axis labels for better readability",
+        ),
+        self.parser.add_argument(
+            "--permutation_importance_scoring",
+            type=str,
+            default='neg_mean_absolute_error',
+            choices=['neg_mean_absolute_error', 'neg_root_mean_squared_error', 'accuracy', 'f1'],
+            help="Scoring function for permutation importance",
+        ),
+        self.parser.add_argument(
+            "--permutation_importance_repeat",
+            type=int,
+            default=10,
+            help="Number of repetitions for permutation importance",
+        ),        
+        
+        
         
 
         # Update --is_feature_importance to True
