@@ -1,7 +1,15 @@
+
 import inspect
 import pickle
 import random
 from typing import Dict, List, Tuple
+import argparse
+import pickle
+import random
+from typing import Dict, List, Tuple
+import pickle
+import os
+
 
 import numpy as np
 import pandas as pd
@@ -42,7 +50,6 @@ def assert_model_param(model, model_params, logger: object = None) -> None:
         original_args = model.args
     else:
         original_args = list(inspect.signature(model).parameters)
-
     args_to_remove = []
     for arg in model_params:
         if arg not in original_args:
@@ -54,3 +61,25 @@ def assert_model_param(model, model_params, logger: object = None) -> None:
         model_params.pop(arg)
     logger.info(f"Using model {model.__name__} with parameters {model_params}")
     return model_params
+
+def log_metrics(log_directory, opt: argparse.Namespace):
+    ''' Log model or feature importance hyperparameters
+   Parameters
+    ----------
+        log_directory: str
+            The directory to save the log file
+        opt: argparse.Namespace
+            The options object
+    Returns:
+        None
+    '''
+    
+    log_path =  os.path.join(log_directory, "metrics.txt")
+
+    with open(log_path, 'w') as f:
+        for arg in vars(opt):
+            f.write(f'{arg}: {getattr(opt, arg)}\n')
+
+    
+            
+
