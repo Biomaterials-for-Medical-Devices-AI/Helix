@@ -35,7 +35,7 @@ class FeatureImportanceOptions(BaseOptions):
             "--feature_importance_ensemble",
             type=lambda x: ast.literal_eval(x),
             default={'Mean': True,
-                     'Majority': False,
+                     'Majority Vote': True,
                      'Fuzzy': False,},
             help="Feature importance ensemble methods to use",
 
@@ -44,21 +44,21 @@ class FeatureImportanceOptions(BaseOptions):
         self.parser.add_argument(
             "--save_feature_importance_results",
             type=bool,
-            default=True,
+            default=False,
             help="Flag to save feature importance results",
         ),
 
         self.parser.add_argument(
             "--save_feature_importance_metrics",
             type=bool,
-            default=True,
+            default=False,
             help="Flag to save feature importance metrics",
         ),
 
         self.parser.add_argument(
             "--save_feature_importance_plots",
             type=bool,
-            default=True,
+            default=False,
             help="Flag to save feature importance plots",
         ),
 

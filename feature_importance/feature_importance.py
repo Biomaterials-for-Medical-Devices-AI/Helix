@@ -6,7 +6,7 @@ import pandas as pd
 from call_methods import load_model
 from feature_importance_methods import calculate_permutation_importance, calculate_shap_values
 from options.feature_importance_options import FeatureImportanceOptions
-from ensemble_methods import calculate_ensemble_mean
+from ensemble_methods import calculate_ensemble_mean, calculate_ensemble_majorityvote
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -63,22 +63,17 @@ def run() -> None:
         if opt.feature_importance_ensemble['Mean']:
             # Calculate mean of feature importance results            
             ensemble_results['Mean'] = calculate_ensemble_mean(feature_importance_results, opt)
+        
+        if opt.feature_importance_ensemble['Majority Vote']:
+            # Calculate majority vote of feature importance results            
+            ensemble_results['Majority Vote'] = calculate_ensemble_majorityvote(feature_importance_results, opt)
             
 
 
-    # Check if fi_results is not empty and print the shape of the results
-    if feature_importance_results:
-        print(feature_importance_results['XG Boost1']['Permutation Importance'].shape) # Just for testing
-        print(feature_importance_results['XG Boost2']['Permutation Importance'].shape) # Just for testing
-        print(feature_importance_results['XG Boost1']['SHAP'].shape) # Just for testing
-        print(feature_importance_results['XG Boost2']['SHAP'].shape) # Just for testing
-        print(ensemble_results['Mean'].shape) # Just for testing
-    else:
-        print("No feature importance results found")
-
-    print(feature_importance_results['XG Boost2']['Permutation Importance']) # Just for testing
-
     print(ensemble_results['Mean']) # Just for testing
+
+    print(ensemble_results['Majority Vote']) # Just for testing
+
 
            
         
