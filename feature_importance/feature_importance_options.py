@@ -4,8 +4,6 @@ import ast
 import os
 import sys
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from base_options import BaseOptions
 
 
@@ -44,21 +42,21 @@ class FeatureImportanceOptions(BaseOptions):
         self.parser.add_argument(
             "--save_feature_importance_results",
             type=bool,
-            default=False,
+            default=True,
             help="Flag to save feature importance results",
         ),
 
         self.parser.add_argument(
             "--save_feature_importance_metrics",
             type=bool,
-            default=False,
+            default=True,
             help="Flag to save feature importance metrics",
         ),
 
         self.parser.add_argument(
             "--save_feature_importance_plots",
             type=bool,
-            default=False,
+            default=True,
             help="Flag to save feature importance plots",
         ),
 

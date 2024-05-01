@@ -1,13 +1,8 @@
 
 import inspect
-import pickle
 import random
 from typing import Dict, List, Tuple
 import argparse
-import pickle
-import random
-from typing import Dict, List, Tuple
-import pickle
 import os
 
 
@@ -62,7 +57,7 @@ def assert_model_param(model, model_params, logger: object = None) -> None:
     logger.info(f"Using model {model.__name__} with parameters {model_params}")
     return model_params
 
-def log_metrics(log_directory, opt: argparse.Namespace):
+def log_options(log_directory, opt: argparse.Namespace):
     ''' Log model or feature importance hyperparameters
    Parameters
     ----------
@@ -74,7 +69,7 @@ def log_metrics(log_directory, opt: argparse.Namespace):
         None
     '''
     
-    log_path =  os.path.join(log_directory, "metrics.txt")
+    log_path =  os.path.join(log_directory, "options.txt")
 
     with open(log_path, 'w') as f:
         for arg in vars(opt):

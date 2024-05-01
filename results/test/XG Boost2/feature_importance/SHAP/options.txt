@@ -1,0 +1,15 @@
+experiment_name: test
+is_feature_engineering: False
+is_machine_learning: False
+is_feature_importance: True
+random_state: 1221
+feature_importance_methods: {'Permutation Importance': True, 'SHAP': True}
+feature_importance_ensemble: {'Mean': True, 'Majority Vote': True, 'Fuzzy': False}
+save_feature_importance_results: True
+save_feature_importance_metrics: True
+save_feature_importance_plots: True
+num_features_to_plot: 5
+angle_rotate_yaxis_labels: 60
+angle_rotate_xaxis_labels: 10
+permutation_importance_scoring: neg_mean_absolute_error
+permutation_importance_repeat: 10
