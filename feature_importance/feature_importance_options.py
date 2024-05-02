@@ -50,13 +50,13 @@ class FeatureImportanceOptions(BaseOptions):
             "--save_feature_importance_metrics",
             type=bool,
             default=True,
-            help="Flag to save feature importance metrics",
+            help="Flag to save feature importance options",
         ),
 
         self.parser.add_argument(
             "--save_feature_importance_plots",
             type=bool,
-            default=True,
+            default=False,
             help="Flag to save feature importance plots",
         ),
 
@@ -90,7 +90,14 @@ class FeatureImportanceOptions(BaseOptions):
             type=int,
             default=10,
             help="Number of repetitions for permutation importance",
-        ),        
+        ),
+        self.parser.add_argument(
+            "--log_dir",
+            type=str,
+            default="fi",
+            help="Path to the directory to store logs",
+            required=False,
+        ),       
         
         
         

@@ -4,7 +4,6 @@ from typing import Dict, List, Tuple
 import numpy as np
 from tqdm import tqdm
 
-from machine_learning.data import normalise_data
 from machine_learning.get_models import get_models
 from machine_learning.metrics import get_metrics
 
@@ -28,18 +27,16 @@ class Learner:
             self._model_types, self._problem_type, logger=self._logger
         )
         if self._data_split["type"] == "holdout":
-            res, metric_res = self._fit_holdout(data)
-            return res, metric_res
+            res, metric_res, trained_models = self._fit_holdout(data)
+            return res, metric_res, trained_models
 
     def _fit_holdout(self, data: Tuple) -> None:
         self._logger.info("Fitting holdout...")
-        X_train, X_test, y_train, y_test = data
-        X_train, X_test, scaler = normalise_data(
-            X_train, X_test, self._normalization, logger=self._logger
-        )
+        X_train, X_test, y_train, y_test = data.X_train, data.X_test, data.y_train, data.y_test
         res = {}
         metric_res = {}
-        res["scaler"] = scaler
+        trained_models = {}
+        res["scaler"] = data.scaler
         res["y_test"] = y_test
         res["y_train"] = y_train
         for model_name, model in self._models.items():
@@ -53,7 +50,8 @@ class Learner:
             metric_res[model_name] = self._evaluate(
                 model_name, y_train, y_pred_train, y_test, y_pred_test
             )
-        return res, metric_res
+            trained_models[model_name] = model
+        return res, metric_res, trained_models
 
     def _evaluate(
         self,

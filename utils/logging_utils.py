@@ -26,10 +26,10 @@ class Logger(object):
     """
 
     def __init__(
-        self, log_dir, logging_level="INFO", console_logger=True, multi_module=True
+        self, log_dir, experiment_name, logging_level="INFO", console_logger=True, multi_module=True
     ) -> None:
         super().__init__()
-        self._log_dir = log_dir
+        self._log_dir = f'./log/{experiment_name}/{log_dir}'
         self.console_logger = console_logger
         self.logging_level = logging_level.lower()
         self.multi_module = multi_module
@@ -51,7 +51,7 @@ class Logger(object):
         # logging configuration
         log_dir = Path(self._log_dir)
         log_dir.mkdir(parents=True, exist_ok=True)
-        file_name = log_dir.joinpath(f'{time.strftime("%Y%m%d")}.log')
+        file_name = log_dir.joinpath(f'{time.strftime("%Y%m%d-%H%M%S")}.log')
 
         # Create a custom logger
         if self.multi_module:

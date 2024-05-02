@@ -1,5 +1,7 @@
 import argparse
+
 import pandas as pd
+
 
 def calculate_ensemble_mean(feature_importance_results, opt: argparse.Namespace):
     '''Calculate mean of feature importance results
@@ -8,7 +10,7 @@ def calculate_ensemble_mean(feature_importance_results, opt: argparse.Namespace)
     Returns:
         ensemble_mean: Mean of feature importance results
     '''
-    print("Calculating mean of feature importance results...")
+
     # create a dataframe to store the mean of feature importance results
     # with the feature names as the index
     ensemble_mean = pd.DataFrame()
@@ -70,7 +72,6 @@ def calculate_ensemble_majorityvote(feature_importance_results, opt: argparse.Na
     
 
     return ensemble_majorityvote
-
 
 
 
