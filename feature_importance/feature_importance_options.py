@@ -4,8 +4,6 @@ import ast
 import os
 import sys
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from base_options import BaseOptions
 
 
@@ -35,7 +33,7 @@ class FeatureImportanceOptions(BaseOptions):
             "--feature_importance_ensemble",
             type=lambda x: ast.literal_eval(x),
             default={'Mean': True,
-                     'Majority': False,
+                     'Majority Vote': True,
                      'Fuzzy': False,},
             help="Feature importance ensemble methods to use",
 

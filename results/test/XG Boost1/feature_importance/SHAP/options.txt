@@ -4,7 +4,7 @@ is_machine_learning: False
 is_feature_importance: True
 random_state: 1221
 feature_importance_methods: {'Permutation Importance': True, 'SHAP': True}
-feature_importance_ensemble: {'Mean': True, 'Majority': False, 'Fuzzy': False}
+feature_importance_ensemble: {'Mean': True, 'Majority Vote': True, 'Fuzzy': False}
 save_feature_importance_results: True
 save_feature_importance_metrics: True
 save_feature_importance_plots: True
