@@ -1,7 +1,9 @@
 import argparse
+
 import pandas as pd
-from sklearn.inspection import permutation_importance
 import shap
+from sklearn.inspection import permutation_importance
+
 
 def calculate_permutation_importance(model, X, y, opt: argparse.Namespace):
     '''Calculate permutation importance for a given model and dataset
@@ -12,7 +14,6 @@ def calculate_permutation_importance(model, X, y, opt: argparse.Namespace):
     Returns:
         permutation_importance: Permutation importance values
     '''
-    print("Calculating Permutation Importance...")
 
         
     # Use permutation importance in sklearn.inspection to calculate feature importance
@@ -36,7 +37,6 @@ def calculate_shap_values(model, X, opt: argparse.Namespace):
     Returns:
         shap_df: Average SHAP values
     '''
-    print("Calculating SHAP Values...")
    
     explainer = shap.Explainer(model)
     

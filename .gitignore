@@ -131,3 +131,8 @@ dmypy.json
 .DS_Store
 .vscode/
 machine_learning/tmp.ipynb
+machine_learning/data_clean.csv
+.gitignore
+machine_learning/data/
+results/
+.results/

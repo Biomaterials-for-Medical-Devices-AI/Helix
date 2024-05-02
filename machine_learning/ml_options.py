@@ -66,7 +66,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--log_dir",
             type=str,
-            default="./logs/ml",
+            default="ml",
             help="Path to the directory to store logs",
             required=False,
         )
