@@ -30,10 +30,10 @@ class Interpreter:
         Returns:
             dict: Dictionary of feature importance results.
         '''
-        self._logger.info(f"-------- Start Feature importance Logging--------") 
+        self._logger.info(f"-------- Start of feature importance logging--------") 
         feature_importance_results = self._individual_feature_importance(models, X, y)
         ensemble_results = self._ensemble_feature_importance(feature_importance_results)
-        self._logger.info(f"-------- End Feature importance Logging--------") 
+        self._logger.info(f"-------- End of feature importance logging--------") 
 
         return feature_importance_results, ensemble_results
          
@@ -56,23 +56,21 @@ class Interpreter:
             self._logger.info("No feature importance methods selected")
         else:
             for model_type, model in models.items():
-                self._logger.info(f"Calculating feature importance for {model_type}...")
+                self._logger.info(f"Indiviudal feature importance methods for {model_type}...")
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for feature_importance_type, value in self._feature_importance_methods.items():
                     if value:
                         if feature_importance_type == 'Permutation Importance':
-                            # Run Permutation Importance
-                            self._logger.info(f"Calculating {feature_importance_type} importance...")
-                            permutation_importance_df = calculate_permutation_importance(model, X, y, self._opt)
-                            save_importance_results(permutation_importance_df, model_type, feature_importance_type, self._opt)
+                            # Run Permutation Importance                            
+                            permutation_importance_df = calculate_permutation_importance(model, X, y, self._opt,self._logger)
+                            save_importance_results(permutation_importance_df, model_type, feature_importance_type, self._opt,self._logger)
                             feature_importance_results[feature_importance_type] = permutation_importance_df
 
                         if feature_importance_type == 'SHAP':
                             # Run SHAP
-                            self._logger.info(f"Calculating {feature_importance_type} importance...")
-                            shap_df, shap_values = calculate_shap_values(model, X,self._opt)
-                            save_importance_results(shap_df, model_type, feature_importance_type, self._opt, shap_values)
+                            shap_df, shap_values = calculate_shap_values(model, X,self._opt,self._logger)
+                            save_importance_results(shap_df, model_type, feature_importance_type, self._opt, self._logger,shap_values)
                             feature_importance_results[feature_importance_type] = shap_df
 
         return feature_importance_results
@@ -90,21 +88,19 @@ class Interpreter:
         if not any(self._feature_importance_ensemble.values()):
             self._logger.info("No ensemble feature importance method selected")
         else:            
-            self._logger.info("------ Calculating ensemble of feature importance results ------")
+            self._logger.info("Ensemble feature importance methods...")
             for ensemble_type, value in self._feature_importance_ensemble.items():
                 if value:
                     if ensemble_type == 'Mean':
-                        # Calculate mean of feature importance results
-                        self._logger.info(f"Calculating {ensemble_type} importance...")            
-                        mean_results = calculate_ensemble_mean(feature_importance_results, self._opt)
-                        save_importance_results(mean_results, None, ensemble_type, self._opt)
+                        # Calculate mean of feature importance results                                   
+                        mean_results = calculate_ensemble_mean(feature_importance_results, self._opt,self._logger)
+                        save_importance_results(mean_results, None, ensemble_type, self._opt,self._logger)
                         ensemble_results[ensemble_type] = mean_results
                     
                     if ensemble_type == 'Majority Vote':
-                        # Calculate majority vote of feature importance results
-                        self._logger.info(f"Calculating {ensemble_type} importance...")             
-                        majority_vote_results = calculate_ensemble_majorityvote(feature_importance_results, self._opt)
-                        save_importance_results(majority_vote_results, None, ensemble_type, self._opt)
+                        # Calculate majority vote of feature importance results         
+                        majority_vote_results = calculate_ensemble_majorityvote(feature_importance_results, self._opt,self._logger)
+                        save_importance_results(majority_vote_results, None, ensemble_type, self._opt,self._logger)
                         ensemble_results[ensemble_type] = majority_vote_results
         
         return ensemble_results

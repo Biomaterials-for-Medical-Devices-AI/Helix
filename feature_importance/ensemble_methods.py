@@ -3,13 +3,16 @@ import argparse
 import pandas as pd
 
 
-def calculate_ensemble_mean(feature_importance_results, opt: argparse.Namespace):
+def calculate_ensemble_mean(feature_importance_results, opt: argparse.Namespace,logger):
     '''Calculate mean of feature importance results
     Args:
         feature_importance_results: Dictionary containing feature importance results for each model
+        opt: Options
+        logger: Logger
     Returns:
         ensemble_mean: Mean of feature importance results
     '''
+    logger.info(f"Calculating Mean ensemble importance...") 
 
     # create a dataframe to store the mean of feature importance results
     # with the feature names as the index
@@ -34,7 +37,7 @@ def calculate_ensemble_mean(feature_importance_results, opt: argparse.Namespace)
     return ensemble_mean
 
 
-def calculate_ensemble_majorityvote(feature_importance_results, opt: argparse.Namespace):
+def calculate_ensemble_majorityvote(feature_importance_results, opt: argparse.Namespace, logger):
     '''Calculate majority vote of feature importance results. 
     For majority vote, each vector in the feature importance matrix has their features ranked based on their importance. 
     Subsequently, the final feature importance is the average of the most common rank order for each feature. 
@@ -42,10 +45,14 @@ def calculate_ensemble_majorityvote(feature_importance_results, opt: argparse.Na
     The final feature importance value for feature Xi is the average value from the three feature importance methods that ranked it as 1.
     Args:
         feature_importance_results: Dictionary containing feature importance results for each model
+        opt: Options
+        logger: Logger
     Returns:
         ensemble_majorityvote: Majority vote of feature importance results
     
     '''
+    logger.info(f"Calculating Majority Vote ensemble importance...") 
+
     ensemble_majorityvote = pd.DataFrame()
     # Loop through each model and scale the feature importance values between 0 and 1
     for _ , feature_importance in feature_importance_results.items():
