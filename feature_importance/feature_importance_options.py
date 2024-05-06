@@ -92,6 +92,14 @@ class FeatureImportanceOptions(BaseOptions):
             help="Number of repetitions for permutation importance",
         ),
         self.parser.add_argument(
+            "--shap_reduce_data",
+            type=int,
+            default = 50,
+            choices=[20, 50, 70, 100],
+            help='Percentage of data to consider when calculating SHAP',
+        ),
+        
+        self.parser.add_argument(
             "--log_dir",
             type=str,
             default="fi",

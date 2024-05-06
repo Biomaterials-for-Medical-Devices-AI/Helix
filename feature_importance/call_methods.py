@@ -23,25 +23,27 @@ def load_model(model_name, folder):
 def load_data(opt: argparse.Namespace):   
     raise NotImplementedError(f"Funtion load_data is not implemented")
 
-def save_importance_results(feature_importance_df, model_type, feature_importance_type, opt: argparse.Namespace, shap_values=None):
+def save_importance_results(feature_importance_df, model_type, feature_importance_type, opt: argparse.Namespace, logger, shap_values=None):
     '''Save the feature importance results to a CSV file
     Args:
         feature_importance_df: DataFrame of feature importance results
         model_type: Type of model
         feature_importance_type: Type of feature importance method
         opt: Options
+        logger: Logger
         shap_values: SHAP values
     Returns:
         None
     '''
-    # Plot results
+    logger.info(f"Saving importance results and plots of {feature_importance_type}...")
+
     # Create results directory if it doesn't exist
     if model_type == None:
         # directory for ensemble feature importance results
-        directory = f'results/{opt.experiment_name}/Ensemble_importance/{feature_importance_type}/'
+        directory = f'./log/{opt.experiment_name}/fi/results/Ensemble_importances/{feature_importance_type}/'
     else:
         # directory for individual model feature importance results
-        directory = f'results/{opt.experiment_name}/{model_type}/feature_importance/{feature_importance_type}/'
+        directory = f'./log/{opt.experiment_name}/fi/results/{model_type}/indiviudal_feature_importances/{feature_importance_type}/'
 
     if not os.path.exists(directory):
         os.makedirs(directory)
