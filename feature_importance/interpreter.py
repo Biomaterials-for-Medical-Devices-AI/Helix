@@ -4,7 +4,7 @@ from feature_importance.call_methods import save_importance_results
 from feature_importance.ensemble_methods import (
     calculate_ensemble_majorityvote, calculate_ensemble_mean)
 from feature_importance.feature_importance_methods import (
-    calculate_permutation_importance, calculate_shap_values)
+    calculate_permutation_importance, calculate_shap_values, calculate_lime_values)
 
 
 class Interpreter:
@@ -16,8 +16,9 @@ class Interpreter:
     def __init__(self, opt: argparse.Namespace, logger: object = None) -> None:
         self._opt = opt
         self._logger = logger
-        self._feature_importance_methods = self._opt.feature_importance_methods
+        self._feature_importance_methods = self._opt.global_importance_methods
         self._feature_importance_ensemble= self._opt.feature_importance_ensemble
+        self.importance_type = 'global' # local feature importance
 
     
     def interpret(self, models, X, y):
@@ -60,17 +61,19 @@ class Interpreter:
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for feature_importance_type, value in self._feature_importance_methods.items():
-                    if value:
+                    if value['value']:
                         if feature_importance_type == 'Permutation Importance':
                             # Run Permutation Importance                            
                             permutation_importance_df = calculate_permutation_importance(model, X, y, self._opt,self._logger)
-                            save_importance_results(permutation_importance_df, model_type, feature_importance_type, self._opt,self._logger)
+                            save_importance_results(permutation_importance_df, model_type, self.importance_type,
+                                                     feature_importance_type, self._opt,self._logger)
                             feature_importance_results[feature_importance_type] = permutation_importance_df
 
                         if feature_importance_type == 'SHAP':
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(model, X,self._opt,self._logger)
-                            save_importance_results(shap_df, model_type, feature_importance_type, self._opt, self._logger,shap_values)
+                            shap_df, shap_values = calculate_shap_values(model, X, value['type'], self._opt,self._logger)
+                            save_importance_results(shap_df, model_type, self.importance_type,
+                                                     feature_importance_type, self._opt, self._logger,shap_values)
                             feature_importance_results[feature_importance_type] = shap_df
 
         return feature_importance_results
@@ -94,18 +97,17 @@ class Interpreter:
                     if ensemble_type == 'Mean':
                         # Calculate mean of feature importance results                                   
                         mean_results = calculate_ensemble_mean(feature_importance_results, self._opt,self._logger)
-                        save_importance_results(mean_results, None, ensemble_type, self._opt,self._logger)
+                        save_importance_results(mean_results, None, self.importance_type,
+                                                ensemble_type, self._opt,self._logger)
                         ensemble_results[ensemble_type] = mean_results
                     
                     if ensemble_type == 'Majority Vote':
                         # Calculate majority vote of feature importance results         
                         majority_vote_results = calculate_ensemble_majorityvote(feature_importance_results, self._opt,self._logger)
-                        save_importance_results(majority_vote_results, None, ensemble_type, self._opt,self._logger)
+                        save_importance_results(majority_vote_results, None, self.importance_type,
+                                                ensemble_type, self._opt,self._logger)
                         ensemble_results[ensemble_type] = majority_vote_results
         
         return ensemble_results
-
-
-
-
+    
     

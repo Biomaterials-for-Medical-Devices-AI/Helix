@@ -49,6 +49,15 @@ class BaseOptions:
             default=1221,
             help="Random seed for reproducibility",
             required=False,
+        ),
+
+        self.parser.add_argument(
+            "--problem_type",
+            type=str,
+            default="regression",
+            help="Problem type: classification or regression",
+            choices=["classification", "regression"],
+            required=False,
         )
 
         self.initialized = True

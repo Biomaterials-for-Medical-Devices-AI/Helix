@@ -4,9 +4,10 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from feature_importance.interpreter import Interpreter
+from feature_importance.fuzzy import Fuzzy
 
 
-def run(opt, data, models, logger):
+def run(fi_opt, data, models, logger):
 
 
     #data = load_data(opt)
@@ -24,7 +25,10 @@ def run(opt, data, models, logger):
     # initiate logger
     # logger = Logger(opt.log_dir, opt.experiment_name).make_logger()
     # Interpret the model results
-    interpreter = Interpreter(opt,logger=logger)
-    feature_importance_results, ensemble_results = interpreter.interpret(models, X_train, y_train)
+    interpreter = Interpreter(fi_opt,logger=logger)
+    fuzzy = Fuzzy(fi_opt, logger=logger)
+    gloabl_importance_results, ensemble_results = interpreter.interpret(models, X_train, y_train)
+    local_importance_results = fuzzy.interpret(models, ensemble_results, X_train, y_train)
 
-    return feature_importance_results, ensemble_results
+
+    return  gloabl_importance_results, ensemble_results, local_importance_results
