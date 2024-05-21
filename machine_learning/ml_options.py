@@ -23,14 +23,7 @@ class MLOptions(BaseOptions):
             required=False,
         )
 
-        self.parser.add_argument(
-            "--problem_type",
-            type=str,
-            default="regression",
-            help="Problem type: classification or regression",
-            choices=["classification", "regression"],
-            required=False,
-        )
+        
 
         self.parser.add_argument(
             "--data_split",
