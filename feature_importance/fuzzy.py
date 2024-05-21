@@ -38,6 +38,15 @@ class Fuzzy:
         if self._opt.is_granularity:
             X_train = self._fuzzy_granularity(X_train)
             X_test = self._fuzzy_granularity(X_test)
+        # Train and evaluate models
+        # trained_models = self._train_ml_models(ml_opt, data, ml_logger)
+
+        # Feature importance
+        # local_feature_importance = self._local_feature_importance
+
+        # TODO:Add clas to local feature importance
+
+
         #local_importance_results = self._local_feature_importance(models, X, y)
         self._logger.info(f"-------- End of fuzzy interpretation logging--------") 
 
@@ -140,6 +149,7 @@ class Fuzzy:
                             lime_importance_df = calculate_lime_values(model, X, self._opt,self._logger)
                             save_importance_results(lime_importance_df, model_type, self.importance_type,
                                                     feature_importance_type, self._opt,self._logger)
+                            #TODO: Add y to 
                             feature_importance_results[feature_importance_type] = lime_importance_df
 
                         if feature_importance_type == 'SHAP':
