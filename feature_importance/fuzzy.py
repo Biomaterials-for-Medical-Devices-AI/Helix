@@ -18,27 +18,30 @@ class Fuzzy:
 
 
     
-    def interpret(self, models, ensemble_results, X, y):
+    def interpret(self, models, ensemble_results, data):
         '''
         Interpret the model results using the selected feature importance methods and ensemble methods.
         Parameters:
             models (dict): Dictionary of models.
-            X (pd.DataFrame): Features.
-            y (pd.Series): Target.
+            data (object): Data object.
         Returns:
             dict: Dictionary of feature importance results.
         '''
+        # create a copy of the data
+        X_train, X_test, _, _ = data.X_train, data.X_test, data.y_train, data.y_test
         self._logger.info(f"-------- Start of fuzzy interpretation logging--------")
         if self._opt.fuzzy_feature_selection:
             # Select top features for fuzzy interpretation
             topfeatures = self._select_features(ensemble_results['Majority Vote'])
-            X = X[topfeatures]
+            X_train = X_train[topfeatures]
+            X_test = X_test[topfeatures]
         if self._opt.is_granularity:
-            X = self._fuzzy_granularity(X)
-        local_importance_results = self._local_feature_importance(models, X, y)
+            X_train = self._fuzzy_granularity(X_train)
+            X_test = self._fuzzy_granularity(X_test)
+        #local_importance_results = self._local_feature_importance(models, X, y)
         self._logger.info(f"-------- End of fuzzy interpretation logging--------") 
 
-        return local_importance_results
+        return X_train, X_test
 
     def _select_features(self, majority_vote_results):
         '''
@@ -51,7 +54,7 @@ class Fuzzy:
         self._logger.info(f"Selecting top {self._opt.number_fuzzy_features} features...")
         fi = majority_vote_results.sort_values(by=0, ascending=False)
         # Select top n features for fuzzy interpretation
-        topfeatures = fi.Feature[:self._opt.number_fuzzy_features].tolist()
+        topfeatures = fi.index[:self._opt.number_fuzzy_features].tolist()
         return topfeatures
     
     def _fuzzy_granularity(self, X):
@@ -64,6 +67,11 @@ class Fuzzy:
         '''
         import numpy as np
         import skfuzzy as fuzz
+        import warnings
+
+        # Suppress all warnings
+        warnings.filterwarnings('ignore'
+                                )
         self._logger.info(f"Assigning granularity to features...")
         # find interquartile values for each feature
         df_top_qtl = X.quantile([0,0.25, 0.5, 0.75,1])
@@ -94,12 +102,12 @@ class Fuzzy:
 
         # Create granular features using membership values
         new_df_features = []
-        for feature in X.colums:
-            X[f'{feature}_small'] = fuzz.interp_membership(universe[feature], membership_functions[feature]['low'], df_processed[feature])
+        for feature in X.columns:
+            X.loc[:, f'{feature}_small'] = fuzz.interp_membership(universe[feature], membership_functions[feature]['low'], X[feature])
             new_df_features.append(f'{feature}_small')
-            X[f'{feature}_mod'] = fuzz.interp_membership(universe[feature], membership_functions[feature]['medium'], df_processed[feature])
+            X.loc[:, f'{feature}_mod'] = fuzz.interp_membership(universe[feature], membership_functions[feature]['medium'], X[feature])
             new_df_features.append(f'{feature}_mod')
-            X[f'{feature}_large'] = fuzz.interp_membership(universe[feature], membership_functions[feature]['high'], df_processed[feature])
+            X.loc[:, f'{feature}_large'] = fuzz.interp_membership(universe[feature], membership_functions[feature]['high'], X[feature])
             new_df_features.append(f'{feature}_large')
         X = X[new_df_features]
                 

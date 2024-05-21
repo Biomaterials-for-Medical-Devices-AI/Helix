@@ -21,7 +21,7 @@ class Interpreter:
         self.importance_type = 'global' # local feature importance
 
     
-    def interpret(self, models, X, y):
+    def interpret(self, models, data):
         '''
         Interpret the model results using the selected feature importance methods and ensemble methods.
         Parameters:
@@ -31,6 +31,8 @@ class Interpreter:
         Returns:
             dict: Dictionary of feature importance results.
         '''
+        # Load the data
+        X, _, y, _ = data.X_train, data.X_test, data.y_train, data.y_test
         self._logger.info(f"-------- Start of feature importance logging--------") 
         feature_importance_results = self._individual_feature_importance(models, X, y)
         ensemble_results = self._ensemble_feature_importance(feature_importance_results)
