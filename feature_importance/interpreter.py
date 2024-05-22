@@ -17,8 +17,9 @@ class Interpreter:
         self._opt = opt
         self._logger = logger
         self._feature_importance_methods = self._opt.global_importance_methods
+        self._local_importance_methods = self._opt.local_importance_methods
         self._feature_importance_ensemble= self._opt.feature_importance_ensemble
-        self.importance_type = 'global' # local feature importance
+
 
     
     def interpret(self, models, data):
@@ -34,18 +35,19 @@ class Interpreter:
         # Load the data
         X, _, y, _ = data.X_train, data.X_test, data.y_train, data.y_test
         self._logger.info(f"-------- Start of feature importance logging--------") 
-        feature_importance_results = self._individual_feature_importance(models, X, y)
-        ensemble_results = self._ensemble_feature_importance(feature_importance_results)
+        global_importance_results = self._individual_feature_importance(models, X, y)
+        local_importance_results = self._local_feature_importance(models, X)
+        ensemble_results = self._ensemble_feature_importance(global_importance_results)
         self._logger.info(f"-------- End of feature importance logging--------") 
 
-        return feature_importance_results, ensemble_results
+        return global_importance_results,  local_importance_results, ensemble_results
          
 
 
 
     def _individual_feature_importance(self, models,  X, y):
         '''
-        Calculate feature importance for a given model and dataset.
+        Calculate global feature importance for a given model and dataset.
         Parameters:
             models (dict): Dictionary of models.
             X (pd.DataFrame): Features.
@@ -60,6 +62,7 @@ class Interpreter:
         else:
             for model_type, model in models.items():
                 self._logger.info(f"Indiviudal feature importance methods for {model_type}...")
+                feature_importance_results[model_type] = {}
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for feature_importance_type, value in self._feature_importance_methods.items():
@@ -67,16 +70,56 @@ class Interpreter:
                         if feature_importance_type == 'Permutation Importance':
                             # Run Permutation Importance                            
                             permutation_importance_df = calculate_permutation_importance(model, X, y, self._opt,self._logger)
-                            save_importance_results(permutation_importance_df, model_type, self.importance_type,
+                            save_importance_results(permutation_importance_df, model_type, value['type'],
                                                      feature_importance_type, self._opt,self._logger)
-                            feature_importance_results[feature_importance_type] = permutation_importance_df
+                            feature_importance_results[model_type][feature_importance_type] = permutation_importance_df
 
                         if feature_importance_type == 'SHAP':
                             # Run SHAP
                             shap_df, shap_values = calculate_shap_values(model, X, value['type'], self._opt,self._logger)
-                            save_importance_results(shap_df, model_type, self.importance_type,
+                            save_importance_results(shap_df, model_type, value['type'],
                                                      feature_importance_type, self._opt, self._logger,shap_values)
-                            feature_importance_results[feature_importance_type] = shap_df
+                            feature_importance_results[model_type][feature_importance_type] = shap_df
+
+
+        return feature_importance_results
+    
+    def _local_feature_importance(self, models,  X):
+        '''
+        Calculate local feature importance for a given model and dataset.
+        Parameters:
+            models (dict): Dictionary of models.
+            X (pd.DataFrame): Features.
+            y (pd.Series): Target.
+        Returns:
+            dict: Dictionary of feature importance results.
+        '''
+        feature_importance_results = {}
+
+        if not any(self._local_importance_methods.values()):
+            self._logger.info("No local feature importance methods selected")
+        else:
+            for model_type, model in models.items():
+                self._logger.info(f"Local feature importance methods for {model_type}...")
+                feature_importance_results[model_type] = {}
+
+                # Run methods with TRUE values in the dictionary of feature importance methods
+                for feature_importance_type, value in self._local_importance_methods.items():
+                    if value['value']:
+                        if feature_importance_type == 'LIME':
+                            # Run Permutation Importance                            
+                            lime_importance_df = calculate_lime_values(model, X, self._opt,self._logger)
+                            save_importance_results(lime_importance_df, model_type, value['type'],
+                                                    feature_importance_type, self._opt,self._logger)
+                            feature_importance_results[model_type][feature_importance_type] = lime_importance_df
+
+                        if feature_importance_type == 'SHAP':
+                            # Run SHAP
+                            shap_df, shap_values = calculate_shap_values(model, X, value['type'], self._opt,self._logger)
+                            save_importance_results(shap_df, model_type,value['type'], 
+                                                    feature_importance_type, self._opt, self._logger,shap_values)
+                            feature_importance_results[model_type][feature_importance_type] = shap_df
+        
 
         return feature_importance_results
     
@@ -99,16 +142,18 @@ class Interpreter:
                     if ensemble_type == 'Mean':
                         # Calculate mean of feature importance results                                   
                         mean_results = calculate_ensemble_mean(feature_importance_results, self._opt,self._logger)
-                        save_importance_results(mean_results, None, self.importance_type,
+                        save_importance_results(mean_results, None, None,
                                                 ensemble_type, self._opt,self._logger)
                         ensemble_results[ensemble_type] = mean_results
                     
                     if ensemble_type == 'Majority Vote':
                         # Calculate majority vote of feature importance results         
                         majority_vote_results = calculate_ensemble_majorityvote(feature_importance_results, self._opt,self._logger)
-                        save_importance_results(majority_vote_results, None, self.importance_type,
+                        save_importance_results(majority_vote_results, None, None,
                                                 ensemble_type, self._opt,self._logger)
                         ensemble_results[ensemble_type] = majority_vote_results
+
+        self._logger.info(f"Ensemble feature importance results: \n{ensemble_results}")
         
         return ensemble_results
     
