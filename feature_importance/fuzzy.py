@@ -4,6 +4,7 @@ import pandas as pd
 from feature_importance.call_methods import save_importance_results
 from feature_importance.feature_importance_methods import (
     calculate_shap_values, calculate_lime_values)
+#from machine_learning import train
 
 class Fuzzy:
     """
@@ -41,15 +42,20 @@ class Fuzzy:
         if self._opt.is_granularity:
             X_train = self._fuzzy_granularity(X_train)
             X_test = self._fuzzy_granularity(X_test)
+
+        # Update data object with new features
+        data.X_train, data.X_test = X_train, X_test
         # Step 3: Train and evaluate models
-        # trained_models = self._train_ml_models(ml_opt, data, ml_logger)
+        #trained_models = train.run(ml_opt, data, self._logger)
 
         # Step 4: Master feature importance dataframe for granular features from local feature importance methods and ML models
         master_importance_df = self._local_feature_importance(models, data.X_train, data.y_train)
 
         # Step 5: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
-        print(fuzzy_rules_df)
+
+        # Step 6: Identify most occuring fuzzy rules by context (e.g. target category:low, medium, high)
+
 
 
 
@@ -129,7 +135,7 @@ class Fuzzy:
                 
         return X
     
-    def _fuzzyset_selection(uni, mf1, mf2, mf3, val):
+    def _fuzzyset_selection(self, uni, mf1, mf2, mf3, val):
         '''
         Select fuzzy set with highest membership value.
         Parameters:
@@ -193,25 +199,30 @@ class Fuzzy:
         fuzzy_rules = []
 
         # Loop through each row in the dataframe and extract fuzzy rules
-        for i in range(len(df)):
+        for i, _ in df.iterrows():
             df_instance = {} # Dictionary to store observation values
             fuzzy_sets = {} # Dictionary to store fuzzy sets
             for feature in df.columns[:-1]:
                 df_instance[feature] = df.loc[i,feature]
-            
             # Extract fuzzy set for each feature
             for feature in df.columns[:-1]:
-                fuzzy_sets[feature] = self._fuzzyset_selection(universe[feature], membership_functions[feature]['low'], 
-                                            membership_functions[feature]['medium'],
-                                            membership_functions[feature]['high'],
-                                            df_instance[feature]
-                                            )
-            fuzzy_sets[df.column[-1]] = df.loc[i,df.column[-1]]
+                fuzzy_sets[feature] = self._fuzzyset_selection(universe[feature],
+                                                                membership_functions[feature]['low'],
+                                                                membership_functions[feature]['medium'],
+                                                                membership_functions[feature]['high'],
+                                                                df_instance[feature]
+                                                                )
+            
+            fuzzy_sets[df.columns[-1]] = df.loc[i,df.columns[-1]]
             fuzzy_rules.append(fuzzy_sets)
 
+        # Create dataframe of fuzzy rules
+        fuzzy_rules_df = pd.DataFrame(fuzzy_rules, index=df.index)
 
+        # log fuzzy rules
+        self._logger.info(f"Fiver fuzzy rules extracted: \n{fuzzy_rules_df.head(5)}")
 
-        return fuzzy_rules
+        return fuzzy_rules_df
 
     
     def _local_feature_importance(self, models,  X, y):
@@ -224,6 +235,7 @@ class Fuzzy:
         Returns:
             dict: Dictionary of feature importance results.
         '''
+        self._logger.info(f"Creating master feature importance dataframe...")
         feature_importance_results = {}
 
         if not any(self._local_importance_methods.values()):
@@ -266,7 +278,7 @@ class Fuzzy:
         
         
 
-        return master_df, X.columns.tolist()
+        return master_df
 
 
 
