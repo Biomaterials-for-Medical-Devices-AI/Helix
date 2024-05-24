@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from feature_importance.fuzzy import Fuzzy
 
 
-def run(fuzzy_opt, data, ensemble_results, models, logger):
+def run(fuzzy_opt, data,  models, logger):
 
     
     # Interpret the feature synergy importance

@@ -21,8 +21,8 @@ fuzzy_logger = Logger(fuzzy_opt.fuzzy_log_dir, fuzzy_opt.experiment_name).make_l
 set_seed(seed)
 data = DataBuilder(ml_opt, logger=ml_logger).ingest()
 trained_models = train.run(ml_opt, data, ml_logger)
-gloabl_importance_results, ensemble_results, local_importance_results = feature_importance.run(fi_opt, data, trained_models, fi_logger)
-fuzzy_rules = fuzzy_interpretation.run(fuzzy_opt, data, ensemble_results, trained_models, fuzzy_logger)
+#gloabl_importance_results, ensemble_results, local_importance_results = feature_importance.run(fi_opt, data, trained_models, fi_logger)
+fuzzy_rules = fuzzy_interpretation.run(fuzzy_opt, data, trained_models, fuzzy_logger)
 
 
 

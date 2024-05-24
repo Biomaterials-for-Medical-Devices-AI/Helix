@@ -179,7 +179,41 @@ class Fuzzy:
         import skfuzzy as fuzz
 
         self._logger.info(f"Extracting fuzzy rules...")
-        #TODO: convert target to categorical
+        #TODO: convert target to categorical using fuzzy clustering
+        if self._opt.problem_type == 'regression':
+            target = np.array(df[df.columns[-1]])
+            centers, membership_matrix, _, _, _, _, _ = fuzz.cluster.cmeans(data=target.reshape(1, -1),
+                                                                            c=self._opt.number_clusters,
+                                                                            m=2,  # Fuzziness parameter
+                                                                            error=0.005,
+                                                                            maxiter=1000,
+                                                                            )
+            # Determine the primary cluster assignment for each data point
+            primary_cluster_assignment = np.argmax(membership_matrix, axis=0)
+
+            # Calculate the average value for each cluster
+            cluster_numbers = np.unique(primary_cluster_assignment).tolist()
+
+            cluster_averages = [np.mean(target[primary_cluster_assignment == i]) for i in range(self._opt.number_clusters)]
+
+            # Replace cluser numbers by cluster names based on their average values
+            cluster_names = self._opt.names_clusters
+
+            # Create a list of tuples where each tuple contains a cluster number and its corresponding average
+            clusters = list(zip(cluster_numbers, cluster_averages))
+
+            # Sort this list by the averages
+            clusters.sort(key=lambda x: x[1])
+
+            # Create a dictionary where the keys are the cluster numbers and the values are the cluster names
+            cluster_mapping = {cluster_num[0]: cluster_name for cluster_num, cluster_name in zip(clusters, cluster_names)}
+
+            # replace the cluster numbers in the list with the corresponding cluster names
+            primary_cluster_assignment = [cluster_mapping[cluster_num] for cluster_num in primary_cluster_assignment]
+
+            # Assign labels to target
+            df.loc[:,df.columns[-1]] =  primary_cluster_assignment
+      
 
         # Create membership functions based on interquartile values for each feature
         membership_functions = {}
@@ -220,7 +254,7 @@ class Fuzzy:
         fuzzy_rules_df = pd.DataFrame(fuzzy_rules, index=df.index)
 
         # log fuzzy rules
-        self._logger.info(f"Fiver fuzzy rules extracted: \n{fuzzy_rules_df.head(5)}")
+        self._logger.info(f"Fiver fuzzy rules extracted: \n{fuzzy_rules_df.head(10)}")
 
         return fuzzy_rules_df
 

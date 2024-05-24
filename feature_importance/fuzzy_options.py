@@ -38,9 +38,22 @@ class FuzzyOptions(FeatureImportanceOptions):
             help="Flag for granularity of features",
         ),
         self.parser.add_argument(
+            "--number_clusters",
+            type=int,
+            default=3,
+            help="Number of clusters for target variable in fuzzy interpretation",
+        ),
+        self.parser.add_argument(
+            "--names_clusters",
+            type=ast.literal_eval,
+            default=['low', 'medium', 'high'],
+            help="Names of the clusters for target variable in fuzzy interpretation",
+        ),
+        self.parser.add_argument(
             "--fuzzy_log_dir",
             type=str,
             default="fuzzy",
             help="Path to the directory to store logs",
             required=False,
         ),
+        
