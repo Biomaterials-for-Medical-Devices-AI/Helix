@@ -25,7 +25,7 @@ class FeatureImportanceOptions(BaseOptions):
             "--global_importance_methods",
             type=lambda x: ast.literal_eval(x),
             default={'Permutation Importance': {'type': 'global', 'value':True},
-                     'SHAP': {'type': 'global', 'value':True}},
+                     'SHAP': {'type': 'global', 'value':False}},
             help="Global feature importance methods to use",
         ),
 
@@ -34,7 +34,7 @@ class FeatureImportanceOptions(BaseOptions):
             "--feature_importance_ensemble",
             type=lambda x: ast.literal_eval(x),
             default={'Mean': True,
-                     'Majority Vote': True},
+                     'Majority Vote': False},
             help="Feature importance ensemble methods to use",
 
         ),
@@ -43,27 +43,8 @@ class FeatureImportanceOptions(BaseOptions):
             "--local_importance_methods",
             type=lambda x: ast.literal_eval(x),
             default={'LIME': {'type': 'local', 'value':True},
-                     'SHAP': {'type': 'local', 'value':True},},
+                     'SHAP': {'type': 'local', 'value':False},},
             help="Local feature importance methods to use in fuzzy interpretation",
-        ),
-
-        self.parser.add_argument(
-            "--fuzzy_feature_selection",
-            type=bool,
-            default=True,
-            help="Flag for fuzzy feature selection",
-        ),  
-        self.parser.add_argument(
-            "--number_fuzzy_features",
-            type=int,
-            default=5,  
-            help="Number of features selected for fuzzy interpretation",
-        ),
-        self.parser.add_argument(
-            "--is_granularity",
-            type=bool,
-            default=True,
-            help="Flag for granularity of features",
         ),
         self.parser.add_argument(
             "--save_feature_importance_results",

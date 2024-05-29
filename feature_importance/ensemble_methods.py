@@ -20,7 +20,7 @@ def calculate_ensemble_mean(feature_importance_results, opt: argparse.Namespace,
     
     # Loop through each model and scale the feature importance values between 0 and 1
     for _, feature_importance in feature_importance_results.items():
-        for _, result in feature_importance.items():
+        for f_, result in feature_importance.items():
             # Scale the feature importance values between 0 and 1
             result = (result - result.min()) / (result.max() - result.min())
             # Add the scaled values to the ensemble_mean dataframe

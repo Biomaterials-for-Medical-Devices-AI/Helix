@@ -56,7 +56,7 @@ def calculate_shap_values(model, X, shap_type, opt: argparse.Namespace, logger):
 
     # add an option to check if feature importance is local or global
     if shap_type == 'local':
-        shap_df = pd.DataFrame(shap_values.values, columns=X.columns)
+        shap_df = pd.DataFrame(shap_values.values, columns=X.columns, index=X.index)
         #TODO: scale coefficients between 0 and +1 (low to high impact)
     elif shap_type == 'global':
         # Calculate Average Importance + set column names as index
@@ -93,7 +93,7 @@ def calculate_lime_values(model, X, opt: argparse.Namespace, logger):
         explanation = explainer.explain_instance(X.iloc[i,:], model.predict, num_features=X.shape[1])
         coefficients.append([item[-1] for item in explanation.local_exp[1]])
         
-    lr_lime_values = pd.DataFrame(coefficients, columns=X.columns)
+    lr_lime_values = pd.DataFrame(coefficients, columns=X.columns, index=X.index)
 
     #TODO: scale coefficients between 0 and +1 (low to high impact)
     
