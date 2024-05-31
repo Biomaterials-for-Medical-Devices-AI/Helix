@@ -22,7 +22,7 @@ class FuzzyOptions(FeatureImportanceOptions):
         self.parser.add_argument(
             "--fuzzy_feature_selection",
             type=bool,
-            default=False,
+            default=True,
             help="Flag for fuzzy feature selection",
         ),  
         self.parser.add_argument(
@@ -34,7 +34,7 @@ class FuzzyOptions(FeatureImportanceOptions):
         self.parser.add_argument(
             "--is_granularity",
             type=bool,
-            default=False,
+            default=True,
             help="Flag for granularity of features",
         ),
         self.parser.add_argument(
@@ -48,6 +48,12 @@ class FuzzyOptions(FeatureImportanceOptions):
             type=ast.literal_eval,
             default=['low', 'medium', 'high'],
             help="Names of the clusters for target variable in fuzzy interpretation",
+        ),
+        self.parser.add_argument(
+            "--number_rules",
+            type=int,
+            default=5,
+            help="Number of top occuring rules to consider for fuzzy synergy analysis",
         ),
         self.parser.add_argument(
             "--fuzzy_log_dir",
