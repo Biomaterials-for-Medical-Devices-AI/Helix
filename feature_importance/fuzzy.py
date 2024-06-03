@@ -4,7 +4,7 @@ import pandas as pd
 from feature_importance.call_methods import save_importance_results
 from feature_importance.feature_importance_methods import (
     calculate_shap_values, calculate_lime_values)
-#from machine_learning import train
+from machine_learning import train
 
 class Fuzzy:
     """
@@ -20,7 +20,7 @@ class Fuzzy:
 
 
     
-    def interpret(self, models, ensemble_results, data):
+    def interpret(self, models, ensemble_results, data, ml_opt):
         '''
         Interpret the model results using the selected feature importance methods and ensemble methods.
         Parameters:
@@ -30,7 +30,7 @@ class Fuzzy:
             dict: Dictionary of feature importance results.
         '''
         # create a copy of the data
-        X_train, X_test, _, _ = data.X_train, data.X_test, data.y_train, data.y_test
+        X_train, X_test = data.X_train, data.X_test
         self._logger.info(f"-------- Start of fuzzy interpretation logging--------")
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._opt.fuzzy_feature_selection:
@@ -38,15 +38,21 @@ class Fuzzy:
             topfeatures = self._select_features(ensemble_results['Majority Vote'])
             X_train = X_train[topfeatures]
             X_test = X_test[topfeatures]
+            print(X_train.head())
+            print(X_test.head())
         # Step 2: Assign granularity to features e.g. low, medium, high categories
         if self._opt.is_granularity:
             X_train = self._fuzzy_granularity(X_train)
             X_test = self._fuzzy_granularity(X_test)
+            print(X_train.head())
+            print(X_test.head())
 
-        # Update data object with new features
-        data.X_train, data.X_test = X_train, X_test
+    
         # Step 3: Train and evaluate models
-        #trained_models = train.run(ml_opt, data, self._logger)
+        if self._opt.fuzzy_feature_selection or self._opt.is_granularity:
+            # Update data object with new features
+            data.X_train, data.X_test = X_train, X_test
+            models = train.run(ml_opt, data, self._logger)    
 
         # Step 4: Master feature importance dataframe for granular features from local feature importance methods and ML models
         master_importance_df = self._local_feature_importance(models, data.X_train, data.y_train)
@@ -54,16 +60,16 @@ class Fuzzy:
         # Step 5: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
 
-        # Step 6: Identify most occuring fuzzy rules by context (e.g. target category:low, medium, high)
+        # Step 6: Identify the synergy of important features by context (e.g. target category:low, medium, high)
+        df_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
 
-
-
+        print(df_rules)
 
 
         #local_importance_results = self._local_feature_importance(models, X, y)
         self._logger.info(f"-------- End of fuzzy interpretation logging--------") 
 
-        return fuzzy_rules_df
+        return df_rules
 
     def _select_features(self, majority_vote_results):
         '''
@@ -157,6 +163,9 @@ class Fuzzy:
         mf_values.append(fuzz.interp_membership(uni, mf3, val))
 
         # Select fuzzy set with highest membership value
+        # if multiple fuzzy sets have the same membership value, the first one is selected
+        
+
         index_of_max = mf_values.index(max(mf_values))
 
         # Return fuzzy set
@@ -177,7 +186,7 @@ class Fuzzy:
         '''
         import numpy as np
         import skfuzzy as fuzz
-
+        print(df)
         self._logger.info(f"Extracting fuzzy rules...")
         #TODO: convert target to categorical using fuzzy clustering
         if self._opt.problem_type == 'regression':
@@ -251,12 +260,48 @@ class Fuzzy:
             fuzzy_rules.append(fuzzy_sets)
 
         # Create dataframe of fuzzy rules
-        fuzzy_rules_df = pd.DataFrame(fuzzy_rules, index=df.index)
-
-        # log fuzzy rules
-        self._logger.info(f"Fiver fuzzy rules extracted: \n{fuzzy_rules_df.head(10)}")
+        fuzzy_rules_df = pd.DataFrame(fuzzy_rules, index=df.index)        
 
         return fuzzy_rules_df
+    
+    def _contextual_synergy_analysis(self, fuzzy_rules_df):
+        '''
+        Identify most occuring fuzzy rules by context (e.g. target category:low, medium, high)
+        Parameters:
+            fuzzy_rules_df (pd.DataFrame): Features with fuzzy rules.
+        Returns:
+            pd.DataFrame: Most occuring fuzzy rules.
+        '''
+        self._logger.info(f"Use most occuring fuzzy rules to extract synergy of features...")
+        # Drop rules with all NaN values
+        fuzzy_rules_df.dropna(how='all', axis=1, inplace=True)
+
+        # Group by all columns to count the number of occurences of each rule
+        fuzzy_rules_grouped = fuzzy_rules_df.groupby(fuzzy_rules_df.columns.tolist()).size().reset_index().rename(columns={0: 'records'})
+
+        # Sort by the number of occurences
+        fuzzy_rules_grouped = fuzzy_rules_grouped.sort_values(by=['records'], ascending=False)
+
+        # Identify top n rules in each target category
+        top_rules = {}
+        for category in fuzzy_rules_grouped[fuzzy_rules_grouped.columns[-2]].unique():    
+            top_rules[category] = fuzzy_rules_grouped[fuzzy_rules_grouped[fuzzy_rules_grouped.columns[-2]] == category].head(self._opt.number_rules)
+        
+        synergy_features = {}
+        for category, rules in top_rules.items():
+            synergy_features[category] = {}
+            for feature in rules.columns[:-2]:
+                unique_values = rules[feature].unique()
+                if 'high' in unique_values:
+                    top_value = 'high'
+                elif 'medium' in unique_values:
+                    top_value = 'medium'
+                else:
+                    top_value = 'low'
+                synergy_features[category][feature] = top_value
+        
+        self._logger.info(f"synergy and impact of features: \n{synergy_features}")
+        return synergy_features
 
     
     def _local_feature_importance(self, models,  X, y):
@@ -309,6 +354,9 @@ class Fuzzy:
         for model_type, feature_importance in feature_importance_results.items():
             for feature_importance_type, result in feature_importance.items():
                 master_df = pd.concat([master_df, result], axis=0)
+        
+        # Reset the index of the master dataframe
+        master_df.reset_index(drop=True, inplace=True)
         
         
 
