@@ -54,7 +54,7 @@ class BaseOptions:
         self.parser.add_argument(
             "--problem_type",
             type=str,
-            default="regression",
+            default="classification",
             help="Problem type: classification or regression",
             choices=["classification", "regression"],
             required=False,

@@ -98,8 +98,7 @@ class Fuzzy:
         import warnings
 
         # Suppress all warnings
-        warnings.filterwarnings('ignore'
-                                )
+        warnings.filterwarnings('ignore')
         self._logger.info(f"Assigning granularity to features...")
         # find interquartile values for each feature
         df_top_qtl = X.quantile([0,0.25, 0.5, 0.75,1])
@@ -112,8 +111,14 @@ class Fuzzy:
             universe[feature] = np.linspace(X[feature].min(), X[feature].max(), 100)
 
             # Define membership functions
+            # features with less than 3 unique values
+            if len(X[feature].unique()) < 3:
+                print('Feature with only 2 values')
+                print(feature)
+                print(df_top_qtl[feature])
+
             # Highly skewed features
-            if df_top_qtl[feature][0.00] == df_top_qtl[feature][0.50]:
+            elif df_top_qtl[feature][0.00] == df_top_qtl[feature][0.50]:
                 low_mf = fuzz.trimf(universe[feature], [df_top_qtl[feature][0.00],df_top_qtl[feature][0.50],
                                                         df_top_qtl[feature][0.75]])
                 medium_mf = fuzz.trimf(universe[feature], [df_top_qtl[feature][0.50],df_top_qtl[feature][0.75],
@@ -221,8 +226,9 @@ class Fuzzy:
             primary_cluster_assignment = [cluster_mapping[cluster_num] for cluster_num in primary_cluster_assignment]
 
             # Assign labels to target
-            df.loc[:,df.columns[-1]] =  primary_cluster_assignment
-      
+            df.loc[:,df.columns[-1]] =  primary_cluster_assignment      
+
+            
 
         # Create membership functions based on interquartile values for each feature
         membership_functions = {}

@@ -23,6 +23,7 @@ def get_models(
                 model_param = assert_model_param(
                     LogisticRegression, model_param, logger=logger
                 )
+                model_param['class_weight'] = 'balanced'
                 models[model] = LogisticRegression(**model_param)
             elif problem_type.lower() == "regression":
                 model_param = assert_model_param(
@@ -39,6 +40,7 @@ def get_models(
                 model_param = assert_model_param(
                     RandomForestClassifier, model_param, logger=logger
                 )
+                model_param['class_weight'] = 'balanced'
                 models[model] = RandomForestClassifier(**model_param)
             elif problem_type.lower() == "regression":
                 model_param = assert_model_param(
