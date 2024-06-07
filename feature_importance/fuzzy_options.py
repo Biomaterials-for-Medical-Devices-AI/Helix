@@ -28,7 +28,7 @@ class FuzzyOptions(FeatureImportanceOptions):
         self.parser.add_argument(
             "--number_fuzzy_features",
             type=int,
-            default=5,  
+            default=7,  
             help="Number of features selected for fuzzy interpretation",
         ),
         self.parser.add_argument(
@@ -52,7 +52,7 @@ class FuzzyOptions(FeatureImportanceOptions):
         self.parser.add_argument(
             "--number_rules",
             type=int,
-            default=5,
+            default=3,
             help="Number of top occuring rules to consider for fuzzy synergy analysis",
         ),
         self.parser.add_argument(

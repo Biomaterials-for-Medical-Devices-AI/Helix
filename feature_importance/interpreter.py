@@ -61,7 +61,7 @@ class Interpreter:
             self._logger.info("No feature importance methods selected")
         else:
             for model_type, model in models.items():
-                self._logger.info(f"Indiviudal feature importance methods for {model_type}...")
+                self._logger.info(f"Global feature importance methods for {model_type}...")
                 feature_importance_results[model_type] = {}
 
                 # Run methods with TRUE values in the dictionary of feature importance methods

@@ -1,0 +1,8 @@
+lime==0.2.0.1
+matplotlib==3.8.2
+numpy==1.26.4
+pandas==2.2.2
+scikit_fuzzy==0.4.2
+scikit_learn==1.4.0
+shap==0.45.0
+tqdm==4.66.2

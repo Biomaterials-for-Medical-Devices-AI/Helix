@@ -5,6 +5,7 @@ from feature_importance.call_methods import save_importance_results
 from feature_importance.feature_importance_methods import (
     calculate_shap_values, calculate_lime_values)
 from machine_learning import train
+from feature_importance.call_methods import save_importance_results
 
 class Fuzzy:
     """
@@ -35,11 +36,26 @@ class Fuzzy:
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._opt.fuzzy_feature_selection:
             # Select top features for fuzzy interpretation
-            topfeatures = self._select_features(ensemble_results['Majority Vote'])
-            X_train = X_train[topfeatures]
-            X_test = X_test[topfeatures]
-            print(X_train.head())
-            print(X_test.head())
+            try:
+                topfeatures = self._select_features(ensemble_results['Majority Vote'])
+                X_train = X_train[topfeatures]
+                X_test = X_test[topfeatures]
+                print(X_train.head())
+                print(X_test.head())
+            except Exception as e:
+                self._logger.error(f"Error in fuzzy feature selection: {e}")
+                try:
+                    # Use Mean ensemble results
+                    topfeatures = self._select_features(ensemble_results['Mean'])
+                    X_train = X_train[topfeatures]
+                    X_test = X_test[topfeatures]
+                    print(X_train.head())
+                    print(X_test.head())
+                except Exception as e:
+                    self._logger.error(f"Error in fuzzy feature selection: {e}")
+
+            # if error occurs, use Mean ensemble results
+
         # Step 2: Assign granularity to features e.g. low, medium, high categories
         if self._opt.is_granularity:
             X_train = self._fuzzy_granularity(X_train)
@@ -59,17 +75,16 @@ class Fuzzy:
 
         # Step 5: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
+        save_importance_results(fuzzy_rules_df, None, 'fuzzy', 'fuzzy rules', self._opt, self._logger)
 
         # Step 6: Identify the synergy of important features by context (e.g. target category:low, medium, high)
-        df_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
-
-        print(df_rules)
-
+        df_contextual_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
+        save_importance_results(df_contextual_rules, None, 'fuzzy', 'top contextual rules', self._opt, self._logger)
 
         #local_importance_results = self._local_feature_importance(models, X, y)
         self._logger.info(f"-------- End of fuzzy interpretation logging--------") 
 
-        return df_rules
+        return df_contextual_rules
 
     def _select_features(self, majority_vote_results):
         '''
@@ -116,6 +131,15 @@ class Fuzzy:
                 print('Feature with only 2 values')
                 print(feature)
                 print(df_top_qtl[feature])
+                low_mf = fuzz.trimf(universe[feature], [df_top_qtl[feature][0.00],
+                                                        df_top_qtl[feature][0.00],
+                                                        df_top_qtl[feature][0.00]])
+                medium_mf = fuzz.trimf(universe[feature], [(df_top_qtl[feature][0.00]+df_top_qtl[feature][1.00])/2,
+                                                        (df_top_qtl[feature][0.00]+df_top_qtl[feature][1.00])/2,
+                                                        (df_top_qtl[feature][0.00]+df_top_qtl[feature][1.00])/2])
+                high_mf = fuzz.trimf(universe[feature], [df_top_qtl[feature][1.00],
+                                                        df_top_qtl[feature][1.00],
+                                                        df_top_qtl[feature][1.00]])
 
             # Highly skewed features
             elif df_top_qtl[feature][0.00] == df_top_qtl[feature][0.50]:
@@ -307,7 +331,9 @@ class Fuzzy:
                 synergy_features[category][feature] = top_value
         
         self._logger.info(f"synergy and impact of features: \n{synergy_features}")
-        return synergy_features
+        # Convert dictionary to dataframe
+        synergy_features_df = pd.DataFrame(synergy_features)
+        return synergy_features_df
 
     
     def _local_feature_importance(self, models,  X, y):
