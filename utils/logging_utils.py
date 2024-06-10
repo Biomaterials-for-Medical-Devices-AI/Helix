@@ -79,3 +79,18 @@ class Logger(object):
             logger.addHandler(c_handler)
 
         return logger
+    
+    def remove_handlers(self, logger):
+        """
+        Remove all handlers associated with the logger object.
+        """
+        for handler in list(logger.handlers):
+            logger.removeHandler(handler)
+            handler.close()
+
+
+def close_logger(logger_instance, logger):
+    logger_instance.remove_handlers(logger)
+    del logger_instance
+    del logger
+    return None
