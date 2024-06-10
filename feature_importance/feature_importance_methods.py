@@ -90,7 +90,10 @@ def calculate_lime_values(model, X, opt: argparse.Namespace, logger):
     coefficients = []
 
     for i in range(X.shape[0]):
-        explanation = explainer.explain_instance(X.iloc[i,:], model.predict, num_features=X.shape[1])
+        if opt.problem_type == 'classification':
+            explanation = explainer.explain_instance(X.iloc[i,:], model.predict_proba, num_features=X.shape[1])
+        else:
+            explanation = explainer.explain_instance(X.iloc[i,:], model.predict, num_features=X.shape[1])
         coefficients.append([item[-1] for item in explanation.local_exp[1]])
         
     lr_lime_values = pd.DataFrame(coefficients, columns=X.columns, index=X.index)

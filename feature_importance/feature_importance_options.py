@@ -53,7 +53,7 @@ class FeatureImportanceOptions(BaseOptions):
             help="Flag to save feature importance results",
         ),
         self.parser.add_argument(
-            "--save_feature_importance_metrics",
+            "--save_feature_importance_options",
             type=bool,
             default=True,
             help="Flag to save feature importance options",
@@ -105,7 +105,7 @@ class FeatureImportanceOptions(BaseOptions):
         ),
         
         self.parser.add_argument(
-            "--log_dir",
+            "--fi_log_dir",
             type=str,
             default="fi",
             help="Path to the directory to store logs",

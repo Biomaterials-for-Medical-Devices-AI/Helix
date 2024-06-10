@@ -57,12 +57,13 @@ class MLOptions(BaseOptions):
         )
 
         self.parser.add_argument(
-            "--log_dir",
+            "--ml_log_dir",
             type=str,
             default="ml",
             help="Path to the directory to store logs",
             required=False,
-        )
+        ),
 
         ######## New Parameters to be added above this line ########
-        self._is_train = True
+
+        self.parser.set_defaults(_is_train=True),

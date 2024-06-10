@@ -22,7 +22,7 @@ class BaseOptions:
         self.parser.add_argument(
             "--experiment_name",
             type=str,
-            default="test",
+            default="test regression",
             help="Name of the experiment",
         ),
         self.parser.add_argument(
@@ -58,7 +58,7 @@ class BaseOptions:
             help="Problem type: classification or regression",
             choices=["classification", "regression"],
             required=False,
-        )
+        ),
 
         self.initialized = True
 
