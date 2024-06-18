@@ -5,7 +5,7 @@ from feature_importance.call_methods import save_importance_results
 from feature_importance.feature_importance_methods import (
     calculate_shap_values, calculate_lime_values)
 from machine_learning import train
-from feature_importance.call_methods import save_importance_results
+from feature_importance.call_methods import save_importance_results, save_fuzzy_sets_plots,save_target_clusters_plots
 
 class Fuzzy:
     """
@@ -40,8 +40,6 @@ class Fuzzy:
                 topfeatures = self._select_features(ensemble_results['Majority Vote'])
                 X_train = X_train[topfeatures]
                 X_test = X_test[topfeatures]
-                print(X_train.head())
-                print(X_test.head())
             except Exception as e:
                 self._logger.error(f"Error in fuzzy feature selection: {e}")
                 try:
@@ -49,8 +47,6 @@ class Fuzzy:
                     topfeatures = self._select_features(ensemble_results['Mean'])
                     X_train = X_train[topfeatures]
                     X_test = X_test[topfeatures]
-                    print(X_train.head())
-                    print(X_test.head())
                 except Exception as e:
                     self._logger.error(f"Error in fuzzy feature selection: {e}")
 
@@ -60,8 +56,6 @@ class Fuzzy:
         if self._opt.is_granularity:
             X_train = self._fuzzy_granularity(X_train)
             X_test = self._fuzzy_granularity(X_test)
-            print(X_train.head())
-            print(X_test.head())
 
     
         # Step 3: Train and evaluate models
@@ -128,9 +122,9 @@ class Fuzzy:
             # Define membership functions
             # features with less than 3 unique values
             if len(X[feature].unique()) < 3:
-                print('Feature with only 2 values')
-                print(feature)
-                print(df_top_qtl[feature])
+                #print('Feature with only 2 values')
+                #print(feature)
+                #print(df_top_qtl[feature])
                 low_mf = fuzz.trimf(universe[feature], [df_top_qtl[feature][0.00],
                                                         df_top_qtl[feature][0.00],
                                                         df_top_qtl[feature][0.00]])
@@ -156,6 +150,7 @@ class Fuzzy:
                 high_mf = fuzz.smf(universe[feature], df_top_qtl[feature][0.50], df_top_qtl[feature][1.00])
             
             membership_functions[feature] = {'low': low_mf, 'medium': medium_mf, 'high': high_mf}
+        save_fuzzy_sets_plots(universe, membership_functions, X.columns, self._opt, self._logger)
 
         # Create granular features using membership values
         new_df_features = []
@@ -215,9 +210,7 @@ class Fuzzy:
         '''
         import numpy as np
         import skfuzzy as fuzz
-        print(df)
         self._logger.info(f"Extracting fuzzy rules...")
-        #TODO: convert target to categorical using fuzzy clustering
         if self._opt.problem_type == 'regression':
             target = np.array(df[df.columns[-1]])
             centers, membership_matrix, _, _, _, _, _ = fuzz.cluster.cmeans(data=target.reshape(1, -1),
@@ -249,8 +242,15 @@ class Fuzzy:
             # replace the cluster numbers in the list with the corresponding cluster names
             primary_cluster_assignment = [cluster_mapping[cluster_num] for cluster_num in primary_cluster_assignment]
 
+            #TODO: save the plot of the range of cluster assignments 
+            # create new dataframe with target values and cluster assignments
+            df_cluster = pd.DataFrame({'target': df.loc[:,df.columns[-1]].to_list(), 'cluster': primary_cluster_assignment})
+
+            save_target_clusters_plots(df_cluster, self._opt, self._logger)
             # Assign labels to target
             df.loc[:,df.columns[-1]] =  primary_cluster_assignment      
+        
+        
 
             
 

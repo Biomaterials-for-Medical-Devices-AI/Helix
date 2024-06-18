@@ -22,7 +22,7 @@ class BaseOptions:
         self.parser.add_argument(
             "--experiment_name",
             type=str,
-            default="test regression",
+            default="Topo surface features macrophage",
             help="Name of the experiment",
         ),
         self.parser.add_argument(
