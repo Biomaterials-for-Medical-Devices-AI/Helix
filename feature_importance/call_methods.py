@@ -3,6 +3,7 @@ import pickle
 import os
 import sys
 import matplotlib.pyplot as plt
+import seaborn as sns
 from utils.utils import log_options
 import shap
 
@@ -91,3 +92,39 @@ def save_importance_results(feature_importance_df, model_type, importance_type,
     # Save the metrics to a log file
     if opt.save_feature_importance_options:
         log_options(directory, opt)
+
+def save_fuzzy_sets_plots(universe, membership_functions, x_cols, opt: argparse.Namespace, logger):
+    # Plot the membership functions
+    if opt.save_fuzzy_set_plots:
+        logger.info(f"Saving fuzzy set plots ...")
+        directory = f'./log/{opt.experiment_name}/{opt.fuzzy_log_dir}/results/fuzzy sets/'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+
+        for feature in x_cols:
+            plt.figure(figsize=(5, 5))
+            plt.plot(universe[feature], membership_functions[feature]['low'], 'r', label='Small')
+            plt.plot(universe[feature], membership_functions[feature]['medium'], 'g', label='Moderate')
+            plt.plot(universe[feature], membership_functions[feature]['high'], 'b', label='Large')
+            plt.title(f'{feature} Membership Functions')
+            plt.legend()
+            plt.savefig(f"{directory}{feature}.png")
+        plt.close()
+
+def save_target_clusters_plots(df_cluster, opt: argparse.Namespace, logger):
+    # Plot the target clusters
+    if opt.save_fuzzy_set_plots:
+        logger.info(f"Saving target clusters plot ...")
+        directory = f'./log/{opt.experiment_name}/{opt.fuzzy_log_dir}/results/'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        
+        # Plot boxplot of the target (continuous values) and target clusters (categories) using seaborn
+        plt.figure(figsize=(5, 5))
+        sns.boxplot(data=df_cluster, x='cluster', y='target')
+        plt.title('Target Clusters')
+        plt.savefig(f"{directory}target_clusters.png")
+        plt.close()
+    
+    

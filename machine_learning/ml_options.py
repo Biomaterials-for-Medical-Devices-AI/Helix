@@ -18,7 +18,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--data_path",
             type=str,
-            default="machine_learning/data/granular_surface_macrophage.csv",
+            default="machine_learning/data/Topo_surface_5_features_macrophage.csv",
             help="Path to the data",
             required=False,
         )
@@ -41,8 +41,10 @@ class MLOptions(BaseOptions):
             "--model_types",
             type=lambda x: ast.literal_eval(x),
             default={
-                "Linear Model": {"use": True, "params": {"fit_intercept": False}},
-                "Random Forest": {"use": True, "params": {"fit_intercept": True}},
+                "Linear Model": {"use": False, "params": {"fit_intercept": False}},
+                "Random Forest": {"use": True, "params": {"n_estimators":500, "min_samples_split":2, "min_samples_leaf":1,
+                                                          "max_depth":8}},
+                "XGBoost": {"use": True, "params": {"n_estimators":500, "max_depth":8, "learning_rate":0.01, "subsample": 0.5}},
             },
             help="Model types to use",
         )
@@ -50,7 +52,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--normalization",
             type=str,
-            default="MinMax",
+            default="None",
             help="Normalization method: Standardization or MinMax",
             choices=["Standardization", "MinMax", "None"],
             required=False,
