@@ -64,16 +64,16 @@ def calculate_ensemble_majorityvote(feature_importance_results, opt: argparse.Na
     
     # Rank the features based on their importance in each model and method
     rank_feature_importance = ensemble_majorityvote.rank(axis=0, method='dense', ascending=False)
+    mode_rank_feature_importance = rank_feature_importance.mode(axis=1)
     # Find the top two most common rank order for each feature
-    majority_votes_1 = rank_feature_importance.mode(axis=1)[0]
-    majority_votes_2 = rank_feature_importance.mode(axis=1)[1]
-
+    majority_votes_1 = mode_rank_feature_importance[0]
     # Assign True to rank values that are the most common
     majority_votes_rank_1 = rank_feature_importance.eq(majority_votes_1 , axis=0)
-    majority_votes_rank_2 = rank_feature_importance.eq(majority_votes_2 , axis=0)
-
-    final_majority_votes = majority_votes_rank_1 + majority_votes_rank_2
-
+    final_majority_votes = majority_votes_rank_1
+    if len(mode_rank_feature_importance.columns) > 1:
+        majority_votes_2 = mode_rank_feature_importance[1]
+        majority_votes_rank_2 = rank_feature_importance.eq(majority_votes_2 , axis=0)
+        final_majority_votes = final_majority_votes + majority_votes_rank_2
     # Calculate the mean of feature importance values in ensemble_majorityvote where majority votes is True in final_majority_votes dataframe
     ensemble_majorityvote = ensemble_majorityvote.where(final_majority_votes, 0).mean(axis=1).to_frame()
     
