@@ -8,8 +8,8 @@ from machine_learning.ml_options import MLOptions
 from utils.logging_utils import Logger, close_logger
 from utils.utils import set_seed
 
-fi_opt = FeatureImportanceOptions().parse()
 fuzzy_opt = FuzzyOptions().parse()
+fi_opt = FeatureImportanceOptions().parse()
 ml_opt = MLOptions().parse()
 seed = ml_opt.random_state
 ml_logger_instance = Logger(ml_opt.ml_log_dir, ml_opt.experiment_name)

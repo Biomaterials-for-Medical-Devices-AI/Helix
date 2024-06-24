@@ -22,7 +22,7 @@ class FuzzyOptions(FeatureImportanceOptions):
         self.parser.add_argument(
             "--fuzzy_feature_selection",
             type=bool,
-            default=False,
+            default=True,
             help="Flag for fuzzy feature selection",
         ),  
         self.parser.add_argument(

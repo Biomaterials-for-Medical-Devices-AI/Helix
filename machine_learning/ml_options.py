@@ -18,7 +18,7 @@ class MLOptions(BaseOptions):
         self.parser.add_argument(
             "--data_path",
             type=str,
-            default="machine_learning/data/Topo_surface_5_features_macrophage.csv",
+            default="machine_learning/data/Oceanic_1_year_post_discharge.csv",
             help="Path to the data",
             required=False,
         )

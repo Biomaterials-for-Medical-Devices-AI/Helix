@@ -4,10 +4,10 @@ import ast
 import os
 import sys
 
-from base_options import BaseOptions
+from machine_learning.ml_options import MLOptions
 
 
-class FeatureImportanceOptions(BaseOptions):
+class FeatureImportanceOptions(MLOptions):
     """
     Feature Importance options
     Parent class: BaseOptions
@@ -19,7 +19,7 @@ class FeatureImportanceOptions(BaseOptions):
 
     def initialize(self) -> None:
         """Initialize train options"""
-        BaseOptions.initialize(self)
+        MLOptions.initialize(self)
 
         self.parser.add_argument(
             "--global_importance_methods",

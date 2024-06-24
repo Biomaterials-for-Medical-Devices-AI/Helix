@@ -22,7 +22,7 @@ class BaseOptions:
         self.parser.add_argument(
             "--experiment_name",
             type=str,
-            default="Topo surface features macrophage",
+            default="test",
             help="Name of the experiment",
         ),
         self.parser.add_argument(
@@ -54,7 +54,7 @@ class BaseOptions:
         self.parser.add_argument(
             "--problem_type",
             type=str,
-            default="regression",
+            default="classification",
             help="Problem type: classification or regression",
             choices=["classification", "regression"],
             required=False,
