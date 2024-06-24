@@ -42,9 +42,9 @@ class MLOptions(BaseOptions):
             type=lambda x: ast.literal_eval(x),
             default={
                 "Linear Model": {"use": False, "params": {"fit_intercept": False}},
-                "Random Forest": {"use": True, "params": {"n_estimators":500, "min_samples_split":2, "min_samples_leaf":1,
+                "Random Forest": {"use": False, "params": {"n_estimators":500, "min_samples_split":2, "min_samples_leaf":1,
                                                           "max_depth":8}},
-                "XGBoost": {"use": True, "params": {"n_estimators":500, "max_depth":8, "learning_rate":0.01, "subsample": 0.5}},
+                "XGBoost": {"use": True, "params": {"kwargs":{"n_estimators":500, "max_depth":8, "learning_rate":0.01, "subsample": 0.5}}},
             },
             help="Model types to use",
         )
