@@ -54,6 +54,12 @@ def assert_model_param(model, model_params, logger: object = None) -> None:
             args_to_remove.append(arg)
     for arg in args_to_remove:
         model_params.pop(arg)
+    # check arguments for XGBoost
+    if 'kwargs' in model_params:
+        for arguments, value in model_params['kwargs'].items():
+            model_params[arguments] = value
+        model_params.pop('kwargs')
+
     logger.info(f"Using model {model.__name__} with parameters {model_params}")
     return model_params
 
