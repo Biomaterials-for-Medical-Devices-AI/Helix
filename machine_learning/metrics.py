@@ -5,18 +5,21 @@ def get_metrics(problem_type: str, logger: object = None) -> Dict:
     if problem_type.lower() == "classification":
         from sklearn.metrics import (
             accuracy_score,
-            classification_report,
-            confusion_matrix,
-            roc_auc_score,
-            roc_curve,
+            f1_score,
+            precision_score,
+            recall_score,
+            roc_auc_score
+
         )
+
+
 
         metrics = {
             "accuracy": accuracy_score,
-            "confusion_matrix": confusion_matrix,
-            "classification_report": classification_report,
+            "f1_score": f1_score,
+            "precision_score": precision_score,
+            "recall_score": recall_score,
             "roc_auc_score": roc_auc_score,
-            "roc_curve": roc_curve,
         }
     elif problem_type.lower() == "regression":
         from sklearn.metrics import (

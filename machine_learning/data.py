@@ -1,7 +1,7 @@
 import argparse
 from dataclasses import dataclass
 from typing import Dict
-
+from typing import Dict, List, Any
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -18,6 +18,7 @@ class DataBuilder:
         self._logger = logger
         self._normalization = opt.normalization
         self._numerical_cols = 'all'
+        self._n_bootstraps = opt.n_bootstraps
 
     def _load_data(self) -> Dict[str, pd.DataFrame]:
         """
@@ -46,18 +47,31 @@ class DataBuilder:
         # Last column is target
         X = df.iloc[:, :-1]
         y = df.iloc[:, -1]
-        if self._data_split["type"].lower() == "holdout":
-            self._logger.info(
-                f"Using holdout data split with test size {self._data_split['test_size']}"
-            )
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=self._data_split["test_size"], random_state=self._random_state
-            )
-            return {'X_train': X_train, 'X_test': X_test, 'y_train': y_train, 'y_test': y_test}
-        else:
-            raise NotImplementedError(
-                f"Data split type {self._data_split['type']} is not implemented"
-            )
+        X_train_list, X_test_list, y_train_list, y_test_list = [], [], [], []
+
+        for i in range(self._n_bootstraps):
+            if self._data_split["type"].lower() == "holdout":
+                self._logger.info(
+                    f"Using holdout data split with test size {self._data_split['test_size']} for bootstrap {i+1}"
+                )
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X, y, test_size=self._data_split["test_size"], random_state=self._random_state + i
+                )
+                X_train_list.append(X_train)
+                X_test_list.append(X_test)
+                y_train_list.append(y_train)
+                y_test_list.append(y_test)
+            else:
+                raise NotImplementedError(
+                    f"Data split type {self._data_split['type']} is not implemented"
+                )
+
+        return {
+            'X_train': X_train_list, 
+            'X_test': X_test_list, 
+            'y_train': y_train_list, 
+            'y_test': y_test_list
+        }
 
     def normalise_data(self,
         X_train: pd.DataFrame,
@@ -119,15 +133,26 @@ class DataBuilder:
     
     def ingest(self):
         data = self._load_data()
-        data['X_train'], data['X_test'], scaler = self.normalise_data(data['X_train'], data['X_test'])
-        return TabularData(**data, scaler=scaler)
+        data_scaler = {'scaler': []}
+        for i in range(self._n_bootstraps):
+            data['X_train'][i], data['X_test'][i], scaler = self.normalise_data(data['X_train'][i], data['X_test'][i])
+            data_scaler['scaler'].append(scaler)
+        
+        return TabularData(
+            X_train=data['X_train'],
+            X_test=data['X_test'],
+            y_train=data['y_train'],
+            y_test=data['y_test'],
+            scaler=data_scaler['scaler'],
+        )
 
 @dataclass
 class TabularData:
-    X_train: pd.DataFrame
-    X_test: pd.DataFrame
-    y_train: pd.DataFrame
-    y_test: pd.DataFrame
-    scaler: object
+    # X_train as a list of dataframes
+    X_train: list[pd.DataFrame]
+    X_test: list[pd.DataFrame]
+    y_train: list[pd.DataFrame]
+    y_test: list[pd.DataFrame]
+    scaler: list[object]
 
 

@@ -27,31 +27,37 @@ class Learner:
             self._model_types, self._problem_type, logger=self._logger
         )
         if self._data_split["type"] == "holdout":
-            res, metric_res, trained_models = self._fit_holdout(data)
-            return res, metric_res, trained_models
+            res, metric_res, metric_res_stats, trained_models = self._fit_holdout(data)
+            return res, metric_res, metric_res_stats, trained_models
 
     def _fit_holdout(self, data: Tuple) -> None:
-        self._logger.info("Fitting holdout...")
-        X_train, X_test, y_train, y_test = data.X_train, data.X_test, data.y_train, data.y_test
+        self._logger.info("Fitting holdout with bootstrapped datasets...")
         res = {}
         metric_res = {}
-        trained_models = {}
-        res["scaler"] = data.scaler
-        res["y_test"] = y_test
-        res["y_train"] = y_train
-        for model_name, model in self._models.items():
-            res[model_name] = {}
-            self._logger.info(f"Fitting {model_name}...")
-            model.fit(X_train, y_train)
-            y_pred_train = model.predict(X_train)
-            res[model_name]["y_pred_train"] = y_pred_train
-            y_pred_test = model.predict(X_test)
-            res[model_name]["y_pred_test"] = y_pred_test
-            metric_res[model_name] = self._evaluate(
-                model_name, y_train, y_pred_train, y_test, y_pred_test
-            )
-            trained_models[model_name] = model
-        return res, metric_res, trained_models
+        trained_models = {model_name: [] for model_name in self._models.keys()}
+
+        for i in range(self._opt.n_bootstraps):
+            self._logger.info(f"Processing bootstrap sample {i+1}...")
+            X_train, X_test = data.X_train[i], data.X_test[i]
+            y_train, y_test = data.y_train[i], data.y_test[i]
+
+            res[i] = {}
+            for model_name, model in self._models.items():
+                res[i][model_name] = {}
+                self._logger.info(f"Fitting {model_name} for bootstrap sample {i+1}...")
+                model.fit(X_train, y_train)
+                y_pred_train = model.predict(X_train)
+                res[i][model_name]["y_pred_train"] = y_pred_train
+                y_pred_test = model.predict(X_test)
+                res[i][model_name]["y_pred_test"] = y_pred_test
+                if model_name not in metric_res:
+                    metric_res[model_name] = []
+                metric_res[model_name].append(self._evaluate(
+                    model_name, y_train, y_pred_train, y_test, y_pred_test
+                ))
+                trained_models[model_name].append(model)
+        metric_res_stats = self._compute_metrics_statistics(metric_res)
+        return res, metric_res, metric_res_stats, trained_models
 
     def _evaluate(
         self,
@@ -75,3 +81,42 @@ class Learner:
                 "value": metric_test,
             }
         return eval_res
+    
+    def _compute_metrics_statistics(self,
+                                    metric_res: Dict) -> Dict:
+        """
+        Compute average and standard deviation of metric values across bootstrap samples
+        """
+        statistics = {}
+
+        for model_name, metrics_list in metric_res.items():
+            # Initialize dictionaries to store metric values for train and test sets
+            train_metrics = {}
+            test_metrics = {}
+
+            # Aggregate metric values from each bootstrap sample
+            for metrics in metrics_list:
+                for metric_name, metric_values in metrics.items():
+                    if metric_name not in train_metrics:
+                        train_metrics[metric_name] = []
+                        test_metrics[metric_name] = []
+
+                    train_metrics[metric_name].append(metric_values['train']['value'])
+                    test_metrics[metric_name].append(metric_values['test']['value'])
+
+            # Compute average and standard deviation for each metric
+            statistics[model_name] = {'train': {}, 'test': {}}
+            for metric_name in train_metrics.keys():
+                train_values = np.array(train_metrics[metric_name])
+                test_values = np.array(test_metrics[metric_name])
+
+                statistics[model_name]['train'][metric_name] = {
+                    'mean': np.mean(train_values),
+                    'std': np.std(train_values)
+                }
+                statistics[model_name]['test'][metric_name] = {
+                    'mean': np.mean(test_values),
+                    'std': np.std(test_values)
+                }
+
+        return statistics

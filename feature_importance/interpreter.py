@@ -32,8 +32,8 @@ class Interpreter:
         Returns:
             dict: Dictionary of feature importance results.
         '''
-        # Load the data
-        X, _, y, _ = data.X_train, data.X_test, data.y_train, data.y_test
+        # Load just the first fold of the data and the first models for interpretation
+        X, y = data.X_train[0], data.y_train[0]
         self._logger.info(f"-------- Start of feature importance logging--------") 
         global_importance_results = self._individual_feature_importance(models, X, y)
         local_importance_results = self._local_feature_importance(models, X)
@@ -67,16 +67,17 @@ class Interpreter:
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for feature_importance_type, value in self._feature_importance_methods.items():
                     if value['value']:
+                        #Select the first model in the list - model[0]
                         if feature_importance_type == 'Permutation Importance':
-                            # Run Permutation Importance                            
-                            permutation_importance_df = calculate_permutation_importance(model, X, y, self._opt,self._logger)
+                            # Run Permutation Importance -                          
+                            permutation_importance_df = calculate_permutation_importance(model[0], X, y, self._opt,self._logger)
                             save_importance_results(permutation_importance_df, model_type, value['type'],
                                                      feature_importance_type, self._opt,self._logger)
                             feature_importance_results[model_type][feature_importance_type] = permutation_importance_df
 
                         if feature_importance_type == 'SHAP':
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(model, X, value['type'], self._opt,self._logger)
+                            shap_df, shap_values = calculate_shap_values(model[0], X, value['type'], self._opt,self._logger)
                             save_importance_results(shap_df, model_type, value['type'],
                                                      feature_importance_type, self._opt, self._logger,shap_values)
                             feature_importance_results[model_type][feature_importance_type] = shap_df
@@ -106,16 +107,17 @@ class Interpreter:
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for feature_importance_type, value in self._local_importance_methods.items():
                     if value['value']:
+                        #Select the first model in the list - model[0]
                         if feature_importance_type == 'LIME':
                             # Run Permutation Importance                            
-                            lime_importance_df = calculate_lime_values(model, X, self._opt,self._logger)
+                            lime_importance_df = calculate_lime_values(model[0], X, self._opt,self._logger)
                             save_importance_results(lime_importance_df, model_type, value['type'],
                                                     feature_importance_type, self._opt,self._logger)
                             feature_importance_results[model_type][feature_importance_type] = lime_importance_df
 
                         if feature_importance_type == 'SHAP':
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(model, X, value['type'], self._opt,self._logger)
+                            shap_df, shap_values = calculate_shap_values(model[0], X, value['type'], self._opt,self._logger)
                             save_importance_results(shap_df, model_type,value['type'], 
                                                     feature_importance_type, self._opt, self._logger,shap_values)
                             feature_importance_results[model_type][feature_importance_type] = shap_df

@@ -25,7 +25,7 @@ class FeatureImportanceOptions(MLOptions):
             "--global_importance_methods",
             type=lambda x: ast.literal_eval(x),
             default={'Permutation Importance': {'type': 'global', 'value':True},
-                     'SHAP': {'type': 'global', 'value':True}},
+                     'SHAP': {'type': 'global', 'value':False}},
             help="Global feature importance methods to use",
         ),
 
@@ -43,7 +43,7 @@ class FeatureImportanceOptions(MLOptions):
             "--local_importance_methods",
             type=lambda x: ast.literal_eval(x),
             default={'LIME': {'type': 'local', 'value':True},
-                     'SHAP': {'type': 'local', 'value':True},},
+                     'SHAP': {'type': 'local', 'value':False},},
             help="Local feature importance methods to use in fuzzy interpretation",
         ),
         self.parser.add_argument(
@@ -117,3 +117,4 @@ class FeatureImportanceOptions(MLOptions):
 
         # Update --is_feature_importance to True
         self.parser.set_defaults(is_feature_importance=True),
+

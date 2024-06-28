@@ -6,6 +6,7 @@ from feature_importance.feature_importance_methods import (
     calculate_shap_values, calculate_lime_values)
 from machine_learning import train
 from feature_importance.call_methods import save_importance_results, save_fuzzy_sets_plots,save_target_clusters_plots
+from machine_learning.ml_options import MLOptions
 
 class Fuzzy:
     """
@@ -15,13 +16,14 @@ class Fuzzy:
 
     def __init__(self, opt: argparse.Namespace, logger: object = None) -> None:
         self._opt = opt
+        self._ml_opt = MLOptions().fuzzy_reset_bootstraps()
         self._logger = logger
         self._local_importance_methods = self._opt.local_importance_methods
         self.importance_type = 'local' # local feature importance
 
 
     
-    def interpret(self, models, ensemble_results, data, ml_opt):
+    def interpret(self, models, ensemble_results, data):
         '''
         Interpret the model results using the selected feature importance methods and ensemble methods.
         Parameters:
@@ -30,8 +32,8 @@ class Fuzzy:
         Returns:
             dict: Dictionary of feature importance results.
         '''
-        # create a copy of the data
-        X_train, X_test = data.X_train, data.X_test
+        # create a copy of the data - select first fold of the data
+        X_train, X_test = data.X_train[0], data.X_test[0]
         self._logger.info(f"-------- Start of fuzzy interpretation logging--------")
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._opt.fuzzy_feature_selection:
@@ -61,11 +63,11 @@ class Fuzzy:
         # Step 3: Train and evaluate models
         if self._opt.fuzzy_feature_selection or self._opt.is_granularity:
             # Update data object with new features
-            data.X_train, data.X_test = X_train, X_test
-            models = train.run(ml_opt, data, self._logger)    
-
+            data.X_train[0], data.X_test[0] = X_train, X_test
+            # use parser to update ml_opt
+            models = train.run(self._ml_opt, data, self._logger)  
         # Step 4: Master feature importance dataframe for granular features from local feature importance methods and ML models
-        master_importance_df = self._local_feature_importance(models, data.X_train, data.y_train)
+        master_importance_df = self._local_feature_importance(models, data.X_train[0], data.y_train[0])
 
         # Step 5: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
@@ -359,10 +361,11 @@ class Fuzzy:
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for feature_importance_type, value in self._local_importance_methods.items():
+                    # Select the first model in the list - model[0]
                     if value['value']:
                         if feature_importance_type == 'LIME':
                             # Run LIME importance                            
-                            lime_importance_df = calculate_lime_values(model, X, self._opt,self._logger)
+                            lime_importance_df = calculate_lime_values(model[0], X, self._opt,self._logger)
                             # Normalise LIME coefficients between 0 and 1 (0 being the lowest impact and 1 being the highest impact)
                             lime_importance_df = lime_importance_df.abs()
                             lime_importance_df_norm = (lime_importance_df - lime_importance_df.min()) / (lime_importance_df.max() - lime_importance_df.min())
@@ -373,7 +376,7 @@ class Fuzzy:
 
                         if feature_importance_type == 'SHAP':
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(model, X, value['type'], self._opt,self._logger)
+                            shap_df, shap_values = calculate_shap_values(model[0], X, value['type'], self._opt,self._logger)
                             # Normalise SHAP values between 0 and 1 (0 being the lowest impact and 1 being the highest impact)
                             shap_df = shap_df.abs()
                             shap_df_norm= (shap_df - shap_df.min()) / (shap_df.max() - shap_df.min())
