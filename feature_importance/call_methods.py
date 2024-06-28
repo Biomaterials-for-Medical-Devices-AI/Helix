@@ -67,7 +67,7 @@ def save_importance_results(feature_importance_df, model_type, importance_type,
         plt.title(f'{feature_importance_type} - {model_type}')
         plt.ylabel('Importance')
         plt.savefig(f"{directory}bar.png")
-        plt.show()
+        #plt.show()
         plt.close()
 
         if feature_importance_type == 'SHAP':
@@ -75,7 +75,7 @@ def save_importance_results(feature_importance_df, model_type, importance_type,
             shap.plots.beeswarm(shap_values, max_display=opt.num_features_to_plot,show=False)
             plt.yticks(rotation=opt.angle_rotate_yaxis_labels)
             plt.savefig(f"{directory}beeswarm.png")
-            plt.show()
+            #plt.show()
         
     if opt.save_feature_importance_plots and importance_type == 'fuzzy':
         # save fuzzy sets
