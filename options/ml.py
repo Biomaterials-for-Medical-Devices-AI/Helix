@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Any
 
 @dataclass
-class MlOptions:
+class MachineLearningOptions:
     data_path: str
     data_split: Any
     n_bootstraps: int
