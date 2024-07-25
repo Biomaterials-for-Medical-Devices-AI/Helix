@@ -60,6 +60,14 @@ class BaseOptions:
             required=False,
         ),
 
+        self.parser.add_argument(
+            "--dependent_variable",
+            type=str,
+            default=None,
+            help="Dependent variable: the name to use for reporting the dependent variable",
+            required=False,
+        ),
+
         self.initialized = True
 
     def parse(self):

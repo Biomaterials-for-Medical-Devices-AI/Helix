@@ -24,27 +24,12 @@ class DataBuilder:
         """
         Load data from a csv file
 
-        Parameters
-        ----------
-        path: str
-            The path to the csv file
-
-        data_split_type: str
-            The type of data split to use
-
-        random_state: int
-            The random state to use for reproducibility
-
-        logger: object
-            The logger to use for logging
-
         Returns
         -------
         Dict[str, pd.DataFrame]
             The data loaded from the csv file
         """
         df = pd.read_csv(self._path)
-        # Last column is target
         X = df.iloc[:, :-1]
         y = df.iloc[:, -1]
         X_train_list, X_test_list, y_train_list, y_test_list = [], [], [], []
