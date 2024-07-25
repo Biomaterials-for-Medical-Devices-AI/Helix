@@ -1,0 +1,16 @@
+name: bioFEFI
+channels:
+  - conda-forge
+dependencies:
+  - lime
+  - matplotlib
+  - numpy
+  - pandas
+  - scikit-fuzzy
+  - scikit-learn
+  - seaborn
+  - shap
+  - tqdm
+  - py-xgboost
+  - streamlit
+  - pydantic
