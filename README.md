@@ -124,9 +124,7 @@ Users can customize the pipeline configurations in the following files:
    pip install -r requirements.txt
    ```
 
-## Acknowledgements
 
-Special thanks to all the contributors and the open-source community.
 
 ---
 
