@@ -8,3 +8,4 @@ seaborn==0.13.2
 shap==0.45.0
 tqdm==4.66.2
 xgboost==2.1.0
+streamlit==1.36
