@@ -20,45 +20,8 @@ import os
 import pandas as pd
 
 
-def build_configuration(
-    fuzzy_feature_selection,
-    num_fuzzy_features,
-    granular_features,
-    num_clusters,
-    cluster_names,
-    dependent_variable,
-    num_features_to_plot,
-    permutation_importance_scoring,
-    permutation_importance_repeat,
-    shap_reduce_data,
-    n_bootstraps,
-    save_actual_pred_plots,
-    normalization,
-    data_path,
-    experiment_name,
-    problem_type,
-    num_top_rules = 1
-) -> tuple[argparse.Namespace]:
+def build_configuration() -> tuple[argparse.Namespace]:
     """Build the configuration objects for the pipeline.
-
-    Args:
-        fuzzy_feature_selection (_type_): _description_
-        num_fuzzy_features (_type_): _description_
-        granular_features (_type_): _description_
-        num_clusters (_type_): _description_
-        cluster_names (_type_): _description_
-        dependent_variable (_type_): _description_
-        num_features_to_plot (_type_): _description_
-        permutation_importance_scoring (_type_): _description_
-        permutation_importance_repeat (_type_): _description_
-        shap_reduce_data (_type_): _description_
-        n_bootstraps (_type_): _description_
-        save_actual_pred_plots (_type_): _description_
-        normalization (_type_): _description_
-        data_path (_type_): _description_
-        experiment_name (_type_): _description_
-        problem_type (_type_): _description_
-        num_top_rules (int, optional): _description_. Defaults to 1.
 
     Returns:
         tuple[argparse.Namespace]: The configuration for fuzzy, FI and ML pipelines.
@@ -67,41 +30,51 @@ def build_configuration(
     fuzzy_opt = FuzzyOptions()
     fuzzy_opt.initialize()
     fuzzy_opt.parser.set_defaults(
-        fuzzy_feature_selection=fuzzy_feature_selection,
-        num_fuzzy_features=num_fuzzy_features,
-        granular_features=granular_features,
-        num_clusters=num_clusters,
-        cluster_names=cluster_names,
-        num_top_rules=num_top_rules,
-        dependent_variable=dependent_variable,
-        experiment_name=experiment_name,
-        problem_type=problem_type,
+        fuzzy_feature_selection=st.session_state[ConfigStateKeys.FuzzyFeatureSelection],
+        num_fuzzy_features=st.session_state[ConfigStateKeys.NumberOfFuzzyFeatures],
+        granular_features=st.session_state[ConfigStateKeys.GranularFeatures],
+        num_clusters=st.session_state[ConfigStateKeys.NumberOfClusters],
+        cluster_names=st.session_state[ConfigStateKeys.ClusterNames],
+        num_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
+        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+        problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
     )
     fuzzy_opt = fuzzy_opt.parse()
 
     fi_opt = FeatureImportanceOptions()
     fi_opt.initialize()
     fi_opt.parser.set_defaults(
-        num_features_to_plot=num_features_to_plot,
-        permutation_importance_scoring=permutation_importance_scoring,
-        permutation_importance_repeat=permutation_importance_repeat,
-        shap_reduce_data=shap_reduce_data,
-        dependent_variable=dependent_variable,
-        experiment_name=experiment_name,
-        problem_type=problem_type,
+        num_features_to_plot=st.session_state[
+            ConfigStateKeys.NumberOfImportantFeatures
+        ],
+        permutation_importance_scoring=st.session_state[
+            ConfigStateKeys.ScoringFunction
+        ],
+        permutation_importance_repeat=st.session_state[
+            ConfigStateKeys.NumberOfRepetitions
+        ],
+        shap_reduce_data=st.session_state[ConfigStateKeys.ShapDataPercentage],
+        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+        problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
     )
     fi_opt = fi_opt.parse()
 
     ml_opt = MLOptions()
     ml_opt.initialize()
+    path_to_data = uploaded_file_path(
+        st.session_state[ConfigStateKeys.UploadedFileName].name
+    )
     ml_opt.parser.set_defaults(
-        n_bootstraps=n_bootstraps,
+        n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
         save_actual_pred_plots=save_actual_pred_plots,
-        normalization=normalization,
-        dependent_variable=dependent_variable,
-        experiment_name=experiment_name,
-        data_path=data_path,
-        problem_type=problem_type,
+        normalization=st.session_state[ConfigStateKeys.Normalization],
+        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+        data_path=path_to_data,
+        problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+        random_state=st.session_state[ConfigStateKeys.RandomSeed],
     )
     ml_opt = ml_opt.parse()
 
@@ -193,23 +166,44 @@ with st.sidebar:
     with st.expander("Machine Learning Options"):
         ml_on = st.checkbox("Machine Learning", key=ConfigStateKeys.IsMachineLearning)
         st.subheader("Machine Learning Options")
-        problem_type = st.selectbox("Problem type", ["Classification", "Regression"], key=ConfigStateKeys.ProblemType).lower()
-        data_split = st.selectbox("Data split method", ["Holdout", "K-Fold"], key=ConfigStateKeys.DataSplit)
-        num_bootstraps = st.number_input("Number of bootstraps", min_value=1, value=10, key=ConfigStateKeys.NumberOfBootstraps)
-        save_plots = st.checkbox("Save actual or predicted plots", key=ConfigStateKeys.SavePlots)
+        problem_type = st.selectbox(
+            "Problem type",
+            ["Classification", "Regression"],
+            key=ConfigStateKeys.ProblemType,
+        ).lower()
+        data_split = st.selectbox(
+            "Data split method", ["Holdout", "K-Fold"], key=ConfigStateKeys.DataSplit
+        )
+        num_bootstraps = st.number_input(
+            "Number of bootstraps",
+            min_value=1,
+            value=10,
+            key=ConfigStateKeys.NumberOfBootstraps,
+        )
+        save_plots = st.checkbox(
+            "Save actual or predicted plots", key=ConfigStateKeys.SavePlots
+        )
 
         st.write("Model types to use:")
         use_linear = st.checkbox("Linear Model", key=ConfigStateKeys.UseLinear)
         use_rf = st.checkbox("Random Forest", key=ConfigStateKeys.UseRandomForest)
         use_xgb = st.checkbox("XGBoost", key=ConfigStateKeys.UseXGBoost)
 
-        normalization = st.selectbox("Normalization", ["Standardization", "MinMax", "None"])
+        normalization = st.selectbox(
+            "Normalization",
+            ["Standardization", "MinMax", "None"],
+            key=ConfigStateKeys.Normalization,
+        )
 
     # Feature Importance Options
     with st.expander("Feature importance options"):
-        fi_on = st.checkbox("Feature Importance", key=ConfigStateKeys.IsFeatureImportance)
+        fi_on = st.checkbox(
+            "Feature Importance", key=ConfigStateKeys.IsFeatureImportance
+        )
         st.write("Global feature importance methods:")
-        use_permutation = st.checkbox("Permutation Importance", key=ConfigStateKeys.UsePermutation)
+        use_permutation = st.checkbox(
+            "Permutation Importance", key=ConfigStateKeys.UsePermutation
+        )
         use_shap = st.checkbox("SHAP", key=ConfigStateKeys.UseShap)
 
         st.write("Feature importance ensemble methods:")
@@ -221,65 +215,85 @@ with st.sidebar:
         use_local_shap = st.checkbox("Local SHAP", key=ConfigStateKeys.UseLocalShap)
 
         num_important_features = st.number_input(
-            "Number of most important features to plot", min_value=1, value=10, key=ConfigStateKeys.NumberOfImportantFeatures
+            "Number of most important features to plot",
+            min_value=1,
+            value=10,
+            key=ConfigStateKeys.NumberOfImportantFeatures,
         )
         scoring_function = st.selectbox(
-            "Scoring function for permutation importance", ['neg_mean_absolute_error', 'neg_root_mean_squared_error', 'accuracy', 'f1'], key=ConfigStateKeys.ScoringFunction
+            "Scoring function for permutation importance",
+            [
+                "neg_mean_absolute_error",
+                "neg_root_mean_squared_error",
+                "accuracy",
+                "f1",
+            ],
+            key=ConfigStateKeys.ScoringFunction,
         )
         num_repetitions = st.number_input(
-            "Number of repetitions for permutation importance", min_value=1, value=5, key=ConfigStateKeys.NumberOfRepetitions
+            "Number of repetitions for permutation importance",
+            min_value=1,
+            value=5,
+            key=ConfigStateKeys.NumberOfRepetitions,
         )
         shap_data_percentage = st.slider(
-            "Percentage of data to consider for SHAP", 0, 100, 100, key=ConfigStateKeys.ShapDataPercentage
+            "Percentage of data to consider for SHAP",
+            0,
+            100,
+            100,
+            key=ConfigStateKeys.ShapDataPercentage,
         )
 
         # Fuzzy Options
         st.subheader("Fuzzy Options")
-        fuzzy_feature_selection = st.checkbox("Fuzzy feature selection", key=ConfigStateKeys.FuzzyFeatureSelection)
+        fuzzy_feature_selection = st.checkbox(
+            "Fuzzy feature selection", key=ConfigStateKeys.FuzzyFeatureSelection
+        )
         num_fuzzy_features = st.number_input(
-            "Number of features for fuzzy interpretation", min_value=1, value=5, key=ConfigStateKeys.NumberOfFuzzyFeatures
+            "Number of features for fuzzy interpretation",
+            min_value=1,
+            value=5,
+            key=ConfigStateKeys.NumberOfFuzzyFeatures,
         )
-        granular_features = st.checkbox("Granular features", key=ConfigStateKeys.GranularFeatures)
+        granular_features = st.checkbox(
+            "Granular features", key=ConfigStateKeys.GranularFeatures
+        )
         num_clusters = st.number_input(
-            "Number of clusters for target variable", min_value=2, value=3, key=ConfigStateKeys.NumberOfClusters
+            "Number of clusters for target variable",
+            min_value=2,
+            value=3,
+            key=ConfigStateKeys.NumberOfClusters,
         )
-        cluster_names = st.text_input("Names of clusters (comma-separated)", key=ConfigStateKeys.ClusterNames)
+        cluster_names = st.text_input(
+            "Names of clusters (comma-separated)", key=ConfigStateKeys.ClusterNames
+        )
         num_top_rules = st.number_input(
             "Number of top occurring rules for fuzzy synergy analysis",
             min_value=1,
             value=10,
-            key=ConfigStateKeys.NumberOfTopRules
+            key=ConfigStateKeys.NumberOfTopRules,
         )
-    seed = st.number_input("Random seed", value=1221, min_value=0)
+    seed = st.number_input(
+        "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
+    )
 # Main body
 st.header("Data Upload")
-experiment_name = st.text_input("Name of the experiment", key=ConfigStateKeys.ExperimentName)
-dependent_variable = st.text_input("Name of the dependent variable", key=ConfigStateKeys.DependentVariableName)
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName)
+experiment_name = st.text_input(
+    "Name of the experiment", key=ConfigStateKeys.ExperimentName
+)
+dependent_variable = st.text_input(
+    "Name of the dependent variable", key=ConfigStateKeys.DependentVariableName
+)
+uploaded_file = st.file_uploader(
+    "Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName
+)
 run_button = st.button("Run")
 
 
 if uploaded_file is not None and run_button:
     upload_path = uploaded_file_path(uploaded_file.name)
     save_upload(upload_path, uploaded_file.read().decode("utf-8"))
-    config = build_configuration(
-        fuzzy_feature_selection=fuzzy_feature_selection,
-        num_fuzzy_features=num_fuzzy_features,
-        granular_features=granular_features,
-        num_clusters=num_clusters,
-        cluster_names=cluster_names,
-        dependent_variable=dependent_variable,
-        num_features_to_plot=num_important_features,
-        permutation_importance_scoring=scoring_function,
-        permutation_importance_repeat=num_repetitions,
-        shap_reduce_data=shap_data_percentage,
-        n_bootstraps=num_bootstraps,
-        save_actual_pred_plots=save_actual_pred_plots,
-        normalization=normalization,
-        data_path=upload_path,
-        experiment_name=experiment_name,
-        problem_type=problem_type,
-    )
+    config = build_configuration()
     process = Process(target=_pipeline, args=config, daemon=True)
     process.start()
     cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))

@@ -37,3 +37,4 @@ class ConfigStateKeys(StrEnum):
     ExperimentName = "experiment_name"
     DependentVariableName = "dependent_variable_name"
     UploadedFileName = "uploaded_file_name"
+    RandomSeed = "random_seed"
