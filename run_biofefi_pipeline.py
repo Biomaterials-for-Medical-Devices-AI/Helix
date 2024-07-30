@@ -34,5 +34,5 @@ close_logger(fi_logger_instance, fi_logger)
 # Fuzzy interpretation
 fuzzy_logger_instance = Logger(fuzzy_opt.fuzzy_log_dir, fuzzy_opt.experiment_name)
 fuzzy_logger = fuzzy_logger_instance.make_logger()
-fuzzy_rules = fuzzy_interpretation.run(fuzzy_opt, data, trained_models, ensemble_results, fuzzy_logger)
+fuzzy_rules = fuzzy_interpretation.run(fuzzy_opt, ml_opt, data, trained_models, ensemble_results, fuzzy_logger)
 close_logger(fuzzy_logger_instance, fuzzy_logger)

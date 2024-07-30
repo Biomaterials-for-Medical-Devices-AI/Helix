@@ -14,9 +14,9 @@ class Fuzzy:
 
     """
 
-    def __init__(self, opt: argparse.Namespace, logger: object = None) -> None:
+    def __init__(self, opt: argparse.Namespace, ml_opt: argparse.Namespace, logger: object = None) -> None:
         self._opt = opt
-        self._ml_opt = MLOptions().fuzzy_reset_bootstraps()
+        self._ml_opt = ml_opt
         self._logger = logger
         self._local_importance_methods = self._opt.local_importance_methods
         self.importance_type = 'local' # local feature importance
