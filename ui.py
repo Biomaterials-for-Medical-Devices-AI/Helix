@@ -2,6 +2,7 @@ from argparse import Namespace
 import argparse
 from multiprocessing import Process
 from numba.cuda import initialize
+from components.images.logos import header_logo, sidebar_logo
 from feature_importance import feature_importance, fuzzy_interpretation
 from feature_importance.feature_importance_options import FeatureImportanceOptions
 from feature_importance.fuzzy_options import FuzzyOptions
@@ -186,8 +187,9 @@ def cancel_pipeline(p: Process):
         p.terminate()
 
 
-st.image("ui/bioFEFI header.png")
+header_logo()
 # Sidebar
+sidebar_logo()
 with st.sidebar:
     st.header("Options")
     # st.checkbox("Feature Engineering", key=ConfigStateKeys.IsFeatureEngineering)
