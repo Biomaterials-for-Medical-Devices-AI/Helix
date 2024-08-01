@@ -36,6 +36,8 @@ def build_configuration() -> tuple[argparse.Namespace]:
         num_clusters=st.session_state[ConfigStateKeys.NumberOfClusters],
         cluster_names=st.session_state[ConfigStateKeys.ClusterNames],
         num_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
+        save_fuzzy_set_plots=st.session_state[ConfigStateKeys.SaveFuzzySetPlots],
+        # fuzzy_log_dir=
         dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
         experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
         problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
@@ -58,6 +60,26 @@ def build_configuration() -> tuple[argparse.Namespace]:
         dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
         experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
         problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+        is_feature_importance=st.session_state[ConfigStateKeys.IsFeatureImportance],
+        # fi_log_dir=
+        angle_rotate_xaxis_labels=st.session_state[ConfigStateKeys.RotateXAxisLabels],
+        angle_rotate_yaxis_labels=st.session_state[ConfigStateKeys.RotateYAxisLabels],
+        save_feature_importance_plots=st.session_state[
+            ConfigStateKeys.SaveFeatureImportancePlots
+        ],
+        save_feature_importance_options=st.session_state[
+            ConfigStateKeys.SaveFeatureImportanceOptions
+        ],
+        save_feature_importance_results=st.session_state[
+            ConfigStateKeys.SaveFeatureImportanceResults
+        ],
+        local_importance_methods=st.session_state[
+            ConfigStateKeys.LocalImportanceFeatures
+        ],
+        feature_importance_ensemble=st.session_state[ConfigStateKeys.EnsembleMethods],
+        global_importance_methods=st.session_state[
+            ConfigStateKeys.GlobalFeatureImportanceMethods
+        ],
     )
     fi_opt = fi_opt.parse()
 
@@ -73,8 +95,12 @@ def build_configuration() -> tuple[argparse.Namespace]:
         dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
         experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
         data_path=path_to_data,
+        data_split=st.session_state[ConfigStateKeys.DataSplit],
+        model_types=st.session_state[ConfigStateKeys.ModelTypes],
+        # ml_log_dir=
         problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
         random_state=st.session_state[ConfigStateKeys.RandomSeed],
+        is_machine_learning=st.session_state[ConfigStateKeys.IsMachineLearning],
     )
     ml_opt = ml_opt.parse()
 
@@ -108,7 +134,7 @@ def save_upload(file_to_upload: str, content: str):
         f.write(content)
 
 
-def _pipeline(fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace):
+def pipeline(fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace):
     """This function actually performs the steps of the pipeline. It can be wrapped
     in a process it doesn't block the UI.
 
@@ -125,24 +151,29 @@ def _pipeline(fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace):
     data = DataBuilder(ml_opts, ml_logger).ingest()
 
     # Machine learning
-    trained_models = train.run(ml_opts, data, ml_logger)
-    close_logger(ml_logger_instance, ml_logger)
+    if ml_opts.is_machine_learning:
+        trained_models = train.run(ml_opts, data, ml_logger)
+        close_logger(ml_logger_instance, ml_logger)
 
     # Feature importance
-    fi_logger_instance = Logger(fi_opts.fi_log_dir, fi_opts.experiment_name)
-    fi_logger = fi_logger_instance.make_logger()
-    gloabl_importance_results, local_importance_results, ensemble_results = (
-        feature_importance.run(fi_opts, data, trained_models, fi_logger)
-    )
-    close_logger(fi_logger_instance, fi_logger)
+    if fi_opts.is_feature_importance:
+        fi_logger_instance = Logger(fi_opts.fi_log_dir, fi_opts.experiment_name)
+        fi_logger = fi_logger_instance.make_logger()
+        gloabl_importance_results, local_importance_results, ensemble_results = (
+            feature_importance.run(fi_opts, data, trained_models, fi_logger)
+        )
+        close_logger(fi_logger_instance, fi_logger)
 
     # Fuzzy interpretation
-    fuzzy_logger_instance = Logger(fuzzy_opts.fuzzy_log_dir, fuzzy_opts.experiment_name)
-    fuzzy_logger = fuzzy_logger_instance.make_logger()
-    fuzzy_rules = fuzzy_interpretation.run(
-        fuzzy_opts, ml_opts, data, trained_models, ensemble_results, fuzzy_logger
-    )
-    close_logger(fuzzy_logger_instance, fuzzy_logger)
+    if fuzzy_opts.fuzzy_feature_selection:
+        fuzzy_logger_instance = Logger(
+            fuzzy_opts.fuzzy_log_dir, fuzzy_opts.experiment_name
+        )
+        fuzzy_logger = fuzzy_logger_instance.make_logger()
+        fuzzy_rules = fuzzy_interpretation.run(
+            fuzzy_opts, ml_opts, data, trained_models, ensemble_results, fuzzy_logger
+        )
+        close_logger(fuzzy_logger_instance, fuzzy_logger)
 
 
 def cancel_pipeline(p: Process):
@@ -159,119 +190,244 @@ st.image("ui/bioFEFI header.png")
 # Sidebar
 with st.sidebar:
     st.header("Options")
-    st.checkbox("Feature Engineering", key=ConfigStateKeys.IsFeatureEngineering)
+    # st.checkbox("Feature Engineering", key=ConfigStateKeys.IsFeatureEngineering)
 
     # Machine Learning Options
-    with st.expander("Machine Learning Options"):
-        ml_on = st.checkbox("Machine Learning", key=ConfigStateKeys.IsMachineLearning)
-        st.subheader("Machine Learning Options")
-        problem_type = st.selectbox(
-            "Problem type",
-            ["Classification", "Regression"],
-            key=ConfigStateKeys.ProblemType,
-        ).lower()
-        data_split = st.selectbox(
-            "Data split method", ["Holdout", "K-Fold"], key=ConfigStateKeys.DataSplit
-        )
-        num_bootstraps = st.number_input(
-            "Number of bootstraps",
-            min_value=1,
-            value=10,
-            key=ConfigStateKeys.NumberOfBootstraps,
-        )
-        save_plots = st.checkbox(
-            "Save actual or predicted plots", key=ConfigStateKeys.SavePlots
-        )
+    ml_on = st.checkbox("Machine Learning", key=ConfigStateKeys.IsMachineLearning)
+    if ml_on:
+        with st.expander("Machine Learning Options"):
+            st.subheader("Machine Learning Options")
+            problem_type = st.selectbox(
+                "Problem type",
+                ["Classification", "Regression"],
+                key=ConfigStateKeys.ProblemType,
+            ).lower()
+            data_split = st.selectbox("Data split method", ["Holdout", "K-Fold"])
+            if data_split == "Holdout":
+                split_size = st.number_input(
+                    "Test split",
+                    min_value=0.0,
+                    max_value=1.0,
+                    value=0.2,
+                )
+                st.session_state[ConfigStateKeys.DataSplit] = {
+                    "type": "holdout",
+                    "test_size": split_size,
+                }
+            elif data_split == "K-Fold":
+                split_size = st.number_input(
+                    "n splits",
+                    min_value=0,
+                    value=5,
+                )
+                st.session_state[ConfigStateKeys.DataSplit] = {
+                    "type": "kfold",
+                    "n_splits": split_size,
+                }
+            else:
+                split_size = None
+            num_bootstraps = st.number_input(
+                "Number of bootstraps",
+                min_value=1,
+                value=10,
+                key=ConfigStateKeys.NumberOfBootstraps,
+            )
+            save_plots = st.checkbox(
+                "Save actual or predicted plots", key=ConfigStateKeys.SavePlots
+            )
 
-        st.write("Model types to use:")
-        use_linear = st.checkbox("Linear Model", key=ConfigStateKeys.UseLinear)
-        use_rf = st.checkbox("Random Forest", key=ConfigStateKeys.UseRandomForest)
-        use_xgb = st.checkbox("XGBoost", key=ConfigStateKeys.UseXGBoost)
+            st.write("Model types to use:")
+            model_types = {}
+            use_linear = st.checkbox("Linear Model", value=True)
+            if use_linear:
+                st.write("Options:")
+                fit_intercept = st.checkbox("Fit intercept")
+                model_types["Linear Model"] = {
+                    "use": use_linear,
+                    "params": {
+                        "fit_intercept": fit_intercept,
+                    },
+                }
+                st.divider()
 
-        normalization = st.selectbox(
-            "Normalization",
-            ["Standardization", "MinMax", "None"],
-            key=ConfigStateKeys.Normalization,
-        )
+            use_rf = st.checkbox("Random Forest", value=True)
+            if use_rf:
+                st.write("Options:")
+                n_estimators_rf = st.number_input(
+                    "Number of estimators", value=300, key="n_estimators_rf"
+                )
+                min_samples_split = st.number_input("Minimum samples split", value=2)
+                min_samples_leaf = st.number_input("Minimum samples leaf", value=1)
+                max_depth_rf = st.number_input("Maximum depth", value=6, key="max_depth_rf")
+                model_types["Random Forest"] = {
+                    "use": use_rf,
+                    "params": {
+                        "n_estimators": n_estimators_rf,
+                        "min_samples_split": min_samples_split,
+                        "min_samples_leaf": min_samples_leaf,
+                        "max_depth": max_depth_rf,
+                    },
+                }
+                st.divider()
+
+            use_xgb = st.checkbox("XGBoost", value=True)
+            if use_xgb:
+                st.write("Options:")
+                n_estimators_xgb = st.number_input(
+                    "Number of estimators", value=300, key="n_estimators_xgb"
+                )
+                max_depth_xbg = st.number_input(
+                    "Maximum depth", value=6, key="max_depth_xgb"
+                )
+                learning_rate = st.number_input("Learning rate", value=0.01)
+                subsample = st.number_input("Subsample size", value=0.5)
+                model_types["XGBoost"] = {
+                    "use": use_xgb,
+                    "params": {
+                        "kwargs": {
+                            "n_estimators": n_estimators_xgb,
+                            "max_depth": max_depth_xbg,
+                            "learning_rate": learning_rate,
+                            "subsample": subsample,
+                        }
+                    },
+                }
+                st.divider()
+            st.session_state[ConfigStateKeys.ModelTypes] = model_types
+
+            normalization = st.selectbox(
+                "Normalization",
+                ["Standardization", "MinMax", "None"],
+                key=ConfigStateKeys.Normalization,
+            )
 
     # Feature Importance Options
-    with st.expander("Feature importance options"):
-        fi_on = st.checkbox(
-            "Feature Importance", key=ConfigStateKeys.IsFeatureImportance
-        )
-        st.write("Global feature importance methods:")
-        use_permutation = st.checkbox(
-            "Permutation Importance", key=ConfigStateKeys.UsePermutation
-        )
-        use_shap = st.checkbox("SHAP", key=ConfigStateKeys.UseShap)
+    fi_on = st.checkbox(
+        "Feature Importance", key=ConfigStateKeys.IsFeatureImportance
+    )
+    if fi_on:
+        with st.expander("Feature importance options"):
+            st.write("Global feature importance methods:")
+            global_methods = {}
+            use_permutation = st.checkbox("Permutation Importance")
+            global_methods["Permutation Importance"] = {
+                "type": "global",
+                "value": use_permutation,
+            }
+            use_shap = st.checkbox("SHAP")
+            global_methods["SHAP"] = {"type": "global", "value": use_shap}
+            st.session_state[ConfigStateKeys.GlobalFeatureImportanceMethods] = (
+                global_methods
+            )
 
-        st.write("Feature importance ensemble methods:")
-        use_mean = st.checkbox("Mean", key=ConfigStateKeys.UseMean)
-        use_majority = st.checkbox("Majority vote", key=ConfigStateKeys.UseMajorityVote)
+            st.write("Feature importance ensemble methods:")
+            ensemble_methods = {}
+            use_mean = st.checkbox("Mean")
+            ensemble_methods["Mean"] = use_mean
+            use_majority = st.checkbox("Majority vote")
+            ensemble_methods["Majority Vote"] = use_majority
+            st.session_state[ConfigStateKeys.EnsembleMethods] = ensemble_methods
 
-        st.write("Local feature importance methods:")
-        use_lime = st.checkbox("LIME", key=ConfigStateKeys.UseLime)
-        use_local_shap = st.checkbox("Local SHAP", key=ConfigStateKeys.UseLocalShap)
+            st.write("Local feature importance methods:")
+            local_importance_methods = {}
+            use_lime = st.checkbox("LIME")
+            local_importance_methods["LIME"] = {"type": "local", "value": use_lime}
+            use_local_shap = st.checkbox("Local SHAP")
+            local_importance_methods["SHAP"] = {"type": "local", "value": use_local_shap}
+            st.session_state[ConfigStateKeys.LocalImportanceFeatures] = (
+                local_importance_methods
+            )
 
-        num_important_features = st.number_input(
-            "Number of most important features to plot",
-            min_value=1,
-            value=10,
-            key=ConfigStateKeys.NumberOfImportantFeatures,
-        )
-        scoring_function = st.selectbox(
-            "Scoring function for permutation importance",
-            [
-                "neg_mean_absolute_error",
-                "neg_root_mean_squared_error",
-                "accuracy",
-                "f1",
-            ],
-            key=ConfigStateKeys.ScoringFunction,
-        )
-        num_repetitions = st.number_input(
-            "Number of repetitions for permutation importance",
-            min_value=1,
-            value=5,
-            key=ConfigStateKeys.NumberOfRepetitions,
-        )
-        shap_data_percentage = st.slider(
-            "Percentage of data to consider for SHAP",
-            0,
-            100,
-            100,
-            key=ConfigStateKeys.ShapDataPercentage,
-        )
+            num_important_features = st.number_input(
+                "Number of most important features to plot",
+                min_value=1,
+                value=10,
+                key=ConfigStateKeys.NumberOfImportantFeatures,
+            )
+            scoring_function = st.selectbox(
+                "Scoring function for permutation importance",
+                [
+                    "neg_mean_absolute_error",
+                    "neg_root_mean_squared_error",
+                    "accuracy",
+                    "f1",
+                ],
+                key=ConfigStateKeys.ScoringFunction,
+            )
+            num_repetitions = st.number_input(
+                "Number of repetitions for permutation importance",
+                min_value=1,
+                value=5,
+                key=ConfigStateKeys.NumberOfRepetitions,
+            )
+            shap_data_percentage = st.slider(
+                "Percentage of data to consider for SHAP",
+                0,
+                100,
+                100,
+                key=ConfigStateKeys.ShapDataPercentage,
+            )
+            angle_rotate_xaxis_labels = st.number_input(
+                "Angle to rotate X-axis labels",
+                min_value=0,
+                max_value=90,
+                value=10,
+                key=ConfigStateKeys.RotateXAxisLabels,
+            )
+            angle_rotate_yaxis_labels = st.number_input(
+                "Angle to rotate Y-axis labels",
+                min_value=0,
+                max_value=90,
+                value=60,
+                key=ConfigStateKeys.RotateYAxisLabels,
+            )
+            save_feature_importance_plots = st.checkbox(
+                "Save feature importance plots",
+                key=ConfigStateKeys.SaveFeatureImportancePlots,
+            )
+            save_feature_importance_options = st.checkbox(
+                "Save feature importance options",
+                key=ConfigStateKeys.SaveFeatureImportanceOptions,
+            )
+            save_feature_importance_results = st.checkbox(
+                "Save feature importance results",
+                key=ConfigStateKeys.SaveFeatureImportanceResults,
+            )
 
-        # Fuzzy Options
-        st.subheader("Fuzzy Options")
-        fuzzy_feature_selection = st.checkbox(
-            "Fuzzy feature selection", key=ConfigStateKeys.FuzzyFeatureSelection
-        )
-        num_fuzzy_features = st.number_input(
-            "Number of features for fuzzy interpretation",
-            min_value=1,
-            value=5,
-            key=ConfigStateKeys.NumberOfFuzzyFeatures,
-        )
-        granular_features = st.checkbox(
-            "Granular features", key=ConfigStateKeys.GranularFeatures
-        )
-        num_clusters = st.number_input(
-            "Number of clusters for target variable",
-            min_value=2,
-            value=3,
-            key=ConfigStateKeys.NumberOfClusters,
-        )
-        cluster_names = st.text_input(
-            "Names of clusters (comma-separated)", key=ConfigStateKeys.ClusterNames
-        )
-        num_top_rules = st.number_input(
-            "Number of top occurring rules for fuzzy synergy analysis",
-            min_value=1,
-            value=10,
-            key=ConfigStateKeys.NumberOfTopRules,
-        )
+            # Fuzzy Options
+            st.subheader("Fuzzy Options")
+            fuzzy_feature_selection = st.checkbox(
+                "Fuzzy feature selection", key=ConfigStateKeys.FuzzyFeatureSelection
+            )
+            if fuzzy_feature_selection:
+                num_fuzzy_features = st.number_input(
+                    "Number of features for fuzzy interpretation",
+                    min_value=1,
+                    value=5,
+                    key=ConfigStateKeys.NumberOfFuzzyFeatures,
+                )
+                granular_features = st.checkbox(
+                    "Granular features", key=ConfigStateKeys.GranularFeatures
+                )
+                num_clusters = st.number_input(
+                    "Number of clusters for target variable",
+                    min_value=2,
+                    value=3,
+                    key=ConfigStateKeys.NumberOfClusters,
+                )
+                cluster_names = st.text_input(
+                    "Names of clusters (comma-separated)", key=ConfigStateKeys.ClusterNames
+                )
+                num_top_rules = st.number_input(
+                    "Number of top occurring rules for fuzzy synergy analysis",
+                    min_value=1,
+                    value=10,
+                    key=ConfigStateKeys.NumberOfTopRules,
+                )
+                save_fuzzy_set_plots = st.checkbox(
+                    "Save fuzzy set plots", key=ConfigStateKeys.SaveFuzzySetPlots
+                )
+
     seed = st.number_input(
         "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
     )
@@ -293,7 +449,7 @@ if uploaded_file is not None and run_button:
     upload_path = uploaded_file_path(uploaded_file.name)
     save_upload(upload_path, uploaded_file.read().decode("utf-8"))
     config = build_configuration()
-    process = Process(target=_pipeline, args=config, daemon=True)
+    process = Process(target=pipeline, args=config, daemon=True)
     process.start()
     cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))
     df = pd.read_csv(upload_path)
