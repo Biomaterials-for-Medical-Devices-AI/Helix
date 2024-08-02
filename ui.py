@@ -42,6 +42,7 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
         dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
         experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
         problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+        is_granularity=st.session_state[ConfigStateKeys.GranularFeatures],
     )
     fuzzy_opt = fuzzy_opt.parse()
 
