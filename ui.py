@@ -1,5 +1,4 @@
 from argparse import Namespace
-import argparse
 from multiprocessing import Process
 from numba.cuda import initialize
 from components.images.logos import header_logo, sidebar_logo
@@ -11,9 +10,9 @@ from machine_learning.call_methods import save_actual_pred_plots
 from machine_learning.data import DataBuilder
 from machine_learning.ml_options import MLOptions
 from options.enums import ConfigStateKeys
+from options.file_paths import uploaded_file_path, log_dir
 from utils.logging_utils import Logger, close_logger
 from utils.utils import set_seed
-from pathlib import Path
 import streamlit as st
 import os
 
@@ -21,11 +20,12 @@ import os
 import pandas as pd
 
 
-def build_configuration() -> tuple[argparse.Namespace]:
+def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
     """Build the configuration objects for the pipeline.
 
     Returns:
-        tuple[argparse.Namespace]: The configuration for fuzzy, FI and ML pipelines.
+        tuple[Namespace, Namespace, Namespace, str]: The configuration for fuzzy, FI and ML pipelines,
+        and the experiment name.
     """
 
     fuzzy_opt = FuzzyOptions()
@@ -87,7 +87,8 @@ def build_configuration() -> tuple[argparse.Namespace]:
     ml_opt = MLOptions()
     ml_opt.initialize()
     path_to_data = uploaded_file_path(
-        st.session_state[ConfigStateKeys.UploadedFileName].name
+        st.session_state[ConfigStateKeys.UploadedFileName].name,
+        st.session_state[ConfigStateKeys.ExperimentName],
     )
     ml_opt.parser.set_defaults(
         n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
@@ -105,20 +106,7 @@ def build_configuration() -> tuple[argparse.Namespace]:
     )
     ml_opt = ml_opt.parse()
 
-    return fuzzy_opt, fi_opt, ml_opt
-
-
-@st.cache_data
-def uploaded_file_path(file_name: str) -> str:
-    """Create the full upload path for data file uploads.
-
-    Args:
-        file_name (str): The name of the file.
-
-    Returns:
-        str: The full upload path for the file.
-    """
-    return Path.home() / "BioFEFIUploads" / file_name
+    return fuzzy_opt, fi_opt, ml_opt, st.session_state[ConfigStateKeys.ExperimentName]
 
 
 def save_upload(file_to_upload: str, content: str):
@@ -135,7 +123,9 @@ def save_upload(file_to_upload: str, content: str):
         f.write(content)
 
 
-def pipeline(fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace):
+def pipeline(
+    fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace, experiment_name: str
+):
     """This function actually performs the steps of the pipeline. It can be wrapped
     in a process it doesn't block the UI.
 
@@ -143,38 +133,33 @@ def pipeline(fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace):
         fuzzy_opts (Namespace): Options for fuzzy feature importance.
         fi_opts (Namespace): Options for feature importance.
         ml_opts (Namespace): Options for machine learning.
+        experiment_name (str): The name of the experiment.
     """
     seed = ml_opts.random_state
     set_seed(seed)
-    ml_logger_instance = Logger(ml_opts.ml_log_dir, ml_opts.experiment_name)
-    ml_logger = ml_logger_instance.make_logger()
+    logger_instance = Logger(log_dir(experiment_name))
+    logger = logger_instance.make_logger()
 
-    data = DataBuilder(ml_opts, ml_logger).ingest()
+    data = DataBuilder(ml_opts, logger).ingest()
 
     # Machine learning
     if ml_opts.is_machine_learning:
-        trained_models = train.run(ml_opts, data, ml_logger)
-        close_logger(ml_logger_instance, ml_logger)
+        trained_models = train.run(ml_opts, data, logger)
 
     # Feature importance
     if fi_opts.is_feature_importance:
-        fi_logger_instance = Logger(fi_opts.fi_log_dir, fi_opts.experiment_name)
-        fi_logger = fi_logger_instance.make_logger()
         gloabl_importance_results, local_importance_results, ensemble_results = (
-            feature_importance.run(fi_opts, data, trained_models, fi_logger)
+            feature_importance.run(fi_opts, data, trained_models, logger)
         )
-        close_logger(fi_logger_instance, fi_logger)
 
     # Fuzzy interpretation
     if fuzzy_opts.fuzzy_feature_selection:
-        fuzzy_logger_instance = Logger(
-            fuzzy_opts.fuzzy_log_dir, fuzzy_opts.experiment_name
-        )
-        fuzzy_logger = fuzzy_logger_instance.make_logger()
         fuzzy_rules = fuzzy_interpretation.run(
-            fuzzy_opts, ml_opts, data, trained_models, ensemble_results, fuzzy_logger
+            fuzzy_opts, ml_opts, data, trained_models, ensemble_results, logger
         )
-        close_logger(fuzzy_logger_instance, fuzzy_logger)
+
+    # Close the logger
+    close_logger(logger_instance, logger)
 
 
 def cancel_pipeline(p: Process):
@@ -260,7 +245,9 @@ with st.sidebar:
                 )
                 min_samples_split = st.number_input("Minimum samples split", value=2)
                 min_samples_leaf = st.number_input("Minimum samples leaf", value=1)
-                max_depth_rf = st.number_input("Maximum depth", value=6, key="max_depth_rf")
+                max_depth_rf = st.number_input(
+                    "Maximum depth", value=6, key="max_depth_rf"
+                )
                 model_types["Random Forest"] = {
                     "use": use_rf,
                     "params": {
@@ -304,9 +291,7 @@ with st.sidebar:
             )
 
     # Feature Importance Options
-    fi_on = st.checkbox(
-        "Feature Importance", key=ConfigStateKeys.IsFeatureImportance
-    )
+    fi_on = st.checkbox("Feature Importance", key=ConfigStateKeys.IsFeatureImportance)
     if fi_on:
         with st.expander("Feature importance options"):
             st.write("Global feature importance methods:")
@@ -335,7 +320,10 @@ with st.sidebar:
             use_lime = st.checkbox("LIME")
             local_importance_methods["LIME"] = {"type": "local", "value": use_lime}
             use_local_shap = st.checkbox("Local SHAP")
-            local_importance_methods["SHAP"] = {"type": "local", "value": use_local_shap}
+            local_importance_methods["SHAP"] = {
+                "type": "local",
+                "value": use_local_shap,
+            }
             st.session_state[ConfigStateKeys.LocalImportanceFeatures] = (
                 local_importance_methods
             )
@@ -418,7 +406,8 @@ with st.sidebar:
                     key=ConfigStateKeys.NumberOfClusters,
                 )
                 cluster_names = st.text_input(
-                    "Names of clusters (comma-separated)", key=ConfigStateKeys.ClusterNames
+                    "Names of clusters (comma-separated)",
+                    key=ConfigStateKeys.ClusterNames,
                 )
                 num_top_rules = st.number_input(
                     "Number of top occurring rules for fuzzy synergy analysis",
@@ -448,7 +437,7 @@ run_button = st.button("Run")
 
 
 if uploaded_file is not None and run_button:
-    upload_path = uploaded_file_path(uploaded_file.name)
+    upload_path = uploaded_file_path(uploaded_file.name, experiment_name)
     save_upload(upload_path, uploaded_file.read().decode("utf-8"))
     config = build_configuration()
     process = Process(target=pipeline, args=config, daemon=True)
