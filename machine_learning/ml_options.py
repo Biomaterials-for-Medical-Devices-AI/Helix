@@ -23,8 +23,6 @@ class MLOptions(BaseOptions):
             required=False,
         )
 
-        
-
         self.parser.add_argument(
             "--data_split",
             type=lambda x: ast.literal_eval(x),
@@ -55,9 +53,26 @@ class MLOptions(BaseOptions):
             type=lambda x: ast.literal_eval(x),
             default={
                 "Linear Model": {"use": False, "params": {"fit_intercept": False}},
-                "Random Forest": {"use": True, "params": {"n_estimators":300, "min_samples_split":2, "min_samples_leaf":1,
-                                                          "max_depth":6}},
-                "XGBoost": {"use": True, "params": {"kwargs":{"n_estimators":300, "max_depth":6, "learning_rate":0.01, "subsample": 0.5}}},
+                "Random Forest": {
+                    "use": True,
+                    "params": {
+                        "n_estimators": 300,
+                        "min_samples_split": 2,
+                        "min_samples_leaf": 1,
+                        "max_depth": 6,
+                    },
+                },
+                "XGBoost": {
+                    "use": True,
+                    "params": {
+                        "kwargs": {
+                            "n_estimators": 300,
+                            "max_depth": 6,
+                            "learning_rate": 0.01,
+                            "subsample": 0.5,
+                        }
+                    },
+                },
             },
             help="Model types to use",
         )
@@ -81,7 +96,7 @@ class MLOptions(BaseOptions):
 
         ######## New Parameters to be added above this line ########
 
-        self.parser.set_defaults(is_machine_learning=True),
+        # self.parser.set_defaults(is_machine_learning=True),
 
     def fuzzy_reset_bootstraps(self):
         """Set the number of bootstraps to 1"""

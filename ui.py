@@ -29,81 +29,92 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
 
     fuzzy_opt = FuzzyOptions()
     fuzzy_opt.initialize()
-    fuzzy_opt.parser.set_defaults(
-        fuzzy_feature_selection=st.session_state[ConfigStateKeys.FuzzyFeatureSelection],
-        num_fuzzy_features=st.session_state[ConfigStateKeys.NumberOfFuzzyFeatures],
-        granular_features=st.session_state[ConfigStateKeys.GranularFeatures],
-        num_clusters=st.session_state[ConfigStateKeys.NumberOfClusters],
-        cluster_names=st.session_state[ConfigStateKeys.ClusterNames],
-        num_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
-        save_fuzzy_set_plots=st.session_state[ConfigStateKeys.SaveFuzzySetPlots],
-        # fuzzy_log_dir=
-        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
-        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-        problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
-        is_granularity=st.session_state[ConfigStateKeys.GranularFeatures],
-    )
+    if st.session_state.get(ConfigStateKeys.FuzzyFeatureSelection, False):
+        fuzzy_opt.parser.set_defaults(
+            fuzzy_feature_selection=st.session_state[
+                ConfigStateKeys.FuzzyFeatureSelection
+            ],
+            num_fuzzy_features=st.session_state[ConfigStateKeys.NumberOfFuzzyFeatures],
+            granular_features=st.session_state[ConfigStateKeys.GranularFeatures],
+            num_clusters=st.session_state[ConfigStateKeys.NumberOfClusters],
+            cluster_names=st.session_state[ConfigStateKeys.ClusterNames],
+            num_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
+            save_fuzzy_set_plots=st.session_state[ConfigStateKeys.SaveFuzzySetPlots],
+            # fuzzy_log_dir=
+            dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+            experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+            problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+            is_granularity=st.session_state[ConfigStateKeys.GranularFeatures],
+        )
     fuzzy_opt = fuzzy_opt.parse()
 
     fi_opt = FeatureImportanceOptions()
     fi_opt.initialize()
-    fi_opt.parser.set_defaults(
-        num_features_to_plot=st.session_state[
-            ConfigStateKeys.NumberOfImportantFeatures
-        ],
-        permutation_importance_scoring=st.session_state[
-            ConfigStateKeys.ScoringFunction
-        ],
-        permutation_importance_repeat=st.session_state[
-            ConfigStateKeys.NumberOfRepetitions
-        ],
-        shap_reduce_data=st.session_state[ConfigStateKeys.ShapDataPercentage],
-        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
-        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-        problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
-        is_feature_importance=st.session_state[ConfigStateKeys.IsFeatureImportance],
-        # fi_log_dir=
-        angle_rotate_xaxis_labels=st.session_state[ConfigStateKeys.RotateXAxisLabels],
-        angle_rotate_yaxis_labels=st.session_state[ConfigStateKeys.RotateYAxisLabels],
-        save_feature_importance_plots=st.session_state[
-            ConfigStateKeys.SaveFeatureImportancePlots
-        ],
-        save_feature_importance_options=st.session_state[
-            ConfigStateKeys.SaveFeatureImportanceOptions
-        ],
-        save_feature_importance_results=st.session_state[
-            ConfigStateKeys.SaveFeatureImportanceResults
-        ],
-        local_importance_methods=st.session_state[
-            ConfigStateKeys.LocalImportanceFeatures
-        ],
-        feature_importance_ensemble=st.session_state[ConfigStateKeys.EnsembleMethods],
-        global_importance_methods=st.session_state[
-            ConfigStateKeys.GlobalFeatureImportanceMethods
-        ],
-    )
+    if st.session_state.get(ConfigStateKeys.IsFeatureImportance, False):
+        fi_opt.parser.set_defaults(
+            num_features_to_plot=st.session_state[
+                ConfigStateKeys.NumberOfImportantFeatures
+            ],
+            permutation_importance_scoring=st.session_state[
+                ConfigStateKeys.ScoringFunction
+            ],
+            permutation_importance_repeat=st.session_state[
+                ConfigStateKeys.NumberOfRepetitions
+            ],
+            shap_reduce_data=st.session_state[ConfigStateKeys.ShapDataPercentage],
+            dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+            experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+            problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+            is_feature_importance=st.session_state[ConfigStateKeys.IsFeatureImportance],
+            # fi_log_dir=
+            angle_rotate_xaxis_labels=st.session_state[
+                ConfigStateKeys.RotateXAxisLabels
+            ],
+            angle_rotate_yaxis_labels=st.session_state[
+                ConfigStateKeys.RotateYAxisLabels
+            ],
+            save_feature_importance_plots=st.session_state[
+                ConfigStateKeys.SaveFeatureImportancePlots
+            ],
+            save_feature_importance_options=st.session_state[
+                ConfigStateKeys.SaveFeatureImportanceOptions
+            ],
+            save_feature_importance_results=st.session_state[
+                ConfigStateKeys.SaveFeatureImportanceResults
+            ],
+            local_importance_methods=st.session_state[
+                ConfigStateKeys.LocalImportanceFeatures
+            ],
+            feature_importance_ensemble=st.session_state[
+                ConfigStateKeys.EnsembleMethods
+            ],
+            global_importance_methods=st.session_state[
+                ConfigStateKeys.GlobalFeatureImportanceMethods
+            ],
+        )
     fi_opt = fi_opt.parse()
 
     ml_opt = MLOptions()
     ml_opt.initialize()
-    path_to_data = uploaded_file_path(
-        st.session_state[ConfigStateKeys.UploadedFileName].name,
-        st.session_state[ConfigStateKeys.ExperimentName],
-    )
-    ml_opt.parser.set_defaults(
-        n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
-        save_actual_pred_plots=save_actual_pred_plots,
-        normalization=st.session_state[ConfigStateKeys.Normalization],
-        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
-        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-        data_path=path_to_data,
-        data_split=st.session_state[ConfigStateKeys.DataSplit],
-        model_types=st.session_state[ConfigStateKeys.ModelTypes],
-        # ml_log_dir=
-        problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
-        random_state=st.session_state[ConfigStateKeys.RandomSeed],
-        is_machine_learning=st.session_state[ConfigStateKeys.IsMachineLearning],
-    )
+    if st.session_state.get(ConfigStateKeys.IsMachineLearning, False):
+        path_to_data = uploaded_file_path(
+            st.session_state[ConfigStateKeys.UploadedFileName].name,
+            st.session_state[ConfigStateKeys.ExperimentName],
+        )
+        ml_opt.parser.set_defaults(
+            n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
+            save_actual_pred_plots=save_actual_pred_plots,
+            normalization=st.session_state[ConfigStateKeys.Normalization],
+            dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+            experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+            data_path=path_to_data,
+            data_split=st.session_state[ConfigStateKeys.DataSplit],
+            model_types=st.session_state[ConfigStateKeys.ModelTypes],
+            # ml_log_dir=
+            problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+            random_state=st.session_state[ConfigStateKeys.RandomSeed],
+            is_machine_learning=st.session_state[ConfigStateKeys.IsMachineLearning],
+        )
     ml_opt = ml_opt.parse()
 
     return fuzzy_opt, fi_opt, ml_opt, st.session_state[ConfigStateKeys.ExperimentName]
@@ -140,23 +151,22 @@ def pipeline(
     logger_instance = Logger(log_dir(experiment_name))
     logger = logger_instance.make_logger()
 
-    data = DataBuilder(ml_opts, logger).ingest()
-
     # Machine learning
     if ml_opts.is_machine_learning:
+        data = DataBuilder(ml_opts, logger).ingest()
         trained_models = train.run(ml_opts, data, logger)
 
-    # Feature importance
-    if fi_opts.is_feature_importance:
-        gloabl_importance_results, local_importance_results, ensemble_results = (
-            feature_importance.run(fi_opts, data, trained_models, logger)
-        )
+        # Feature importance
+        if fi_opts.is_feature_importance:
+            gloabl_importance_results, local_importance_results, ensemble_results = (
+                feature_importance.run(fi_opts, data, trained_models, logger)
+            )
 
-    # Fuzzy interpretation
-    if fuzzy_opts.fuzzy_feature_selection:
-        fuzzy_rules = fuzzy_interpretation.run(
-            fuzzy_opts, ml_opts, data, trained_models, ensemble_results, logger
-        )
+        # Fuzzy interpretation
+        if fuzzy_opts.fuzzy_feature_selection:
+            fuzzy_rules = fuzzy_interpretation.run(
+                fuzzy_opts, ml_opts, data, trained_models, ensemble_results, logger
+            )
 
     # Close the logger
     close_logger(logger_instance, logger)
@@ -180,7 +190,9 @@ with st.sidebar:
     # st.checkbox("Feature Engineering", key=ConfigStateKeys.IsFeatureEngineering)
 
     # Machine Learning Options
-    ml_on = st.checkbox("Machine Learning", key=ConfigStateKeys.IsMachineLearning)
+    ml_on = True
+    st.session_state[ConfigStateKeys.IsMachineLearning] = ml_on
+    # ml_on = st.checkbox("Machine Learning", key=ConfigStateKeys.IsMachineLearning)
     if ml_on:
         with st.expander("Machine Learning Options"):
             st.subheader("Machine Learning Options")
