@@ -3,6 +3,7 @@ from enum import StrEnum
 
 class ConfigStateKeys(StrEnum):
     """Enum containing the state key names for UI configuration inputs."""
+
     IsFeatureEngineering = "is_feature_engineering"
     # Machine Learning options
     IsMachineLearning = "is_machine_learning"
@@ -42,3 +43,8 @@ class ConfigStateKeys(StrEnum):
     DependentVariableName = "dependent_variable_name"
     UploadedFileName = "uploaded_file_name"
     RandomSeed = "random_seed"
+    LogBox = "log_box"
+
+
+class ExecutionStateKeys(StrEnum):
+    RunPipeline = "run_pipeline"

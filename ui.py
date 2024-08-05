@@ -1,7 +1,9 @@
 from argparse import Namespace
 from multiprocessing import Process
-from numba.cuda import initialize
 from components.images.logos import header_logo, sidebar_logo
+from components.logs import log_box
+from components.forms import data_upload_form
+from services.logs import get_logs
 from feature_importance import feature_importance, fuzzy_interpretation
 from feature_importance.feature_importance_options import FeatureImportanceOptions
 from feature_importance.fuzzy_options import FuzzyOptions
@@ -9,15 +11,12 @@ from machine_learning import train
 from machine_learning.call_methods import save_actual_pred_plots
 from machine_learning.data import DataBuilder
 from machine_learning.ml_options import MLOptions
-from options.enums import ConfigStateKeys
+from options.enums import ConfigStateKeys, ExecutionStateKeys
 from options.file_paths import uploaded_file_path, log_dir
 from utils.logging_utils import Logger, close_logger
 from utils.utils import set_seed
 import streamlit as st
 import os
-
-
-import pandas as pd
 
 
 def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
@@ -173,8 +172,8 @@ def cancel_pipeline(p: Process):
         p.terminate()
 
 
+## Page contents
 header_logo()
-# Sidebar
 sidebar_logo()
 with st.sidebar:
     st.header("Options")
@@ -423,53 +422,22 @@ with st.sidebar:
     seed = st.number_input(
         "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
     )
-# Main body
-st.header("Data Upload")
-experiment_name = st.text_input(
-    "Name of the experiment", key=ConfigStateKeys.ExperimentName
-)
-dependent_variable = st.text_input(
-    "Name of the dependent variable", key=ConfigStateKeys.DependentVariableName
-)
-uploaded_file = st.file_uploader(
-    "Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName
-)
-run_button = st.button("Run")
+data_upload_form()
 
 
-if uploaded_file is not None and run_button:
+# If the user has uploaded a file and pressed the run button, run the pipeline
+if (
+    uploaded_file := st.session_state.get(ConfigStateKeys.UploadedFileName)
+) and st.session_state.get(ExecutionStateKeys.RunPipeline, False):
+    experiment_name = st.session_state.get(ConfigStateKeys.ExperimentName)
     upload_path = uploaded_file_path(uploaded_file.name, experiment_name)
     save_upload(upload_path, uploaded_file.read().decode("utf-8"))
     config = build_configuration()
     process = Process(target=pipeline, args=config, daemon=True)
     process.start()
     cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))
-    df = pd.read_csv(upload_path)
-    st.write("Columns:", df.columns.tolist())
-    st.write("Target variable:", df.columns[-1])
-
-    # Model training status
-    st.header("Model Training Status")
-    if use_linear:
-        st.checkbox("Linear Model", value=False, disabled=True)
-    if use_rf:
-        st.checkbox("Random Forest", value=False, disabled=True)
-    if use_xgb:
-        st.checkbox("XGBoost", value=False, disabled=True)
-
-    # Plot selection
-    st.header("Plots")
-    plot_options = [
-        "Metric values across bootstrap samples",
-        "Feature importance plots",
-    ]
-    selected_plots = st.multiselect("Select plots to display", plot_options)
-
-    for plot in selected_plots:
-        st.subheader(plot)
-        st.write("Placeholder for", plot)
-
-    # Feature importance description
-    st.header("Feature Importance Description")
-    if st.button("Generate Feature Importance Description"):
-        st.write("Placeholder for feature importance description")
+    with st.spinner("Running pipeline..."):
+        # wait for the process to finish or be cancelled
+        process.join()
+    st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
+    log_box()
