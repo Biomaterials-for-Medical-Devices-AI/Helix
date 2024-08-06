@@ -26,6 +26,19 @@ def log_dir(exeperiment_name: str) -> Path:
         to create a subdirectory with the this value.
 
     Returns:
-        Path: The full upload path for the file.
+        Path: The full path for the log directory.
     """
     return BASE_DIR / exeperiment_name / "logs"
+
+
+def ml_plot_dir(exeperiment_name: str) -> Path:
+    """Create the pull path to the directory to save Machine Learning plots.
+
+    Args:
+        exeperiment_name (str): The name of the experiment. This will be used
+        to create a subdirectory with the this value.
+
+    Returns:
+        Path: The full path for the Machine Learning plot directory.
+    """
+    return BASE_DIR / exeperiment_name / "plots" / "ml"

@@ -3,16 +3,16 @@ from multiprocessing import Process
 from components.images.logos import header_logo, sidebar_logo
 from components.logs import log_box
 from components.forms import data_upload_form
+from components.plots import ml_plots
 from services.logs import get_logs
 from feature_importance import feature_importance, fuzzy_interpretation
 from feature_importance.feature_importance_options import FeatureImportanceOptions
 from feature_importance.fuzzy_options import FuzzyOptions
 from machine_learning import train
-from machine_learning.call_methods import save_actual_pred_plots
 from machine_learning.data import DataBuilder
 from machine_learning.ml_options import MLOptions
 from options.enums import ConfigStateKeys, ExecutionStateKeys
-from options.file_paths import uploaded_file_path, log_dir
+from options.file_paths import uploaded_file_path, log_dir, ml_plot_dir
 from utils.logging_utils import Logger, close_logger
 from utils.utils import set_seed
 import streamlit as st
@@ -103,14 +103,14 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
         )
         ml_opt.parser.set_defaults(
             n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
-            save_actual_pred_plots=save_actual_pred_plots,
+            save_actual_pred_plots=st.session_state[ConfigStateKeys.SavePlots],
             normalization=st.session_state[ConfigStateKeys.Normalization],
             dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
             experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
             data_path=path_to_data,
             data_split=st.session_state[ConfigStateKeys.DataSplit],
             model_types=st.session_state[ConfigStateKeys.ModelTypes],
-            # ml_log_dir=
+            ml_log_dir=ml_plot_dir(st.session_state[ConfigStateKeys.ExperimentName]),
             problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
             random_state=st.session_state[ConfigStateKeys.RandomSeed],
             is_machine_learning=st.session_state[ConfigStateKeys.IsMachineLearning],
@@ -453,3 +453,4 @@ if (
         process.join()
     st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
     log_box()
+    ml_plots(ml_plot_dir(experiment_name))
