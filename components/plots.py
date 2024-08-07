@@ -9,6 +9,6 @@ def ml_plots(ml_plot_dir: Path):
         ml_plot_dir (Path): The directory containing the Machine Learning plots.
     """
     plots = list(ml_plot_dir.iterdir())
-    with st.expander("Machine leaning plots", expanded=len(plots) > 0):
+    with st.expander("Machine learning plots", expanded=len(plots) > 0):
         for p in plots:
             st.image(str(p))
