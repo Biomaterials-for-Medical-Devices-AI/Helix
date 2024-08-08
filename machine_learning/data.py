@@ -11,13 +11,14 @@ class DataBuilder:
     """
     Data builder class
     """
+
     def __init__(self, opt: argparse.Namespace, logger: object = None) -> None:
         self._path = opt.data_path
         self._data_split = opt.data_split
         self._random_state = opt.random_state
         self._logger = logger
         self._normalization = opt.normalization
-        self._numerical_cols = 'all'
+        self._numerical_cols = "all"
         self._n_bootstraps = opt.n_bootstraps
 
     def _load_data(self) -> Dict[str, pd.DataFrame]:
@@ -40,7 +41,10 @@ class DataBuilder:
                     f"Using holdout data split with test size {self._data_split['test_size']} for bootstrap {i+1}"
                 )
                 X_train, X_test, y_train, y_test = train_test_split(
-                    X, y, test_size=self._data_split["test_size"], random_state=self._random_state + i
+                    X,
+                    y,
+                    test_size=self._data_split["test_size"],
+                    random_state=self._random_state + i,
                 )
                 X_train_list.append(X_train)
                 X_test_list.append(X_test)
@@ -52,13 +56,14 @@ class DataBuilder:
                 )
 
         return {
-            'X_train': X_train_list, 
-            'X_test': X_test_list, 
-            'y_train': y_train_list, 
-            'y_test': y_test_list
+            "X_train": X_train_list,
+            "X_test": X_test_list,
+            "y_train": y_train_list,
+            "y_test": y_test_list,
         }
 
-    def normalise_data(self,
+    def normalise_data(
+        self,
         X_train: pd.DataFrame,
         X_test: pd.DataFrame,
     ) -> pd.DataFrame:
@@ -104,32 +109,39 @@ class DataBuilder:
 
             scaler = MinMaxScaler()
         else:
-            raise ValueError("normalization must be either'Standardization' or'MinMax'.")
+            raise ValueError(
+                "normalization must be either'Standardization' or'MinMax'."
+            )
 
-        if self._numerical_cols == "all":
+        if isinstance(self._numerical_cols, str) and self._numerical_cols == "all":
             self._numerical_cols = X_train.columns
-        elif type(self._numerical_cols) == list:
+        elif type(self._numerical_cols) == pd.Index:
             pass
         else:
             raise TypeError("numerical_cols must be a list of columns or 'all'.")
-        X_train[self._numerical_cols] = scaler.fit_transform(X_train[self._numerical_cols])
+        X_train[self._numerical_cols] = scaler.fit_transform(
+            X_train[self._numerical_cols]
+        )
         X_test[self._numerical_cols] = scaler.transform(X_test[self._numerical_cols])
         return X_train, X_test, scaler
-    
+
     def ingest(self):
         data = self._load_data()
-        data_scaler = {'scaler': []}
+        data_scaler = {"scaler": []}
         for i in range(self._n_bootstraps):
-            data['X_train'][i], data['X_test'][i], scaler = self.normalise_data(data['X_train'][i], data['X_test'][i])
-            data_scaler['scaler'].append(scaler)
-        
+            data["X_train"][i], data["X_test"][i], scaler = self.normalise_data(
+                data["X_train"][i], data["X_test"][i]
+            )
+            data_scaler["scaler"].append(scaler)
+
         return TabularData(
-            X_train=data['X_train'],
-            X_test=data['X_test'],
-            y_train=data['y_train'],
-            y_test=data['y_test'],
-            scaler=data_scaler['scaler'],
+            X_train=data["X_train"],
+            X_test=data["X_test"],
+            y_train=data["y_train"],
+            y_test=data["y_test"],
+            scaler=data_scaler["scaler"],
         )
+
 
 @dataclass
 class TabularData:
@@ -139,5 +151,3 @@ class TabularData:
     y_train: list[pd.DataFrame]
     y_test: list[pd.DataFrame]
     scaler: list[object]
-
-
