@@ -183,6 +183,10 @@ def cancel_pipeline(p: Process):
 
 
 ## Page contents
+st.set_page_config(
+    page_title="BioFEFI",
+    page_icon="static/BioFEFI_Logo_Transparent_160x160.png",
+)
 header_logo()
 sidebar_logo()
 with st.sidebar:
