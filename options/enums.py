@@ -16,6 +16,7 @@ class ConfigStateKeys(StrEnum):
     UseXGBoost = "use_xgb"
     Normalization = "normalization"
     ModelTypes = "model_types"
+    SaveModels = "save_models"
     # Feature Importance options
     IsFeatureImportance = "is_feature_importance"
     NumberOfImportantFeatures = "num_important_features"

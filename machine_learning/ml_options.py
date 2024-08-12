@@ -49,6 +49,13 @@ class MLOptions(BaseOptions):
         )
 
         self.parser.add_argument(
+            "--save_models",
+            type=bool,
+            default=True,
+            help="Flag to save machine learning models",
+        )
+
+        self.parser.add_argument(
             "--model_types",
             type=lambda x: ast.literal_eval(x),
             default={

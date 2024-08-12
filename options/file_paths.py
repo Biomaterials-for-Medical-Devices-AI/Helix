@@ -44,3 +44,16 @@ def ml_plot_dir(exeperiment_name: str) -> Path:
         Path: The full path for the Machine Learning plot directory.
     """
     return BASE_DIR / exeperiment_name / "plots" / "ml"
+
+
+def ml_model_dir(exeperiment_name: str) -> Path:
+    """Create the pull path to the directory to save Machine Learning models.
+
+    Args:
+        exeperiment_name (str): The name of the experiment. This will be used
+        to create a subdirectory with the this value.
+
+    Returns:
+        Path: The full path for the Machine Learning model directory.
+    """
+    return BASE_DIR / exeperiment_name / "models"
