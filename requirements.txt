@@ -1,6 +1,6 @@
 lime==0.2.0.1
 matplotlib==3.8.2
-numpy==2.0.0
+numpy==1.26.0
 pandas==2.2.2
 scikit_fuzzy==0.4.2
 scikit_learn==1.4.0
