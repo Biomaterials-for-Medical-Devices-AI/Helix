@@ -4,9 +4,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
+from options.enums import ProblemTypes
+
 
 def plot_scatter(y, yp, r2, set_name, dependent_variable, model_name, directory):
-    
+
     # Create a scatter plot using Seaborn
     plt.figure(figsize=(10, 6))
     sns.scatterplot(x=y, y=yp)
@@ -32,7 +34,6 @@ def plot_scatter(y, yp, r2, set_name, dependent_variable, model_name, directory)
     plt.close()
 
 
-
 def save_actual_pred_plots(
     data, ml_results, opt: argparse.Namespace, logger, ml_metric_results
 ) -> None:
@@ -46,7 +47,7 @@ def save_actual_pred_plots(
     Returns:
         None
     """
-    if opt.problem_type == "regression":
+    if opt.problem_type == ProblemTypes.Regression:
 
         # Create results directory if it doesn't exist
         directory = opt.ml_log_dir

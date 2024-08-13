@@ -6,14 +6,14 @@ from components.forms import data_upload_form
 from components.plots import ml_plots
 from components.configuration import ml_options
 from services.logs import get_logs
-from services.ml_models import save_model
+from services.ml_models import save_model, load_models
 from feature_importance import feature_importance, fuzzy_interpretation
 from feature_importance.feature_importance_options import FeatureImportanceOptions
 from feature_importance.fuzzy_options import FuzzyOptions
 from machine_learning import train
 from machine_learning.data import DataBuilder
 from machine_learning.ml_options import MLOptions
-from options.enums import ConfigStateKeys, ExecutionStateKeys
+from options.enums import ConfigStateKeys, ExecutionStateKeys, ProblemTypes
 from options.file_paths import uploaded_file_path, log_dir, ml_plot_dir, ml_model_dir
 from utils.logging_utils import Logger, close_logger
 from utils.utils import set_seed
@@ -45,7 +45,9 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
             # fuzzy_log_dir=
             dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
             experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-            problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+            problem_type=st.session_state.get(
+                ConfigStateKeys.ProblemType, ProblemTypes.Auto
+            ).lower(),
             is_granularity=st.session_state[ConfigStateKeys.GranularFeatures],
         )
     fuzzy_opt = fuzzy_opt.parse()
@@ -66,7 +68,9 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
             shap_reduce_data=st.session_state[ConfigStateKeys.ShapDataPercentage],
             dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
             experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-            problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
+            problem_type=st.session_state.get(
+                ConfigStateKeys.ProblemType, ProblemTypes.Auto
+            ).lower(),
             is_feature_importance=st.session_state[ConfigStateKeys.IsFeatureImportance],
             # fi_log_dir=
             angle_rotate_xaxis_labels=st.session_state[
@@ -98,42 +102,44 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
 
     ml_opt = MLOptions()
     ml_opt.initialize()
-    if st.session_state.get(ConfigStateKeys.IsMachineLearning, False):
-        path_to_data = uploaded_file_path(
-            st.session_state[ConfigStateKeys.UploadedFileName].name,
-            st.session_state[ConfigStateKeys.ExperimentName],
-        )
-        ml_opt.parser.set_defaults(
-            n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
-            save_actual_pred_plots=st.session_state[ConfigStateKeys.SavePlots],
-            normalization=st.session_state[ConfigStateKeys.Normalization],
-            dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
-            experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-            data_path=path_to_data,
-            data_split=st.session_state[ConfigStateKeys.DataSplit],
-            model_types=st.session_state[ConfigStateKeys.ModelTypes],
-            ml_log_dir=ml_plot_dir(st.session_state[ConfigStateKeys.ExperimentName]),
-            problem_type=st.session_state[ConfigStateKeys.ProblemType].lower(),
-            random_state=st.session_state[ConfigStateKeys.RandomSeed],
-            is_machine_learning=st.session_state[ConfigStateKeys.IsMachineLearning],
-            save_models=st.session_state[ConfigStateKeys.SaveModels],
-        )
+    path_to_data = uploaded_file_path(
+        st.session_state[ConfigStateKeys.UploadedFileName].name,
+        st.session_state[ConfigStateKeys.ExperimentName],
+    )
+    ml_opt.parser.set_defaults(
+        n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
+        save_actual_pred_plots=st.session_state[ConfigStateKeys.SavePlots],
+        normalization=st.session_state[ConfigStateKeys.Normalization],
+        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
+        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
+        data_path=path_to_data,
+        data_split=st.session_state[ConfigStateKeys.DataSplit],
+        model_types=st.session_state[ConfigStateKeys.ModelTypes],
+        ml_log_dir=ml_plot_dir(st.session_state[ConfigStateKeys.ExperimentName]),
+        problem_type=st.session_state.get(
+            ConfigStateKeys.ProblemType, ProblemTypes.Auto
+        ).lower(),
+        random_state=st.session_state[ConfigStateKeys.RandomSeed],
+        is_machine_learning=st.session_state[ConfigStateKeys.IsMachineLearning],
+        save_models=st.session_state[ConfigStateKeys.SaveModels],
+    )
     ml_opt = ml_opt.parse()
 
     return fuzzy_opt, fi_opt, ml_opt, st.session_state[ConfigStateKeys.ExperimentName]
 
 
-def save_upload(file_to_upload: str, content: str):
+def save_upload(file_to_upload: str, content: str, mode: str = "w"):
     """Save a file given to the UI to disk.
 
     Args:
         file_to_upload (str): The name of the file to save.
         content (str): The contents to save to the file.
+        mode (str): The mode to write the file. e.g. "w", "w+", "wb", etc.
     """
     base_dir = os.path.dirname(file_to_upload)
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
-    with open(file_to_upload, "w") as f:
+    with open(file_to_upload, mode) as f:
         f.write(content)
 
 
@@ -154,21 +160,24 @@ def pipeline(
     logger_instance = Logger(log_dir(experiment_name))
     logger = logger_instance.make_logger()
 
+    data = DataBuilder(ml_opts, logger).ingest()
+
     # Machine learning
     if ml_opts.is_machine_learning:
-        data = DataBuilder(ml_opts, logger).ingest()
         trained_models = train.run(ml_opts, data, logger)
         if ml_opts.save_models:
             for model_name in trained_models:
                 for i, model in enumerate(trained_models[model_name]):
                     save_path = ml_model_dir(experiment_name) / f"{model_name}-{i}.pkl"
                     save_model(model, save_path)
+    else:
+        trained_models = load_models(ml_model_dir(experiment_name))
 
-        # Feature importance
-        if fi_opts.is_feature_importance:
-            gloabl_importance_results, local_importance_results, ensemble_results = (
-                feature_importance.run(fi_opts, data, trained_models, logger)
-            )
+    # Feature importance
+    if fi_opts.is_feature_importance:
+        gloabl_importance_results, local_importance_results, ensemble_results = (
+            feature_importance.run(fi_opts, data, trained_models, logger)
+        )
 
         # Fuzzy interpretation
         if fuzzy_opts.fuzzy_feature_selection:
@@ -346,6 +355,10 @@ if (
     experiment_name = st.session_state.get(ConfigStateKeys.ExperimentName)
     upload_path = uploaded_file_path(uploaded_file.name, experiment_name)
     save_upload(upload_path, uploaded_file.read().decode("utf-8"))
+    if uploaded_models := st.session_state.get(ConfigStateKeys.UploadedModels):
+        for m in uploaded_models:
+            upload_path = ml_model_dir(experiment_name) / m.name
+            save_upload(upload_path, m.read(), "wb")
     config = build_configuration()
     process = Process(target=pipeline, args=config, daemon=True)
     process.start()
@@ -355,4 +368,6 @@ if (
         process.join()
     st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
     log_box()
-    ml_plots(ml_plot_dir(experiment_name))
+    plot_dir = ml_plot_dir(experiment_name)
+    if plot_dir.exists():
+        ml_plots(plot_dir)

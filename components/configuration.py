@@ -3,49 +3,17 @@ import streamlit as st
 
 
 def ml_options():
-    ml_on = True
-    st.session_state[ConfigStateKeys.IsMachineLearning] = ml_on
-    # ml_on = st.checkbox("Machine Learning", key=ConfigStateKeys.IsMachineLearning)
-    if ml_on:
-        with st.expander("Machine Learning Options"):
+    ml_on = st.checkbox(
+        "Train new models", key=ConfigStateKeys.IsMachineLearning, value=True
+    )
+    with st.expander("Machine Learning Options"):
+        if ml_on:
             st.subheader("Machine Learning Options")
             st.selectbox(
                 "Problem type",
                 ["Classification", "Regression"],
                 key=ConfigStateKeys.ProblemType,
-            ).lower()
-            data_split = st.selectbox("Data split method", ["Holdout", "K-Fold"])
-            if data_split == "Holdout":
-                split_size = st.number_input(
-                    "Test split",
-                    min_value=0.0,
-                    max_value=1.0,
-                    value=0.2,
-                )
-                st.session_state[ConfigStateKeys.DataSplit] = {
-                    "type": "holdout",
-                    "test_size": split_size,
-                }
-            elif data_split == "K-Fold":
-                split_size = st.number_input(
-                    "n splits",
-                    min_value=0,
-                    value=5,
-                )
-                st.session_state[ConfigStateKeys.DataSplit] = {
-                    "type": "kfold",
-                    "n_splits": split_size,
-                }
-            else:
-                split_size = None
-            st.number_input(
-                "Number of bootstraps",
-                min_value=1,
-                value=10,
-                key=ConfigStateKeys.NumberOfBootstraps,
             )
-            st.checkbox("Save actual or predicted plots", key=ConfigStateKeys.SavePlots)
-            st.checkbox("Save models", key=ConfigStateKeys.SaveModels)
 
             st.write("Model types to use:")
             model_types = {}
@@ -108,8 +76,41 @@ def ml_options():
                 st.divider()
             st.session_state[ConfigStateKeys.ModelTypes] = model_types
 
-            st.selectbox(
-                "Normalization",
-                ["Standardization", "MinMax", "None"],
-                key=ConfigStateKeys.Normalization,
+        st.selectbox(
+            "Normalization",
+            ["Standardization", "MinMax", "None"],
+            key=ConfigStateKeys.Normalization,
+        )
+
+        data_split = st.selectbox("Data split method", ["Holdout", "K-Fold"])
+        if data_split == "Holdout":
+            split_size = st.number_input(
+                "Test split",
+                min_value=0.0,
+                max_value=1.0,
+                value=0.2,
             )
+            st.session_state[ConfigStateKeys.DataSplit] = {
+                "type": "holdout",
+                "test_size": split_size,
+            }
+        elif data_split == "K-Fold":
+            split_size = st.number_input(
+                "n splits",
+                min_value=0,
+                value=5,
+            )
+            st.session_state[ConfigStateKeys.DataSplit] = {
+                "type": "kfold",
+                "n_splits": split_size,
+            }
+        else:
+            split_size = None
+        st.number_input(
+            "Number of bootstraps",
+            min_value=1,
+            value=10,
+            key=ConfigStateKeys.NumberOfBootstraps,
+        )
+        st.checkbox("Save actual or predicted plots", key=ConfigStateKeys.SavePlots)
+        st.checkbox("Save models", key=ConfigStateKeys.SaveModels)

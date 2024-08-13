@@ -45,7 +45,14 @@ class ConfigStateKeys(StrEnum):
     UploadedFileName = "uploaded_file_name"
     RandomSeed = "random_seed"
     LogBox = "log_box"
+    UploadedModels = "uploaded_models"
 
 
 class ExecutionStateKeys(StrEnum):
     RunPipeline = "run_pipeline"
+
+
+class ProblemTypes(StrEnum):
+    Auto = "auto"
+    Classification = "classification"
+    Regression = "regression"

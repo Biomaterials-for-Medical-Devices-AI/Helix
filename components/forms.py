@@ -12,4 +12,11 @@ def data_upload_form():
     st.file_uploader(
         "Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName
     )
+    if not st.session_state.get(ConfigStateKeys.IsMachineLearning, False):
+        st.file_uploader(
+            "Upload machine leaerning models",
+            type="pkl",
+            accept_multiple_files=True,
+            key=ConfigStateKeys.UploadedModels,
+        )
     st.button("Run", key=ExecutionStateKeys.RunPipeline)
