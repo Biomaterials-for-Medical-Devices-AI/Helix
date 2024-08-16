@@ -1,4 +1,3 @@
-
 import inspect
 import random
 from typing import Dict, List, Tuple
@@ -55,32 +54,29 @@ def assert_model_param(model, model_params, logger: object = None) -> None:
     for arg in args_to_remove:
         model_params.pop(arg)
     # check arguments for XGBoost
-    if 'kwargs' in model_params:
-        for arguments, value in model_params['kwargs'].items():
+    if "kwargs" in model_params:
+        for arguments, value in model_params["kwargs"].items():
             model_params[arguments] = value
-        model_params.pop('kwargs')
+        model_params.pop("kwargs")
 
     logger.info(f"Using model {model.__name__} with parameters {model_params}")
     return model_params
 
+
 def log_options(log_directory, opt: argparse.Namespace):
-    ''' Log model or feature importance hyperparameters
-   Parameters
-    ----------
-        log_directory: str
-            The directory to save the log file
-        opt: argparse.Namespace
-            The options object
-    Returns:
-        None
-    '''
-    
-    log_path =  os.path.join(log_directory, "options.txt")
+    """Log model or feature importance hyperparameters
+    Parameters
+     ----------
+         log_directory: str
+             The directory to save the log file
+         opt: argparse.Namespace
+             The options object
+     Returns:
+         None
+    """
 
-    with open(log_path, 'w') as f:
+    log_path = os.path.join(log_directory, "options.txt")
+
+    with open(log_path, "w") as f:
         for arg in vars(opt):
-            f.write(f'{arg}: {getattr(opt, arg)}\n')
-
-    
-            
-
+            f.write(f"{arg}: {getattr(opt, arg)}\n")

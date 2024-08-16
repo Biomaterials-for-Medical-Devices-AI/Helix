@@ -52,9 +52,11 @@ class Learner:
                 res[i][model_name]["y_pred_test"] = y_pred_test
                 if model_name not in metric_res:
                     metric_res[model_name] = []
-                metric_res[model_name].append(self._evaluate(
-                    model_name, y_train, y_pred_train, y_test, y_pred_test
-                ))
+                metric_res[model_name].append(
+                    self._evaluate(
+                        model_name, y_train, y_pred_train, y_test, y_pred_test
+                    )
+                )
                 trained_models[model_name].append(model)
         metric_res_stats = self._compute_metrics_statistics(metric_res)
         return res, metric_res, metric_res_stats, trained_models
@@ -81,9 +83,8 @@ class Learner:
                 "value": metric_test,
             }
         return eval_res
-    
-    def _compute_metrics_statistics(self,
-                                    metric_res: Dict) -> Dict:
+
+    def _compute_metrics_statistics(self, metric_res: Dict) -> Dict:
         """
         Compute average and standard deviation of metric values across bootstrap samples
         """
@@ -101,22 +102,22 @@ class Learner:
                         train_metrics[metric_name] = []
                         test_metrics[metric_name] = []
 
-                    train_metrics[metric_name].append(metric_values['train']['value'])
-                    test_metrics[metric_name].append(metric_values['test']['value'])
+                    train_metrics[metric_name].append(metric_values["train"]["value"])
+                    test_metrics[metric_name].append(metric_values["test"]["value"])
 
             # Compute average and standard deviation for each metric
-            statistics[model_name] = {'train': {}, 'test': {}}
+            statistics[model_name] = {"train": {}, "test": {}}
             for metric_name in train_metrics.keys():
                 train_values = np.array(train_metrics[metric_name])
                 test_values = np.array(test_metrics[metric_name])
 
-                statistics[model_name]['train'][metric_name] = {
-                    'mean': np.mean(train_values),
-                    'std': np.std(train_values)
+                statistics[model_name]["train"][metric_name] = {
+                    "mean": np.mean(train_values),
+                    "std": np.std(train_values),
                 }
-                statistics[model_name]['test'][metric_name] = {
-                    'mean': np.mean(test_values),
-                    'std': np.std(test_values)
+                statistics[model_name]["test"][metric_name] = {
+                    "mean": np.mean(test_values),
+                    "std": np.std(test_values),
                 }
 
         return statistics

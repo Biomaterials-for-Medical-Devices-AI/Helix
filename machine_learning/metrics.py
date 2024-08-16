@@ -8,11 +8,8 @@ def get_metrics(problem_type: str, logger: object = None) -> Dict:
             f1_score,
             precision_score,
             recall_score,
-            roc_auc_score
-
+            roc_auc_score,
         )
-
-
 
         metrics = {
             "accuracy": accuracy_score,

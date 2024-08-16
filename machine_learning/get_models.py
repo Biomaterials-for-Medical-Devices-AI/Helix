@@ -13,8 +13,8 @@ def get_models(
         for model_type, model in model_types.items()
         if model["use"]
     ]
-    #model_names = [model[0] for model in model_list]
-    #model_params = [model[1] for model in model_list]
+    # model_names = [model[0] for model in model_list]
+    # model_params = [model[1] for model in model_list]
     for model, model_param in model_list:
         if model.lower() == "linear model":
             from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -23,7 +23,7 @@ def get_models(
                 model_param = assert_model_param(
                     LogisticRegression, model_param, logger=logger
                 )
-                model_param['class_weight'] = 'balanced'
+                model_param["class_weight"] = "balanced"
                 models[model] = LogisticRegression(**model_param)
             elif problem_type.lower() == "regression":
                 model_param = assert_model_param(
@@ -40,7 +40,7 @@ def get_models(
                 model_param = assert_model_param(
                     RandomForestClassifier, model_param, logger=logger
                 )
-                model_param['class_weight'] = 'balanced'
+                model_param["class_weight"] = "balanced"
                 models[model] = RandomForestClassifier(**model_param)
             elif problem_type.lower() == "regression":
                 model_param = assert_model_param(
@@ -49,7 +49,7 @@ def get_models(
                 models[model] = RandomForestRegressor(**model_param)
             else:
                 raise ValueError(f"Model type {model} not recognized")
-        
+
         elif model.lower() == "xgboost":
             from xgboost import XGBClassifier, XGBRegressor
 
@@ -57,7 +57,7 @@ def get_models(
                 model_param = assert_model_param(
                     XGBClassifier, model_param, logger=logger
                 )
-                #TODO: scale_pos_weight not implemented for clas imbalanced problems
+                # TODO: scale_pos_weight not implemented for clas imbalanced problems
                 models[model] = XGBClassifier(**model_param)
             elif problem_type.lower() == "regression":
                 model_param = assert_model_param(
