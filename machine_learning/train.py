@@ -23,7 +23,7 @@ def run(opt: MLOptions, data: DataBuilder, logger: Logger) -> None:
     learner = Learner(opt, logger=logger)
     res, metric_res, metric_res_stats, trained_models = learner.fit(data)
     logger.info(f"Performance Metric Statistics: \n{metric_res_stats}")
-    if opt.is_machine_learning:
+    if opt.save_actual_pred_plots:
         save_actual_pred_plots(data, res, opt, logger, metric_res)
 
     return trained_models
