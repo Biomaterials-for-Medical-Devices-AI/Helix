@@ -1,3 +1,4 @@
+from options.choices import SVM_KERNELS, PROBLEM_TYPES, NORMALISATIONS
 from options.enums import ConfigStateKeys
 import streamlit as st
 
@@ -11,7 +12,7 @@ def ml_options():
             st.subheader("Machine Learning Options")
             st.selectbox(
                 "Problem type",
-                ["Classification", "Regression"],
+                PROBLEM_TYPES,
                 key=ConfigStateKeys.ProblemType,
             )
 
@@ -74,11 +75,27 @@ def ml_options():
                     },
                 }
                 st.divider()
+
+            use_svm = st.checkbox("SVM", value=True)
+            if use_svm:
+                st.write("Options:")
+                kernel = st.selectbox("Kernel", options=SVM_KERNELS)
+                degree = st.number_input("Degree", min_value=0, value=3)
+                c = st.number_input("C", value=1.0, min_value=0.0)
+                model_types["SVM"] = {
+                    "use": use_svm,
+                    "params": {
+                        "kernel": kernel.lower(),
+                        "degree": degree,
+                        "C": c,
+                    },
+                }
+                st.divider()
             st.session_state[ConfigStateKeys.ModelTypes] = model_types
 
         st.selectbox(
             "Normalization",
-            ["Standardization", "MinMax", "None"],
+            NORMALISATIONS,
             key=ConfigStateKeys.Normalization,
         )
 
