@@ -77,3 +77,8 @@ class ModelNames(StrEnum):
     RandomForest = "random forest"
     XGBoost = "xgboost"
     SVM = "svm"
+
+
+class DataSplitMethods(StrEnum):
+    Holdout = "holdout"
+    KFold = "k-fold"
