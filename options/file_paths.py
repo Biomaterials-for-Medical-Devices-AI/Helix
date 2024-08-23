@@ -35,7 +35,7 @@ def log_dir(experiment_name: str) -> Path:
 
 
 def ml_plot_dir(experiment_name: str) -> Path:
-    """Create the pull path to the directory to save Machine Learning plots.
+    """Create the full path to the directory to save Machine Learning plots.
 
     Args:
         experiment_name (str): The name of the experiment. This will be used
@@ -48,7 +48,7 @@ def ml_plot_dir(experiment_name: str) -> Path:
 
 
 def ml_model_dir(experiment_name: str) -> Path:
-    """Create the pull path to the directory to save Machine Learning models.
+    """Create the full path to the directory to save Machine Learning models.
 
     Args:
         experiment_name (str): The name of the experiment. This will be used
@@ -58,3 +58,55 @@ def ml_model_dir(experiment_name: str) -> Path:
         Path: The full path for the Machine Learning model directory.
     """
     return BASE_DIR / experiment_name / "models"
+
+
+def fi_plot_dir(experiment_name: str) -> Path:
+    """Create the full path to the directory to save Feature Importance plots.
+
+    Args:
+        experiment_name (str): The name of the experiment. This will be used
+        to create a subdirectory with the this value.
+
+    Returns:
+        Path: The full path for the Feature Importance plot directory.
+    """
+    return BASE_DIR / experiment_name / "plots" / "fi"
+
+
+def fi_result_dir(experiment_name: str) -> Path:
+    """Create the full path to the directory to save Feature Importance results.
+
+    Args:
+        experiment_name (str): The name of the experiment. This will be used
+        to create a subdirectory with the this value.
+
+    Returns:
+        Path: The full path for the Feature Importance result directory.
+    """
+    return BASE_DIR / experiment_name / "results" / "fi"
+
+
+def fuzzy_plot_dir(experiment_name: str) -> Path:
+    """Create the full path to the directory to save Fuzzy plots.
+
+    Args:
+        experiment_name (str): The name of the experiment. This will be used
+        to create a subdirectory with the this value.
+
+    Returns:
+        Path: The full path for the Fuzzy plot directory.
+    """
+    return BASE_DIR / experiment_name / "plots" / "fuzzy"
+
+
+def fuzzy_result_dir(experiment_name: str) -> Path:
+    """Create the full path to the directory to save Fuzzy results.
+
+    Args:
+        experiment_name (str): The name of the experiment. This will be used
+        to create a subdirectory with the this value.
+
+    Returns:
+        Path: The full path for the Fuzzy result directory.
+    """
+    return BASE_DIR / experiment_name / "results" / "fuzzy"

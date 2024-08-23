@@ -1,9 +1,14 @@
 import argparse
 import pickle
 import os
-import sys
 import matplotlib.pyplot as plt
 import seaborn as sns
+from options.file_paths import (
+    fi_plot_dir,
+    fi_result_dir,
+    fuzzy_plot_dir,
+    fuzzy_result_dir,
+)
 from utils.utils import log_options
 import shap
 
@@ -66,6 +71,9 @@ def save_importance_results(
 
     # Save plots when the flag is set to True and importance type is not fuzzy
     if opt.save_feature_importance_plots and importance_type != "fuzzy":
+        save_dir = fi_plot_dir(opt.experiment_name)
+        if not save_dir.exists():
+            save_dir.mkdir(exist_ok=True, parents=True)
         # Plot bar plot - sort values in descending order and plot top n features
         # rotate x-axis labels for better readability
         feature_importance_df.sort_values(by=0, ascending=False).head(
@@ -75,7 +83,7 @@ def save_importance_results(
         plt.xticks(rotation=opt.angle_rotate_xaxis_labels)
         plt.title(f"{feature_importance_type} - {model_type}")
         plt.ylabel("Importance")
-        plt.savefig(f"{directory}bar.png")
+        plt.savefig(save_dir / f"{model_type}-bar.png")
         # plt.show()
         plt.close()
 
@@ -85,7 +93,7 @@ def save_importance_results(
                 shap_values, max_display=opt.num_features_to_plot, show=False
             )
             plt.yticks(rotation=opt.angle_rotate_yaxis_labels)
-            plt.savefig(f"{directory}beeswarm.png")
+            plt.savefig(save_dir / f"{model_type}-beeswarm.png")
             # plt.show()
 
     if opt.save_feature_importance_plots and importance_type == "fuzzy":
@@ -94,10 +102,16 @@ def save_importance_results(
 
     # Save the results to a CSV file - create folders if they don't exist
     if opt.save_feature_importance_results and importance_type != "fuzzy":
-        feature_importance_df.to_csv(f"{directory}importance.csv")
+        save_dir = fi_result_dir(opt.experiment_name)
+        if not save_dir.exists():
+            save_dir.mkdir(exist_ok=True, parents=True)
+        feature_importance_df.to_csv(save_dir / f"{feature_importance_type}.csv")
 
     if opt.save_feature_importance_results and importance_type == "fuzzy":
-        feature_importance_df.to_csv(f"{directory}{feature_importance_type}.csv")
+        save_dir = fuzzy_result_dir(opt.experiment_name)
+        if not save_dir.exists():
+            save_dir.mkdir(exist_ok=True, parents=True)
+        feature_importance_df.to_csv(save_dir / f"{feature_importance_type}.csv")
 
     # Save the metrics to a log file
     if opt.save_feature_importance_options:
@@ -110,11 +124,9 @@ def save_fuzzy_sets_plots(
     # Plot the membership functions
     if opt.save_fuzzy_set_plots:
         logger.info(f"Saving fuzzy set plots ...")
-        directory = (
-            f"./log/{opt.experiment_name}/{opt.fuzzy_log_dir}/results/fuzzy sets/"
-        )
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        save_dir = fuzzy_plot_dir(opt.experiment_name)
+        if not save_dir.exists():
+            save_dir.mkdir(exist_ok=True, parents=True)
 
         for feature in x_cols:
             plt.figure(figsize=(5, 5))
@@ -138,7 +150,7 @@ def save_fuzzy_sets_plots(
             )
             plt.title(f"{feature} Membership Functions")
             plt.legend()
-            plt.savefig(f"{directory}{feature}.png")
+            plt.savefig(save_dir / f"{feature}.png")
         plt.close()
 
 
@@ -146,13 +158,13 @@ def save_target_clusters_plots(df_cluster, opt: argparse.Namespace, logger):
     # Plot the target clusters
     if opt.save_fuzzy_set_plots:
         logger.info(f"Saving target clusters plot ...")
-        directory = f"./log/{opt.experiment_name}/{opt.fuzzy_log_dir}/results/"
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        save_dir = fuzzy_plot_dir(opt.experiment_name)
+        if not save_dir.exists():
+            save_dir.mkdir(exist_ok=True, parents=True)
 
         # Plot boxplot of the target (continuous values) and target clusters (categories) using seaborn
         plt.figure(figsize=(5, 5))
         sns.boxplot(data=df_cluster, x="cluster", y="target")
         plt.title("Target Clusters")
-        plt.savefig(f"{directory}target_clusters.png")
+        plt.savefig(save_dir / f"target_clusters.png")
         plt.close()

@@ -3,7 +3,7 @@ from multiprocessing import Process
 from components.images.logos import header_logo, sidebar_logo
 from components.logs import log_box
 from components.forms import data_upload_form
-from components.plots import ml_plots
+from components.plots import plot_box
 from components.configuration import ml_options
 from services.logs import get_logs
 from services.ml_models import save_model, load_models
@@ -14,7 +14,14 @@ from machine_learning import train
 from machine_learning.data import DataBuilder
 from machine_learning.ml_options import MLOptions
 from options.enums import ConfigStateKeys, ExecutionStateKeys, ProblemTypes
-from options.file_paths import uploaded_file_path, log_dir, ml_plot_dir, ml_model_dir
+from options.file_paths import (
+    fi_plot_dir,
+    fuzzy_plot_dir,
+    uploaded_file_path,
+    log_dir,
+    ml_plot_dir,
+    ml_model_dir,
+)
 from utils.logging_utils import Logger, close_logger
 from utils.utils import set_seed
 import streamlit as st
@@ -368,6 +375,12 @@ if (
         process.join()
     st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
     log_box()
-    plot_dir = ml_plot_dir(experiment_name)
-    if plot_dir.exists():
-        ml_plots(plot_dir)
+    ml_plots = ml_plot_dir(experiment_name)
+    if ml_plots.exists():
+        plot_box(ml_plots, "Machine learning plots")
+    fi_plots = fi_plot_dir(experiment_name)
+    if fi_plots.exists():
+        plot_box(fi_plots, "Feature importance plots")
+    fuzzy_plots = fuzzy_plot_dir(experiment_name)
+    if fuzzy_plots.exists():
+        plot_box(fuzzy_plots, "Fuzzy plots")
