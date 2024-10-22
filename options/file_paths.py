@@ -1,9 +1,4 @@
 from pathlib import Path
-import os
-
-BASE_DIR = os.getenv("BASE_DIR", Path.home() / ".BioFEFI")
-if not isinstance(BASE_DIR, Path):
-    BASE_DIR = Path(BASE_DIR)
 
 
 def uploaded_file_path(file_name: str, experiment_path: Path) -> Path:
