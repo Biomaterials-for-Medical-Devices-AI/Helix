@@ -7,11 +7,12 @@ from options.enums import ConfigStateKeys, ExecutionStateKeys
 def data_upload_form():
     st.header("Data Upload")
     save_dir = _save_directory_selector()
-    if not _directory_is_valid(save_dir):
+    if not _directory_is_valid(save_dir) and st.session_state.get(
+        ConfigStateKeys.ExperimentName
+    ):
         st.markdown(f":red[Cannot use {save_dir}; it already exists.]")
     else:
-        st.session_state[ConfigStateKeys.SaveDir] = save_dir
-    st.text_input("Name of the experiment", key=ConfigStateKeys.ExperimentName)
+        st.session_state[ConfigStateKeys.ExperimentName] = save_dir
     st.text_input(
         "Name of the dependent variable", key=ConfigStateKeys.DependentVariableName
     )
@@ -34,8 +35,8 @@ def _save_directory_selector() -> Path:
 
     col1, col2 = st.columns([0.3, 0.7], vertical_alignment="bottom")
 
-    col1.text(f"{root}/")
-    sub_dir = col2.text_input(label="", placeholder="Directory name")
+    col1.text(f"{root}/", help="Your experiment will be saved here")
+    sub_dir = col2.text_input("Name of the experiment")
 
     return root / sub_dir
 
