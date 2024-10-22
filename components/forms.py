@@ -7,6 +7,9 @@ from options.enums import ConfigStateKeys, ExecutionStateKeys
 def data_upload_form():
     st.header("Data Upload")
     save_dir = _save_directory_selector()
+    # If a user has tried to enter a destination to save an experiment, show it
+    # if it's valid, else show some red text showing the destination and saying
+    # it's invalid.
     if not _directory_is_valid(save_dir) and st.session_state.get(
         ConfigStateKeys.ExperimentName
     ):
