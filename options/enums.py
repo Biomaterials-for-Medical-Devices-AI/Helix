@@ -46,7 +46,6 @@ class ConfigStateKeys(StrEnum):
     RandomSeed = "random_seed"
     LogBox = "log_box"
     UploadedModels = "uploaded_models"
-    SaveDir = "save_dir"
 
 
 class ExecutionStateKeys(StrEnum):
