@@ -1,5 +1,5 @@
 from options.choices import SVM_KERNELS, PROBLEM_TYPES, NORMALISATIONS
-from options.enums import ConfigStateKeys
+from options.enums import ConfigStateKeys, PlotOptionKeys
 import streamlit as st
 
 
@@ -129,7 +129,28 @@ def ml_options():
             value=10,
             key=ConfigStateKeys.NumberOfBootstraps,
         )
-        st.checkbox(
-            "Save actual or predicted plots", key=ConfigStateKeys.SavePlots, value=True
-        )
         st.checkbox("Save models", key=ConfigStateKeys.SaveModels)
+
+
+def plot_options_box():
+    """Expander containing the options for making plots"""
+    with st.expander("Plot options", expanded=False):
+        st.number_input(
+            "Angle to rotate X-axis labels",
+            min_value=0,
+            max_value=90,
+            value=10,
+            key=PlotOptionKeys.RotateXAxisLabels,
+        )
+        st.number_input(
+            "Angle to rotate Y-axis labels",
+            min_value=0,
+            max_value=90,
+            value=60,
+            key=PlotOptionKeys.RotateYAxisLabels,
+        )
+        st.checkbox(
+            "Save all plots",
+            key=PlotOptionKeys.SavePlots,
+            value=True,
+        )

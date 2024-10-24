@@ -10,7 +10,6 @@ class ConfigStateKeys(StrEnum):
     ProblemType = "problem_type"
     DataSplit = "data_split"
     NumberOfBootstraps = "num_bootstraps"
-    SavePlots = "save_plots"
     UseLinear = "use_linear"
     UseRandomForest = "use_rf"
     UseXGBoost = "use_xgb"
@@ -23,9 +22,6 @@ class ConfigStateKeys(StrEnum):
     ScoringFunction = "scoring_function"
     NumberOfRepetitions = "num_repetitions"
     ShapDataPercentage = "shap_data_percentage"
-    RotateXAxisLabels = "angle_rotate_xaxis_labels"
-    RotateYAxisLabels = "angle_rotate_yaxis_labels"
-    SaveFeatureImportancePlots = "save_feature_importance_plots"
     SaveFeatureImportanceOptions = "save_feature_importance_options"
     SaveFeatureImportanceResults = "save_feature_importance_results"
     LocalImportanceFeatures = "local_importance_methods"
@@ -38,7 +34,6 @@ class ConfigStateKeys(StrEnum):
     NumberOfClusters = "num_clusters"
     ClusterNames = "cluster_names"
     NumberOfTopRules = "num_top_rules"
-    SaveFuzzySetPlots = "save_fuzzy_set_plots"
     # Base options
     ExperimentName = "experiment_name"
     DependentVariableName = "dependent_variable_name"
@@ -82,3 +77,9 @@ class ModelNames(StrEnum):
 class DataSplitMethods(StrEnum):
     Holdout = "holdout"
     KFold = "k-fold"
+
+
+class PlotOptionKeys(StrEnum):
+    RotateXAxisLabels = "angle_rotate_xaxis_labels"
+    RotateYAxisLabels = "angle_rotate_yaxis_labels"
+    SavePlots = "save_plots"
