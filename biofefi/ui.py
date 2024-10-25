@@ -5,7 +5,7 @@ from biofefi.components.logs import log_box
 from biofefi.components.forms import data_upload_form
 from biofefi.components.plots import plot_box
 from biofefi.components.configuration import (
-    ml_options,
+    ml_options_box,
     plot_options_box,
     fi_options_box,
 )
@@ -227,7 +227,7 @@ with st.sidebar:
     # st.checkbox("Feature Engineering", key=ConfigStateKeys.IsFeatureEngineering)
 
     # Machine Learning Options
-    ml_options()
+    ml_options_box()
 
     # Feature Importance (+ Fuzzy) Options
     fi_options_box()
