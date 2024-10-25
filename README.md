@@ -25,27 +25,33 @@ git clone https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
 You then need to set up a Python virtual environment. In the `BioFEFI` directory that you downloaded, use the following command in the terminal:
 
 For MacOS / Linux
-```bash
+```shell
 # create a virtual environment
 python -m venv .venv
 
 # activate the virtual environment
 source .venv/bin/activate
 
+# add poetry to the virtual environment
+pip install poetry
+
 # install the code and its dependencies in the virtual environment
-pip install -r requirements.txt
+poetry install
 ```
 
 For Windows
-```powershell
+```shell
 # create a virtual environment
 python -m venv .venv
 
 # activate the virtual environment
 source .venv\Scripts\activate
 
+# add poetry to the virtual environment
+pip install poetry
+
 # install the code and its dependencies in the virtual environment
-pip install -r requirements.txt
+poetry install
 ```
 
 **NB:** if `python` doesn't work, try using `python3` instead.
