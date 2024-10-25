@@ -56,12 +56,20 @@ poetry install
 
 **NB:** if `python` doesn't work, try using `python3` instead.
 
-## Running the app
+## Running the app (users)
 
-If everything the installation was successful, you should be able to run the app. In the `BioFEFI` directory run the following command:
+If the installation was successful, you should be able to run the app with the following command:
 
 ```bash
-streamlit run ui.py
+biofefi
+```
+
+## Running the app (developers)
+
+If the installation was successful, you should be able to run the app. In the `BioFEFI` directory run the following command:
+
+```bash
+streamlit run biofefi/ui.py
 ```
 
 Remember to activate the virtual environment before running the app, if you haven't already (see [Installation](#installation)). The app will open in your web browser. Or you can follow follow this link to view your app http://localhost:8501.
