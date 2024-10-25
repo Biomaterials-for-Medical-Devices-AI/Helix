@@ -3,6 +3,7 @@ from biofefi.options.enums import ConfigStateKeys, PlotOptionKeys
 import streamlit as st
 
 
+@st.experimental_fragment
 def ml_options():
     ml_on = st.checkbox(
         "Train new models", key=ConfigStateKeys.IsMachineLearning, value=True

@@ -4,7 +4,12 @@ import streamlit as st
 from biofefi.options.enums import ConfigStateKeys, ExecutionStateKeys
 
 
+@st.experimental_fragment
 def data_upload_form():
+    """
+    The main form for BioFEFI where the user supplies the data
+    and says where they want their experiment to be saved.
+    """
     st.header("Data Upload")
     save_dir = _save_directory_selector()
     # If a user has tried to enter a destination to save an experiment, show it
