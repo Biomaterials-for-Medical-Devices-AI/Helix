@@ -4,7 +4,6 @@ import streamlit as st
 from biofefi.options.enums import ConfigStateKeys, ExecutionStateKeys
 
 
-@st.experimental_fragment
 def data_upload_form():
     """
     The main form for BioFEFI where the user supplies the data
