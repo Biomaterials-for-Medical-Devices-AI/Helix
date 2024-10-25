@@ -4,7 +4,7 @@ import streamlit as st
 
 
 @st.experimental_fragment
-def ml_options():
+def ml_options_box():
     ml_on = st.checkbox(
         "Train new models", key=ConfigStateKeys.IsMachineLearning, value=True
     )
