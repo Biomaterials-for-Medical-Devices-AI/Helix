@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "biofefi"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+include = [
+    { path = "static", format = ["sdist", "wheel"] },
+    { path = ".streamlit", format = ["sdist", "wheel"] },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+numpy = "1.26.4"
+pandas = "2.2.2"
+streamlit = "1.36"
+matplotlib = "3.8.2"
+scikit-learn = "1.4.0"
+scikit-fuzzy = "0.4.2"
+seaborn = "0.13.2"
+tqdm = "4.66.2"
+xgboost = "2.1.0"
+lime = "0.2.0.1"
+shap = "0.45.0"
+
+[tool.poetry.scripts]
+biofefi = "biofefi.launch:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
