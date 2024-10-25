@@ -8,7 +8,6 @@ def log_box():
     with st.expander("Pipeline report", expanded=True):
         st.text_area(
             "Logs",
-            value=st.session_state.get(ConfigStateKeys.LogBox, ""),
             key=ConfigStateKeys.LogBox,
             height=200,
             disabled=True,
