@@ -4,7 +4,11 @@ from biofefi.components.images.logos import header_logo, sidebar_logo
 from biofefi.components.logs import log_box
 from biofefi.components.forms import data_upload_form
 from biofefi.components.plots import plot_box
-from biofefi.components.configuration import ml_options, plot_options_box
+from biofefi.components.configuration import (
+    ml_options,
+    plot_options_box,
+    fi_options_box,
+)
 from biofefi.services.logs import get_logs
 from biofefi.services.ml_models import save_model, load_models
 from biofefi.feature_importance import feature_importance, fuzzy_interpretation
@@ -225,113 +229,10 @@ with st.sidebar:
     # Machine Learning Options
     ml_options()
 
-    # Feature Importance Options
-    fi_on = st.checkbox("Feature Importance", key=ConfigStateKeys.IsFeatureImportance)
-    if fi_on:
-        with st.expander("Feature importance options"):
-            st.write("Global feature importance methods:")
-            global_methods = {}
-            use_permutation = st.checkbox("Permutation Importance")
-            global_methods["Permutation Importance"] = {
-                "type": "global",
-                "value": use_permutation,
-            }
-            use_shap = st.checkbox("SHAP")
-            global_methods["SHAP"] = {"type": "global", "value": use_shap}
-            st.session_state[ConfigStateKeys.GlobalFeatureImportanceMethods] = (
-                global_methods
-            )
+    # Feature Importance (+ Fuzzy) Options
+    fi_options_box()
 
-            st.write("Feature importance ensemble methods:")
-            ensemble_methods = {}
-            use_mean = st.checkbox("Mean")
-            ensemble_methods["Mean"] = use_mean
-            use_majority = st.checkbox("Majority vote")
-            ensemble_methods["Majority Vote"] = use_majority
-            st.session_state[ConfigStateKeys.EnsembleMethods] = ensemble_methods
-
-            st.write("Local feature importance methods:")
-            local_importance_methods = {}
-            use_lime = st.checkbox("LIME")
-            local_importance_methods["LIME"] = {"type": "local", "value": use_lime}
-            use_local_shap = st.checkbox("Local SHAP")
-            local_importance_methods["SHAP"] = {
-                "type": "local",
-                "value": use_local_shap,
-            }
-            st.session_state[ConfigStateKeys.LocalImportanceFeatures] = (
-                local_importance_methods
-            )
-
-            num_important_features = st.number_input(
-                "Number of most important features to plot",
-                min_value=1,
-                value=10,
-                key=ConfigStateKeys.NumberOfImportantFeatures,
-            )
-            scoring_function = st.selectbox(
-                "Scoring function for permutation importance",
-                [
-                    "neg_mean_absolute_error",
-                    "neg_root_mean_squared_error",
-                    "accuracy",
-                    "f1",
-                ],
-                key=ConfigStateKeys.ScoringFunction,
-            )
-            num_repetitions = st.number_input(
-                "Number of repetitions for permutation importance",
-                min_value=1,
-                value=5,
-                key=ConfigStateKeys.NumberOfRepetitions,
-            )
-            shap_data_percentage = st.slider(
-                "Percentage of data to consider for SHAP",
-                0,
-                100,
-                100,
-                key=ConfigStateKeys.ShapDataPercentage,
-            )
-            save_feature_importance_options = st.checkbox(
-                "Save feature importance options",
-                key=ConfigStateKeys.SaveFeatureImportanceOptions,
-            )
-            save_feature_importance_results = st.checkbox(
-                "Save feature importance results",
-                key=ConfigStateKeys.SaveFeatureImportanceResults,
-            )
-
-            # Fuzzy Options
-            st.subheader("Fuzzy Options")
-            fuzzy_feature_selection = st.checkbox(
-                "Fuzzy feature selection", key=ConfigStateKeys.FuzzyFeatureSelection
-            )
-            if fuzzy_feature_selection:
-                num_fuzzy_features = st.number_input(
-                    "Number of features for fuzzy interpretation",
-                    min_value=1,
-                    value=5,
-                    key=ConfigStateKeys.NumberOfFuzzyFeatures,
-                )
-                granular_features = st.checkbox(
-                    "Granular features", key=ConfigStateKeys.GranularFeatures
-                )
-                num_clusters = st.number_input(
-                    "Number of clusters for target variable",
-                    min_value=2,
-                    value=3,
-                    key=ConfigStateKeys.NumberOfClusters,
-                )
-                cluster_names = st.text_input(
-                    "Names of clusters (comma-separated)",
-                    key=ConfigStateKeys.ClusterNames,
-                )
-                num_top_rules = st.number_input(
-                    "Number of top occurring rules for fuzzy synergy analysis",
-                    min_value=1,
-                    value=10,
-                    key=ConfigStateKeys.NumberOfTopRules,
-                )
+    # Global plot options
     plot_options_box()
     seed = st.number_input(
         "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
