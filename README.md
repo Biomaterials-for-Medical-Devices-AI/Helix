@@ -25,37 +25,51 @@ git clone https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
 You then need to set up a Python virtual environment. In the `BioFEFI` directory that you downloaded, use the following command in the terminal:
 
 For MacOS / Linux
-```bash
+```shell
 # create a virtual environment
 python -m venv .venv
 
 # activate the virtual environment
 source .venv/bin/activate
 
+# add poetry to the virtual environment
+pip install poetry
+
 # install the code and its dependencies in the virtual environment
-pip install -r requirements.txt
+poetry install
 ```
 
 For Windows
-```powershell
+```shell
 # create a virtual environment
 python -m venv .venv
 
 # activate the virtual environment
 source .venv\Scripts\activate
 
+# add poetry to the virtual environment
+pip install poetry
+
 # install the code and its dependencies in the virtual environment
-pip install -r requirements.txt
+poetry install
 ```
 
 **NB:** if `python` doesn't work, try using `python3` instead.
 
-## Running the app
+## Running the app (users)
 
-If everything the installation was successful, you should be able to run the app. In the `BioFEFI` directory run the following command:
+If the installation was successful, you should be able to run the app with the following command:
 
 ```bash
-streamlit run ui.py
+biofefi
+```
+
+## Running the app (developers)
+
+If the installation was successful, you should be able to run the app. In the `BioFEFI` directory run the following command:
+
+```bash
+streamlit run biofefi/ui.py
 ```
 
 Remember to activate the virtual environment before running the app, if you haven't already (see [Installation](#installation)). The app will open in your web browser. Or you can follow follow this link to view your app http://localhost:8501.
@@ -79,17 +93,14 @@ On the "Data Upload" form, there are 3 fields, or 4 if you choose not to train n
 When you're happy with your input and configuration, press "Run" to start the pipeline. A "Cancel" button will appear underneath which will allow you stop the run at any point. A spinner will appear under the buttons to show the pipeline is working. Once complete, logs for the latest run of your experiment will appear and so will any plots generated.
 
 ### Finding your outputs
-Currently by default, `BioFEFI` saves all outputs to your home directory under the `.BioFEFI` directory. On Linux this path looks like: `/home/myuser/.BioFEFI`, on MacOS, `/Users/myuser/.BioFEFI` and on Windows `C:\\Users\myuser\.BioFEFI`.
+The first field of the Data Upload form has the base directory where your experiments will be saved. On Linux this path looks like: `/home/myuser`, on MacOS, `/Users/myuser` and on Windows `C:\\Users\myuser`. When you give a name for your experiment, your outputs will appear under a directory with the same name as the experiment name, under the base directory
 
 In this directory you will find subdirectories named after your experiments. Within each experiment, you will find:
 - the training data
 - a subdirectory called `logs`
 - a subdirectory called `plots`
-
-To change the directory to save all the outputs, run the app using the following command:
-```bash
-BASE_DIR=<insert desired path here> streamlit run ui.py
-```
+- a subdirectory called `models`
+- a subdirectory called `results`
 
 ### Training new models
 Click the box that says "Machine Learning Options" under the "Train new models" checkbox to reveal the options for training new models.
