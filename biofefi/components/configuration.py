@@ -3,7 +3,8 @@ from biofefi.options.enums import ConfigStateKeys, PlotOptionKeys
 import streamlit as st
 
 
-def ml_options():
+@st.experimental_fragment
+def ml_options_box():
     ml_on = st.checkbox(
         "Train new models", key=ConfigStateKeys.IsMachineLearning, value=True
     )
@@ -154,3 +155,111 @@ def plot_options_box():
             key=PlotOptionKeys.SavePlots,
             value=True,
         )
+
+
+@st.experimental_fragment
+def fi_options_box():
+    fi_on = st.checkbox("Feature Importance", key=ConfigStateKeys.IsFeatureImportance)
+    if fi_on:
+        with st.expander("Feature importance options"):
+            st.write("Global feature importance methods:")
+            global_methods = {}
+            use_permutation = st.checkbox("Permutation Importance")
+            global_methods["Permutation Importance"] = {
+                "type": "global",
+                "value": use_permutation,
+            }
+            use_shap = st.checkbox("SHAP")
+            global_methods["SHAP"] = {"type": "global", "value": use_shap}
+            st.session_state[ConfigStateKeys.GlobalFeatureImportanceMethods] = (
+                global_methods
+            )
+
+            st.write("Feature importance ensemble methods:")
+            ensemble_methods = {}
+            use_mean = st.checkbox("Mean")
+            ensemble_methods["Mean"] = use_mean
+            use_majority = st.checkbox("Majority vote")
+            ensemble_methods["Majority Vote"] = use_majority
+            st.session_state[ConfigStateKeys.EnsembleMethods] = ensemble_methods
+
+            st.write("Local feature importance methods:")
+            local_importance_methods = {}
+            use_lime = st.checkbox("LIME")
+            local_importance_methods["LIME"] = {"type": "local", "value": use_lime}
+            use_local_shap = st.checkbox("Local SHAP")
+            local_importance_methods["SHAP"] = {
+                "type": "local",
+                "value": use_local_shap,
+            }
+            st.session_state[ConfigStateKeys.LocalImportanceFeatures] = (
+                local_importance_methods
+            )
+
+            st.number_input(
+                "Number of most important features to plot",
+                min_value=1,
+                value=10,
+                key=ConfigStateKeys.NumberOfImportantFeatures,
+            )
+            st.selectbox(
+                "Scoring function for permutation importance",
+                [
+                    "neg_mean_absolute_error",
+                    "neg_root_mean_squared_error",
+                    "accuracy",
+                    "f1",
+                ],
+                key=ConfigStateKeys.ScoringFunction,
+            )
+            st.number_input(
+                "Number of repetitions for permutation importance",
+                min_value=1,
+                value=5,
+                key=ConfigStateKeys.NumberOfRepetitions,
+            )
+            st.slider(
+                "Percentage of data to consider for SHAP",
+                0,
+                100,
+                100,
+                key=ConfigStateKeys.ShapDataPercentage,
+            )
+            st.checkbox(
+                "Save feature importance options",
+                key=ConfigStateKeys.SaveFeatureImportanceOptions,
+            )
+            st.checkbox(
+                "Save feature importance results",
+                key=ConfigStateKeys.SaveFeatureImportanceResults,
+            )
+
+            # Fuzzy Options
+            st.subheader("Fuzzy Options")
+            fuzzy_feature_selection = st.checkbox(
+                "Fuzzy feature selection", key=ConfigStateKeys.FuzzyFeatureSelection
+            )
+            if fuzzy_feature_selection:
+                st.number_input(
+                    "Number of features for fuzzy interpretation",
+                    min_value=1,
+                    value=5,
+                    key=ConfigStateKeys.NumberOfFuzzyFeatures,
+                )
+                st.checkbox("Granular features", key=ConfigStateKeys.GranularFeatures)
+                st.number_input(
+                    "Number of clusters for target variable",
+                    min_value=2,
+                    value=3,
+                    key=ConfigStateKeys.NumberOfClusters,
+                )
+                st.text_input(
+                    "Names of clusters (comma-separated)",
+                    key=ConfigStateKeys.ClusterNames,
+                )
+                st.number_input(
+                    "Number of top occurring rules for fuzzy synergy analysis",
+                    min_value=1,
+                    value=10,
+                    key=ConfigStateKeys.NumberOfTopRules,
+                )
