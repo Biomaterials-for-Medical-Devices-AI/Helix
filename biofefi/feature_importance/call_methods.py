@@ -76,25 +76,29 @@ def save_importance_results(
             save_dir.mkdir(exist_ok=True, parents=True)
         # Plot bar plot - sort values in descending order and plot top n features
         # rotate x-axis labels for better readability
+        fig, ax = plt.subplots(layout="constrained")
+
         feature_importance_df.sort_values(by=0, ascending=False).head(
             opt.num_features_to_plot
-        ).plot(kind="bar", legend=False)
+        ).plot(
+            kind="bar",
+            legend=False,
+            ax=ax,
+            title=f"{feature_importance_type} - {model_type}",
+            ylabel="Importance",
+        )
         # rotate x-axis labels for better readability
-        plt.xticks(rotation=opt.angle_rotate_xaxis_labels)
-        plt.title(f"{feature_importance_type} - {model_type}")
-        plt.ylabel("Importance")
-        plt.savefig(save_dir / f"{model_type}-bar.png")
-        # plt.show()
-        plt.close()
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=opt.angle_rotate_xaxis_labels)
+        fig.savefig(save_dir / f"{model_type}-bar.png")
 
         if feature_importance_type == "SHAP":
             # Plot bee swarm plot
+            fig, ax = plt.subplots(layout="constrained")
+            ax.set_title(f"{feature_importance_type} - {model_type}")
             shap.plots.beeswarm(
                 shap_values, max_display=opt.num_features_to_plot, show=False
             )
-            plt.yticks(rotation=opt.angle_rotate_yaxis_labels)
-            plt.savefig(save_dir / f"{model_type}-beeswarm.png")
-            # plt.show()
+            fig.savefig(save_dir / f"{model_type}-beeswarm.png")
 
     if opt.save_feature_importance_plots and importance_type == "fuzzy":
         # save fuzzy sets
