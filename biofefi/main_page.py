@@ -1,5 +1,6 @@
 import streamlit as st
 from biofefi.components.images.logos import header_logo, sidebar_logo
+from biofefi.components.navigation import navbar
 
 st.set_page_config(
     page_title="BioFEFI",
@@ -7,6 +8,7 @@ st.set_page_config(
 )
 header_logo()
 sidebar_logo()
+navbar()
 
 st.write("# Welcome")
 st.write(
@@ -21,8 +23,9 @@ st.write(
 
     Your models can then be evaluated by general measures, such as **accuracy**, and by individual feature metrics,
     such as **SHAP**.
+
+    ### Using BioFEFI
+
+    In order to create a **new experiment** ⚗️, go to the sidebar on the **left** and click **"New experiment"**.
     """
 )
-col1, col2 = st.columns(2)
-col1.button("New experiment", use_container_width=True, type="primary")
-col2.button("My experiments", use_container_width=True)

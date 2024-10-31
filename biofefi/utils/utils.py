@@ -1,4 +1,5 @@
 import inspect
+from pathlib import Path
 import random
 import argparse
 import os
@@ -75,3 +76,15 @@ def log_options(log_directory, opt: argparse.Namespace):
     with open(log_path, "w") as f:
         for arg in vars(opt):
             f.write(f"{arg}: {getattr(opt, arg)}\n")
+
+
+def create_directory(path: Path):
+    """Create a directory at the specified path. If intermediate directories
+    don't already exist, create them. If the path already exists, no action
+    is taken.
+
+    Args:
+        path (Path): The path the directory to create.
+    """
+    if not os.path.exists(path):
+        os.makedirs(path, exist_ok=True)

@@ -96,3 +96,16 @@ def fuzzy_result_dir(experiment_path: str) -> Path:
         Path: The full path for the Fuzzy result directory.
     """
     return experiment_path / "results" / "fuzzy"
+
+
+def biofefi_experiments_base_dir() -> Path:
+    """Return the path the base directory of all BioFEFI experiments.
+
+    This will be `/Users/<username>/BioFEFIExperiments` on MacOS,
+    `/home/<username>/BioFEFIExperiments` on Linux, and
+    `C:\\Users\\<username>\\BioFEFIExperiments` on Windows.
+
+    Returns:
+        Path: The path to the BioFEFI experiments base directory.
+    """
+    return Path.home() / "BioFEFIExperiments"
