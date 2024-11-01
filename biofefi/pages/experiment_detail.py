@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 import streamlit as st
 
 from biofefi.components.images.logos import sidebar_logo
@@ -26,12 +25,15 @@ navbar()
 
 header = st.session_state.get(ViewExperimentKeys.ExperimentName)
 
-st.header(header if header is not None else "View experiment")
+st.header(header if header is not None else "View Experiment")
 st.write(
     """
-    On this page, you can select a completed experiment to view.
+    On this page, you can select one of your experiments to view.
 
-    Select an experiment in the dropdown below to see your results.
+    Use the dropdown below to see the details of your experiment.
+
+    If you have not run any analyses yet, your experiment will be empty.
+    Go to the sidebar on the **left** and select an analysis to run.
     """
 )
 
@@ -47,7 +49,6 @@ experiment_selector(choices)
 
 if experiment_name := st.session_state.get(ViewExperimentKeys.ExperimentName):
     experiment_name = base_dir / experiment_name
-    st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
     ml_plots = ml_plot_dir(experiment_name)
     if ml_plots.exists():
         plot_box(ml_plots, "Machine learning plots")
@@ -57,4 +58,8 @@ if experiment_name := st.session_state.get(ViewExperimentKeys.ExperimentName):
     fuzzy_plots = fuzzy_plot_dir(experiment_name)
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")
-    log_box()
+    try:
+        st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
+        log_box()
+    except NotADirectoryError:
+        pass

@@ -38,7 +38,7 @@ st.set_page_config(
 )
 navbar()
 
-st.header("New experiment")
+st.header("New Experiment")
 st.write(
     """
     Here you can start a new experiment. Once you create one, you will be able to select it
