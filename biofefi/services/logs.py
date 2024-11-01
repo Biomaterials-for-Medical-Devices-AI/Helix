@@ -24,6 +24,5 @@ def get_logs(log_dir: Path) -> str:
 
     with open(files[index_most_recent], "r") as log:
         text = log.read()
-        print(f"The text is: {text}")
 
     return text
