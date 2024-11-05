@@ -1,6 +1,6 @@
 import streamlit as st
 from pathlib import Path
-from biofefi.options.enums import ViewExperimentKeys
+from biofefi.options.enums import ViewExperimentKeys, ConfigStateKeys
 from biofefi.options.file_paths import biofefi_experiments_base_dir
 
 
@@ -39,5 +39,5 @@ def model_selector(options: list) -> Path:
         options=options,
         default=None,
         placeholder="Models to explain",
-        key=ViewExperimentKeys.ExplainModels,
+        key=ConfigStateKeys.ExplainModels,
     )
