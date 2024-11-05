@@ -3,6 +3,7 @@ from pathlib import Path
 import random
 import argparse
 import os
+from multiprocessing import Process
 
 
 import numpy as np
@@ -88,3 +89,28 @@ def create_directory(path: Path):
     """
     if not os.path.exists(path):
         os.makedirs(path, exist_ok=True)
+
+
+def save_upload(file_to_upload: str, content: str, mode: str = "w"):
+    """Save a file given to the UI to disk.
+
+    Args:
+        file_to_upload (str): The name of the file to save.
+        content (str): The contents to save to the file.
+        mode (str): The mode to write the file. e.g. "w", "w+", "wb", etc.
+    """
+    base_dir = os.path.dirname(file_to_upload)
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+    with open(file_to_upload, mode) as f:
+        f.write(content)
+
+
+def cancel_pipeline(p: Process):
+    """Cancel a running pipeline.
+
+    Args:
+        p (Process): the process running the pipeline to cancel.
+    """
+    if p.is_alive():
+        p.terminate()
