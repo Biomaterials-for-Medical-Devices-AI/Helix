@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import streamlit as st
 
@@ -42,7 +43,7 @@ def _save_directory_selector() -> Path:
 
     col1, col2 = st.columns([0.3, 0.7], vertical_alignment="bottom")
 
-    col1.text(f"{root}/", help="Your experiment will be saved here")
+    col1.text(f"{root}{os.path.sep}", help="Your experiment will be saved here")
     sub_dir = col2.text_input("Name of the experiment", placeholder="e.g. MyExperiment")
 
     return root / sub_dir

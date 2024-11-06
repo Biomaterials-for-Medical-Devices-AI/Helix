@@ -14,6 +14,55 @@ The data should be in a format where all columns except the last one are input f
 
 ## Installation
 
+**N.B.:** You may need to make sure you have OpenMP installed on your machine before you can install BioFEFI.
+
+On Mac:
+```shell
+brew install libomp
+```
+
+On Linux (Ubuntu)
+```shell
+sudo apt install libomp-dev
+```
+
+On Windows, this doesn't seem to be a problem. You should be able to proceed with installation.
+
+### Users
+Users can install BioFEFI using `pip` like so:
+
+On Mac/Linux
+```shell
+# Create a virtual environment with venv
+python -m venv <path/to/env>
+source <path/to/env>/bin/activate
+pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+
+# -- OR --
+
+# Create a virtual environment with conda
+conda create -n <env_name> python=3.11
+conda activate <env_name>
+pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+```
+
+On Windows
+```shell
+# Create a virtual environment with venv
+python -m venv <path\to\env>
+<path/to/env>\Scripts\activate
+pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+
+# -- OR --
+
+# Create a virtual environment with conda
+conda create -n <env_name> python=3.11
+conda activate <env_name>
+pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+```
+
+### Developers
+
 You can obtain a copy of the latest code by downloading it from Github. You can do this by donwloading the ZIP file using the button shown below:
 ![Download ZIP](static/download-zip.png)
 
@@ -22,41 +71,47 @@ Or by using the git command in the terminal:
 git clone https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
 ```
 
-You then need to set up a Python virtual environment. In the `BioFEFI` directory that you downloaded, use the following command in the terminal:
+You then need to set up a Python virtual environment. In the `BioFEFI` directory that you downloaded, use the following commands in the terminal:
 
-For MacOS / Linux
+On Mac/Linux
 ```shell
-# create a virtual environment
+# Create a virtual environment with venv
 python -m venv .venv
-
-# activate the virtual environment
 source .venv/bin/activate
-
-# add poetry to the virtual environment
 pip install poetry
+poetry install
 
-# install the code and its dependencies in the virtual environment
+# -- OR --
+
+# Create a virtual environment with conda
+conda create -n <env_name> python=3.11
+conda activate <env_name>
+pip install poetry
 poetry install
 ```
 
-For Windows
+On Windows
 ```shell
-# create a virtual environment
+# Create a virtual environment with venv
 python -m venv .venv
-
-# activate the virtual environment
-source .venv\Scripts\activate
-
-# add poetry to the virtual environment
+.venv\Scripts\activate
 pip install poetry
+poetry install
 
-# install the code and its dependencies in the virtual environment
+# -- OR --
+
+# Create a virtual environment with conda
+conda create -n <env_name> python=3.11
+conda activate <env_name>
+pip install poetry
 poetry install
 ```
 
-**NB:** if `python` doesn't work, try using `python3` instead.
+## Running the app
 
-## Running the app (users)
+Remember to activate the virtual environment before running the app, if you haven't already (see [Installation](#installation)). The app will open in your web browser. Or you can follow follow this link to view your app http://localhost:8501.
+
+### Users
 
 If the installation was successful, you should be able to run the app with the following command:
 
@@ -64,15 +119,13 @@ If the installation was successful, you should be able to run the app with the f
 biofefi
 ```
 
-## Running the app (developers)
+### Developers
 
 If the installation was successful, you should be able to run the app. In the `BioFEFI/biofefi` directory run the following command:
 
 ```bash
-streamlit run ui.py
+poetry run biofefi
 ```
-
-Remember to activate the virtual environment before running the app, if you haven't already (see [Installation](#installation)). The app will open in your web browser. Or you can follow follow this link to view your app http://localhost:8501.
 
 You will see the following screen:
 ![main screen](static/main-screen.png)
