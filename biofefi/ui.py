@@ -34,9 +34,8 @@ from biofefi.options.file_paths import (
     ml_model_dir,
 )
 from biofefi.utils.logging_utils import Logger, close_logger
-from biofefi.utils.utils import set_seed
+from biofefi.utils.utils import save_upload, set_seed
 import streamlit as st
-import os
 
 
 def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
@@ -144,21 +143,6 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
     return fuzzy_opt, fi_opt, ml_opt, st.session_state[ConfigStateKeys.ExperimentName]
 
 
-def save_upload(file_to_upload: str, content: str, mode: str = "w"):
-    """Save a file given to the UI to disk.
-
-    Args:
-        file_to_upload (str): The name of the file to save.
-        content (str): The contents to save to the file.
-        mode (str): The mode to write the file. e.g. "w", "w+", "wb", etc.
-    """
-    base_dir = os.path.dirname(file_to_upload)
-    if not os.path.exists(base_dir):
-        os.makedirs(base_dir)
-    with open(file_to_upload, mode) as f:
-        f.write(content)
-
-
 def pipeline(
     fuzzy_opts: Namespace, fi_opts: Namespace, ml_opts: Namespace, experiment_name: str
 ):
@@ -246,7 +230,7 @@ if (
 ) and st.session_state.get(ExecutionStateKeys.RunPipeline, False):
     experiment_name = st.session_state.get(ConfigStateKeys.ExperimentName)
     upload_path = uploaded_file_path(uploaded_file.name, experiment_name)
-    save_upload(upload_path, uploaded_file.read().decode("utf-8"))
+    save_upload(upload_path, uploaded_file.read().decode("utf-8-sig"))
     if uploaded_models := st.session_state.get(ConfigStateKeys.UploadedModels):
         for m in uploaded_models:
             upload_path = ml_model_dir(experiment_name) / m.name
