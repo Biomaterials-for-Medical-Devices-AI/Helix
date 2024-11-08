@@ -1,7 +1,6 @@
 import subprocess
 import os
 import logging
-import sys
 import shutil
 from pathlib import Path
 from biofefi.utils.utils import create_directory
