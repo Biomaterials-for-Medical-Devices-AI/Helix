@@ -3,7 +3,6 @@ import streamlit as st
 
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.navigation import navbar
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.plots import plot_box
 from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
@@ -21,7 +20,6 @@ st.set_page_config(
     page_title="View Experiment",
     page_icon=sidebar_logo(),
 )
-navbar()
 
 header = st.session_state.get(ViewExperimentKeys.ExperimentName)
 

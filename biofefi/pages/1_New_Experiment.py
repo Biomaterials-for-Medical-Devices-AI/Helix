@@ -2,7 +2,6 @@ import os
 from pathlib import Path
 import streamlit as st
 from biofefi.components.images.logos import sidebar_logo
-from biofefi.components.navigation import navbar
 from biofefi.options.enums import ConfigStateKeys
 from biofefi.options.file_paths import biofefi_experiments_base_dir
 from biofefi.utils.utils import create_directory
@@ -37,7 +36,6 @@ st.set_page_config(
     page_title="New Experiment",
     page_icon=sidebar_logo(),
 )
-navbar()
 
 st.header("New Experiment")
 st.write(

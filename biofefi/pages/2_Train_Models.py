@@ -5,7 +5,6 @@ from biofefi.components.experiments import experiment_selector
 from biofefi.components.forms import ml_options_form
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.navigation import navbar
 from biofefi.components.plots import plot_box
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
@@ -107,7 +106,6 @@ st.set_page_config(
     page_icon=sidebar_logo(),
 )
 sidebar_logo()
-navbar()
 
 st.header("Train Models")
 st.write(

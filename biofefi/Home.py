@@ -1,6 +1,5 @@
 import streamlit as st
 from biofefi.components.images.logos import header_logo, sidebar_logo
-from biofefi.components.navigation import navbar
 
 st.set_page_config(
     page_title="BioFEFI",
@@ -8,7 +7,6 @@ st.set_page_config(
 )
 header_logo()
 sidebar_logo()
-navbar()
 
 st.write("# Welcome")
 st.write(

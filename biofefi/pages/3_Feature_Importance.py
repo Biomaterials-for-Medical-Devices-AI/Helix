@@ -35,7 +35,6 @@ from biofefi.options.file_paths import (
 )
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import set_seed, cancel_pipeline
-from biofefi.components.navigation import navbar
 from biofefi.components.experiments import experiment_selector, model_selector
 import streamlit as st
 import os
@@ -175,7 +174,6 @@ st.set_page_config(
     page_icon=sidebar_logo(),
 )
 
-navbar()
 
 st.header("Feature Importance")
 st.write(
