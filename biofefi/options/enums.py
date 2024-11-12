@@ -28,6 +28,7 @@ class ConfigStateKeys(StrEnum):
     EnsembleMethods = "ensemble_methods"
     GlobalFeatureImportanceMethods = "global_feature_importance_methods"
     ExplainModels = "explain_models"
+    ExplainAllModels = "explain_all_models"
     # Fuzzy options
     FuzzyFeatureSelection = "fuzzy_feature_selection"
     NumberOfFuzzyFeatures = "num_fuzzy_features"

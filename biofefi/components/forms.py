@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import streamlit as st
-
+from biofefi.components.configuration import plot_options_box
 from biofefi.options.choices import PROBLEM_TYPES, SVM_KERNELS
 from biofefi.options.enums import ConfigStateKeys, ExecutionStateKeys, PlotOptionKeys
 
@@ -175,19 +175,6 @@ def fi_options_form():
         key=ConfigStateKeys.ShapDataPercentage,
     )
 
-    # Save options
-    st.checkbox(
-        "Save feature importance options",
-        help="Save the selected configuration of feature importance methods.",
-        key=ConfigStateKeys.SaveFeatureImportanceOptions,
-    )
-
-    st.checkbox(
-        "Save feature importance results",
-        help="Store the results from feature importance computations.",
-        key=ConfigStateKeys.SaveFeatureImportanceResults,
-    )
-
     # Fuzzy Options
     st.write("### Fuzzy Feature Selection Options")
     st.write(
@@ -238,6 +225,29 @@ def fi_options_form():
             help="Set the number of most frequent fuzzy rules for synergy analysis.",
             key=ConfigStateKeys.NumberOfTopRules,
         )
+
+    st.subheader("Select outputs to save")
+
+    # Save options
+    st.toggle(
+        "Save feature importance options",
+        help="Save the selected configuration of feature importance methods.",
+        key=ConfigStateKeys.SaveFeatureImportanceOptions,
+    )
+
+    st.toggle(
+        "Save feature importance results",
+        help="Store the results from feature importance computations.",
+        key=ConfigStateKeys.SaveFeatureImportanceResults,
+    )
+
+    st.text_input(
+        "Dependent variable name",
+        help="Specify the name of the dependent variable for labelling plots.",
+        key=ConfigStateKeys.DependentVariableName,
+    )
+
+    plot_options_box()
 
 
 @st.experimental_fragment
