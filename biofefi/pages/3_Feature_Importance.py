@@ -203,7 +203,7 @@ def pipeline(
             fuzzy_logger = fuzzy_logger_instance.make_logger()
             fuzzy_rules = fuzzy_interpretation.run(
                 fuzzy_opts,
-                fuzzy_opts,
+                fi_opts,
                 data,
                 trained_models,
                 ensemble_results,

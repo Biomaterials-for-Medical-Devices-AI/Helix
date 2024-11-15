@@ -34,6 +34,8 @@ def calculate_ensemble_mean(
     # Add the feature names as index to the ensemble_mean dataframe
     ensemble_mean.index = result.index
 
+    logger.info(f"Mean ensemble importance calculated...")
+
     # Return the DataFrame
     return ensemble_mean
 
@@ -83,6 +85,8 @@ def calculate_ensemble_majorityvote(
     ensemble_majorityvote = (
         ensemble_majorityvote.where(final_majority_votes, 0).mean(axis=1).to_frame()
     )
+
+    logger.info(f"Majority Vote ensemble importance calculated...")
 
     return ensemble_majorityvote
 

@@ -16,7 +16,9 @@ def calculate_permutation_importance(model, X, y, opt: argparse.Namespace, logge
     """
     from sklearn.inspection import permutation_importance
 
-    logger.info(f"Calculating Permutation Importance..")
+    logger.info(
+        f"Calculating Permutation Importance for {model.__class__.__name__} model.."
+    )
 
     # Use permutation importance in sklearn.inspection to calculate feature importance
     permutation_importance_results = permutation_importance(
@@ -31,6 +33,8 @@ def calculate_permutation_importance(model, X, y, opt: argparse.Namespace, logge
     permutation_importance_df = pd.DataFrame(
         permutation_importance_results.importances_mean, index=X.columns
     )
+
+    logger.info(f"Permutation Importance Analysis Completed..")
 
     # Return the DataFrame
     return permutation_importance_df
@@ -48,7 +52,7 @@ def calculate_shap_values(model, X, shap_type, opt: argparse.Namespace, logger):
     """
     import shap
 
-    logger.info(f"Calculating SHAP Importance..")
+    logger.info(f"Calculating SHAP Importance for {model.__class__.__name__} model..")
 
     if opt.shap_reduce_data == 100:
         explainer = shap.Explainer(model.predict, X)
@@ -70,6 +74,8 @@ def calculate_shap_values(model, X, shap_type, opt: argparse.Namespace, logger):
     else:
         raise ValueError("SHAP type must be either local or global")
 
+    logger.info(f"SHAP Importance Analysis Completed..")
+
     # Return the DataFrame
     return shap_df, shap_values
 
@@ -84,7 +90,7 @@ def calculate_lime_values(model, X, opt: argparse.Namespace, logger):
     Returns:
         lime_df: Average LIME values
     """
-    logger.info(f"Calculating LIME Importance..")
+    logger.info(f"Calculating LIME Importance for {model.__class__.__name__} model..")
     # Use LIME to explain predictions
     from lime.lime_tabular import LimeTabularExplainer
     import warnings
@@ -110,5 +116,7 @@ def calculate_lime_values(model, X, opt: argparse.Namespace, logger):
     lr_lime_values = pd.DataFrame(coefficients, columns=X.columns, index=X.index)
 
     # TODO: scale coefficients between 0 and +1 (low to high impact)
+
+    logger.info(f"LIME Importance Analysis Completed..")
 
     return lr_lime_values

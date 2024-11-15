@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from biofefi.feature_importance.call_methods import save_importance_results
 from biofefi.feature_importance.ensemble_methods import (
@@ -56,9 +57,11 @@ class Interpreter:
             dict: Dictionary of feature importance results.
         """
         feature_importance_results = {}
-
-        if not any(self._feature_importance_methods.values()):
+        if not any(
+            sub_dict["value"] for sub_dict in self._feature_importance_methods.values()
+        ):
             self._logger.info("No feature importance methods selected")
+            self._logger.info("Skipping global feature importance methods")
         else:
             for model_type, model in models.items():
                 self._logger.info(
@@ -123,9 +126,11 @@ class Interpreter:
             dict: Dictionary of feature importance results.
         """
         feature_importance_results = {}
-
-        if not any(self._local_importance_methods.values()):
+        if not any(
+            sub_dict["value"] for sub_dict in self._local_importance_methods.values()
+        ):
             self._logger.info("No local feature importance methods selected")
+            self._logger.info("Skipping local feature importance methods")
         else:
             for model_type, model in models.items():
                 self._logger.info(
@@ -189,6 +194,7 @@ class Interpreter:
 
         if not any(self._feature_importance_ensemble.values()):
             self._logger.info("No ensemble feature importance method selected")
+            self._logger.info("Skipping ensemble feature importance analysis")
         else:
             self._logger.info("Ensemble feature importance methods...")
             for ensemble_type, value in self._feature_importance_ensemble.items():
@@ -223,6 +229,8 @@ class Interpreter:
                         )
                         ensemble_results[ensemble_type] = majority_vote_results
 
-        self._logger.info(f"Ensemble feature importance results: \n{ensemble_results}")
+            self._logger.info(
+                f"Ensemble feature importance results: {os.linesep}{ensemble_results}"
+            )
 
         return ensemble_results
