@@ -24,8 +24,10 @@ from biofefi.options.enums import (
     ExecutionStateKeys,
     ProblemTypes,
     PlotOptionKeys,
+    ViewExperimentKeys,
 )
 from biofefi.options.file_paths import (
+    biofefi_experiments_base_dir,
     fi_plot_dir,
     fuzzy_plot_dir,
     uploaded_file_path,
@@ -119,7 +121,8 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
     ml_opt.initialize()
     path_to_data = uploaded_file_path(
         st.session_state[ConfigStateKeys.UploadedFileName].name,
-        st.session_state[ConfigStateKeys.ExperimentName],
+        biofefi_experiments_base_dir()
+        / st.session_state[ConfigStateKeys.ExperimentName],
     )
     ml_opt.parser.set_defaults(
         n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
@@ -130,7 +133,15 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
         data_path=path_to_data,
         data_split=st.session_state[ConfigStateKeys.DataSplit],
         model_types=st.session_state[ConfigStateKeys.ModelTypes],
-        ml_log_dir=ml_plot_dir(st.session_state[ConfigStateKeys.ExperimentName]),
+        ml_plot_dir=ml_plot_dir(
+            biofefi_experiments_base_dir()
+            / st.session_state[ConfigStateKeys.ExperimentName]
+        ),
+        ml_log_dir=log_dir(
+            biofefi_experiments_base_dir()
+            / st.session_state[ConfigStateKeys.ExperimentName]
+        )
+        / "ml",
         problem_type=st.session_state.get(
             ConfigStateKeys.ProblemType, ProblemTypes.Auto
         ).lower(),
@@ -157,36 +168,59 @@ def pipeline(
     """
     seed = ml_opts.random_state
     set_seed(seed)
-    logger_instance = Logger(log_dir(experiment_name))
-    logger = logger_instance.make_logger()
+    ml_logger_instance = Logger(
+        log_dir(biofefi_experiments_base_dir() / experiment_name) / "ml"
+    )
+    ml_logger = ml_logger_instance.make_logger()
 
-    data = DataBuilder(ml_opts, logger).ingest()
+    data = DataBuilder(ml_opts, ml_logger).ingest()
 
     # Machine learning
     if ml_opts.is_machine_learning:
-        trained_models = train.run(ml_opts, data, logger)
+        trained_models = train.run(ml_opts, data, ml_logger)
         if ml_opts.save_models:
             for model_name in trained_models:
                 for i, model in enumerate(trained_models[model_name]):
-                    save_path = ml_model_dir(experiment_name) / f"{model_name}-{i}.pkl"
+                    save_path = (
+                        ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
+                        / f"{model_name}-{i}.pkl"
+                    )
                     save_model(model, save_path)
     else:
-        trained_models = load_models(ml_model_dir(experiment_name))
+        trained_models = load_models(
+            ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
+        )
+
+    close_logger(ml_logger_instance, ml_logger)
 
     # Feature importance
     if fi_opts.is_feature_importance:
-        gloabl_importance_results, local_importance_results, ensemble_results = (
-            feature_importance.run(fi_opts, data, trained_models, logger)
+        fi_logger_instance = Logger(
+            log_dir(biofefi_experiments_base_dir() / experiment_name) / "fi"
         )
+        fi_logger = fi_logger_instance.make_logger()
+        gloabl_importance_results, local_importance_results, ensemble_results = (
+            feature_importance.run(fi_opts, data, trained_models, fi_logger)
+        )
+
+        close_logger(fi_logger_instance, fi_logger)
 
         # Fuzzy interpretation
         if fuzzy_opts.fuzzy_feature_selection:
+            fuzzy_logger_instance = Logger(
+                log_dir(biofefi_experiments_base_dir() / experiment_name) / "fuzzy"
+            )
+            fuzzy_logger = fuzzy_logger_instance.make_logger()
             fuzzy_rules = fuzzy_interpretation.run(
-                fuzzy_opts, ml_opts, data, trained_models, ensemble_results, logger
+                fuzzy_opts,
+                ml_opts,
+                data,
+                trained_models,
+                ensemble_results,
+                fuzzy_logger,
             )
 
-    # Close the logger
-    close_logger(logger_instance, logger)
+            close_logger(fuzzy_logger_instance, fuzzy_logger)
 
 
 def cancel_pipeline(p: Process):
@@ -229,11 +263,15 @@ if (
     uploaded_file := st.session_state.get(ConfigStateKeys.UploadedFileName)
 ) and st.session_state.get(ExecutionStateKeys.RunPipeline, False):
     experiment_name = st.session_state.get(ConfigStateKeys.ExperimentName)
-    upload_path = uploaded_file_path(uploaded_file.name, experiment_name)
+    upload_path = uploaded_file_path(
+        uploaded_file.name, biofefi_experiments_base_dir() / experiment_name
+    )
     save_upload(upload_path, uploaded_file.read().decode("utf-8-sig"))
     if uploaded_models := st.session_state.get(ConfigStateKeys.UploadedModels):
         for m in uploaded_models:
-            upload_path = ml_model_dir(experiment_name) / m.name
+            upload_path = (
+                ml_model_dir(biofefi_experiments_base_dir() / experiment_name) / m.name
+            )
             save_upload(upload_path, m.read(), "wb")
     config = build_configuration()
     process = Process(target=pipeline, args=config, daemon=True)
@@ -242,14 +280,39 @@ if (
     with st.spinner("Running pipeline..."):
         # wait for the process to finish or be cancelled
         process.join()
-    st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
-    log_box()
-    ml_plots = ml_plot_dir(experiment_name)
+    try:
+        st.session_state[ConfigStateKeys.MLLogBox] = get_logs(
+            log_dir(
+                biofefi_experiments_base_dir()
+                / st.session_state[ConfigStateKeys.ExperimentName]
+            )
+            / "ml"
+        )
+        st.session_state[ConfigStateKeys.FILogBox] = get_logs(
+            log_dir(
+                biofefi_experiments_base_dir()
+                / st.session_state[ConfigStateKeys.ExperimentName]
+            )
+            / "fi"
+        )
+        st.session_state[ConfigStateKeys.FuzzyLogBox] = get_logs(
+            log_dir(
+                biofefi_experiments_base_dir()
+                / st.session_state[ConfigStateKeys.ExperimentName]
+            )
+            / "fuzzy"
+        )
+        log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
+        log_box(box_title="Feature Importance Logs", key=ConfigStateKeys.FILogBox)
+        log_box(box_title="Fuzzy FI Logs", key=ConfigStateKeys.FuzzyLogBox)
+    except NotADirectoryError:
+        pass
+    ml_plots = ml_plot_dir(biofefi_experiments_base_dir() / experiment_name)
     if ml_plots.exists():
         plot_box(ml_plots, "Machine learning plots")
-    fi_plots = fi_plot_dir(experiment_name)
+    fi_plots = fi_plot_dir(biofefi_experiments_base_dir() / experiment_name)
     if fi_plots.exists():
         plot_box(fi_plots, "Feature importance plots")
-    fuzzy_plots = fuzzy_plot_dir(experiment_name)
+    fuzzy_plots = fuzzy_plot_dir(biofefi_experiments_base_dir() / experiment_name)
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")

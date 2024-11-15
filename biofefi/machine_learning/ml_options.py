@@ -98,6 +98,13 @@ class MLOptions(BaseOptions):
             help="Path to the directory to store logs",
             required=False,
         ),
+        self.parser.add_argument(
+            "--ml_plot_dir",
+            type=str,
+            default="ml",
+            help="Path to the directory to store plots",
+            required=False,
+        ),
 
         ######## New Parameters to be added above this line ########
 

@@ -43,21 +43,30 @@ choices = filter(lambda x: not x.startswith("."), choices)
 # Filter out files
 choices = filter(lambda x: os.path.isdir(os.path.join(base_dir, x)), choices)
 
-experiment_selector(choices)
-
-if experiment_name := st.session_state.get(ViewExperimentKeys.ExperimentName):
-    experiment_name = base_dir / experiment_name
-    ml_plots = ml_plot_dir(experiment_name)
+experiment_name = experiment_selector(choices)
+if experiment_name:
+    experiment_path = base_dir / experiment_name
+    ml_plots = ml_plot_dir(experiment_path)
     if ml_plots.exists():
         plot_box(ml_plots, "Machine learning plots")
-    fi_plots = fi_plot_dir(experiment_name)
+    fi_plots = fi_plot_dir(experiment_path)
     if fi_plots.exists():
         plot_box(fi_plots, "Feature importance plots")
-    fuzzy_plots = fuzzy_plot_dir(experiment_name)
+    fuzzy_plots = fuzzy_plot_dir(experiment_path)
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")
     try:
-        st.session_state[ConfigStateKeys.LogBox] = get_logs(log_dir(experiment_name))
-        log_box()
+        st.session_state[ConfigStateKeys.MLLogBox] = get_logs(
+            log_dir(experiment_path) / "ml"
+        )
+        st.session_state[ConfigStateKeys.FILogBox] = get_logs(
+            log_dir(experiment_path) / "fi"
+        )
+        st.session_state[ConfigStateKeys.FuzzyLogBox] = get_logs(
+            log_dir(experiment_path) / "fuzzy"
+        )
+        log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
+        log_box(box_title="Feature Importance Logs", key=ConfigStateKeys.FILogBox)
+        log_box(box_title="Fuzzy FI Logs", key=ConfigStateKeys.FuzzyLogBox)
     except NotADirectoryError:
         pass

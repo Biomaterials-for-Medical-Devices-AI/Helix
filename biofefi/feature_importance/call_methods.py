@@ -4,6 +4,8 @@ import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 from biofefi.options.file_paths import (
+    biofefi_experiments_base_dir,
+    fi_options_dir,
     fi_plot_dir,
     fi_result_dir,
     fuzzy_plot_dir,
@@ -52,26 +54,9 @@ def save_importance_results(
     """
     logger.info(f"Saving importance results and plots of {feature_importance_type}...")
 
-    # Create results directory if it doesn't exist
-    if importance_type == "fuzzy":
-        # directory for fuzzy feature importance results
-        directory = f"./log/{opt.experiment_name}/{opt.fuzzy_log_dir}/results/"
-    elif model_type == None:
-        # directory for ensemble feature importance results
-        directory = f"./log/{opt.experiment_name}/{opt.fi_log_dir}/results/Ensemble_importances/{feature_importance_type}/"
-    elif importance_type == "local":
-        # directory for local model feature importance results
-        directory = f"./log/{opt.experiment_name}/{opt.fi_log_dir}/results/{model_type}/local_feature_importances/{feature_importance_type}/"
-    else:
-        # directory for individual model feature importance results
-        directory = f"./log/{opt.experiment_name}/{opt.fi_log_dir}/results/{model_type}/global_feature_importances/{feature_importance_type}/"
-
-    if not os.path.exists(directory):
-        os.makedirs(directory)
-
     # Save plots when the flag is set to True and importance type is not fuzzy
     if opt.save_feature_importance_plots and importance_type != "fuzzy":
-        save_dir = fi_plot_dir(opt.experiment_name)
+        save_dir = fi_plot_dir(biofefi_experiments_base_dir() / opt.experiment_name)
         if not save_dir.exists():
             save_dir.mkdir(exist_ok=True, parents=True)
         # Plot bar plot - sort values in descending order and plot top n features
@@ -106,20 +91,27 @@ def save_importance_results(
 
     # Save the results to a CSV file - create folders if they don't exist
     if opt.save_feature_importance_results and importance_type != "fuzzy":
-        save_dir = fi_result_dir(opt.experiment_name)
+        save_dir = fi_result_dir(biofefi_experiments_base_dir() / opt.experiment_name)
         if not save_dir.exists():
             save_dir.mkdir(exist_ok=True, parents=True)
         feature_importance_df.to_csv(save_dir / f"{feature_importance_type}.csv")
 
     if opt.save_feature_importance_results and importance_type == "fuzzy":
-        save_dir = fuzzy_result_dir(opt.experiment_name)
+        save_dir = fuzzy_result_dir(
+            biofefi_experiments_base_dir() / opt.experiment_name
+        )
         if not save_dir.exists():
             save_dir.mkdir(exist_ok=True, parents=True)
         feature_importance_df.to_csv(save_dir / f"{feature_importance_type}.csv")
 
     # Save the metrics to a log file
     if opt.save_feature_importance_options:
-        log_options(directory, opt)
+        options_path = fi_options_dir(
+            biofefi_experiments_base_dir() / opt.experiment_name
+        )
+        if not options_path.exists():
+            options_path.mkdir(parents=True, exist_ok=True)
+        log_options(options_path, opt)
 
 
 def save_fuzzy_sets_plots(
@@ -128,7 +120,7 @@ def save_fuzzy_sets_plots(
     # Plot the membership functions
     if opt.save_fuzzy_set_plots:
         logger.info(f"Saving fuzzy set plots ...")
-        save_dir = fuzzy_plot_dir(opt.experiment_name)
+        save_dir = fuzzy_plot_dir(biofefi_experiments_base_dir() / opt.experiment_name)
         if not save_dir.exists():
             save_dir.mkdir(exist_ok=True, parents=True)
 
@@ -162,7 +154,7 @@ def save_target_clusters_plots(df_cluster, opt: argparse.Namespace, logger):
     # Plot the target clusters
     if opt.save_fuzzy_set_plots:
         logger.info(f"Saving target clusters plot ...")
-        save_dir = fuzzy_plot_dir(opt.experiment_name)
+        save_dir = fuzzy_plot_dir(biofefi_experiments_base_dir() / opt.experiment_name)
         if not save_dir.exists():
             save_dir.mkdir(exist_ok=True, parents=True)
 

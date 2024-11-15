@@ -41,7 +41,9 @@ class ConfigStateKeys(StrEnum):
     DependentVariableName = "dependent_variable_name"
     UploadedFileName = "uploaded_file_name"
     RandomSeed = "random_seed"
-    LogBox = "log_box"
+    MLLogBox = "ml_log_box"
+    FILogBox = "fi_log_box"
+    FuzzyLogBox = "fuzzy_log_box"
     UploadedModels = "uploaded_models"
 
 

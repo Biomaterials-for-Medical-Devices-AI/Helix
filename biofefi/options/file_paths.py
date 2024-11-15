@@ -74,6 +74,18 @@ def fi_result_dir(experiment_path: Path) -> Path:
     return experiment_path / "results" / "fi"
 
 
+def fi_options_dir(experiment_path: Path) -> Path:
+    """Create the full path to the directory to save Feature Importance options.
+
+    Args:
+        experiment_path (Path): The path of the experiment.
+
+    Returns:
+        Path: The full path for the Feature Importance options directory.
+    """
+    return experiment_path / "options" / "fi"
+
+
 def fuzzy_plot_dir(experiment_path: Path) -> Path:
     """Create the full path to the directory to save Fuzzy plots.
 
