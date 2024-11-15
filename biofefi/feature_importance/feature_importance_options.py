@@ -1,6 +1,8 @@
 import ast
+import matplotlib.pyplot as plt
 
 from biofefi.machine_learning.ml_options import MLOptions
+from biofefi.options.choices import PLOT_FONT_FAMILIES
 
 
 class FeatureImportanceOptions(MLOptions):
@@ -78,6 +80,38 @@ class FeatureImportanceOptions(MLOptions):
             type=int,
             default=10,
             help="Angle to rotate x-axis labels for better readability",
+        ),
+        self.parser.add_argument(
+            "--plot_axis_font_size",
+            type=int,
+            default=8,
+            help="Font size for the axis labels",
+        ),
+        self.parser.add_argument(
+            "--plot_axis_tick_size",
+            type=int,
+            default=8,
+            help="Font size for the axis ticks",
+        ),
+        self.parser.add_argument(
+            "--plot_title_font_size",
+            type=int,
+            default=20,
+            help="Font size for the plot title",
+        ),
+        self.parser.add_argument(
+            "--plot_colour_scheme",
+            type=str,
+            default="classic",
+            choices=plt.style.available,
+            help="Colour scheme for the plot",
+        ),
+        self.parser.add_argument(
+            "--plot_font_family",
+            type=str,
+            default=PLOT_FONT_FAMILIES[1],  # sans-serif
+            choices=PLOT_FONT_FAMILIES,
+            help="Colour scheme for the plot",
         ),
         self.parser.add_argument(
             "--permutation_importance_scoring",

@@ -121,3 +121,23 @@ def biofefi_experiments_base_dir() -> Path:
         Path: The path to the BioFEFI experiments base directory.
     """
     return Path.home() / "BioFEFIExperiments"
+
+
+def plot_options_path(experiment_path: str) -> Path:
+    """Return the path to an experiment's plot options.
+    The path will be to a `json` file called `plot_options.json`
+
+    Args:
+        experiment_path (str): The path of the experiment.
+
+    Returns:
+        Path: The path to the experiment's plot options.
+
+    Examples:
+    ```python
+    experiment_name = "test"
+    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    plot_options_file = plot_options_path(experiment_path)
+    ```
+    """
+    return experiment_path / "plot_options.json"

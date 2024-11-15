@@ -1,6 +1,13 @@
-from biofefi.options.choices import SVM_KERNELS, PROBLEM_TYPES, NORMALISATIONS
+from biofefi.options.choices import (
+    PLOT_FONT_FAMILIES,
+    SVM_KERNELS,
+    PROBLEM_TYPES,
+    NORMALISATIONS,
+)
 from biofefi.options.enums import ConfigStateKeys, PlotOptionKeys
 import streamlit as st
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 @st.experimental_fragment
@@ -133,28 +140,76 @@ def ml_options_box():
         st.checkbox("Save models", key=ConfigStateKeys.SaveModels)
 
 
+@st.experimental_fragment
 def plot_options_box():
     """Expander containing the options for making plots"""
     with st.expander("Plot options", expanded=False):
-        st.number_input(
+        save = st.checkbox(
+            "Save all plots",
+            key=PlotOptionKeys.SavePlots,
+            value=True,
+        )
+        rotate_x = st.number_input(
             "Angle to rotate X-axis labels",
             min_value=0,
             max_value=90,
             value=10,
             key=PlotOptionKeys.RotateXAxisLabels,
+            disabled=not save,
         )
-        st.number_input(
+        rotate_y = st.number_input(
             "Angle to rotate Y-axis labels",
             min_value=0,
             max_value=90,
             value=60,
             key=PlotOptionKeys.RotateYAxisLabels,
+            disabled=not save,
         )
-        st.checkbox(
-            "Save all plots",
-            key=PlotOptionKeys.SavePlots,
-            value=True,
+        tfs = st.number_input(
+            "Title font size",
+            min_value=20,
+            key=PlotOptionKeys.AxisFontSize,
+            disabled=not save,
         )
+        afs = st.number_input(
+            "Axis font size",
+            min_value=8,
+            key=PlotOptionKeys.TitleFontSize,
+            disabled=not save,
+        )
+        ats = st.number_input(
+            "Axis tick size",
+            min_value=8,
+            key=PlotOptionKeys.AxisTickSize,
+            disabled=not save,
+        )
+        cs = st.selectbox(
+            "Colour scheme",
+            options=plt.style.available,
+            key=PlotOptionKeys.ColourScheme,
+            disabled=not save,
+        )
+        font = st.selectbox(
+            "Font",
+            options=PLOT_FONT_FAMILIES,
+            key=PlotOptionKeys.FontFamily,
+            disabled=not save,
+            index=1,
+        )
+        if save:
+            st.write("### Preview")
+            plt.style.use(cs)
+            arr = np.random.normal(1, 1, size=100)
+            fig, ax = plt.subplots()
+            ax.hist(arr, bins=20)
+            ax.set_title("Title", fontsize=tfs, family=font)
+            ax.set_xlabel("X axis", fontsize=afs, family=font)
+            ax.set_ylabel("Y axis", fontsize=afs, family=font)
+            ax.tick_params(labelsize=ats)
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=rotate_x, family=font)
+            ax.set_yticklabels(ax.get_yticklabels(), rotation=rotate_y, family=font)
+            st.pyplot(fig, clear_figure=True)
+            fig.clear()
 
 
 @st.experimental_fragment

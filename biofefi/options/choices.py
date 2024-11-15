@@ -16,3 +16,4 @@ NORMALISATIONS = [
     Normalisations.MinMax.capitalize(),
     Normalisations.NoNormalisation.capitalize(),
 ]
+PLOT_FONT_FAMILIES = ["serif", "sans-serif", "cursive", "fantasy", "monospace"]

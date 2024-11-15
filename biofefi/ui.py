@@ -98,6 +98,10 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
             angle_rotate_yaxis_labels=st.session_state[
                 PlotOptionKeys.RotateYAxisLabels
             ],
+            plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
+            plot_axis_tick_size=st.session_state[PlotOptionKeys.AxisTickSize],
+            plot_title_font_size=st.session_state[PlotOptionKeys.TitleFontSize],
+            plot_colour_scheme=st.session_state[PlotOptionKeys.ColourScheme],
             save_feature_importance_plots=st.session_state[PlotOptionKeys.SavePlots],
             save_feature_importance_options=st.session_state[
                 ConfigStateKeys.SaveFeatureImportanceOptions

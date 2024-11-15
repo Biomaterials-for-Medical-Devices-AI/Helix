@@ -4,6 +4,7 @@ from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
 from biofefi.components.plots import plot_box
 from biofefi.components.forms import fi_options_form
+from biofefi.options.choices import PROBLEM_TYPES
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
 from biofefi.services.ml_models import load_models_to_explain
@@ -16,7 +17,6 @@ from biofefi.machine_learning.data import DataBuilder
 from biofefi.options.enums import (
     ConfigStateKeys,
     ProblemTypes,
-    PlotOptionKeys,
 )
 
 from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
@@ -26,6 +26,7 @@ from biofefi.options.file_paths import (
     fi_plot_dir,
     fuzzy_plot_dir,
     log_dir,
+    plot_options_path,
     uploaded_file_path,
 )
 
@@ -35,6 +36,7 @@ from biofefi.options.file_paths import (
     log_dir,
     ml_model_dir,
 )
+from biofefi.services.plotting import load_plot_options
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import set_seed, cancel_pipeline
 from biofefi.components.experiments import (
@@ -61,6 +63,11 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
         biofefi_experiments_base_dir()
         / st.session_state[ViewExperimentKeys.ExperimentName],
     )
+    path_to_plot_opts = plot_options_path(
+        biofefi_experiments_base_dir()
+        / st.session_state[ViewExperimentKeys.ExperimentName]
+    )
+    plotting_options = load_plot_options(path_to_plot_opts)
     if st.session_state.get(ConfigStateKeys.FuzzyFeatureSelection, False):
         fuzzy_opt.parser.set_defaults(
             fuzzy_feature_selection=st.session_state[
@@ -71,7 +78,14 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
             num_clusters=st.session_state[ConfigStateKeys.NumberOfClusters],
             cluster_names=st.session_state[ConfigStateKeys.ClusterNames],
             num_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
-            save_fuzzy_set_plots=st.session_state[PlotOptionKeys.SavePlots],
+            angle_rotate_xaxis_labels=plotting_options.angle_rotate_xaxis_labels,
+            angle_rotate_yaxis_labels=plotting_options.angle_rotate_yaxis_labels,
+            plot_axis_font_size=plotting_options.plot_axis_font_size,
+            plot_axis_tick_size=plotting_options.plot_axis_tick_size,
+            plot_title_font_size=plotting_options.plot_title_font_size,
+            plot_font_family=plotting_options.plot_font_family,
+            plot_colour_scheme=plotting_options.plot_colour_scheme,
+            save_fuzzy_set_plots=plotting_options.save_plots,
             fuzzy_log_dir=log_dir(
                 biofefi_experiments_base_dir()
                 / st.session_state[ViewExperimentKeys.ExperimentName]
@@ -107,14 +121,19 @@ def build_configuration() -> tuple[Namespace, Namespace, Namespace, str]:
             ConfigStateKeys.ProblemType, ProblemTypes.Auto
         ).lower(),
         is_feature_importance=True,
+        angle_rotate_xaxis_labels=plotting_options.angle_rotate_xaxis_labels,
+        angle_rotate_yaxis_labels=plotting_options.angle_rotate_yaxis_labels,
+        plot_axis_font_size=plotting_options.plot_axis_font_size,
+        plot_axis_tick_size=plotting_options.plot_axis_tick_size,
+        plot_title_font_size=plotting_options.plot_title_font_size,
+        plot_colour_scheme=plotting_options.plot_colour_scheme,
+        plot_font_family=plotting_options.plot_font_family,
+        save_feature_importance_plots=plotting_options.save_plots,
         fi_log_dir=log_dir(
             biofefi_experiments_base_dir()
             / st.session_state[ViewExperimentKeys.ExperimentName]
         )
         / "fi",
-        angle_rotate_xaxis_labels=st.session_state[PlotOptionKeys.RotateXAxisLabels],
-        angle_rotate_yaxis_labels=st.session_state[PlotOptionKeys.RotateYAxisLabels],
-        save_feature_importance_plots=st.session_state[PlotOptionKeys.SavePlots],
         save_feature_importance_options=st.session_state[
             ConfigStateKeys.SaveFeatureImportanceOptions
         ],
@@ -224,6 +243,13 @@ if experiment_name:
 
     data_selector(data_choices)
 
+    # Fuzzy options require this
+    # TODO: get this from a saved configuration from ML
+    st.selectbox(
+        "Problem type",
+        PROBLEM_TYPES,
+        key=ConfigStateKeys.ProblemType,
+    )
     model_choices = os.listdir(
         ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
     )

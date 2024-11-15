@@ -248,8 +248,6 @@ def fi_options_form():
         key=ConfigStateKeys.DependentVariableName,
     )
 
-    plot_options_box()
-
 
 @st.experimental_fragment
 def ml_options_form():
