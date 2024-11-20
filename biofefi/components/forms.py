@@ -9,6 +9,8 @@ from biofefi.options.enums import (
     PlotOptionKeys,
     ProblemTypes,
 )
+from biofefi.services.ml_models import load_models
+from biofefi.options.file_paths import ml_model_dir
 from biofefi.options.file_paths import biofefi_experiments_base_dir
 
 
@@ -150,13 +152,17 @@ def fi_options_form():
     )
 
     # Scoring function for permutation importance
-    if st.session_state.get(ConfigStateKeys.ProblemType) == ProblemTypes.Regression:
+    if (
+        st.session_state.get(ConfigStateKeys.ProblemType, ProblemTypes.Auto).lower()
+        == ProblemTypes.Regression
+    ):
         scoring_options = [
             "neg_mean_absolute_error",
             "neg_root_mean_squared_error",
         ]
     elif (
-        st.session_state.get(ConfigStateKeys.ProblemType) == ProblemTypes.Classification
+        st.session_state.get(ConfigStateKeys.ProblemType, ProblemTypes.Auto).lower()
+        == ProblemTypes.Classification
     ):
         scoring_options = ["accuracy", "f1"]
 
@@ -278,87 +284,117 @@ def ml_options_form():
 
     st.subheader("Select and cofigure which models to train")
 
-    model_types = {}
-    use_linear = st.toggle("Linear Model", value=False)
-    if use_linear:
-        st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept")
-        model_types["Linear Model"] = {
-            "use": use_linear,
-            "params": {
-                "fit_intercept": fit_intercept,
-            },
-        }
-        st.divider()
-
-    use_rf = st.toggle("Random Forest", value=False)
-    if use_rf:
-        st.write("Options:")
-        n_estimators_rf = st.number_input(
-            "Number of estimators", value=300, key="n_estimators_rf"
+    try:
+        trained_models = load_models(
+            ml_model_dir(
+                biofefi_experiments_base_dir()
+                / st.session_state[ConfigStateKeys.ExperimentName]
+            )
         )
-        min_samples_split = st.number_input("Minimum samples split", value=2)
-        min_samples_leaf = st.number_input("Minimum samples leaf", value=1)
-        max_depth_rf = st.number_input("Maximum depth", value=6, key="max_depth_rf")
-        model_types["Random Forest"] = {
-            "use": use_rf,
-            "params": {
-                "n_estimators": n_estimators_rf,
-                "min_samples_split": min_samples_split,
-                "min_samples_leaf": min_samples_leaf,
-                "max_depth": max_depth_rf,
-            },
-        }
-        st.divider()
 
-    use_xgb = st.toggle("XGBoost", value=False)
-    if use_xgb:
-        st.write("Options:")
-        n_estimators_xgb = st.number_input(
-            "Number of estimators", value=300, key="n_estimators_xgb"
+        if trained_models:
+            st.warning("You have trained models in this experiment.")
+            st.checkbox(
+                "Would you like to rerun the experiments? This will overwrite the existing models.",
+                value=True,
+                key=ConfigStateKeys.RerunML,
+            )
+        else:
+            st.session_state[ConfigStateKeys.RerunML] = True
+
+    except:
+        st.session_state[ConfigStateKeys.RerunML] = True
+
+    if st.session_state[ConfigStateKeys.RerunML]:
+
+        model_types = {}
+        use_linear = st.toggle("Linear Model", value=False)
+        if use_linear:
+
+            st.write("Options:")
+            fit_intercept = st.checkbox("Fit intercept")
+            model_types["Linear Model"] = {
+                "use": use_linear,
+                "params": {
+                    "fit_intercept": fit_intercept,
+                },
+            }
+            st.divider()
+
+        use_rf = st.toggle("Random Forest", value=False)
+        if use_rf:
+
+            st.write("Options:")
+            n_estimators_rf = st.number_input(
+                "Number of estimators", value=300, key="n_estimators_rf"
+            )
+            min_samples_split = st.number_input("Minimum samples split", value=2)
+            min_samples_leaf = st.number_input("Minimum samples leaf", value=1)
+            max_depth_rf = st.number_input("Maximum depth", value=6, key="max_depth_rf")
+            model_types["Random Forest"] = {
+                "use": use_rf,
+                "params": {
+                    "n_estimators": n_estimators_rf,
+                    "min_samples_split": min_samples_split,
+                    "min_samples_leaf": min_samples_leaf,
+                    "max_depth": max_depth_rf,
+                },
+            }
+            st.divider()
+
+        use_xgb = st.toggle("XGBoost", value=False)
+        if use_xgb:
+
+            st.write("Options:")
+            n_estimators_xgb = st.number_input(
+                "Number of estimators", value=300, key="n_estimators_xgb"
+            )
+            max_depth_xbg = st.number_input(
+                "Maximum depth", value=6, key="max_depth_xgb"
+            )
+            learning_rate = st.number_input("Learning rate", value=0.01)
+            subsample = st.number_input("Subsample size", value=0.5)
+            model_types["XGBoost"] = {
+                "use": use_xgb,
+                "params": {
+                    "kwargs": {
+                        "n_estimators": n_estimators_xgb,
+                        "max_depth": max_depth_xbg,
+                        "learning_rate": learning_rate,
+                        "subsample": subsample,
+                    }
+                },
+            }
+            st.divider()
+
+        use_svm = st.toggle("Support Vector Machine", value=False)
+        if use_svm:
+
+            st.write("Options:")
+            kernel = st.selectbox("Kernel", options=SVM_KERNELS)
+            degree = st.number_input("Degree", min_value=0, value=3)
+            c = st.number_input("C", value=1.0, min_value=0.0)
+            model_types["SVM"] = {
+                "use": use_svm,
+                "params": {
+                    "kernel": kernel.lower(),
+                    "degree": degree,
+                    "C": c,
+                },
+            }
+            st.divider()
+
+        st.session_state[ConfigStateKeys.ModelTypes] = model_types
+        st.subheader("Select outputs to save")
+        st.toggle(
+            "Save models",
+            key=ConfigStateKeys.SaveModels,
+            value=True,
+            help="Save the models that are trained to disk?",
         )
-        max_depth_xbg = st.number_input("Maximum depth", value=6, key="max_depth_xgb")
-        learning_rate = st.number_input("Learning rate", value=0.01)
-        subsample = st.number_input("Subsample size", value=0.5)
-        model_types["XGBoost"] = {
-            "use": use_xgb,
-            "params": {
-                "kwargs": {
-                    "n_estimators": n_estimators_xgb,
-                    "max_depth": max_depth_xbg,
-                    "learning_rate": learning_rate,
-                    "subsample": subsample,
-                }
-            },
-        }
-        st.divider()
-
-    use_svm = st.toggle("Support Vector Machine", value=False)
-    if use_svm:
-        st.write("Options:")
-        kernel = st.selectbox("Kernel", options=SVM_KERNELS)
-        degree = st.number_input("Degree", min_value=0, value=3)
-        c = st.number_input("C", value=1.0, min_value=0.0)
-        model_types["SVM"] = {
-            "use": use_svm,
-            "params": {
-                "kernel": kernel.lower(),
-                "degree": degree,
-                "C": c,
-            },
-        }
-        st.divider()
-    st.session_state[ConfigStateKeys.ModelTypes] = model_types
-    st.subheader("Select outputs to save")
-    st.toggle(
-        "Save models",
-        key=ConfigStateKeys.SaveModels,
-        value=True,
-        help="Save the models that are trained to disk?",
-    )
-    st.toggle(
-        "Save plot",
-        key=PlotOptionKeys.SavePlots,
-        value=True,
-        help="Save the plots to disk?",
-    )
+        st.toggle(
+            "Save plot",
+            key=PlotOptionKeys.SavePlots,
+            value=True,
+            help="Save the plots to disk?",
+        )

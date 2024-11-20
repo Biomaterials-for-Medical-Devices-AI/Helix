@@ -1,5 +1,6 @@
 from argparse import Namespace
 from multiprocessing import Process
+import os
 import streamlit as st
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.forms import ml_options_form
@@ -27,7 +28,7 @@ from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
 from biofefi.services.ml_models import save_model
 from biofefi.utils.logging_utils import Logger, close_logger
-from biofefi.utils.utils import cancel_pipeline, save_upload, set_seed
+from biofefi.utils.utils import cancel_pipeline, save_upload, set_seed, delete_directory
 
 
 def build_configuration() -> tuple[Namespace, str]:
@@ -180,14 +181,22 @@ if experiment_name:
 
     ml_options_form()
 
-    if st.button("Run Training", type="primary") and (
-        uploaded_file := st.session_state.get(ConfigStateKeys.UploadedFileName)
+    if (
+        st.button("Run Training", type="primary")
+        and (st.session_state[ConfigStateKeys.RerunML])
+        and (uploaded_file := st.session_state.get(ConfigStateKeys.UploadedFileName))
     ):
         biofefi_base_dir = biofefi_experiments_base_dir()
         upload_path = uploaded_file_path(
             uploaded_file.name, biofefi_base_dir / experiment_name
         )
         save_upload(upload_path, uploaded_file.read().decode("utf-8-sig"))
+
+        if os.path.exists(ml_model_dir(biofefi_base_dir / experiment_name)):
+            delete_directory(ml_model_dir(biofefi_base_dir / experiment_name))
+        if os.path.exists(ml_plot_dir(biofefi_base_dir / experiment_name)):
+            delete_directory(ml_plot_dir(biofefi_base_dir / experiment_name))
+
         config = build_configuration()
         process = Process(target=pipeline, args=config, daemon=True)
         process.start()
@@ -205,3 +214,8 @@ if experiment_name:
         ml_plots = ml_plot_dir(biofefi_experiments_base_dir() / experiment_name)
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")
+
+    elif not st.session_state[ConfigStateKeys.RerunML]:
+        st.success(
+            "You have chosen not to rerun the machine learning experiments. You can proceed to feature importance analysis."
+        )

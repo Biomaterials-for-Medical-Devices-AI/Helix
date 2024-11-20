@@ -4,7 +4,7 @@ import random
 import argparse
 import os
 from multiprocessing import Process
-
+import shutil
 
 import numpy as np
 
@@ -114,3 +114,15 @@ def cancel_pipeline(p: Process):
     """
     if p.is_alive():
         p.terminate()
+
+
+def delete_directory(path: Path):
+    """Delete the previous results from the log_dir
+
+    Returns:
+        None
+
+    Args:
+        path: The path to the log directory
+    """
+    shutil.rmtree(path, ignore_errors=True)
