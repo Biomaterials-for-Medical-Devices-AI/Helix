@@ -1,4 +1,3 @@
-import argparse
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
 import pandas as pd
@@ -18,14 +17,22 @@ class DataBuilder:
         Normalisations.Standardization: StandardScaler,
     }
 
-    def __init__(self, opt: argparse.Namespace, logger: object = None) -> None:
-        self._path = opt.data_path
-        self._data_split = opt.data_split
-        self._random_state = opt.random_state
+    def __init__(
+        self,
+        data_path: str,
+        random_state: int,
+        normalization: str,
+        n_bootstraps: int,
+        logger: object = None,
+        data_split: dict | None = None,
+    ) -> None:
+        self._path = data_path
+        self._data_split = data_split
+        self._random_state = random_state
         self._logger = logger
-        self._normalization = opt.normalization
+        self._normalization = normalization
         self._numerical_cols = "all"
-        self._n_bootstraps = opt.n_bootstraps
+        self._n_bootstraps = n_bootstraps
 
     def _load_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -58,7 +65,10 @@ class DataBuilder:
         """
         X_train_list, X_test_list, y_train_list, y_test_list = [], [], [], []
 
-        if self._data_split["type"].lower() == DataSplitMethods.Holdout:
+        if (
+            self._data_split is not None
+            and self._data_split["type"].lower() == DataSplitMethods.Holdout
+        ):
             for i in range(self._n_bootstraps):
                 self._logger.info(
                     f"Using holdout data split with test size {self._data_split['test_size']} for bootstrap {i+1}"

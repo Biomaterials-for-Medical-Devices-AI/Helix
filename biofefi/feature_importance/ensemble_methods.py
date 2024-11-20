@@ -2,14 +2,13 @@ import argparse
 
 import pandas as pd
 
+from biofefi.utils.logging_utils import Logger
 
-def calculate_ensemble_mean(
-    feature_importance_results, opt: argparse.Namespace, logger
-):
+
+def calculate_ensemble_mean(feature_importance_results, logger: Logger):
     """Calculate mean of feature importance results
     Args:
         feature_importance_results: Dictionary containing feature importance results for each model
-        opt: Options
         logger: Logger
     Returns:
         ensemble_mean: Mean of feature importance results
@@ -40,9 +39,7 @@ def calculate_ensemble_mean(
     return ensemble_mean
 
 
-def calculate_ensemble_majorityvote(
-    feature_importance_results, opt: argparse.Namespace, logger
-):
+def calculate_ensemble_majorityvote(feature_importance_results, logger: Logger):
     """Calculate majority vote of feature importance results.
     For majority vote, each vector in the feature importance matrix has their features ranked based on their importance.
     Subsequently, the final feature importance is the average of the most common rank order for each feature.
@@ -50,7 +47,6 @@ def calculate_ensemble_majorityvote(
     The final feature importance value for feature Xi is the average value from the three feature importance methods that ranked it as 1.
     Args:
         feature_importance_results: Dictionary containing feature importance results for each model
-        opt: Options
         logger: Logger
     Returns:
         ensemble_majorityvote: Majority vote of feature importance results

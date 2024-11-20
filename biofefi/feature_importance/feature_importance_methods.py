@@ -1,20 +1,39 @@
+from typing import Any
 from sklearn.base import is_classifier
-import argparse
 import pandas as pd
+import shap
+from sklearn.inspection import permutation_importance
+from lime.lime_tabular import LimeTabularExplainer
+import warnings
+
+from biofefi.options.enums import ProblemTypes
+from biofefi.options.fi import FeatureImportanceOptions
+from biofefi.utils.logging_utils import Logger
 
 
-def calculate_permutation_importance(model, X, y, opt: argparse.Namespace, logger):
-    """Calculate permutation importance for a given model and dataset
+def calculate_permutation_importance(
+    model,
+    X: pd.DataFrame,
+    y: pd.Series,
+    permutation_importance_scoring: str,
+    permutation_importance_repeat: int,
+    random_state: int,
+    logger: Logger,
+):
+    """Calculate permutation importance for a given model and dataset.
+
     Args:
-        model: Model object
-        X: Input features
-        y: Target variable
-        opt: Options
-        logger: Logger
+        model: Model object.
+        X (pd.DataFrame): Input features.
+        y (pd.Series): Target variable.
+        permutation_importance_scoring (str): Permutation importance scoring method.
+        permutation_importance_repeat (int): Number of repeats for importance scoring.
+        random_state (int): Seed for the random state.
+        logger (Logger): The logger.
+
     Returns:
         permutation_importance: Permutation importance values
     """
-    from sklearn.inspection import permutation_importance
 
     logger.info(
         f"Calculating Permutation Importance for {model.__class__.__name__} model.."
@@ -25,9 +44,9 @@ def calculate_permutation_importance(model, X, y, opt: argparse.Namespace, logge
         model,
         X=X,
         y=y,
-        scoring=opt.permutation_importance_scoring,
-        n_repeats=opt.permutation_importance_repeat,
-        random_state=opt.random_state,
+        scoring=permutation_importance_scoring,
+        n_repeats=permutation_importance_repeat,
+        random_state=random_state,
     )
     # Create a DataFrame with the results
     permutation_importance_df = pd.DataFrame(
@@ -40,24 +59,36 @@ def calculate_permutation_importance(model, X, y, opt: argparse.Namespace, logge
     return permutation_importance_df
 
 
-def calculate_shap_values(model, X, shap_type, opt: argparse.Namespace, logger):
-    """Calculate SHAP values for a given model and dataset
-    Args:
-        model: Model object
-        X: Dataset
-        opt: Options
-        logger: Logger
-    Returns:
-        shap_df: Average SHAP values
-    """
-    import shap
+def calculate_shap_values(
+    model,
+    X: pd.DataFrame,
+    shap_type: str,
+    fi_opt: FeatureImportanceOptions,
+    logger: Logger,
+) -> tuple[pd.DataFrame, Any]:
+    """Calculate SHAP values for a given model and dataset.
 
+    Args:
+        model: Model object.
+        X (pd.DataFrame): The dataset.
+        shap_type (str): The type of SHAP (local or global).
+        fi_opt (FeatureImportanceOptions): The options.
+        logger (Logger): The logger.
+
+    Raises:
+        ValueError: SHAP type is not "local" or "global"
+
+    Returns:
+        tuple[pd.DataFrame, Any]: SHAP dataframe and SHAP values.
+    """
     logger.info(f"Calculating SHAP Importance for {model.__class__.__name__} model..")
 
-    if opt.shap_reduce_data == 100:
+    if fi_opt.shap_reduce_data == 100:
         explainer = shap.Explainer(model.predict, X)
     else:
-        X_reduced = shap.utils.sample(X, int(X.shape[0] * opt.shap_reduce_data / 100))
+        X_reduced = shap.utils.sample(
+            X, int(X.shape[0] * fi_opt.shap_reduce_data / 100)
+        )
         explainer = shap.Explainer(model.predict, X_reduced)
 
     shap_values = explainer(X)
@@ -80,24 +111,25 @@ def calculate_shap_values(model, X, shap_type, opt: argparse.Namespace, logger):
     return shap_df, shap_values
 
 
-def calculate_lime_values(model, X, opt: argparse.Namespace, logger):
-    """Calculate LIME values for a given model and dataset
+def calculate_lime_values(
+    model, X: pd.DataFrame, problem_type: ProblemTypes, logger: Logger
+) -> pd.DataFrame:
+    """Calculate LIME values for a given model and dataset.
+
     Args:
-        model: Model object
-        X: Dataset
-        opt: Options
-        logger: Logger
+        model: The model.
+        X (pd.DataFrame): The dataset.
+        problem_type (ProblemTypes): The problem type.
+        logger (Logger): The logger.
+
     Returns:
-        lime_df: Average LIME values
+        pd.DataFrame: The LIME values.
     """
     logger.info(f"Calculating LIME Importance for {model.__class__.__name__} model..")
-    # Use LIME to explain predictions
-    from lime.lime_tabular import LimeTabularExplainer
-    import warnings
 
     # Suppress all warnings
     warnings.filterwarnings("ignore")
-    explainer = LimeTabularExplainer(X.to_numpy(), mode=opt.problem_type)
+    explainer = LimeTabularExplainer(X.to_numpy(), mode=problem_type)
 
     coefficients = []
 

@@ -1,10 +1,11 @@
 from biofefi.options.choices import (
+    DATA_SPLITS,
     PLOT_FONT_FAMILIES,
     SVM_KERNELS,
     PROBLEM_TYPES,
     NORMALISATIONS,
 )
-from biofefi.options.enums import ConfigStateKeys, PlotOptionKeys
+from biofefi.options.enums import ConfigStateKeys, DataSplitMethods, PlotOptionKeys
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
@@ -168,13 +169,13 @@ def plot_options_box():
         tfs = st.number_input(
             "Title font size",
             min_value=20,
-            key=PlotOptionKeys.AxisFontSize,
+            key=PlotOptionKeys.TitleFontSize,
             disabled=not save,
         )
         afs = st.number_input(
             "Axis font size",
             min_value=8,
-            key=PlotOptionKeys.TitleFontSize,
+            key=PlotOptionKeys.AxisFontSize,
             disabled=not save,
         )
         ats = st.number_input(
@@ -318,3 +319,69 @@ def fi_options_box():
                     value=10,
                     key=ConfigStateKeys.NumberOfTopRules,
                 )
+
+
+@st.experimental_fragment
+def execution_options_box():
+    st.write(
+        """
+        If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
+
+        If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
+        """
+    )
+    st.selectbox(
+        "Problem type",
+        PROBLEM_TYPES,
+        key=ConfigStateKeys.ProblemType,
+    )
+    st.write(
+        """
+        If you select **"Standardization"**, your data will be normalised by subtracting the
+        mean and dividing by the standard deviation for each feature. The resulting transformation has a
+        mean of 0 and values are between -1 and 1.
+
+        If you select **"Minmax"**, your data will be scaled based on the minimum and maximum
+        value of each feature. The resulting transformation will have values between 0 and 1.
+
+        If you select **"None"**, the data will not be normalised.
+        """
+    )
+    st.selectbox(
+        "Normalisation",
+        NORMALISATIONS,
+        key=ConfigStateKeys.Normalization,
+    )
+    data_split = st.selectbox("Data split method", DATA_SPLITS)
+    if data_split.lower() == DataSplitMethods.Holdout:
+        split_size = st.number_input(
+            "Test split",
+            min_value=0.0,
+            max_value=1.0,
+            value=0.2,
+        )
+        st.session_state[ConfigStateKeys.DataSplit] = {
+            "type": DataSplitMethods.Holdout,
+            "test_size": split_size,
+        }
+    elif data_split.lower() == DataSplitMethods.KFold:
+        split_size = st.number_input(
+            "n splits",
+            min_value=0,
+            value=5,
+        )
+        st.session_state[ConfigStateKeys.DataSplit] = {
+            "type": DataSplitMethods.KFold,
+            "n_splits": split_size,
+        }
+    else:
+        split_size = None
+    st.number_input(
+        "Number of bootstraps",
+        min_value=1,
+        value=10,
+        key=ConfigStateKeys.NumberOfBootstraps,
+    )
+    st.number_input(
+        "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
+    )

@@ -5,6 +5,8 @@ import numpy as np
 
 from biofefi.machine_learning.get_models import get_models
 from biofefi.machine_learning.metrics import get_metrics
+from biofefi.options.enums import Normalisations, ProblemTypes
+from biofefi.utils.logging_utils import Logger
 
 
 class Learner:
@@ -12,13 +14,21 @@ class Learner:
     Learner class
     """
 
-    def __init__(self, opt: argparse.Namespace, logger: object = None) -> None:
+    def __init__(
+        self,
+        model_types: dict,
+        problem_type: ProblemTypes,
+        data_split: dict,
+        normalization: Normalisations,
+        n_bootstraps: int,
+        logger: Logger | None = None,
+    ) -> None:
         self._logger = logger
-        self._opt = opt
-        self._model_types = self._opt.model_types
-        self._problem_type = self._opt.problem_type
-        self._data_split = self._opt.data_split
-        self._normalization = self._opt.normalization
+        self._model_types = model_types
+        self._problem_type = problem_type
+        self._data_split = data_split
+        self._normalization = normalization
+        self._n_bootstraps = n_bootstraps
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
 
     def fit(self, data: Tuple) -> None:
@@ -35,7 +45,7 @@ class Learner:
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._models.keys()}
 
-        for i in range(self._opt.n_bootstraps):
+        for i in range(self._n_bootstraps):
             self._logger.info(f"Processing bootstrap sample {i+1}...")
             X_train, X_test = data.X_train[i], data.X_test[i]
             y_train, y_test = data.y_train[i], data.y_test[i]

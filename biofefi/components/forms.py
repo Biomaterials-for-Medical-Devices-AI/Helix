@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 import streamlit as st
-from biofefi.components.configuration import plot_options_box
 from biofefi.options.choices import PROBLEM_TYPES, SVM_KERNELS
 from biofefi.options.enums import (
     ConfigStateKeys,
@@ -165,6 +164,8 @@ def fi_options_form():
         == ProblemTypes.Classification
     ):
         scoring_options = ["accuracy", "f1"]
+    else:
+        scoring_options = []
 
     st.selectbox(
         "Scoring function for permutation importance",
@@ -233,6 +234,7 @@ def fi_options_form():
             "Names of clusters (comma-separated)",
             help="Specify names for each cluster (e.g., Low, Medium, High).",
             key=ConfigStateKeys.ClusterNames,
+            value=", ".join(["very low", "low", "medium", "high", "very high"]),
         )
 
         st.number_input(
@@ -258,30 +260,10 @@ def fi_options_form():
         key=ConfigStateKeys.SaveFeatureImportanceResults,
     )
 
-    st.text_input(
-        "Dependent variable name",
-        help="Specify the name of the dependent variable for labelling plots.",
-        key=ConfigStateKeys.DependentVariableName,
-    )
-
 
 @st.experimental_fragment
 def ml_options_form():
     """The form for setting up the machine learning pipeline."""
-    st.subheader("Select your problem type")
-    st.write(
-        """
-        If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
-
-        If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
-        """
-    )
-    st.selectbox(
-        "Problem type",
-        PROBLEM_TYPES,
-        key=ConfigStateKeys.ProblemType,
-    )
-
     st.subheader("Select and cofigure which models to train")
 
     try:
@@ -393,7 +375,7 @@ def ml_options_form():
             help="Save the models that are trained to disk?",
         )
         st.toggle(
-            "Save plot",
+            "Save plots",
             key=PlotOptionKeys.SavePlots,
             value=True,
             help="Save the plots to disk?",

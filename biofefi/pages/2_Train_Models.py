@@ -1,4 +1,3 @@
-from argparse import Namespace
 from multiprocessing import Process
 import os
 import streamlit as st
@@ -9,94 +8,114 @@ from biofefi.components.logs import log_box
 from biofefi.components.plots import plot_box
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
-from biofefi.machine_learning.ml_options import MLOptions
-from biofefi.options.choices import NORMALISATIONS
 from biofefi.options.enums import (
     ConfigStateKeys,
     PlotOptionKeys,
-    ProblemTypes,
-    ViewExperimentKeys,
 )
+from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
+    execution_options_path,
     log_dir,
     ml_model_dir,
     ml_plot_dir,
-    uploaded_file_path,
+    plot_options_path,
 )
+from biofefi.options.ml import MachineLearningOptions
+from biofefi.options.plotting import PlottingOptions
+from biofefi.services.configuration import load_execution_options
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
 from biofefi.services.ml_models import save_model
+from biofefi.services.plotting import load_plot_options
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import cancel_pipeline, save_upload, set_seed, delete_directory
 
 
-def build_configuration() -> tuple[Namespace, str]:
-    """Build the configuration objects for the pipeline.
+def build_configuration() -> (
+    tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, str]
+):
+    """Build the configuration options to run the Machine Learning pipeline.
 
     Returns:
-        tuple[Namespace, str]: The configuration for the ML pipeline
-        and the experiment name.
+        tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, str]:
+        The machine learning options, general execution options, plotting options, experiment name
     """
 
-    ml_opt = MLOptions()
-    ml_opt.initialize()
-    path_to_data = uploaded_file_path(
-        st.session_state[ConfigStateKeys.UploadedFileName].name,
+    path_to_plot_opts = plot_options_path(
         biofefi_experiments_base_dir()
-        / st.session_state[ViewExperimentKeys.ExperimentName],
+        / st.session_state[ConfigStateKeys.ExperimentName]
     )
-    ml_opt.parser.set_defaults(
-        n_bootstraps=st.session_state[ConfigStateKeys.NumberOfBootstraps],
+    plot_opt = load_plot_options(path_to_plot_opts)
+
+    path_to_exec_opts = execution_options_path(
+        biofefi_experiments_base_dir()
+        / st.session_state[ConfigStateKeys.ExperimentName]
+    )
+    exec_opt = load_execution_options(path_to_exec_opts)
+    ml_opt = MachineLearningOptions(
         save_actual_pred_plots=st.session_state[PlotOptionKeys.SavePlots],
-        normalization=st.session_state[ConfigStateKeys.Normalization],
-        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
-        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-        data_path=path_to_data,
-        data_split=st.session_state[ConfigStateKeys.DataSplit],
         model_types=st.session_state[ConfigStateKeys.ModelTypes],
         ml_plot_dir=ml_plot_dir(
             biofefi_experiments_base_dir()
             / st.session_state[ConfigStateKeys.ExperimentName]
         ),
-        problem_type=st.session_state.get(
-            ConfigStateKeys.ProblemType, ProblemTypes.Auto
-        ).lower(),
-        random_state=st.session_state[ConfigStateKeys.RandomSeed],
-        is_machine_learning=True,
+        ml_log_dir=log_dir(
+            biofefi_experiments_base_dir()
+            / st.session_state[ConfigStateKeys.ExperimentName]
+        )
+        / "ml",
         save_models=st.session_state[ConfigStateKeys.SaveModels],
     )
-    ml_opt = ml_opt.parse()
 
-    return ml_opt, st.session_state[ConfigStateKeys.ExperimentName]
+    return ml_opt, exec_opt, plot_opt, st.session_state[ConfigStateKeys.ExperimentName]
 
 
-def pipeline(ml_opts: Namespace, experiment_name: str):
+def pipeline(
+    ml_opts: MachineLearningOptions,
+    exec_opts: ExecutionOptions,
+    plotting_opts: PlottingOptions,
+    experiment_name: str,
+):
     """This function actually performs the steps of the pipeline. It can be wrapped
     in a process it doesn't block the UI.
 
     Args:
-        ml_opts (Namespace): Options for machine learning.
+        ml_opts (MachineLearningOptions): Options for machine learning.
+        exec_opts (ExecutionOptions): General execution options.
+        plotting_opts (PlottingOptions): Options for plotting.
         experiment_name (str): The name of the experiment.
     """
-    seed = ml_opts.random_state
+    seed = exec_opts.random_state
     set_seed(seed)
     logger_instance = Logger(log_dir(biofefi_experiments_base_dir() / experiment_name))
     logger = logger_instance.make_logger()
 
-    data = DataBuilder(ml_opts, logger).ingest()
+    data = DataBuilder(
+        data_path=exec_opts.data_path,
+        random_state=exec_opts.random_state,
+        normalization=exec_opts.normalization,
+        n_bootstraps=exec_opts.n_bootstraps,
+        logger=logger,
+        data_split=exec_opts.data_split,
+    ).ingest()
 
     # Machine learning
-    if ml_opts.is_machine_learning:
-        trained_models = train.run(ml_opts, data, logger)
-        if ml_opts.save_models:
-            for model_name in trained_models:
-                for i, model in enumerate(trained_models[model_name]):
-                    save_path = (
-                        ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
-                        / f"{model_name}-{i}.pkl"
-                    )
-                    save_model(model, save_path)
+    trained_models = train.run(
+        ml_opts=ml_opts,
+        exec_opts=exec_opts,
+        plot_opts=plotting_opts,
+        data=data,
+        logger=logger,
+    )
+    if ml_opts.save_models:
+        for model_name in trained_models:
+            for i, model in enumerate(trained_models[model_name]):
+                save_path = (
+                    ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
+                    / f"{model_name}-{i}.pkl"
+                )
+                save_model(model, save_path)
 
     # Close the logger
     close_logger(logger_instance, logger)
@@ -125,72 +144,12 @@ experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
 
-    st.text_input(
-        "Name of the dependent variable", key=ConfigStateKeys.DependentVariableName
-    )
-
-    st.subheader("Data preparation")
-    st.write(
-        """
-        Upload your data file as a CSV and then define how the data will be normalised and split between
-        training and test data.
-        """
-    )
-    st.file_uploader(
-        "Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName
-    )
-    st.selectbox(
-        "Normalisation",
-        NORMALISATIONS,
-        key=ConfigStateKeys.Normalization,
-    )
-
-    data_split = st.selectbox("Data split method", ["Holdout", "K-Fold"])
-    if data_split == "Holdout":
-        split_size = st.number_input(
-            "Test split",
-            min_value=0.0,
-            max_value=1.0,
-            value=0.2,
-        )
-        st.session_state[ConfigStateKeys.DataSplit] = {
-            "type": "holdout",
-            "test_size": split_size,
-        }
-    elif data_split == "K-Fold":
-        split_size = st.number_input(
-            "n splits",
-            min_value=0,
-            value=5,
-        )
-        st.session_state[ConfigStateKeys.DataSplit] = {
-            "type": "kfold",
-            "n_splits": split_size,
-        }
-    else:
-        split_size = None
-    st.number_input(
-        "Number of bootstraps",
-        min_value=1,
-        value=10,
-        key=ConfigStateKeys.NumberOfBootstraps,
-    )
-    seed = st.number_input(
-        "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
-    )
-
     ml_options_form()
 
-    if (
-        st.button("Run Training", type="primary")
-        and (st.session_state[ConfigStateKeys.RerunML])
-        and (uploaded_file := st.session_state.get(ConfigStateKeys.UploadedFileName))
+    if st.button("Run Training", type="primary") and (
+        st.session_state[ConfigStateKeys.RerunML]
     ):
         biofefi_base_dir = biofefi_experiments_base_dir()
-        upload_path = uploaded_file_path(
-            uploaded_file.name, biofefi_base_dir / experiment_name
-        )
-        save_upload(upload_path, uploaded_file.read().decode("utf-8-sig"))
 
         if os.path.exists(ml_model_dir(biofefi_base_dir / experiment_name)):
             delete_directory(ml_model_dir(biofefi_base_dir / experiment_name))
@@ -206,12 +165,12 @@ if experiment_name:
             process.join()
         try:
             st.session_state[ConfigStateKeys.MLLogBox] = get_logs(
-                log_dir(biofefi_experiments_base_dir() / experiment_name) / "ml"
+                log_dir(biofefi_base_dir / experiment_name) / "ml"
             )
             log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
         except NotADirectoryError:
             pass
-        ml_plots = ml_plot_dir(biofefi_experiments_base_dir() / experiment_name)
+        ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")
 
