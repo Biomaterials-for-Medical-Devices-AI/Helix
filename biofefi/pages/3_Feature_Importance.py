@@ -3,7 +3,6 @@ from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
 from biofefi.components.plots import plot_box
 from biofefi.components.forms import fi_options_form
-from biofefi.options.choices import PROBLEM_TYPES
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.plotting import PlottingOptions
@@ -37,7 +36,6 @@ from biofefi.utils.utils import set_seed, cancel_pipeline
 from biofefi.components.experiments import (
     experiment_selector,
     model_selector,
-    data_selector,
 )
 import streamlit as st
 import os
