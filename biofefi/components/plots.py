@@ -13,4 +13,5 @@ def plot_box(plot_dir: Path, box_title: str):
     plots = list(plot_dir.iterdir())
     with st.expander(box_title, expanded=len(plots) > 0):
         for p in plots:
-            st.image(str(p))
+            if p.name.endswith(".png"):
+                st.image(str(p))

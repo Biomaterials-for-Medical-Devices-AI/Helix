@@ -15,8 +15,11 @@ from biofefi.feature_importance.feature_importance_methods import (
 from biofefi.machine_learning.data import TabularData
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
+from biofefi.options.file_paths import biofefi_experiments_base_dir, fi_plot_dir
 from biofefi.options.plotting import PlottingOptions
+from biofefi.services.plotting import plot_lime_importance
 from biofefi.utils.logging_utils import Logger
+from biofefi.utils.utils import create_directory
 
 
 class Interpreter:
@@ -173,15 +176,22 @@ class Interpreter:
                             lime_importance_df = calculate_lime_values(
                                 model[0], X, self._exec_opt.problem_type, self._logger
                             )
-                            save_importance_results(
-                                feature_importance_df=lime_importance_df,
-                                model_type=model_type,
-                                importance_type=value["type"],
-                                feature_importance_type=feature_importance_type,
-                                experiment_name=self._exec_opt.experiment_name,
-                                fi_opt=self._fi_opt,
-                                plot_opt=self._plot_opt,
-                                logger=self._logger,
+                            fig = plot_lime_importance(
+                                df=lime_importance_df,
+                                plot_opts=self._plot_opt,
+                                num_features_to_plot=self._fi_opt.num_features_to_plot,
+                                title=f"{feature_importance_type} - {model_type}",
+                            )
+                            save_dir = fi_plot_dir(
+                                biofefi_experiments_base_dir()
+                                / self._exec_opt.experiment_name
+                            )
+                            create_directory(
+                                save_dir
+                            )  # will create the directory if it doesn't exist
+                            fig.savefig(
+                                save_dir
+                                / f"{feature_importance_type}-{model_type}-violin.png"
                             )
                             feature_importance_results[model_type][
                                 feature_importance_type

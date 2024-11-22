@@ -256,7 +256,7 @@ if experiment_name:
     if model_choices := st.session_state.get(ConfigStateKeys.ExplainModels):
         fi_options_form()
 
-        if st.button("Run Feature Importance"):
+        if st.button("Run Feature Importance", type="primary"):
             config = build_configuration()
             process = Process(target=pipeline, args=config, daemon=True)
             process.start()
