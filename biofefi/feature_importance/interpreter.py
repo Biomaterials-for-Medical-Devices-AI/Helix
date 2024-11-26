@@ -243,7 +243,7 @@ class Interpreter:
                         )
                         save_importance_results(
                             feature_importance_df=mean_results,
-                            model_type=None,
+                            model_type=f"Ensemble {ensemble_type}",
                             importance_type=None,
                             feature_importance_type=ensemble_type,
                             experiment_name=self._exec_opt.experiment_name,
@@ -260,7 +260,7 @@ class Interpreter:
                         )
                         save_importance_results(
                             feature_importance_df=majority_vote_results,
-                            model_type=None,
+                            model_type=f"Ensemble {ensemble_type}",
                             importance_type=None,
                             feature_importance_type=ensemble_type,
                             experiment_name=self._exec_opt.experiment_name,
