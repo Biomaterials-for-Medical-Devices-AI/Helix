@@ -1,6 +1,20 @@
 from pathlib import Path
 from pickle import UnpicklingError, dump, load
+from biofefi.options.ml import MachineLearningOptions
+import json, dataclasses
 import os
+
+
+def save_ml_options(path: Path, options: MachineLearningOptions):
+    """Save plot options to a `json` file at the specified path.
+
+    Args:
+        path (Path): The path to the `json` file.
+        options (MachineLearningOptions): The options to save.
+    """
+    options_json = dataclasses.asdict(options)
+    with open(path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
 
 
 def save_model(model, path: Path):

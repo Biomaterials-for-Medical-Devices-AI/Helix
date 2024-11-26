@@ -161,3 +161,23 @@ def execution_options_path(experiment_path: str) -> Path:
     ```
     """
     return experiment_path / "execution_options.json"
+
+
+def ml_options_path(experiment_path: str) -> Path:
+    """Return the path to an experiment's ML options.
+    The path will be to a `json` file called `ml_options.json`
+
+    Args:
+        experiment_path (str): The path of the experiment.
+
+    Returns:
+        Path: The path to the experiment's plot options.
+
+    Examples:
+    ```python
+    experiment_name = "test"
+    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    ml_options_file = ml_options_path(experiment_path)
+    ```
+    """
+    return experiment_path / "ml_options.json"
