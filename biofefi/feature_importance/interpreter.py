@@ -9,7 +9,6 @@ from biofefi.feature_importance.ensemble_methods import (
 )
 from biofefi.feature_importance.feature_importance_methods import (
     calculate_permutation_importance,
-    calculate_shap_values,
     calculate_lime_values,
 )
 from biofefi.machine_learning.data import TabularData
@@ -17,7 +16,15 @@ from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import biofefi_experiments_base_dir, fi_plot_dir
 from biofefi.options.plotting import PlottingOptions
-from biofefi.services.plotting import plot_lime_importance
+from biofefi.services.fi import (
+    calculate_global_shap_values,
+    calculate_local_shap_values,
+)
+from biofefi.services.plotting import (
+    plot_global_shap_importance,
+    plot_lime_importance,
+    plot_local_shap_importance,
+)
 from biofefi.utils.logging_utils import Logger
 from biofefi.utils.utils import create_directory
 
@@ -121,19 +128,28 @@ class Interpreter:
 
                         if feature_importance_type == "SHAP":
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(
-                                model[0], X, value["type"], self._fi_opt, self._logger
-                            )
-                            save_importance_results(
-                                feature_importance_df=shap_df,
-                                model_type=model_type,
-                                importance_type=value["type"],
-                                feature_importance_type=feature_importance_type,
-                                experiment_name=self._exec_opt.experiment_name,
-                                fi_opt=self._fi_opt,
-                                plot_opt=self._plot_opt,
+                            shap_df, _ = calculate_global_shap_values(
+                                model=model[0],
+                                X=X,
+                                shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
-                                shap_values=shap_values,
+                            )
+                            fig = plot_global_shap_importance(
+                                shap_values=shap_df,
+                                plot_opts=self._plot_opt,
+                                num_features_to_plot=self._fi_opt.num_features_to_plot,
+                                title=f"{feature_importance_type} - {value['type']} - {model_type}",
+                            )
+                            save_dir = fi_plot_dir(
+                                biofefi_experiments_base_dir()
+                                / self._exec_opt.experiment_name
+                            )
+                            create_directory(
+                                save_dir
+                            )  # will create the directory if it doesn't exist
+                            fig.savefig(
+                                save_dir
+                                / f"{feature_importance_type}-{value['type']}-{model_type}-bar.png"
                             )
                             feature_importance_results[model_type][
                                 feature_importance_type
@@ -199,19 +215,28 @@ class Interpreter:
 
                         if feature_importance_type == "SHAP":
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(
-                                model[0], X, value["type"], self._fi_opt, self._logger
-                            )
-                            save_importance_results(
-                                feature_importance_df=shap_df,
-                                model_type=model_type,
-                                importance_type=value["type"],
-                                feature_importance_type=feature_importance_type,
-                                experiment_name=self._exec_opt.experiment_name,
-                                fi_opt=self._fi_opt,
-                                plot_opt=self._plot_opt,
+                            shap_df, shap_values = calculate_local_shap_values(
+                                model=model[0],
+                                X=X,
+                                shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
+                            )
+                            fig = plot_local_shap_importance(
                                 shap_values=shap_values,
+                                plot_opts=self._plot_opt,
+                                num_features_to_plot=self._fi_opt.num_features_to_plot,
+                                title=f"{feature_importance_type} - {value['type']} - {model_type}",
+                            )
+                            save_dir = fi_plot_dir(
+                                biofefi_experiments_base_dir()
+                                / self._exec_opt.experiment_name
+                            )
+                            create_directory(
+                                save_dir
+                            )  # will create the directory if it doesn't exist
+                            fig.savefig(
+                                save_dir
+                                / f"{feature_importance_type}-{value['type']}-{model_type}-beeswarm.png"
                             )
                             feature_importance_results[model_type][
                                 feature_importance_type
