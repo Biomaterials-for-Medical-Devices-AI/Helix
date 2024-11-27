@@ -200,10 +200,20 @@ def fi_options_form():
         "Define the number of features, clusters, and granular options for enhanced interpretability."
     )
 
+    # both ensemble_methods and local_importance_methods
+    fuzzy_is_disabled = (not (use_lime or use_local_shap)) or (
+        not (use_mean or use_majority)
+    )
+    if fuzzy_is_disabled:
+        st.warning(
+            "You must configure both ensemble and local importance methods to use fuzzy feature selection.",
+            icon="⚠",
+        )
     fuzzy_feature_selection = st.checkbox(
         "Enable Fuzzy Feature Selection",
         help="Toggle fuzzy feature selection to analyze feature interactions.",
         key=ConfigStateKeys.FuzzyFeatureSelection,
+        disabled=fuzzy_is_disabled,
     )
 
     if fuzzy_feature_selection:

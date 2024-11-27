@@ -230,15 +230,6 @@ if experiment_name:
     data_choices = os.listdir(biofefi_experiments_base_dir() / experiment_name)
     data_choices = filter(lambda x: x.endswith(".csv"), data_choices)
 
-    # data_selector(data_choices)
-
-    # # Fuzzy options require this
-    # # TODO: get this from a saved configuration from ML
-    # st.selectbox(
-    #     "Problem type",
-    #     PROBLEM_TYPES,
-    #     key=ConfigStateKeys.ProblemType,
-    # )
     model_choices = os.listdir(
         ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
     )
