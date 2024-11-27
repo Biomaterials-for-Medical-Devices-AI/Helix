@@ -63,6 +63,11 @@ def save_importance_results(
         shap_values (_type_, optional): SHAP values. Defaults to None.
     """
 
+    # Return early if feature_importance_df is empty
+    if feature_importance_df.empty:
+        logger.info(f"No importance results for {feature_importance_type}...")
+        return
+
     biofefi_base_dir = biofefi_experiments_base_dir()
     logger.info(f"Saving importance results and plots of {feature_importance_type}...")
 

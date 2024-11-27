@@ -98,19 +98,30 @@ def fi_options_form():
 
     st.session_state[ConfigStateKeys.GlobalFeatureImportanceMethods] = global_methods
 
-    st.write("### Feature Importance Ensemble Methods")
+    st.write("### Ensemble Feature Importance Methods")
     st.write(
         "Ensemble methods combine results from multiple feature importance techniques, "
         "enhancing robustness. Choose how to aggregate feature importance insights."
     )
 
+    # global methods need to be set to perform ensemble methods
+    ensemble_is_disabled = not (use_permutation or use_shap)
+    if ensemble_is_disabled:
+        st.warning(
+            "You must configure at least one global feature importance method to perform ensemble methods.",
+            icon="⚠",
+        )
     ensemble_methods = {}
     use_mean = st.checkbox(
-        "Mean", help="Calculate the mean importance score across methods."
+        "Mean",
+        help="Calculate the mean importance score across methods.",
+        disabled=ensemble_is_disabled,
     )
     ensemble_methods["Mean"] = use_mean
     use_majority = st.checkbox(
-        "Majority Vote", help="Use majority voting to identify important features."
+        "Majority Vote",
+        help="Use majority voting to identify important features.",
+        disabled=ensemble_is_disabled,
     )
     ensemble_methods["Majority Vote"] = use_majority
 
