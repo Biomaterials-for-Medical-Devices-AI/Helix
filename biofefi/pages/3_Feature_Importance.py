@@ -6,7 +6,7 @@ from biofefi.components.forms import fi_options_form
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.plotting import PlottingOptions
-from biofefi.services.configuration import load_execution_options
+from biofefi.services.configuration import load_execution_options, save_options
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
 from biofefi.services.ml_models import load_models_to_explain
@@ -18,7 +18,9 @@ from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     execution_options_path,
+    fi_options_path,
     fi_plot_dir,
+    fuzzy_options_path,
     fuzzy_plot_dir,
     log_dir,
     plot_options_path,
@@ -30,7 +32,7 @@ from biofefi.options.file_paths import (
     log_dir,
     ml_model_dir,
 )
-from biofefi.services.plotting import load_plot_options
+from biofefi.services.configuration import load_plot_options
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import set_seed, cancel_pipeline
 from biofefi.components.experiments import (
@@ -81,10 +83,13 @@ def build_configuration() -> (
             ),
             number_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
             save_fuzzy_set_plots=plotting_options.save_plots,
-            fuzzy_log_dir=log_dir(
-                biofefi_base_dir / st.session_state[ViewExperimentKeys.ExperimentName]
-            )
-            / "fuzzy",
+            fuzzy_log_dir=str(
+                log_dir(
+                    biofefi_base_dir
+                    / st.session_state[ViewExperimentKeys.ExperimentName]
+                )
+                / "fuzzy"
+            ),
         )
 
     # Set up feature importance options
@@ -100,10 +105,12 @@ def build_configuration() -> (
         ],
         shap_reduce_data=st.session_state[ConfigStateKeys.ShapDataPercentage],
         save_feature_importance_plots=plotting_options.save_plots,
-        fi_log_dir=log_dir(
-            biofefi_base_dir / st.session_state[ViewExperimentKeys.ExperimentName]
-        )
-        / "fi",
+        fi_log_dir=str(
+            log_dir(
+                biofefi_base_dir / st.session_state[ViewExperimentKeys.ExperimentName]
+            )
+            / "fi"
+        ),
         save_feature_importance_options=st.session_state[
             ConfigStateKeys.SaveFeatureImportanceOptions
         ],
@@ -223,16 +230,15 @@ st.write(
 
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
+base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
     st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
 
-    data_choices = os.listdir(biofefi_experiments_base_dir() / experiment_name)
+    data_choices = os.listdir(base_dir / experiment_name)
     data_choices = filter(lambda x: x.endswith(".csv"), data_choices)
 
-    model_choices = os.listdir(
-        ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
-    )
+    model_choices = os.listdir(ml_model_dir(base_dir / experiment_name))
     model_choices = [x for x in model_choices if x.endswith(".pkl")]
 
     explain_all_models = st.toggle(
@@ -249,6 +255,14 @@ if experiment_name:
 
         if st.button("Run Feature Importance", type="primary"):
             config = build_configuration()
+            # save FI options
+            fi_options_file = fi_options_path(base_dir / experiment_name)
+            save_options(fi_options_file, config[1])
+            # save Fuzzy options if configured
+            if config[0] is not None:
+                fuzzy_options_file = fuzzy_options_path(base_dir / experiment_name)
+                save_options(fi_options_file, config[0])
+
             process = Process(target=pipeline, args=config, daemon=True)
             process.start()
             cancel_button = st.button(
@@ -261,10 +275,10 @@ if experiment_name:
                 process.join()
             try:
                 st.session_state[ConfigStateKeys.FILogBox] = get_logs(
-                    log_dir(biofefi_experiments_base_dir() / experiment_name) / "fi"
+                    log_dir(base_dir / experiment_name) / "fi"
                 )
                 st.session_state[ConfigStateKeys.FuzzyLogBox] = get_logs(
-                    log_dir(biofefi_experiments_base_dir() / experiment_name) / "fuzzy"
+                    log_dir(base_dir / experiment_name) / "fuzzy"
                 )
                 log_box(
                     box_title="Feature Importance Logs", key=ConfigStateKeys.FILogBox
@@ -272,11 +286,9 @@ if experiment_name:
                 log_box(box_title="Fuzzy FI Logs", key=ConfigStateKeys.FuzzyLogBox)
             except NotADirectoryError:
                 pass
-            fi_plots = fi_plot_dir(biofefi_experiments_base_dir() / experiment_name)
+            fi_plots = fi_plot_dir(base_dir / experiment_name)
             if fi_plots.exists():
                 plot_box(fi_plots, "Feature importance plots")
-            fuzzy_plots = fuzzy_plot_dir(
-                biofefi_experiments_base_dir() / experiment_name
-            )
+            fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
             if fuzzy_plots.exists():
                 plot_box(fuzzy_plots, "Fuzzy plots")

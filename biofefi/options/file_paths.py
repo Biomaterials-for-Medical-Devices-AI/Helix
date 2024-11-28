@@ -98,7 +98,7 @@ def fuzzy_plot_dir(experiment_path: Path) -> Path:
     return experiment_path / "plots" / "fuzzy"
 
 
-def fuzzy_result_dir(experiment_path: str) -> Path:
+def fuzzy_result_dir(experiment_path: Path) -> Path:
     """Create the full path to the directory to save Fuzzy results.
 
     Args:
@@ -123,7 +123,7 @@ def biofefi_experiments_base_dir() -> Path:
     return Path.home() / "BioFEFIExperiments"
 
 
-def plot_options_path(experiment_path: str) -> Path:
+def plot_options_path(experiment_path: Path) -> Path:
     """Return the path to an experiment's plot options.
     The path will be to a `json` file called `plot_options.json`
 
@@ -143,7 +143,7 @@ def plot_options_path(experiment_path: str) -> Path:
     return experiment_path / "plot_options.json"
 
 
-def execution_options_path(experiment_path: str) -> Path:
+def execution_options_path(experiment_path: Path) -> Path:
     """Return the path to an experiment's execution options.
     The path will be to a `json` file called `execution_options.json`
 
@@ -163,7 +163,7 @@ def execution_options_path(experiment_path: str) -> Path:
     return experiment_path / "execution_options.json"
 
 
-def ml_options_path(experiment_path: str) -> Path:
+def ml_options_path(experiment_path: Path) -> Path:
     """Return the path to an experiment's ML options.
     The path will be to a `json` file called `ml_options.json`
 
@@ -171,7 +171,7 @@ def ml_options_path(experiment_path: str) -> Path:
         experiment_path (str): The path of the experiment.
 
     Returns:
-        Path: The path to the experiment's plot options.
+        Path: The path to the experiment's ML options.
 
     Examples:
     ```python
@@ -181,3 +181,43 @@ def ml_options_path(experiment_path: str) -> Path:
     ```
     """
     return experiment_path / "ml_options.json"
+
+
+def fi_options_path(experiment_path: Path) -> Path:
+    """Return the path to an experiment's FI options.
+    The path will be to a `json` file called `fi_options.json`
+
+    Args:
+        experiment_path (str): The path of the experiment.
+
+    Returns:
+        Path: The path to the experiment's FI options.
+
+    Examples:
+    ```python
+    experiment_name = "test"
+    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    fi_options_file = fi_options_path(experiment_path)
+    ```
+    """
+    return experiment_path / "fi_options.json"
+
+
+def fuzzy_options_path(experiment_path: Path) -> Path:
+    """Return the path to an experiment's Fuzzy options.
+    The path will be to a `json` file called `fuzzy_options.json`
+
+    Args:
+        experiment_path (str): The path of the experiment.
+
+    Returns:
+        Path: The path to the experiment's Fuzzy options.
+
+    Examples:
+    ```python
+    experiment_name = "test"
+    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    fuzzy_options_file = fuzzy_options_path(experiment_path)
+    ```
+    """
+    return experiment_path / "fuzzy_options.json"
