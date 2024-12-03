@@ -1,20 +1,18 @@
+import os
 from multiprocessing import Process
+
+import streamlit as st
+
+from biofefi.components.experiments import experiment_selector, model_selector
+from biofefi.components.forms import fi_options_form
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
 from biofefi.components.plots import plot_box
-from biofefi.components.forms import fi_options_form
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.fi import FeatureImportanceOptions
-from biofefi.options.plotting import PlottingOptions
-from biofefi.services.configuration import load_execution_options, save_options
-from biofefi.services.experiments import get_experiments
-from biofefi.services.logs import get_logs
-from biofefi.services.ml_models import load_models_to_explain
 from biofefi.feature_importance import feature_importance, fuzzy_interpretation
-from biofefi.options.fuzzy import FuzzyOptions
 from biofefi.machine_learning.data import DataBuilder
 from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
-
+from biofefi.options.execution import ExecutionOptions
+from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     execution_options_path,
@@ -23,24 +21,21 @@ from biofefi.options.file_paths import (
     fuzzy_options_path,
     fuzzy_plot_dir,
     log_dir,
+    ml_model_dir,
     plot_options_path,
 )
-
-from biofefi.options.file_paths import (
-    fi_plot_dir,
-    fuzzy_plot_dir,
-    log_dir,
-    ml_model_dir,
+from biofefi.options.fuzzy import FuzzyOptions
+from biofefi.options.plotting import PlottingOptions
+from biofefi.services.configuration import (
+    load_execution_options,
+    load_plot_options,
+    save_options,
 )
-from biofefi.services.configuration import load_plot_options
+from biofefi.services.experiments import get_experiments
+from biofefi.services.logs import get_logs
+from biofefi.services.ml_models import load_models_to_explain
 from biofefi.utils.logging_utils import Logger, close_logger
-from biofefi.utils.utils import set_seed, cancel_pipeline
-from biofefi.components.experiments import (
-    experiment_selector,
-    model_selector,
-)
-import streamlit as st
-import os
+from biofefi.utils.utils import cancel_pipeline, set_seed
 
 
 def build_configuration() -> (
@@ -49,8 +44,14 @@ def build_configuration() -> (
     """Build the configuration objects for the pipeline.
 
     Returns:
-        tuple[FuzzyOptions | None, FeatureImportanceOptions, ExecutionOptions, str, list]: The configuration for fuzzy, FI and ML pipelines,
-        the experiment name and the list of models to explain.
+        tuple[
+            FuzzyOptions | None,
+            FeatureImportanceOptions,
+            ExecutionOptions,
+            str,
+            list
+        ]: The configuration for fuzzy, FI and ML pipelines, the experiment name
+        and the list of models to explain.
     """
     biofefi_base_dir = biofefi_experiments_base_dir()
 
@@ -170,7 +171,7 @@ def pipeline(
         data_split=exec_opts.data_split,
     ).ingest()
 
-    ## Models will already be trained before feature importance
+    # Models will already be trained before feature importance
     trained_models = load_models_to_explain(
         ml_model_dir(biofefi_base_dir / experiment_name), explain_models
     )
@@ -195,7 +196,7 @@ def pipeline(
             log_dir(biofefi_base_dir / experiment_name) / "fuzzy"
         )
         fuzzy_logger = fuzzy_logger_instance.make_logger()
-        fuzzy_rules = fuzzy_interpretation.run(
+        fuzzy_interpretation.run(
             fuzzy_opt=fuzzy_opts,
             fi_opt=fi_opts,
             exec_opt=exec_opts,
@@ -221,9 +222,13 @@ st.set_page_config(
 st.header("Feature Importance")
 st.write(
     """
-    This page provides options for exploring and customising feature importance and interpretability methods in the trained machine learning models. 
-    You can configure global and local feature importance techniques, select ensemble approaches, and apply fuzzy feature selection. Options include tuning scoring functions, 
-    setting data percentages for SHAP analysis, and configuring rules for fuzzy synergy analysis to gain deeper insights into model behavior.
+    This page provides options for exploring and customising feature importance and
+    interpretability methods in the trained machine learning models.
+    You can configure global and local feature importance techniques,
+    select ensemble approaches, and apply fuzzy feature selection.
+    Options include tuning scoring functions, setting data percentages
+    for SHAP analysis, and configuring rules for fuzzy synergy analysis
+    to gain deeper insights into model behaviour.
     """
 )
 
@@ -269,7 +274,8 @@ if experiment_name:
                 "Cancel", on_click=cancel_pipeline, args=(process,)
             )
             with st.spinner(
-                "Feature Importance pipeline is running in the background. Check the logs for progress."
+                "Feature Importance pipeline is running in the background. "
+                "Check the logs for progress."
             ):
                 # wait for the process to finish or be cancelled
                 process.join()

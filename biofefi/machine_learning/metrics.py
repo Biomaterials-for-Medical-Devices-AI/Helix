@@ -1,13 +1,14 @@
 from typing import Dict
+
 from sklearn.metrics import (
-    mean_absolute_error,
-    r2_score,
-    root_mean_squared_error,
     accuracy_score,
     f1_score,
+    mean_absolute_error,
     precision_score,
+    r2_score,
     recall_score,
     roc_auc_score,
+    root_mean_squared_error,
 )
 
 from biofefi.options.enums import ProblemTypes

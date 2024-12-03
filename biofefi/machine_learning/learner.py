@@ -1,4 +1,3 @@
-import argparse
 from typing import Dict, Tuple
 
 import numpy as np

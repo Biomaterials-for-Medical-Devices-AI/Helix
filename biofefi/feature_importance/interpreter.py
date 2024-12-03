@@ -8,8 +8,8 @@ from biofefi.feature_importance.ensemble_methods import (
     calculate_ensemble_mean,
 )
 from biofefi.feature_importance.feature_importance_methods import (
-    calculate_permutation_importance,
     calculate_lime_values,
+    calculate_permutation_importance,
 )
 from biofefi.machine_learning.data import TabularData
 from biofefi.options.execution import ExecutionOptions
@@ -52,20 +52,22 @@ class Interpreter:
 
     def interpret(self, models: dict, data: TabularData) -> tuple[dict, dict, dict]:
         """
-        Interpret the model results using the selected feature importance methods and ensemble methods.
+        Interpret the model results using the selected feature importance methods
+        and ensemble methods.
         Parameters:
             models (dict): Dictionary of models.
             data (TabularData): The data to interpret.
         Returns:
-            tuple[dict, dict, dict]: Global, local and ensemble feature importance votes.
+            tuple[dict, dict, dict]:
+            Global, local and ensemble feature importance votes.
         """
         # Load just the first fold of the data and the first models for interpretation
         X, y = data.X_train[0], data.y_train[0]
-        self._logger.info(f"-------- Start of feature importance logging--------")
+        self._logger.info("-------- Start of feature importance logging--------")
         global_importance_results = self._individual_feature_importance(models, X, y)
         local_importance_results = self._local_feature_importance(models, X)
         ensemble_results = self._ensemble_feature_importance(global_importance_results)
-        self._logger.info(f"-------- End of feature importance logging--------")
+        self._logger.info("-------- End of feature importance logging--------")
 
         return global_importance_results, local_importance_results, ensemble_results
 
@@ -94,7 +96,8 @@ class Interpreter:
                 )
                 feature_importance_results[model_type] = {}
 
-                # Run methods with TRUE values in the dictionary of feature importance methods
+                # Run methods with TRUE values in the dictionary
+                # of feature importance methods
                 for (
                     feature_importance_type,
                     value,

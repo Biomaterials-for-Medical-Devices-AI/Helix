@@ -1,5 +1,7 @@
 from typing import Literal
+
 import streamlit as st
+
 from biofefi.options.enums import ConfigStateKeys
 
 

@@ -1,11 +1,12 @@
 import os
+
+from biofefi.machine_learning.call_methods import save_actual_pred_plots
 from biofefi.machine_learning.data import DataBuilder
 from biofefi.machine_learning.learner import Learner
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.utils.logging_utils import Logger
-from biofefi.machine_learning.call_methods import save_actual_pred_plots
 
 
 def run(

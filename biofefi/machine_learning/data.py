@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from biofefi.options.enums import DataSplitMethods, Normalisations
 
@@ -71,7 +72,9 @@ class DataBuilder:
         ):
             for i in range(self._n_bootstraps):
                 self._logger.info(
-                    f"Using holdout data split with test size {self._data_split['test_size']} for bootstrap {i+1}"
+                    "Using holdout data split "
+                    f"with test size {self._data_split['test_size']} "
+                    f"for bootstrap {i+1}"
                 )
                 X_train, X_test, y_train, y_test = train_test_split(
                     X,
@@ -127,7 +130,7 @@ class DataBuilder:
 
         if isinstance(self._numerical_cols, str) and self._numerical_cols == "all":
             self._numerical_cols = data.columns
-        elif type(self._numerical_cols) == pd.Index:
+        elif isinstance(self._numerical_cols, pd.Index):
             pass
         else:
             raise TypeError("numerical_cols must be a list of columns or 'all'.")

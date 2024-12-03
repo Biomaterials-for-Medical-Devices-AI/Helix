@@ -1,12 +1,12 @@
 from typing import Dict, List
-from sklearn.linear_model import LinearRegression, LogisticRegression
+
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.svm import SVC, SVR
 from xgboost import XGBClassifier, XGBRegressor
 
-from biofefi.options.enums import ProblemTypes, ModelNames
+from biofefi.options.enums import ModelNames, ProblemTypes
 from biofefi.utils.utils import assert_model_param
-
 
 _MODEL_PROBLEM_DICT = {
     (ModelNames.LinearModel, ProblemTypes.Classification): LogisticRegression,

@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
+
 import streamlit as st
+
 from biofefi.components.configuration import execution_options_box, plot_options_box
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.options.enums import (
@@ -105,16 +107,17 @@ st.set_page_config(
 st.header("New Experiment")
 st.write(
     """
-    Here you can start a new experiment. Once you create one, you will be able to select it
-    on the Machine Learning & Feature Importance pages.
+    Here you can start a new experiment. Once you create one, you will be able
+    to select it on the Machine Learning & Feature Importance pages.
     """
 )
 st.write(
     """
     ### Create a new experiment ⚗️
 
-    Give your experiment a name, upload your data, and click **Create**. If an experiment with the same name
-    already exists, or you don't provide a file, you will not be able to create it.
+    Give your experiment a name, upload your data, and click **Create**.
+    If an experiment with the same name already exists, or you don't provide a file,
+    you will not be able to create it.
     """
 )
 
@@ -132,8 +135,8 @@ else:
 
 st.write(
     """
-    Upload your data file as a CSV and then define how the data will be normalised and split between
-    training and test data.
+    Upload your data file as a CSV and then define how the data will be normalised and
+    split between training and test data.
     """
 )
 st.file_uploader("Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName)
@@ -144,7 +147,7 @@ st.text_input(
 st.subheader("Configure data options")
 execution_options_box()
 
-## Set up plotting options for the experiment
+# Set up plotting options for the experiment
 st.subheader("Configure experiment plots")
 plot_options_box()
 

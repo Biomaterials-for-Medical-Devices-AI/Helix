@@ -1,14 +1,15 @@
-from biofefi.options.choices import (
-    DATA_SPLITS,
-    PLOT_FONT_FAMILIES,
-    SVM_KERNELS,
-    PROBLEM_TYPES,
-    NORMALISATIONS,
-)
-from biofefi.options.enums import ConfigStateKeys, DataSplitMethods, PlotOptionKeys
-import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+import streamlit as st
+
+from biofefi.options.choices import (
+    DATA_SPLITS,
+    NORMALISATIONS,
+    PLOT_FONT_FAMILIES,
+    PROBLEM_TYPES,
+    SVM_KERNELS,
+)
+from biofefi.options.enums import ConfigStateKeys, DataSplitMethods, PlotOptionKeys
 
 
 @st.experimental_fragment

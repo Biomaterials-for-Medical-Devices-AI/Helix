@@ -1,9 +1,10 @@
 import os
+
 import streamlit as st
 
+from biofefi.components.experiments import experiment_selector
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.experiments import experiment_selector
 from biofefi.components.plots import plot_box
 from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
 from biofefi.options.file_paths import (
@@ -14,7 +15,6 @@ from biofefi.options.file_paths import (
     ml_plot_dir,
 )
 from biofefi.services.logs import get_logs
-
 
 st.set_page_config(
     page_title="View Experiment",

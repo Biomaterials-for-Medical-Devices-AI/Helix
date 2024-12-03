@@ -1,10 +1,11 @@
+import warnings
 from typing import Any
-from sklearn.base import is_classifier
+
 import pandas as pd
 import shap
-from sklearn.inspection import permutation_importance
 from lime.lime_tabular import LimeTabularExplainer
-import warnings
+from sklearn.base import is_classifier
+from sklearn.inspection import permutation_importance
 
 from biofefi.options.enums import ProblemTypes
 from biofefi.options.fi import FeatureImportanceOptions
@@ -53,7 +54,7 @@ def calculate_permutation_importance(
         permutation_importance_results.importances_mean, index=X.columns
     )
 
-    logger.info(f"Permutation Importance Analysis Completed..")
+    logger.info("Permutation Importance Analysis Completed..")
 
     # Return the DataFrame
     return permutation_importance_df
@@ -105,7 +106,7 @@ def calculate_shap_values(
     else:
         raise ValueError("SHAP type must be either local or global")
 
-    logger.info(f"SHAP Importance Analysis Completed..")
+    logger.info("SHAP Importance Analysis Completed..")
 
     # Return the DataFrame
     return shap_df, shap_values
@@ -149,6 +150,6 @@ def calculate_lime_values(
 
     # TODO: scale coefficients between 0 and +1 (low to high impact)
 
-    logger.info(f"LIME Importance Analysis Completed..")
+    logger.info("LIME Importance Analysis Completed..")
 
     return lr_lime_values

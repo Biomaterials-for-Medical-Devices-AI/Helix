@@ -1,6 +1,6 @@
+import os
 from pathlib import Path
 from pickle import UnpicklingError, dump, load
-import os
 
 
 def save_model(model, path: Path):

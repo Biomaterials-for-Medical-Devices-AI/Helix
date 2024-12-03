@@ -14,7 +14,8 @@ class Logger(object):
         path to the log directory
 
     logging_level: str
-        required Level of logging. INFO, WARNING or ERROR can be selected. Default to 'INFO'
+        required Level of logging. INFO, WARNING or ERROR can be selected.
+        Default to 'INFO'
 
     console_logger: bool
         flag if console_logger is required. Default to False
@@ -48,7 +49,8 @@ class Logger(object):
             self._level = logging.ERROR
         else:
             raise ValueError(
-                "logging_level not specified correctly. INFO, WARNING or ERROR must be chosen"
+                "logging_level not specified correctly. "
+                "INFO, WARNING or ERROR must be chosen"
             )
 
     def make_logger(self):

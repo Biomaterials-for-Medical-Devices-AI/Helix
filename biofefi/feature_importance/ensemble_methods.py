@@ -13,7 +13,7 @@ def calculate_ensemble_mean(feature_importance_results, logger: Logger):
     Returns:
         ensemble_mean: Mean of feature importance results
     """
-    logger.info(f"Calculating Mean ensemble importance...")
+    logger.info("Calculating Mean ensemble importance...")
 
     # create a dataframe to store the mean of feature importance results
     # with the feature names as the index
@@ -37,7 +37,7 @@ def calculate_ensemble_mean(feature_importance_results, logger: Logger):
     # Add the feature names as index to the ensemble_mean dataframe
     ensemble_mean.index = result.index
 
-    logger.info(f"Mean ensemble importance calculated...")
+    logger.info("Mean ensemble importance calculated...")
 
     # Return the DataFrame
     return ensemble_mean
@@ -56,7 +56,7 @@ def calculate_ensemble_majorityvote(feature_importance_results, logger: Logger):
         ensemble_majorityvote: Majority vote of feature importance results
 
     """
-    logger.info(f"Calculating Majority Vote ensemble importance...")
+    logger.info("Calculating Majority Vote ensemble importance...")
 
     ensemble_majorityvote = pd.DataFrame()
     # Loop through each model and scale the feature importance values between 0 and 1
@@ -90,7 +90,7 @@ def calculate_ensemble_majorityvote(feature_importance_results, logger: Logger):
         ensemble_majorityvote.where(final_majority_votes, 0).mean(axis=1).to_frame()
     )
 
-    logger.info(f"Majority Vote ensemble importance calculated...")
+    logger.info("Majority Vote ensemble importance calculated...")
 
     return ensemble_majorityvote
 

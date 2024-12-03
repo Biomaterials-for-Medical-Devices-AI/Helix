@@ -1,8 +1,8 @@
 from biofefi.options.enums import (
     DataSplitMethods,
+    Normalisations,
     ProblemTypes,
     SvmKernels,
-    Normalisations,
 )
 
 SVM_KERNELS = [

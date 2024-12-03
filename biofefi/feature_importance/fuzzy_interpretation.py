@@ -1,14 +1,8 @@
-import os
-import sys
-
+from biofefi.feature_importance.fuzzy import Fuzzy
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions
 from biofefi.options.plotting import PlottingOptions
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from biofefi.feature_importance.fuzzy import Fuzzy
 
 
 def run(

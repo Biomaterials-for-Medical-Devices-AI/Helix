@@ -1,4 +1,5 @@
 from typing import Any
+
 import pandas as pd
 import shap
 
@@ -37,7 +38,7 @@ def calculate_global_shap_values(
         pd.DataFrame(shap_values.values, columns=X.columns).abs().mean().to_frame()
     )
 
-    logger.info(f"SHAP Importance Analysis Completed..")
+    logger.info("SHAP Importance Analysis Completed..")
 
     # Return the DataFrame
     return shap_df, shap_values
@@ -73,7 +74,7 @@ def calculate_local_shap_values(
     shap_df = pd.DataFrame(shap_values.values, columns=X.columns, index=X.index)
     # TODO: scale coefficients between 0 and +1 (low to high impact)
 
-    logger.info(f"SHAP Importance Analysis Completed..")
+    logger.info("SHAP Importance Analysis Completed..")
 
     # Return the DataFrame
     return shap_df, shap_values

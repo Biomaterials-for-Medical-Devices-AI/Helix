@@ -1,5 +1,6 @@
-import streamlit as st
 import os
+
+import streamlit as st
 
 PATH_TO_SMALL_ICON = os.path.join(
     os.path.dirname(__file__),

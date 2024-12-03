@@ -1,10 +1,10 @@
-import inspect
-from pathlib import Path
-import random
 import argparse
+import inspect
 import os
-from multiprocessing import Process
+import random
 import shutil
+from multiprocessing import Process
+from pathlib import Path
 
 import numpy as np
 

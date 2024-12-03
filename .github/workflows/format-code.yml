@@ -1,4 +1,4 @@
-name: Format Python Code with Black
+name: Code Quality Check
 
 on:
   - pull_request
@@ -16,3 +16,23 @@ jobs:
        with:
          path: '.'
          black_flags: '--safe --verbose --diff'
+
+  code_quality_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+          ref: ${{ github.ref }}
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Setup Python
+        uses: actions/setup-python@v5.3.0
+        with:
+          python-version: '3.11'
+          cache: "poetry"     
+      - name: Install dependencies
+        run: poetry install
+      - name: Run Flake8
+        run: poetry run flake8 biofefi
+

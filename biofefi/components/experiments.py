@@ -1,7 +1,8 @@
-import streamlit as st
 from pathlib import Path
-from biofefi.options.enums import ViewExperimentKeys, ConfigStateKeys
-from biofefi.options.file_paths import biofefi_experiments_base_dir
+
+import streamlit as st
+
+from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
 
 
 def experiment_selector(options: list) -> str:

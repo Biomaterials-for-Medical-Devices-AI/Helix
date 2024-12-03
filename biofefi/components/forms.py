@@ -1,16 +1,17 @@
 import os
 from pathlib import Path
+
 import streamlit as st
-from biofefi.options.choices import PROBLEM_TYPES, SVM_KERNELS
+
+from biofefi.options.choices import SVM_KERNELS
 from biofefi.options.enums import (
     ConfigStateKeys,
     ExecutionStateKeys,
     PlotOptionKeys,
     ProblemTypes,
 )
+from biofefi.options.file_paths import biofefi_experiments_base_dir, ml_model_dir
 from biofefi.services.ml_models import load_models
-from biofefi.options.file_paths import ml_model_dir
-from biofefi.options.file_paths import biofefi_experiments_base_dir
 
 
 def data_upload_form():
@@ -305,7 +306,7 @@ def ml_options_form():
         else:
             st.session_state[ConfigStateKeys.RerunML] = True
 
-    except:
+    except Exception:
         st.session_state[ConfigStateKeys.RerunML] = True
 
     if st.session_state[ConfigStateKeys.RerunML]:

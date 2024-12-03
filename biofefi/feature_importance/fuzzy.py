@@ -1,16 +1,13 @@
-import argparse
 import pandas as pd
 
-from biofefi.feature_importance.call_methods import save_importance_results
-from biofefi.feature_importance.feature_importance_methods import (
-    calculate_shap_values,
-    calculate_lime_values,
-)
-from biofefi.machine_learning import train
 from biofefi.feature_importance.call_methods import (
-    save_importance_results,
     save_fuzzy_sets_plots,
+    save_importance_results,
     save_target_clusters_plots,
+)
+from biofefi.feature_importance.feature_importance_methods import (
+    calculate_lime_values,
+    calculate_shap_values,
 )
 from biofefi.options.enums import ProblemTypes
 from biofefi.options.execution import ExecutionOptions
@@ -54,7 +51,7 @@ class Fuzzy:
         """
         # create a copy of the data - select first fold of the data
         X_train, X_test = data.X_train[0], data.X_test[0]
-        self._logger.info(f"-------- Start of fuzzy interpretation logging--------")
+        self._logger.info("-------- Start of fuzzy interpretation logging--------")
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._fuzzy_opt.fuzzy_feature_selection:
             # Select top features for fuzzy interpretation
@@ -111,7 +108,7 @@ class Fuzzy:
         )
 
         # local_importance_results = self._local_feature_importance(models, X, y)
-        self._logger.info(f"-------- End of fuzzy interpretation logging--------")
+        self._logger.info("-------- End of fuzzy interpretation logging--------")
 
         return df_contextual_rules
 
@@ -139,13 +136,14 @@ class Fuzzy:
         Returns:
             pd.DataFrame: Features with granularity.
         """
+        import warnings
+
         import numpy as np
         import skfuzzy as fuzz
-        import warnings
 
         # Suppress all warnings
         warnings.filterwarnings("ignore")
-        self._logger.info(f"Assigning granularity to features...")
+        self._logger.info("Assigning granularity to features...")
         # find interquartile values for each feature
         df_top_qtl = X.quantile([0, 0.25, 0.5, 0.75, 1])
         # Create membership functions based on interquartile values for each feature
@@ -311,7 +309,7 @@ class Fuzzy:
         import numpy as np
         import skfuzzy as fuzz
 
-        self._logger.info(f"Extracting fuzzy rules...")
+        self._logger.info("Extracting fuzzy rules...")
         if self._exec_opt.problem_type == ProblemTypes.Regression:
             target = np.array(df[df.columns[-1]])
             centers, membership_matrix, _, _, _, _, _ = fuzz.cluster.cmeans(
@@ -426,7 +424,7 @@ class Fuzzy:
             pd.DataFrame: Most occuring fuzzy rules.
         """
         self._logger.info(
-            f"Use most occuring fuzzy rules to extract synergy of features..."
+            "Use most occuring fuzzy rules to extract synergy of features..."
         )
         # Drop rules with all NaN values
         fuzzy_rules_df.dropna(how="all", axis=1, inplace=True)
@@ -479,7 +477,7 @@ class Fuzzy:
         Returns:
             dict: Dictionary of feature importance results.
         """
-        self._logger.info(f"Creating master feature importance dataframe...")
+        self._logger.info("Creating master feature importance dataframe...")
         feature_importance_results = {}
 
         if not any(self._local_importance_methods.values()):
