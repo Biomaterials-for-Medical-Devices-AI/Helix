@@ -34,6 +34,8 @@ biofefi = "biofefi.launch:main"
 flake8 = "^7.1.1"
 isort = "^5.13.2"
 flake8-isort = "^6.1.1"
+sphinx = "^8.1.3"
+myst-parser = "^4.0.0"
 
 [tool.isort]
 profile = "black"

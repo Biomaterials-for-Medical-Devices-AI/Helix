@@ -20,6 +20,9 @@ def get_experiments() -> list[str]:
     """
     # Get the base directory of all experiments
     base_dir = biofefi_experiments_base_dir()
+    if not base_dir.exists():
+        # if no experiments directory, return empty list
+        return []
     experiments = os.listdir(base_dir)
     # Filter out hidden files and directories
     experiments = filter(lambda x: not x.startswith("."), experiments)

@@ -1,5 +1,3 @@
-import os
-
 import streamlit as st
 
 from biofefi.components.experiments import experiment_selector
@@ -14,6 +12,7 @@ from biofefi.options.file_paths import (
     log_dir,
     ml_plot_dir,
 )
+from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
 
 st.set_page_config(
@@ -35,16 +34,11 @@ st.write(
     """
 )
 
-# Get the base directory of all experiments
-base_dir = biofefi_experiments_base_dir()
-choices = os.listdir(base_dir)
-# Filter out hidden files and directories
-choices = filter(lambda x: not x.startswith("."), choices)
-# Filter out files
-choices = filter(lambda x: os.path.isdir(os.path.join(base_dir, x)), choices)
 
+choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
+    base_dir = biofefi_experiments_base_dir()
     experiment_path = base_dir / experiment_name
     ml_plots = ml_plot_dir(experiment_path)
     if ml_plots.exists():
@@ -59,14 +53,20 @@ if experiment_name:
         st.session_state[ConfigStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"
         )
+        log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
+    except NotADirectoryError:
+        pass
+    try:
         st.session_state[ConfigStateKeys.FILogBox] = get_logs(
             log_dir(experiment_path) / "fi"
         )
+        log_box(box_title="Feature Importance Logs", key=ConfigStateKeys.FILogBox)
+    except NotADirectoryError:
+        pass
+    try:
         st.session_state[ConfigStateKeys.FuzzyLogBox] = get_logs(
             log_dir(experiment_path) / "fuzzy"
         )
-        log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
-        log_box(box_title="Feature Importance Logs", key=ConfigStateKeys.FILogBox)
         log_box(box_title="Fuzzy FI Logs", key=ConfigStateKeys.FuzzyLogBox)
     except NotADirectoryError:
         pass
