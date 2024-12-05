@@ -1,9 +1,11 @@
-name: Check docs build
+name: Reusable docs builder workflow
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        type: string
 
 jobs:
   build-docs:
@@ -34,3 +36,10 @@ jobs:
     - name: Build HTML documentation
       working-directory: docs
       run: make html
+
+    - name: Upload artifacts (optional)
+      if: success()
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ inputs.artifact_name }}
+        path: docs/_build/html
