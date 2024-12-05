@@ -117,7 +117,7 @@ def cancel_pipeline(p: Process):
 
 
 def delete_directory(path: Path):
-    """Delete the previous results from the log_dir
+    """Delete a directory and all of its contents.
 
     Returns:
         None
@@ -125,4 +125,18 @@ def delete_directory(path: Path):
     Args:
         path: The path to the log directory
     """
-    shutil.rmtree(path, ignore_errors=True)
+    if path.is_dir():
+        shutil.rmtree(path, ignore_errors=True)  # Remove the directory
+
+
+def delete_file(path: Path):
+    """Delete a file.
+
+    Returns:
+        None
+
+    Args:
+        path: The path to the log directory
+    """
+    if path.is_file():
+        path.unlink()  # Remove the file
