@@ -7,7 +7,7 @@ from biofefi.components.experiments import experiment_selector
 from biofefi.components.forms import ml_options_form
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.plots import plot_box
+from biofefi.components.plots import display_metrics_table, plot_box
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
 from biofefi.options.enums import ConfigStateKeys, PlotOptionKeys
@@ -16,6 +16,7 @@ from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     execution_options_path,
     log_dir,
+    ml_metrics_path,
     ml_model_dir,
     ml_options_path,
     ml_plot_dir,
@@ -30,7 +31,7 @@ from biofefi.services.configuration import (
 )
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
-from biofefi.services.ml_models import save_model
+from biofefi.services.ml_models import save_model, save_models_metrics
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import cancel_pipeline, delete_directory, set_seed
 
@@ -109,7 +110,7 @@ def pipeline(
     ).ingest()
 
     # Machine learning
-    trained_models = train.run(
+    trained_models, metrics_stats = train.run(
         ml_opts=ml_opts,
         exec_opts=exec_opts,
         plot_opts=plotting_opts,
@@ -125,6 +126,10 @@ def pipeline(
                 )
                 save_model(model, save_path)
 
+    save_models_metrics(
+        metrics_stats,
+        ml_metrics_path(biofefi_experiments_base_dir() / experiment_name),
+    )
     # Close the logger
     close_logger(logger_instance, logger)
 
@@ -183,6 +188,9 @@ if experiment_name:
             log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
         except NotADirectoryError:
             pass
+        metrics = ml_metrics_path(biofefi_base_dir / experiment_name)
+        if metrics.exists():
+            display_metrics_table(metrics)
         ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")

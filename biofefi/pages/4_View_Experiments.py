@@ -3,13 +3,14 @@ import streamlit as st
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.plots import plot_box
+from biofefi.components.plots import display_metrics_table, plot_box
 from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     fi_plot_dir,
     fuzzy_plot_dir,
     log_dir,
+    ml_metrics_path,
     ml_plot_dir,
 )
 from biofefi.services.experiments import get_experiments
@@ -40,6 +41,9 @@ experiment_name = experiment_selector(choices)
 if experiment_name:
     base_dir = biofefi_experiments_base_dir()
     experiment_path = base_dir / experiment_name
+    ml_metrics = ml_metrics_path(experiment_path)
+    if ml_metrics.exists():
+        display_metrics_table(ml_metrics)
     ml_plots = ml_plot_dir(experiment_path)
     if ml_plots.exists():
         plot_box(ml_plots, "Machine learning plots")

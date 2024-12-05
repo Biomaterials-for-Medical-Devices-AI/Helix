@@ -48,4 +48,4 @@ def run(
             n_bootstraps=exec_opts.n_bootstraps,
         )
 
-    return trained_models
+    return trained_models, metric_res_stats
