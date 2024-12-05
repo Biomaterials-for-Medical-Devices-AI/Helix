@@ -43,6 +43,7 @@ def run(
             opt=exec_opts,
             logger=logger,
             ml_metric_results=metric_res,
+            ml_metric_results_stats=metric_res_stats,
             ml_opts=ml_opts,
             plot_opts=plot_opts,
             n_bootstraps=exec_opts.n_bootstraps,

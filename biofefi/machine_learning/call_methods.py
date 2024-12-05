@@ -86,6 +86,7 @@ def save_actual_pred_plots(
     opt: ExecutionOptions,
     logger,
     ml_metric_results,
+    ml_metric_results_stats,
     n_bootstraps: int,
     plot_opts: PlottingOptions | None = None,
     ml_opts: MachineLearningOptions | None = None,
@@ -97,10 +98,30 @@ def save_actual_pred_plots(
         opt: Options
         logger: Logger
         ml_metric_results: metrics of machine learning models
+        ml_metric_results_stats: metrics mean and std
     Returns:
         None
     """
     if opt.problem_type == ProblemTypes.Regression:
+
+        model_boots_plot = {}
+
+        for model_name, stats in ml_metric_results_stats.items():
+            # Extract the mean R² for the test set
+            mean_r2_test = stats["test"]["R2"]["mean"]
+
+            # Find the bootstrap index closest to the mean R²
+            dif = float("inf")
+            closest_index = -1
+            for i, bootstrap in enumerate(ml_metric_results[model_name]):
+                r2_test_value = bootstrap["R2"]["test"]["value"]
+                current_dif = abs(r2_test_value - mean_r2_test)
+                if current_dif < dif:
+                    dif = current_dif
+                    closest_index = i
+
+            # Store the closest index
+            model_boots_plot[model_name] = closest_index
 
         # Create results directory if it doesn't exist
         directory = ml_opts.ml_plot_dir
@@ -116,6 +137,8 @@ def save_actual_pred_plots(
                 logger.info(f"Saving actual vs prediction plots of {model_name}...")
 
                 for i in range(n_bootstraps):
+                    if i != model_boots_plot[model_name]:
+                        continue
                     y_pred_test = ml_results[i][model_name]["y_pred_test"]
                     y_pred_train = ml_results[i][model_name]["y_pred_train"]
 
