@@ -4,7 +4,7 @@ import numpy as np
 
 from biofefi.machine_learning.get_models import get_models
 from biofefi.machine_learning.metrics import get_metrics
-from biofefi.options.enums import Normalisations, ProblemTypes
+from biofefi.options.enums import DataSplitMethods, Normalisations, ProblemTypes
 from biofefi.utils.logging_utils import Logger
 
 
@@ -34,8 +34,12 @@ class Learner:
         self._models = get_models(
             self._model_types, self._problem_type, logger=self._logger
         )
-        if self._data_split["type"] == "holdout":
+        if self._data_split["type"] == DataSplitMethods.Holdout:
             res, metric_res, metric_res_stats, trained_models = self._fit_holdout(data)
+            return res, metric_res, metric_res_stats, trained_models
+
+        elif self._data_split["type"] == DataSplitMethods.KFold:
+            res, metric_res, metric_res_stats, trained_models = self._fit_kfold(data)
             return res, metric_res, metric_res_stats, trained_models
 
     def _fit_holdout(self, data: Tuple) -> None:
@@ -53,6 +57,37 @@ class Learner:
             for model_name, model in self._models.items():
                 res[i][model_name] = {}
                 self._logger.info(f"Fitting {model_name} for bootstrap sample {i+1}...")
+                model.fit(X_train, y_train)
+                y_pred_train = model.predict(X_train)
+                res[i][model_name]["y_pred_train"] = y_pred_train
+                y_pred_test = model.predict(X_test)
+                res[i][model_name]["y_pred_test"] = y_pred_test
+                if model_name not in metric_res:
+                    metric_res[model_name] = []
+                metric_res[model_name].append(
+                    self._evaluate(
+                        model_name, y_train, y_pred_train, y_test, y_pred_test
+                    )
+                )
+                trained_models[model_name].append(model)
+        metric_res_stats = self._compute_metrics_statistics(metric_res)
+        return res, metric_res, metric_res_stats, trained_models
+
+    def _fit_kfold(self, data: Tuple) -> None:
+        self._logger.info("Fitting cross validation datasets...")
+        res = {}
+        metric_res = {}
+        trained_models = {model_name: [] for model_name in self._models.keys()}
+
+        for i in range(self._data_split["n_splits"]):
+            self._logger.info(f"Processing test fold sample {i+1}...")
+            X_train, X_test = data.X_train[i], data.X_test[i]
+            y_train, y_test = data.y_train[i], data.y_test[i]
+
+            res[i] = {}
+            for model_name, model in self._models.items():
+                res[i][model_name] = {}
+                self._logger.info(f"Fitting {model_name} for test fold sample {i+1}...")
                 model.fit(X_train, y_train)
                 y_pred_train = model.predict(X_train)
                 res[i][model_name]["y_pred_train"] = y_pred_train

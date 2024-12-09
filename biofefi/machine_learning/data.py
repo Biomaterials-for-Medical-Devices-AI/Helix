@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Tuple
 
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import KFold, train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from biofefi.options.enums import DataSplitMethods, Normalisations
@@ -86,6 +86,30 @@ class DataBuilder:
                 X_test_list.append(X_test)
                 y_train_list.append(y_train)
                 y_test_list.append(y_test)
+        elif (
+            self._data_split is not None
+            and self._data_split["type"].lower() == DataSplitMethods.KFold
+        ):
+            folds = self._data_split["n_splits"]
+            kf = KFold(n_splits=folds, shuffle=True, random_state=self._random_state)
+            kf.get_n_splits(X)
+
+            for i, (train_index, test_index) in enumerate(kf.split(X)):
+
+                self._logger.info(
+                    "Using K-Fold data split "
+                    f"with test size {len(test_index)} "
+                    f"for fold {i+1}"
+                )
+
+                X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+                y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+                X_train_list.append(X_train)
+                X_test_list.append(X_test)
+                y_train_list.append(y_train)
+                y_test_list.append(y_test)
+
         else:
             raise NotImplementedError(
                 f"Data split type {self._data_split['type']} is not implemented"
