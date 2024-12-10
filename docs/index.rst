@@ -10,6 +10,12 @@ Welcome to BioFEFI's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   users/index.md
+   users/installation.md
+   users/create_experiment.md
+   users/train_models.md
+   users/feature_importance.md
+   users/view_experiments.md
    apidocs/modules
 
 Indices and tables
