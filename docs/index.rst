@@ -8,7 +8,7 @@ Welcome to BioFEFI's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: User documentation:
 
    users/index.md
    users/installation.md
@@ -16,6 +16,14 @@ Welcome to BioFEFI's documentation!
    users/train_models.md
    users/feature_importance.md
    users/view_experiments.md
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Developer documentation:
+
+   devs/index.md
+   devs/installation.md
+   devs/code_quality.md
    apidocs/modules
 
 Indices and tables
