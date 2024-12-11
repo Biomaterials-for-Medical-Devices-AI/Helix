@@ -1,5 +1,6 @@
 import os
 from multiprocessing import Process
+from pathlib import Path
 
 import streamlit as st
 
@@ -163,7 +164,7 @@ def pipeline(
     biofefi_base_dir = biofefi_experiments_base_dir()
     seed = exec_opts.random_state
     set_seed(seed)
-    fi_logger_instance = Logger(log_dir(biofefi_base_dir / experiment_name) / "fi")
+    fi_logger_instance = Logger(Path(fi_opts.fi_log_dir))
     fi_logger = fi_logger_instance.make_logger()
 
     data = DataBuilder(
@@ -196,9 +197,7 @@ def pipeline(
 
     # Fuzzy interpretation
     if fuzzy_opts is not None and fuzzy_opts.fuzzy_feature_selection:
-        fuzzy_logger_instance = Logger(
-            log_dir(biofefi_base_dir / experiment_name) / "fuzzy"
-        )
+        fuzzy_logger_instance = Logger(Path(fuzzy_opts.fuzzy_log_dir))
         fuzzy_logger = fuzzy_logger_instance.make_logger()
         fuzzy_interpretation.run(
             fuzzy_opt=fuzzy_opts,

@@ -1,5 +1,6 @@
 import os
 from multiprocessing import Process
+from pathlib import Path
 
 import streamlit as st
 
@@ -97,7 +98,7 @@ def pipeline(
     """
     seed = exec_opts.random_state
     set_seed(seed)
-    logger_instance = Logger(log_dir(biofefi_experiments_base_dir() / experiment_name))
+    logger_instance = Logger(Path(ml_opts.ml_log_dir))
     logger = logger_instance.make_logger()
 
     data = DataBuilder(
