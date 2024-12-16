@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import streamlit as st
 
 from biofefi.options.choices import (
@@ -201,9 +203,10 @@ def plot_options_box():
         if save:
             st.write("### Preview")
             plt.style.use(cs)
-            arr = np.random.normal(1, 1, size=100)
+            arr = np.random.normal(1, 0.5, size=100)
+            data = pd.DataFrame({"A": arr, "B": arr, "C": arr})
             fig, ax = plt.subplots()
-            ax.hist(arr, bins=20)
+            sns.violinplot(data=data, ax=ax)
             ax.set_title("Title", fontsize=tfs, family=font)
             ax.set_xlabel("X axis", fontsize=afs, family=font)
             ax.set_ylabel("Y axis", fontsize=afs, family=font)
