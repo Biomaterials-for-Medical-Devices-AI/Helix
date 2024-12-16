@@ -81,15 +81,12 @@ def save_importance_results(
         plt.style.use(plot_opt.plot_colour_scheme)
         fig, ax = plt.subplots(layout="constrained")
 
-        feature_importance_df.sort_values(by=0, ascending=False).head(
-            fi_opt.num_features_to_plot
-        ).plot(
-            kind="bar",
-            legend=False,
-            ax=ax,
-            title=f"{feature_importance_type} - {model_type}",
-            ylabel="Importance",
+        top_features = (
+            feature_importance_df.sort_values(by=0, ascending=False)
+            .head(fi_opt.num_features_to_plot)
+            .T
         )
+        sns.barplot(top_features, ax=ax)
         # rotate x-axis labels for better readability
         ax.set_xticklabels(
             ax.get_xticklabels(),
@@ -101,9 +98,12 @@ def save_importance_results(
             rotation=plot_opt.angle_rotate_yaxis_labels,
             family=plot_opt.plot_font_family,
         )
-        ax.set_xlabel(ax.get_xlabel(), family=plot_opt.plot_font_family)
-        ax.set_ylabel(ax.get_ylabel(), family=plot_opt.plot_font_family)
-        ax.set_title(ax.get_title(), family=plot_opt.plot_font_family)
+        ax.set_xlabel("Feature", family=plot_opt.plot_font_family)
+        ax.set_ylabel("Importance", family=plot_opt.plot_font_family)
+        ax.set_title(
+            f"{feature_importance_type} - {model_type}",
+            family=plot_opt.plot_font_family,
+        )
         fig.savefig(save_dir / f"{model_type}-bar.png")
 
         if feature_importance_type == "SHAP":
@@ -164,6 +164,7 @@ def save_fuzzy_sets_plots(
         save_dir.mkdir(exist_ok=True, parents=True)
 
     plt.style.use(plot_opt.plot_colour_scheme)
+    plt.rcParams["font.family"] = plot_opt.plot_font_family
     for feature in x_cols:
         fig, ax = plt.subplots(layout="constrained")
         ax.plot(
@@ -198,7 +199,7 @@ def save_fuzzy_sets_plots(
             rotation=plot_opt.angle_rotate_yaxis_labels,
             family=plot_opt.plot_font_family,
         )
-        ax.legend(prop={"family": plot_opt.plot_font_family})
+        ax.legend()
         fig.savefig(save_dir / f"{feature}.png")
     plt.close()
 
@@ -215,7 +216,7 @@ def save_target_clusters_plots(
     # Plot boxplot of the target (continuous values) and target clusters (categories) using seaborn
     plt.style.use(plot_opt.plot_colour_scheme)
     fig, ax = plt.subplots(layout="constrained")
-    sns.boxplot(data=df_cluster, x="cluster", y="target", ax=ax)
+    sns.boxplot(data=df_cluster, x="cluster", y="target", hue="cluster", ax=ax)
     ax.set_xticklabels(
         ax.get_xticklabels(),
         rotation=plot_opt.angle_rotate_xaxis_labels,

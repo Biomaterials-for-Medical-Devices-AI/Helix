@@ -48,7 +48,7 @@ def plot_lime_importance(
         rotation=plot_opts.angle_rotate_yaxis_labels,
         family=plot_opts.plot_font_family,
     )
-    ax.set_xlabel(ax.get_xlabel(), family=plot_opts.plot_font_family)
+    ax.set_xlabel("Feature Name", family=plot_opts.plot_font_family)
     ax.set_ylabel("Importance", family=plot_opts.plot_font_family)
     ax.set_title(title, family=plot_opts.plot_font_family)
     return fig
@@ -121,7 +121,7 @@ def plot_global_shap_importance(
         shap_values.sort_values(by=0, ascending=False).head(num_features_to_plot).T
     )
     sns.barplot(data=plot_data, fill=True, ax=ax)
-    ax.set_xlabel(ax.get_xlabel(), family=plot_opts.plot_font_family)
+    ax.set_xlabel("Feature Name", family=plot_opts.plot_font_family)
     ax.set_ylabel("Abs. SHAP Importance", family=plot_opts.plot_font_family)
     ax.set_xticklabels(
         ax.get_xticklabels(),
