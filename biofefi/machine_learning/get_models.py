@@ -5,9 +5,14 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.svm import SVC, SVR
 from xgboost import XGBClassifier, XGBRegressor
 
+from biofefi.machine_learning.nn_models import (
+    BayesianRegularisedNNClassifier,
+    BayesianRegularisedNNRegressor,
+)
 from biofefi.options.enums import ModelNames, ProblemTypes
 from biofefi.utils.utils import assert_model_param
 
+# Mapping model types and problem types to specific model classes
 _MODEL_PROBLEM_DICT = {
     (ModelNames.LinearModel, ProblemTypes.Classification): LogisticRegression,
     (ModelNames.LinearModel, ProblemTypes.Regression): LinearRegression,
@@ -17,12 +22,36 @@ _MODEL_PROBLEM_DICT = {
     (ModelNames.XGBoost, ProblemTypes.Regression): XGBRegressor,
     (ModelNames.SVM, ProblemTypes.Classification): SVC,
     (ModelNames.SVM, ProblemTypes.Regression): SVR,
+    (
+        ModelNames.BRNNClassifier,
+        ProblemTypes.Classification,
+    ): BayesianRegularisedNNClassifier,
+    (ModelNames.BRNNRegressor, ProblemTypes.Regression): BayesianRegularisedNNRegressor,
 }
 
 
 def get_models(
     model_types: Dict[str, Dict], problem_type: str, logger: object = None
 ) -> List:
+    """
+    Constructs and initializes machine learning models
+    based on the given configuration.
+
+    Args:
+        model_types (dict): Dictionary containing model types
+        and their parameters.
+        problem_type (str): Type of problem (
+            classification or regression).
+        logger (object): Logger object to log messages.
+
+    Returns:
+        - List: A dictionary of initialized models where th
+        keys are model names and the values are instances
+        of the corresponding models.
+
+    Raises:
+        - ValueError: If a model type is not recognized or unsupported
+    """
     models = {}
     model_list = [
         (model_type, model["params"])

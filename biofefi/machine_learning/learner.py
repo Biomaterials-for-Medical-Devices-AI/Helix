@@ -1,6 +1,7 @@
 from typing import Dict, Tuple
 
 import numpy as np
+import pandas as pd
 
 from biofefi.machine_learning.get_models import get_models
 from biofefi.machine_learning.metrics import get_metrics
@@ -10,7 +11,18 @@ from biofefi.utils.logging_utils import Logger
 
 class Learner:
     """
-    Learner class
+    Learner class encapsulates the logic for initialising,
+    training, and evaluating machine learning models.
+
+    Args:
+        - model_types (dict): Dictionary containing model types
+        and their parameters.
+        - problem_type (ProblemTypes): Type of problem (
+        classification or regression).
+        - data_split (dict): Dictionary containing data split type and parameters
+        - normalization (Normalisations): Type of normalization to apply to the data
+        - n_bootstraps (int): Number of bootstrap samples to generate
+        - logger (Logger): Logger object to log messages
     """
 
     def __init__(
@@ -30,7 +42,67 @@ class Learner:
         self._n_bootstraps = n_bootstraps
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
 
+    def _process_data_for_bootstrap(data, i):
+        """
+        Extracts and converts the datasets for the given samples
+        if it is not a numpy array.
+
+        Args:
+            - data: Structured object containing `X_train`,
+            `X_test`, `y_train`, `y_test`.
+            - i (int): Index of the sample.
+
+        Returns:
+            - Tuple: Processed `X_train`, `X_test`, `y_train`,
+            `y_test` for the given sample.
+        """
+        try:
+            X_train = (
+                data.X_train[i].to_numpy()
+                if isinstance(data.X_train[i], pd.DataFrame)
+                else data.X_train[i]
+            )
+            X_test = (
+                data.X_test[i].to_numpy()
+                if isinstance(data.X_test[i], pd.DataFrame)
+                else data.X_test[i]
+            )
+            y_train = (
+                data.y_train[i].to_numpy()
+                if isinstance(data.y_train[i], pd.DataFrame)
+                else data.y_train[i]
+            )
+            y_test = (
+                data.y_test[i].to_numpy()
+                if isinstance(data.y_test[i], pd.DataFrame)
+                else data.y_test[i]
+            )
+        except Exception as e:
+            raise ValueError(
+                f"Error processing bootstrap data during train test split  {e}"
+            )
+
+        return X_train, X_test, y_train, y_test
+
     def fit(self, data: Tuple) -> None:
+        """
+        Fits machine learning models to the given data
+        and applies holdout strategy with bootstrap sampling.
+
+        Args:
+            - data (Tuple): Tuple containing training and testing data
+            for each bootstrap sample.
+
+        Returns:
+            - res (Dict): Dictionary containing model predictions for
+            each bootstrap sample.
+            - metric_res (Dict): Dictionary containing metric values for
+            each bootstrap sample.
+            - metric_res_stats (Dict): Dictionary containing average and
+            standard deviation of metric values across bootstrap samples.
+            - trained_models (Dict): Dictionary containing
+            trained models for each model type.
+        """
         self._models = get_models(
             self._model_types, self._problem_type, logger=self._logger
         )
@@ -43,6 +115,23 @@ class Learner:
             return res, metric_res, metric_res_stats, trained_models
 
     def _fit_holdout(self, data: Tuple) -> None:
+        """
+        Trains models using a holdout strategy with bootstrap sampling.
+
+        Args:
+            - data (Tuple): Tuple containing training and testing data
+            for each bootstrap sample.
+
+        Returns:
+            - res (Dict): Dictionary containing model predictions for
+            each bootstrap sample.
+            - metric_res (Dict): Dictionary containing metric values for
+            each bootstrap sample.
+            - metric_res_stats (Dict): Dictionary containing average and
+            standard deviation of metric values across bootstrap samples.
+            - trained_models (Dict): Dictionary containing
+            trained models for each model type.
+        """
         self._logger.info("Fitting holdout with bootstrapped datasets...")
         res = {}
         metric_res = {}
@@ -50,8 +139,7 @@ class Learner:
 
         for i in range(self._n_bootstraps):
             self._logger.info(f"Processing bootstrap sample {i+1}...")
-            X_train, X_test = data.X_train[i], data.X_test[i]
-            y_train, y_test = data.y_train[i], data.y_test[i]
+            X_train, X_test, y_train, y_test = self._process_data_for_bootstrap(data, i)
 
             res[i] = {}
             for model_name, model in self._models.items():
@@ -112,6 +200,16 @@ class Learner:
         y_test: np.ndarray,
         y_pred_test: np.ndarray,
     ) -> Dict:
+        """
+        Evaluates the performance of a model using specified metrics.
+
+        Args:
+            - model_name (str): Name of the model being evaluated.
+            - y_train (np.ndarray): True labels for the training set.
+            - y_pred_train (np.ndarray): Predicted labels for the training set.
+            - y_test (np.ndarray): True labels for the test set.
+            - y_pred_test (np.ndarray): Predicted labels for the test set.
+        """
         self._logger.info(f"Evaluating {model_name}...")
         eval_res = {}
         for metric_name, metric in self._metrics.items():
@@ -129,7 +227,15 @@ class Learner:
 
     def _compute_metrics_statistics(self, metric_res: Dict) -> Dict:
         """
-        Compute average and standard deviation of metric values across bootstrap samples
+        Compute metric statistics for each model.
+
+        Args:
+            - metric_res (Dict): Dictionary containing metric values
+            for each bootstrap sample.
+
+        Returns:
+            - Dict: Dictionary containing metric statistics for
+            each model.
         """
         statistics = {}
 
