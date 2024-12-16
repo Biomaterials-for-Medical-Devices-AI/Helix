@@ -135,6 +135,18 @@ def biofefi_experiments_base_dir() -> Path:
     return Path.home() / "BioFEFIExperiments"
 
 
+def data_analysis_plots_dir(experiment_path: Path) -> Path:
+    """Create the full path to the directory to save Data Analysis plots.
+
+    Args:
+        experiment_path (Path): The path of the experiment.
+
+    Returns:
+        Path: The full path for the Data Analysis plot directory.
+    """
+    return experiment_path / "plots" / "data_analysis"
+
+
 def plot_options_path(experiment_path: Path) -> Path:
     """Return the path to an experiment's plot options.
     The path will be to a `json` file called `plot_options.json`
