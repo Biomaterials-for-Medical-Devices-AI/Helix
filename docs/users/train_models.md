@@ -26,16 +26,16 @@ Depending on whether your problem type, which was configured on the [New Experim
   - Number of estimators: The number of decision trees in the forest.
   - Minimum samples split: The minimum number of samples to split an internal node.
   - Minimum samples leaf: The minimum number of samples required to be a leaf node.
-  - Maximum depth: The maximum depth of the tree.
+  - Maximum depth: The maximum depth of the tree. If disabled or 0, then nodes are expanded until all leaves are pure or until all leaves contain less than 'Minimum samples split'.,
 
 - **XGBoost**
 
-  If the problem type is "Classification", train a [XGB Classifier](https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.XGBClassifier) model. If the problem type is "Regression", train a [XGB Regressor](https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.XGBRegressor) model.
+  If the problem type is "Classification", train a [XGB Classifier](https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.XGBClassifier) model. If the problem type is "Regression", train a [XGB Regressor](https://xgboost.readthedocs.io/en/latest/python/python_api.html#xgboost.XGBRegressor) model. The parameters for this model are all optional. To congiure them, check the "Set XGBoost options" box.
 
   - Number of estimators: The number of boosting rounds.
-  - Maximum depth: The maximum depth of the base learners.
   - Learning rate: Boosting learning rate.
   - Subsample size: Subsample ratio of the training instance.
+  - Maximum depth: The maximum depth of the base learners. If disabled or 0, then nodes are expanded until all leaves are pure.
 
 - **Support Vector Machine**
 

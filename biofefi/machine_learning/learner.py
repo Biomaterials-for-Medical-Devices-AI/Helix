@@ -42,7 +42,7 @@ class Learner:
         self._n_bootstraps = n_bootstraps
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
 
-    def _process_data_for_bootstrap(data, i):
+    def _process_data_for_bootstrap(self, data, i):
         """
         Extracts and converts the datasets for the given samples
         if it is not a numpy array.
