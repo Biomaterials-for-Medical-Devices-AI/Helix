@@ -444,7 +444,7 @@ def ml_options_form():
 
 
 @st.experimental_fragment
-def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir):
+def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_opts):
     """
     Form to create the target variable distribution plot.
     """
@@ -462,9 +462,35 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir):
         "Create Target Variable Distribution Plot",
         key=ConfigStateKeys.TargetVarDistribution,
     ):
-
+        plt.style.use(plot_opts.plot_colour_scheme)
+        plt.figure(figsize=(10, 6))
         displot = sns.displot(data=data, x=data.columns[-1], kde=show_kde, bins=n_bins)
-        displot.set(title=f"{dep_var_name} Distribution")
+        plt.title(
+            f"{dep_var_name} Distribution",
+            fontdict={
+                "fontsize": plot_opts.plot_title_font_size,
+                "family": plot_opts.plot_font_family,
+            },
+        )
+
+        plt.xlabel(
+            dep_var_name,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+
+        plt.ylabel(
+            "Frequency",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+
+        plt.xticks(
+            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
+        )
+        plt.yticks(
+            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
+        )
 
         st.pyplot(displot)
 
@@ -476,7 +502,7 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir):
 
 
 @st.experimental_fragment
-def correlation_heatmap_form(data, data_analysis_plot_dir):
+def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
     """
     Form to create the correlation heatmap plot.
     """
@@ -513,7 +539,26 @@ def correlation_heatmap_form(data, data_analysis_plot_dir):
         mask = np.triu(np.ones_like(corr, dtype=bool))
 
         # Set up the matplotlib figure
+        plt.style.use(plot_opts.plot_colour_scheme)
         fig, ax = plt.subplots(figsize=(11, 9))
+
+        ax.set_title(
+            "Correlation Heatmap",
+            fontsize=plot_opts.plot_title_font_size,
+            family=plot_opts.plot_font_family,
+        )
+
+        ax.set_xticklabels(
+            ax.get_xticklabels(),
+            fontsize=plot_opts.plot_axis_tick_size,
+            family=plot_opts.plot_font_family,
+        )
+
+        ax.set_yticklabels(
+            ax.get_yticklabels(),
+            fontsize=plot_opts.plot_axis_tick_size,
+            family=plot_opts.plot_font_family,
+        )
 
         # Generate a custom diverging colormap
         cmap = sns.diverging_palette(230, 20, as_cmap=True)
@@ -541,7 +586,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir):
 
 
 @st.experimental_fragment
-def pairplot_form(data, data_analysis_plot_dir):
+def pairplot_form(data, data_analysis_plot_dir, plot_opts):
     """
     Form to create the pairplot plot.
     """
@@ -571,8 +616,10 @@ def pairplot_form(data, data_analysis_plot_dir):
 
     if st.checkbox("Create Pairplot", key=ConfigStateKeys.PairPlot):
 
+        plt.style.use(plot_opts.plot_colour_scheme)
+        plt.figure(figsize=(10, 6))
         pairplot = sns.pairplot(pairplot_data, corner=True)
-        st.pyplot(pairplot)
+        st.pyplot(plt)
 
         if st.button("Save Plot", key=ConfigStateKeys.SavePairPlot):
             pairplot.savefig(data_analysis_plot_dir / "pairplot.png")
@@ -581,7 +628,7 @@ def pairplot_form(data, data_analysis_plot_dir):
 
 
 @st.experimental_fragment
-def tSNE_plot_form(data, random_state, data_analysis_plot_dir):
+def tSNE_plot_form(data, random_state, data_analysis_plot_dir, plot_opts):
 
     from sklearn.manifold import TSNE
     from sklearn.preprocessing import StandardScaler
@@ -599,11 +646,30 @@ def tSNE_plot_form(data, random_state, data_analysis_plot_dir):
         df = pd.DataFrame(X_embedded, columns=["x", "y"])
         df["target"] = y
 
+        plt.style.use(plot_opts.plot_colour_scheme)
         fig = plt.figure(figsize=(8, 8))
         sns.scatterplot(data=df, x="x", y="y", hue="target", palette="viridis")
-        plt.title("t-SNE Plot")
-        plt.ylabel("t-SNE Component 2")
-        plt.xlabel("t-SNE Component 1")
+        plt.title(
+            "t-SNE Plot",
+            fontsize=plot_opts.plot_title_font_size,
+            family=plot_opts.plot_font_family,
+        )
+        plt.ylabel(
+            "t-SNE Component 2",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+        plt.xlabel(
+            "t-SNE Component 1",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+        plt.xticks(
+            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
+        )
+        plt.yticks(
+            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
+        )
         st.pyplot(fig)
 
         if st.button("Create and Save Plot", key=ConfigStateKeys.SaveTSNEPlot):

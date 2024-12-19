@@ -75,18 +75,20 @@ if experiment_name:
 
     st.write("#### Target Variable Distribution")
 
-    target_variable_dist_form(data, exec_opt.dependent_variable, data_analysis_plot_dir)
+    target_variable_dist_form(
+        data, exec_opt.dependent_variable, data_analysis_plot_dir, plot_opt
+    )
 
     st.write("#### Correlation Heatmap")
 
-    correlation_heatmap_form(data, data_analysis_plot_dir)
+    correlation_heatmap_form(data, data_analysis_plot_dir, plot_opt)
 
     st.write("#### Pairplot")
 
-    pairplot_form(data, data_analysis_plot_dir)
+    pairplot_form(data, data_analysis_plot_dir, plot_opt)
 
     st.write("#### t-SNE Plot")
 
-    tSNE_plot_form(data, exec_opt.random_state, data_analysis_plot_dir)
+    tSNE_plot_form(data, exec_opt.random_state, data_analysis_plot_dir, plot_opt)
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
