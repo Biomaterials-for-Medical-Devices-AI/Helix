@@ -108,6 +108,7 @@ class ModelNames(StrEnum):
 class DataSplitMethods(StrEnum):
     Holdout = "holdout"
     KFold = "k-fold"
+    NoSplit = "none"  # field name can't be None
 
 
 class PlotOptionKeys(StrEnum):

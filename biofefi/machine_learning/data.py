@@ -109,7 +109,20 @@ class DataBuilder:
                 X_test_list.append(X_test)
                 y_train_list.append(y_train)
                 y_test_list.append(y_test)
-
+        elif (
+            self._data_split is not None
+            and self._data_split["type"].lower() == DataSplitMethods.NoSplit
+        ):
+            X_train, X_test, y_train, y_test = train_test_split(
+                X,
+                y,
+                test_size=self._data_split["test_size"],
+                random_state=self._random_state,
+            )
+            X_train_list.append(X_train)
+            X_test_list.append(X_test)
+            y_train_list.append(y_train)
+            y_test_list.append(y_test)
         else:
             raise NotImplementedError(
                 f"Data split type {self._data_split['type']} is not implemented"
