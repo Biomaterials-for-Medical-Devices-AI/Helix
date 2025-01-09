@@ -19,7 +19,7 @@ XGB_GRID = {
 }
 
 SVM_GRID = {
-    "kernel": SVM_KERNELS,
+    "kernel": [k.lower() for k in SVM_KERNELS],
     "degree": [2, 3, 4],
-    "C": [-10.0, 1.0, 10],
+    "C": [1.0, 10.0, 100],
 }

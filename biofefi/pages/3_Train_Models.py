@@ -161,13 +161,15 @@ choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
+    biofefi_base_dir = biofefi_experiments_base_dir()
+    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
+    exec_opt = load_execution_options(path_to_exec_opts)
 
-    ml_options_form()
+    ml_options_form(exec_opt.use_hyperparam_search)
 
     if st.button("Run Training", type="primary") and (
         st.session_state[ConfigStateKeys.RerunML]
     ):
-        biofefi_base_dir = biofefi_experiments_base_dir()
 
         if os.path.exists(ml_model_dir(biofefi_base_dir / experiment_name)):
             delete_directory(ml_model_dir(biofefi_base_dir / experiment_name))

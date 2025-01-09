@@ -220,7 +220,6 @@ class GridSearchLearner:
         problem_type: ProblemTypes,
         data_split: dict,
         normalization: Normalisations,
-        n_bootstraps: int,
         logger: Logger | None = None,
     ) -> None:
         self._logger = logger
@@ -228,7 +227,6 @@ class GridSearchLearner:
         self._problem_type = problem_type
         self._data_split = data_split
         self._normalization = normalization
-        self._n_bootstraps = n_bootstraps
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
         self._models: dict = {}
 
@@ -263,18 +261,19 @@ class GridSearchLearner:
         y_test = data.y_test[0]
 
         # Make grid search compatible scorers
-        scorers = (
+        metrics = (
             REGRESSION_METRICS
             if self._problem_type == ProblemTypes.Regression
             else CLASSIFICATION_METRICS
         )
-        scorers = {key: make_scorer(value) for key, value in scorers.items()}
+        scorers = {key: make_scorer(value) for key, value in metrics.items()}
 
         # Fit models
-        res = {}
+        res = {0: {}}
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._models.keys()}
         for model_name, model in self._models.items():
+            res[0][model_name] = {}
             # Set up grid search
             model = MODEL_PROBLEM_CHOICES.get(
                 (model_name.lower(), self._problem_type.lower())
@@ -284,14 +283,14 @@ class GridSearchLearner:
             )
             gs = GridSearchCV(
                 estimator=model(),
-                param_grid=self._model_types["params"],
+                param_grid=self._model_types[model_name]["params"],
                 scoring=scorers,
                 refit=refit,
-                n_jobs=-1,
+                cv=self._data_split["n_splits"],
             )
 
             # Fit the model
-            self._logger(f"Fitting {model_name}...")
+            self._logger.info(f"Fitting {model_name}...")
             gs.fit(X_train, y_train)
 
             # Make predictions for evaluation
@@ -304,7 +303,7 @@ class GridSearchLearner:
             metric_res[model_name].append(
                 _evaluate(
                     model_name,
-                    scorers,
+                    metrics,
                     y_train,
                     y_pred_train,
                     y_test,

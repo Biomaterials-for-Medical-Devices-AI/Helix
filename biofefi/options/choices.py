@@ -30,7 +30,6 @@ SVM_KERNELS = [
     SvmKernels.Linear.capitalize(),
     SvmKernels.Poly.capitalize(),
     SvmKernels.Sigmoid.capitalize(),
-    SvmKernels.Precomputed.capitalize(),
 ]
 PROBLEM_TYPES = [
     ProblemTypes.Classification.capitalize(),

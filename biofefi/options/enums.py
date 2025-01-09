@@ -49,6 +49,7 @@ class ConfigStateKeys(StrEnum):
     FILogBox = "fi_log_box"
     FuzzyLogBox = "fuzzy_log_box"
     UploadedModels = "uploaded_models"
+    UseHyperParamSearch = "use_hyperparam_search"
     # Data Analysis options
     TargetVarDistribution = "target_var_distribution"
     ShowKDE = "show_kde"

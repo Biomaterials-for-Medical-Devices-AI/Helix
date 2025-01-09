@@ -15,7 +15,13 @@ from biofefi.options.enums import (
     ProblemTypes,
 )
 from biofefi.options.file_paths import biofefi_experiments_base_dir, ml_model_dir
-from biofefi.services.ml_models import load_models
+from biofefi.options.search_grids import (
+    LINEAR_MODEL_GRID,
+    RANDOM_FOREST_GRID,
+    SVM_GRID,
+    XGB_GRID,
+)
+from biofefi.services.ml_models import models_exist
 
 
 def data_upload_form():
@@ -290,142 +296,50 @@ def fi_options_form():
 
 
 @st.experimental_fragment
-def ml_options_form():
-    """The form for setting up the machine learning pipeline."""
+def ml_options_form(use_hyperparam_search: bool):
+    """
+    The form for setting up the machine learning pipeline.
+
+    Args:
+        use_hyperparam_search (bool): Is the user using hyper-parameter search?
+    """
     st.subheader("Select and cofigure which models to train")
 
-    try:
-        trained_models = load_models(
-            ml_model_dir(
-                biofefi_experiments_base_dir()
-                / st.session_state[ConfigStateKeys.ExperimentName]
-            )
+    if models_exist(
+        ml_model_dir(
+            biofefi_experiments_base_dir()
+            / st.session_state[ConfigStateKeys.ExperimentName]
         )
-
-        if trained_models:
-            st.warning("You have trained models in this experiment.")
-            st.checkbox(
-                "Would you like to rerun the experiments? This will overwrite the existing models.",
-                value=True,
-                key=ConfigStateKeys.RerunML,
-            )
-        else:
-            st.session_state[ConfigStateKeys.RerunML] = True
-
-    except Exception:
+    ):
+        st.warning("You have trained models in this experiment.")
+        st.checkbox(
+            "Would you like to rerun the experiments? This will overwrite the existing models.",
+            value=True,
+            key=ConfigStateKeys.RerunML,
+        )
+    else:
         st.session_state[ConfigStateKeys.RerunML] = True
 
     if st.session_state[ConfigStateKeys.RerunML]:
+        if use_hyperparam_search:
+            st.success("**✨ Hyper-parameters will be searched automatically**")
 
         model_types = {}
-        use_linear = st.toggle("Linear Model", value=False)
-        if use_linear:
+        if st.toggle("Linear Model", value=False):
+            lm_model_type = _linear_model_opts(use_hyperparam_search)
+            model_types.update(lm_model_type)
 
-            st.write("Options:")
-            fit_intercept = st.checkbox("Fit intercept")
-            model_types["Linear Model"] = {
-                "use": use_linear,
-                "params": {
-                    "fit_intercept": fit_intercept,
-                },
-            }
-            st.divider()
+        if st.toggle("Random Forest", value=False):
+            rf_model_type = _random_forest_opts(use_hyperparam_search)
+            model_types.update(rf_model_type)
 
-        use_rf = st.toggle("Random Forest", value=False)
-        if use_rf:
+        if st.toggle("XGBoost", value=False):
+            xgb_model_type = _xgboost_opts(use_hyperparam_search)
+            model_types.update(xgb_model_type)
 
-            st.write("Options:")
-            n_estimators_rf = st.number_input(
-                "Number of estimators", value=100, key="n_estimators_rf"
-            )
-            min_samples_split = st.number_input("Minimum samples split", value=2)
-            min_samples_leaf = st.number_input("Minimum samples leaf", value=1)
-            col1, col2 = st.columns(
-                [0.25, 0.75], vertical_alignment="bottom", gap="small"
-            )
-            use_rf_max_depth = col1.checkbox(
-                "Set max depth",
-                value=False,
-                help="If disabled or 0, then nodes are expanded until all leaves are pure"
-                " or until all leaves contain less than 'Minimum samples split'.",
-            )
-            max_depth_rf = col2.number_input(
-                "Maximum depth",
-                value="min",
-                min_value=0,
-                key="max_depth_rf",
-                disabled=not use_rf_max_depth,
-            )
-            model_types["Random Forest"] = {
-                "use": use_rf,
-                "params": {
-                    "n_estimators": n_estimators_rf,
-                    "min_samples_split": min_samples_split,
-                    "min_samples_leaf": min_samples_leaf,
-                    "max_depth": max_depth_rf if max_depth_rf > 0 else None,
-                },
-            }
-            st.divider()
-
-        use_xgb = st.toggle("XGBoost", value=False)
-        if use_xgb:
-            if st.checkbox("Set XGBoost options"):
-                st.write("Options:")
-                n_estimators_xgb = st.number_input(
-                    "Number of estimators", value=100, key="n_estimators_xgb"
-                )
-                learning_rate = st.number_input("Learning rate", value=0.01)
-                subsample = st.number_input("Subsample size", value=0.5)
-                col1, col2 = st.columns(
-                    [0.25, 0.75], vertical_alignment="bottom", gap="small"
-                )
-                use_xgb_max_depth = col1.checkbox(
-                    "Set max depth",
-                    value=False,
-                    help="If disabled or 0, then nodes are expanded until all leaves are pure.",
-                )
-                max_depth_xbg = col2.number_input(
-                    "Maximum depth",
-                    value="min",
-                    min_value=0,
-                    key="max_depth_xgb",
-                    disabled=not use_xgb_max_depth,
-                )
-            else:
-                n_estimators_xgb = None
-                max_depth_xbg = None
-                learning_rate = None
-                subsample = None
-
-            model_types["XGBoost"] = {
-                "use": use_xgb,
-                "params": {
-                    "kwargs": {
-                        "n_estimators": n_estimators_xgb,
-                        "max_depth": max_depth_xbg,
-                        "learning_rate": learning_rate,
-                        "subsample": subsample,
-                    }
-                },
-            }
-            st.divider()
-
-        use_svm = st.toggle("Support Vector Machine", value=False)
-        if use_svm:
-
-            st.write("Options:")
-            kernel = st.selectbox("Kernel", options=SVM_KERNELS)
-            degree = st.number_input("Degree", min_value=0, value=3)
-            c = st.number_input("C", value=1.0, min_value=0.0)
-            model_types["SVM"] = {
-                "use": use_svm,
-                "params": {
-                    "kernel": kernel.lower(),
-                    "degree": degree,
-                    "C": c,
-                },
-            }
-            st.divider()
+        if st.toggle("Support Vector Machine", value=False):
+            svm_model_type = _svm_opts(use_hyperparam_search)
+            model_types.update(svm_model_type)
 
         st.session_state[ConfigStateKeys.ModelTypes] = model_types
         st.subheader("Select outputs to save")
@@ -677,3 +591,132 @@ def tSNE_plot_form(data, random_state, data_analysis_plot_dir, plot_opts):
             fig.savefig(data_analysis_plot_dir / "tsne_plot.png")
             plt.clf()
             st.success("Plots created and saved successfully.")
+
+
+def _linear_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        st.write("Options:")
+        fit_intercept = st.checkbox("Fit intercept")
+        params = {
+            "fit_intercept": fit_intercept,
+        }
+        st.divider()
+    else:
+        params = LINEAR_MODEL_GRID
+    model_types["Linear Model"] = {
+        "use": True,
+        "params": params,
+    }
+    return model_types
+
+
+def _random_forest_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        st.write("Options:")
+        n_estimators_rf = st.number_input(
+            "Number of estimators", value=100, key="n_estimators_rf"
+        )
+        min_samples_split = st.number_input("Minimum samples split", value=2)
+        min_samples_leaf = st.number_input("Minimum samples leaf", value=1)
+        col1, col2 = st.columns([0.25, 0.75], vertical_alignment="bottom", gap="small")
+        use_rf_max_depth = col1.checkbox(
+            "Set max depth",
+            value=False,
+            help="If disabled or 0, then nodes are expanded until all leaves are pure"
+            " or until all leaves contain less than 'Minimum samples split'.",
+        )
+        max_depth_rf = col2.number_input(
+            "Maximum depth",
+            value="min",
+            min_value=0,
+            key="max_depth_rf",
+            disabled=not use_rf_max_depth,
+        )
+        params = {
+            "n_estimators": n_estimators_rf,
+            "min_samples_split": min_samples_split,
+            "min_samples_leaf": min_samples_leaf,
+            "max_depth": max_depth_rf if max_depth_rf > 0 else None,
+        }
+        st.divider()
+    else:
+        params = RANDOM_FOREST_GRID
+    model_types["Random Forest"] = {
+        "use": True,
+        "params": params,
+    }
+    return model_types
+
+
+def _xgboost_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        if st.checkbox("Set XGBoost options"):
+            st.write("Options:")
+            n_estimators_xgb = st.number_input(
+                "Number of estimators", value=100, key="n_estimators_xgb"
+            )
+            learning_rate = st.number_input("Learning rate", value=0.01)
+            subsample = st.number_input("Subsample size", value=0.5)
+            col1, col2 = st.columns(
+                [0.25, 0.75], vertical_alignment="bottom", gap="small"
+            )
+            use_xgb_max_depth = col1.checkbox(
+                "Set max depth",
+                value=False,
+                help="If disabled or 0, then nodes are expanded until all leaves are pure.",
+            )
+            max_depth_xbg = col2.number_input(
+                "Maximum depth",
+                value="min",
+                min_value=0,
+                key="max_depth_xgb",
+                disabled=not use_xgb_max_depth,
+            )
+        else:
+            n_estimators_xgb = None
+            max_depth_xbg = None
+            learning_rate = None
+            subsample = None
+        params = {
+            "kwargs": {
+                "n_estimators": n_estimators_xgb,
+                "max_depth": max_depth_xbg,
+                "learning_rate": learning_rate,
+                "subsample": subsample,
+            }
+        }
+        st.divider()
+    else:
+        params = XGB_GRID
+
+    model_types["XGBoost"] = {
+        "use": True,
+        "params": params,
+    }
+    return model_types
+
+
+def _svm_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        st.write("Options:")
+        kernel = st.selectbox("Kernel", options=SVM_KERNELS)
+        degree = st.number_input("Degree", min_value=0, value=3)
+        c = st.number_input("C", value=1.0, min_value=0.0)
+        params = {
+            "kernel": kernel.lower(),
+            "degree": degree,
+            "C": c,
+        }
+        st.divider()
+    else:
+        params = SVM_GRID
+
+    model_types["SVM"] = {
+        "use": True,
+        "params": params,
+    }
+    return model_types

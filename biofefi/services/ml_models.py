@@ -165,3 +165,16 @@ def get_models(
         else:
             raise ValueError(f"Model type {model} not recognized")
     return models
+
+
+def models_exist(path: Path) -> bool:
+    try:
+        trained_models = load_models(path)
+
+        if trained_models:
+            return True
+        else:
+            return False
+
+    except Exception:
+        return False

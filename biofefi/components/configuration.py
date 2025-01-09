@@ -326,7 +326,11 @@ def fi_options_box():
 
 
 @st.experimental_fragment
-def execution_options_box():
+def execution_options_box_manual():
+    """
+    The execution options box for when the user wants to manually set the hyper-parameters
+    for their models.
+    """
     st.write(
         """
         If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
@@ -378,14 +382,69 @@ def execution_options_box():
             "type": DataSplitMethods.KFold,
             "n_splits": split_size,
         }
-    else:
-        split_size = None
     st.number_input(
         "Number of bootstraps",
         min_value=1,
         value=10,
         key=ConfigStateKeys.NumberOfBootstraps,
     )
+    st.number_input(
+        "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
+    )
+
+
+@st.experimental_fragment
+def execution_options_box_auto():
+    """
+    The execution options box for when the user wants to use automatic
+    hyper-parameter search.
+    """
+    st.write(
+        """
+        If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
+
+        If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
+        """
+    )
+    st.selectbox(
+        "Problem type",
+        PROBLEM_TYPES,
+        key=ConfigStateKeys.ProblemType,
+    )
+    st.write(
+        """
+        If you select **"Standardization"**, your data will be normalised by subtracting the
+        mean and dividing by the standard deviation for each feature. The resulting transformation has a
+        mean of 0 and values are between -1 and 1.
+
+        If you select **"Minmax"**, your data will be scaled based on the minimum and maximum
+        value of each feature. The resulting transformation will have values between 0 and 1.
+
+        If you select **"None"**, the data will not be normalised.
+        """
+    )
+    st.selectbox(
+        "Normalisation",
+        NORMALISATIONS,
+        key=ConfigStateKeys.Normalization,
+    )
+    test_split = st.number_input(
+        "Test split",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.2,
+    )
+    split_size = st.number_input(
+        "n splits",
+        min_value=0,
+        value=5,
+    )
+    # Set data split to none for grid search but specify the test size
+    st.session_state[ConfigStateKeys.DataSplit] = {
+        "type": DataSplitMethods.NoSplit,
+        "n_splits": split_size,
+        "test_size": test_split,
+    }
     st.number_input(
         "Random seed", value=1221, min_value=0, key=ConfigStateKeys.RandomSeed
     )
