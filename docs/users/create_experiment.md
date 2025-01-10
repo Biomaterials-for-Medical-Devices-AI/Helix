@@ -19,12 +19,6 @@ In BioFEFI, you must create an experiment before you can train models and perfor
 ### Automatic hyper-parameter search
 BioFEFI allows you to either manually set hyper-parameters for your models or perform an automatic hyper-parameter search. This is performed by [Grid Search with cross-validation](https://scikit-learn.org/stable/modules/grid_search.html#exhaustive-grid-search). When performing automatic hyper-parameter search, the data will not be bootstrapped and you will get the best performing model from the search for each model. By default, BioFEFI will perform automatic hyper-parameter search; to manually tune your models, click the toggle to switch to manual mode.
 
-![Automatic hyper-parameter search](../_static/auto-hp-search.png)
-
-![Manual hyper-parameter search](../_static/manual-hp-search.png)
-
-### Options
-
 - Select your problem type.
 
     If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
