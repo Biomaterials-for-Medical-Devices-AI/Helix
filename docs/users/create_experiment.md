@@ -36,9 +36,19 @@ In BioFEFI, you must create an experiment before you can train models and perfor
 
     **"K-fold"** stands for *K-fold cross validation*. The test data is split from the training data, then the training data is split into *k*-folds. The folds are used to find the model parameters and the test set is used to evaluate the models.
 
+    **Data split methods are not available if using automatic hyper-parameter search.**
+
 - Specify a test split size. This is a number between 0 and 1. The default is 0.20, i.e. 20% of the data will be used is the test data and 80% for training.
 
+  **Test split is replaced by n splits when using K-fold as the Data split method.**
+
+- Specify *n* splits. This is the number of folds for K-fold cross validation.
+
+  **This is not available when using Holdout with manual hyper-parameter search.**
+
 - Specify the number of bootstraps. This will train a model *n* times, where *n* is the number of bootstraps. The data will be randomly split *n* times into new bataches of training and testing sets. Defaults to 10.
+
+  **When using automatic hyper-parameter search, bootstrapping is not available.**
 
 - Specify the random seed. Data splitting is pseudo-random and this setting helps make an experiment repeatable, while reducing bias in the training and testing sets.
 

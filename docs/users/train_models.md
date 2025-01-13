@@ -13,6 +13,10 @@ To select which models you wish to train, click the toggles next to the model ty
 Depending on whether your problem type, which was configured on the [New Experiment page](../users/create_experiment.md), the models will either be a **classifier** or a **regressor**.
 
 ### Options
+**When using automatic hyper-parameter search, you will not be able to set any of these options. They will be determined automatically.**
+
+![Autmatic hyper-parameter search enabled](../_static/ahps-enabled.png)
+
 - **Linear Model**
 
   If the problem type is "Classification", train a [Logistic Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LogisticRegression.html) model. If the problem type is "Regression", train a [Linear Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html) model.
