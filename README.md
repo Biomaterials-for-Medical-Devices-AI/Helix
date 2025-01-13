@@ -37,4 +37,5 @@ BioFEFI will open in your internet browser when you run it. The main screen will
 [build-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/build-dcos.yml?style=for-the-badge&label=Build%20docs
 [publish-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/publish-docs.yml?style=for-the-badge&label=Publish%20docs
 [code-quality-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/format-code.yml?style=for-the-badge&label=Code%20quality
-[license-badge]: https://img.shields.io/github/license/Biomaterials-for-Medical-Devices-AI/BioFEFI?style=for-the-badge
+[license-badge]: https://img.shields.io/github/license/Biomaterials-for-Medical-Devices-AI/BioFEFI?style=for-the-badge&label=License
+
