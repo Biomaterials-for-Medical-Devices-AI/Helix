@@ -112,6 +112,17 @@ class DataSplitMethods(StrEnum):
     NoSplit = "none"  # field name can't be None
 
 
+class Metrics(StrEnum):
+    Accuracy = "accuracy"
+    F1Score = "f1_score"
+    Precision = "precision_score"
+    Recall = "recall_score"
+    ROC_AUC = "roc_auc_score"
+    R2 = "R2"
+    MAE = "MAE"
+    RMSE = "RMSE"
+
+
 class PlotOptionKeys(StrEnum):
     AxisFontSize = "plot_axis_font_size"
     AxisTickSize = "plot_axis_tick_size"

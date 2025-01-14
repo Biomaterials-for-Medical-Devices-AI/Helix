@@ -11,7 +11,12 @@ from biofefi.options.choices import (
     MODEL_PROBLEM_CHOICES,
     REGRESSION_METRICS,
 )
-from biofefi.options.enums import DataSplitMethods, Normalisations, ProblemTypes
+from biofefi.options.enums import (
+    DataSplitMethods,
+    Metrics,
+    Normalisations,
+    ProblemTypes,
+)
 from biofefi.services.metrics import get_metrics
 from biofefi.services.ml_models import get_models
 from biofefi.utils.logging_utils import Logger
@@ -158,6 +163,12 @@ class Learner:
                 res[i][model_name]["y_pred_train"] = y_pred_train
                 y_pred_test = model.predict(X_test)
                 res[i][model_name]["y_pred_test"] = y_pred_test
+                if self._problem_type == ProblemTypes.Classification:
+                    y_pred_probs_train = model.predict_proba(X_train)
+                    y_pred_probs_test = model.predict_proba(X_test)
+                else:
+                    y_pred_probs_train = None
+                    y_pred_probs_test = None
                 if model_name not in metric_res:
                     metric_res[model_name] = []
                 metric_res[model_name].append(
@@ -166,8 +177,10 @@ class Learner:
                         self._metrics,
                         y_train,
                         y_pred_train,
+                        y_pred_probs_train,
                         y_test,
                         y_pred_test,
+                        y_pred_probs_test,
                         self._logger,
                     )
                 )
@@ -195,6 +208,12 @@ class Learner:
                 res[i][model_name]["y_pred_train"] = y_pred_train
                 y_pred_test = model.predict(X_test)
                 res[i][model_name]["y_pred_test"] = y_pred_test
+                if self._problem_type == ProblemTypes.Classification:
+                    y_pred_probs_train = model.predict_proba(X_train)
+                    y_pred_probs_test = model.predict_proba(X_test)
+                else:
+                    y_pred_probs_train = None
+                    y_pred_probs_test = None
                 if model_name not in metric_res:
                     metric_res[model_name] = []
                 metric_res[model_name].append(
@@ -203,8 +222,10 @@ class Learner:
                         self._metrics,
                         y_train,
                         y_pred_train,
+                        y_pred_probs_train,
                         y_test,
                         y_pred_test,
+                        y_pred_probs_test,
                         self._logger,
                     )
                 )
@@ -298,6 +319,12 @@ class GridSearchLearner:
             res[0][model_name]["y_pred_train"] = y_pred_train
             y_pred_test = gs.predict(X_test)
             res[0][model_name]["y_pred_test"] = y_pred_test
+            if self._problem_type == ProblemTypes.Classification:
+                y_pred_probs_train = gs.predict_proba(X_train)
+                y_pred_probs_test = gs.predict_proba(X_test)
+            else:
+                y_pred_probs_train = None
+                y_pred_probs_test = None
             if model_name not in metric_res:
                 metric_res[model_name] = []
             metric_res[model_name].append(
@@ -306,8 +333,10 @@ class GridSearchLearner:
                     metrics,
                     y_train,
                     y_pred_train,
+                    y_pred_probs_train,
                     y_test,
                     y_pred_test,
+                    y_pred_probs_test,
                     self._logger,
                 )
             )
@@ -322,8 +351,10 @@ def _evaluate(
     metrics: dict,
     y_train: np.ndarray,
     y_pred_train: np.ndarray,
+    y_pred_probs_train: np.ndarray,
     y_test: np.ndarray,
     y_pred_test: np.ndarray,
+    y_pred_probs_test: np.ndarray,
     logger: object,
 ) -> dict:
     """
@@ -334,8 +365,10 @@ def _evaluate(
         - metrics (dict): The metrics to use in evaluation.
         - y_train (np.ndarray): True labels for the training set.
         - y_pred_train (np.ndarray): Predicted labels for the training set.
+        - y_pred_probs_train (np.ndarray): Predicted probabilities for the training set.
         - y_test (np.ndarray): True labels for the test set.
         - y_pred_test (np.ndarray): Predicted labels for the test set.
+        - y_pred_probs_test (np.ndarray): Predicted probabilities for the test set.
         - logger (object): The logger.
     """
     logger.info(f"Evaluating {model_name}...")
@@ -343,8 +376,19 @@ def _evaluate(
     for metric_name, metric in metrics.items():
         eval_res[metric_name] = {}
         logger.info(f"Evaluating {model_name} on {metric_name}...")
-        metric_train = metric(y_train, y_pred_train)
-        metric_test = metric(y_test, y_pred_test)
+        if y_pred_probs_train is None or y_pred_probs_train.shape[1] < 3:
+            metric_train = metric(y_train, y_pred_train)
+            metric_test = metric(y_test, y_pred_test)
+        else:
+            if metric_name == Metrics.Accuracy:
+                metric_train = metric(y_train, y_pred_train)
+                metric_test = metric(y_test, y_pred_test)
+            elif metric_name == Metrics.ROC_AUC:
+                metric_train = metric(y_train, y_pred_probs_train, multi_class="ovr")
+                metric_test = metric(y_test, y_pred_probs_test, multi_class="ovr")
+            else:
+                metric_train = metric(y_train, y_pred_train, average="micro")
+                metric_test = metric(y_test, y_pred_test, average="micro")
         eval_res[metric_name]["train"] = {
             "value": metric_train,
         }
