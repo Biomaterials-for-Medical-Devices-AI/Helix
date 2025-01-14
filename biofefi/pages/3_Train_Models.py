@@ -108,6 +108,7 @@ def pipeline(
         n_bootstraps=exec_opts.n_bootstraps,
         logger=logger,
         data_split=exec_opts.data_split,
+        problem_type=exec_opts.problem_type,
     ).ingest()
 
     # Machine learning
