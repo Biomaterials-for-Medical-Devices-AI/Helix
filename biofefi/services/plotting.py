@@ -50,7 +50,7 @@ def plot_lime_importance(
     )
     ax.set_xlabel("Feature Name", family=plot_opts.plot_font_family)
     ax.set_ylabel("Importance", family=plot_opts.plot_font_family)
-    ax.set_title(title, family=plot_opts.plot_font_family)
+    ax.set_title(title, family=plot_opts.plot_font_family, wrap=True)
     return fig
 
 
@@ -77,6 +77,7 @@ def plot_local_shap_importance(
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
+        wrap=True,
     )
     shap.plots.beeswarm(shap_values, max_display=num_features_to_plot, show=False)
     ax.set_xlabel(ax.get_xlabel(), family=plot_opts.plot_font_family)
@@ -116,6 +117,7 @@ def plot_global_shap_importance(
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
+        wrap=True,
     )
     plot_data = (
         shap_values.sort_values(by=0, ascending=False).head(num_features_to_plot).T

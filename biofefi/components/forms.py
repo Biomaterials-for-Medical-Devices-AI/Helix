@@ -460,6 +460,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
             "Correlation Heatmap",
             fontsize=plot_opts.plot_title_font_size,
             family=plot_opts.plot_font_family,
+            wrap=True,
         )
 
         ax.set_xticklabels(

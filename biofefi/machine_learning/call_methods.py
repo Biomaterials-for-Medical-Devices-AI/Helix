@@ -59,6 +59,7 @@ def plot_scatter(
         figure_title,
         fontsize=plot_opts.plot_title_font_size,
         family=plot_opts.plot_font_family,
+        wrap=True,
     )
 
     # Add legend

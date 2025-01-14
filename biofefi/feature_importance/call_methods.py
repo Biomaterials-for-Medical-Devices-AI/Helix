@@ -103,6 +103,7 @@ def save_importance_results(
         ax.set_title(
             f"{feature_importance_type} - {model_type}",
             family=plot_opt.plot_font_family,
+            wrap=True,
         )
         fig.savefig(save_dir / f"{model_type}-bar.png")
 
@@ -112,6 +113,7 @@ def save_importance_results(
             ax.set_title(
                 f"{feature_importance_type} - {model_type}",
                 family=plot_opt.plot_font_family,
+                wrap=True,
             )
             shap.plots.beeswarm(
                 shap_values, max_display=fi_opt.num_features_to_plot, show=False
@@ -188,6 +190,7 @@ def save_fuzzy_sets_plots(
         ax.set_title(
             f"{feature} Membership Functions",
             family=plot_opt.plot_font_family,
+            wrap=True,
         )
         ax.set_xticklabels(
             ax.get_xticklabels(),
@@ -230,6 +233,7 @@ def save_target_clusters_plots(
     ax.set_title(
         "Target Clusters",
         family=plot_opt.plot_font_family,
+        wrap=True,
     )
     fig.savefig(save_dir / "target_clusters.png")
     plt.close()
