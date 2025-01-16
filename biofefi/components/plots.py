@@ -55,4 +55,9 @@ def display_metrics_table(metrics_path: Path):
     table = table.set_index("Model")
     # Display the table in Streamlit
     st.write("### Metrics Summary")
+    st.write(
+        "Metrics are the mean (± standard deviation) of all bootstraps (if using the Holdout"
+        " data split) or cross-validation folds (if using K-fold data split or"
+        " automatic hyper-parameter search)."
+    )
     st.dataframe(table, use_container_width=True)

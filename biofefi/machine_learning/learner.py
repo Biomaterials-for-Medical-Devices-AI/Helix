@@ -293,6 +293,7 @@ class GridSearchLearner:
         res = {0: {}}
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._models.keys()}
+        metric_res_stats = {model_name: {} for model_name in self._models.keys()}
         for model_name, model in self._models.items():
             res[0][model_name] = {}
             # Set up grid search
@@ -308,6 +309,7 @@ class GridSearchLearner:
                 scoring=scorers,
                 refit=refit,
                 cv=self._data_split["n_splits"],
+                return_train_score=True,
             )
 
             # Fit the model
@@ -342,8 +344,41 @@ class GridSearchLearner:
             )
             # append the best estimator
             trained_models[model_name].append(gs.best_estimator_)
-        metric_res_stats = _compute_metrics_statistics(metric_res)
+            metric_res_stats[model_name].update(
+                self._compute_metrics_statistics(gs.cv_results_, gs.best_index_)
+            )
         return res, metric_res, metric_res_stats, trained_models
+
+    def _compute_metrics_statistics(self, cv_results: dict, best_index: int) -> dict:
+        """
+        Compute metric statistics for each model.
+
+        Args:
+            - cv_results (dict): The cross-validation results for a grid search.
+            - best_index (int): The index of the best performing model.
+
+        Returns:
+            - dict: Dictionary containing metric statistics for
+            the model.
+        """
+        metric_names = (
+            REGRESSION_METRICS.keys()
+            if self._problem_type == ProblemTypes.Regression
+            else CLASSIFICATION_METRICS.keys()
+        )
+
+        statistics = {"train": {}, "test": {}}
+        for metric in metric_names:
+            statistics["train"][metric] = {
+                "mean": cv_results[f"mean_train_{metric}"][best_index],
+                "std": cv_results[f"std_train_{metric}"][best_index],
+            }
+            statistics["test"][metric] = {
+                "mean": cv_results[f"mean_test_{metric}"][best_index],
+                "std": cv_results[f"std_test_{metric}"][best_index],
+            }
+
+        return statistics
 
 
 def _evaluate(
