@@ -1,8 +1,6 @@
-import os
-import sys
+from pathlib import Path
 from typing import Tuple
 
-import numpy as np
 import torch
 import torch.nn as nn
 
@@ -10,8 +8,6 @@ from biofefi.options.enums import OptimiserTypes, ProblemTypes
 from biofefi.options.ml import BrnnOptions
 from biofefi.services.custom_loss import compute_brnn_loss
 from biofefi.services.weights_init import kaiming_init, normal_init, xavier_init
-
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 class BaseNetwork(nn.Module):
@@ -75,7 +71,7 @@ class BaseNetwork(nn.Module):
         # Ensure targets are float for MSE loss
         elif problem_type == ProblemTypes.Regression:
             loss_fn = nn.MSELoss()
-            targets = targets.float()
+            targets = targets.unsqueeze(-1).float()
             predictive_loss = loss_fn(outputs, targets)
 
         else:
@@ -132,24 +128,26 @@ class BaseNetwork(nn.Module):
                 f"Optimizer type {optimizer_type} not implemented"
             )
 
-    def train_brnn(self, X: np.ndarray, y: np.ndarray) -> None:
+    def train_brnn(
+        self, X: torch.Tensor, y: torch.Tensor, problem_type: ProblemTypes
+    ) -> None:
         """
         Trains the Bayesian Regularized Neural Network.
 
         Args:
-            X (np.ndarray): The input data.
-            y (np.ndarray): The target data.
+            X (torch.Tensor): The input data.
+            y (torch.Tensor): The target data.
+            problem_type (ProblemTypes): The problem type.
         """
 
         self.train()
-        dataset = torch.utils.data.TensorDataset(
-            torch.tensor(X, dtype=torch.float32), torch.tensor(y, dtype=torch.float32)
-        )
+
+        dataset = torch.utils.data.TensorDataset(X, y)
         dataloader = torch.utils.data.DataLoader(
             dataset, batch_size=self._brnn_options.batch_size, shuffle=True
         )
 
-        for epoch in range(self._brnn_options.epochs):
+        for _ in range(self._brnn_options.epochs):
             epoch_loss = 0.0
 
             for batch_X, batch_y in dataloader:
@@ -158,14 +156,12 @@ class BaseNetwork(nn.Module):
                 outputs = self(batch_X)
 
                 # Compute total loss
-                loss = compute_brnn_loss(self, outputs, batch_y, self._brnn_options)
+                loss = compute_brnn_loss(
+                    self, outputs, batch_y, self._brnn_options, problem_type
+                )
                 loss.backward()
                 self.optimizer.step()
                 epoch_loss += loss.item()
-
-            print(
-                f"Epoch {epoch + 1}/{self._brnn_options.epochs}, Loss: {epoch_loss:.4f}"
-            )
 
         return self
 
@@ -203,23 +199,14 @@ class BaseNetwork(nn.Module):
         all_params = sum(p.numel() for p in self.parameters())
         trainable_params = sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-        print(f"Total Parameters: {all_params}")
-        print(f"Trainable Parameters: {trainable_params}")
         return all_params, trainable_params
 
-    def save_model(self):
+    def save_model(self, destination: Path):
         """
         Saves the model's state dictionary to a file.
-
-        Raises:
-            NotImplementedError: If there is an error while
-            saving the model, it raises a NotImplementedError
-            with the error message.
         """
-        try:
-            torch.save(
-                self.state_dict(),
-                os.path.join(self._opt.checkpoints_dir, f"{self._name}.pth"),
-            )
-        except Exception as e:
-            raise NotImplementedError(f"Method not implemented: {e}")
+        torch.save(self.state_dict(), destination)
+
+    # define purely for help from the IDE
+    def parameters(self, recurse=True):
+        return super().parameters(recurse)

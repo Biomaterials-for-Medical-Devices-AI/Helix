@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 from biofefi.machine_learning.nn_networks import BaseNetwork
-from biofefi.options.enums import ModelNames, OptimiserTypes
+from biofefi.options.enums import ModelNames, OptimiserTypes, ProblemTypes
 from biofefi.options.ml import BrnnOptions
 
 
@@ -90,15 +90,15 @@ class BayesianRegularisedNNClassifier(BaseNetwork, BaseEstimator, ClassifierMixi
         Raises:
             ValueError: If an error occurs during training.
         """
-        X = torch.tensor(X, dtype=torch.float32).to(self.device)
-        y = torch.tensor(y, dtype=torch.float32).squeeze().long().to(self.device)
+        X_tensor = torch.tensor(X, dtype=torch.float32).to(self.device)
+        y_tensor = torch.tensor(y, dtype=torch.float32).squeeze().long().to(self.device)
         input_dim = X.shape[1]
-        output_dim = len(torch.unique(y))
+        output_dim = len(torch.unique(y_tensor))
 
         try:
             self._initialize_network(input_dim, output_dim)
-            self.train()
-            self.train_brnn(X, y)
+            self.train()  # set the underlying model to training mode
+            self.train_brnn(X_tensor, y_tensor, ProblemTypes.Classification)
         except Exception as e:
             raise ValueError(f"Error occured during fitting of BRNN Classifier: {e}")
 
@@ -226,15 +226,15 @@ class BayesianRegularisedNNRegressor(BaseNetwork, BaseEstimator, RegressorMixin)
             ValueError: If an error occurs during training.
         """
 
-        X = torch.tensor(X, dtype=torch.float32)
-        y = torch.tensor(y, dtype=torch.float32).squeeze().long()
+        X_tensor = torch.tensor(X, dtype=torch.float32)
+        y_tensor = torch.tensor(y, dtype=torch.float32).squeeze().long()
         input_dim = X.shape[1]
         output_dim = 1
 
         try:
             self._initialize_network(input_dim, output_dim)
             self.train()
-            self.train_brnn(X, y)
+            self.train_brnn(X_tensor, y_tensor, ProblemTypes.Regression)
         except Exception as e:
             raise ValueError(f"Error occured during fitting of BRNN Regressor: {e}")
 
