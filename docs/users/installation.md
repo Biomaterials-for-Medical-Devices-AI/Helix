@@ -33,14 +33,14 @@ On Windows, this doesn't seem to be a problem. You should be able to proceed wit
 # Create a virtual environment with venv
 python -m venv <path/to/env>
 source <path/to/env>/bin/activate
-pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+pip install biofefi
 
 # -- OR --
 
 # Create a virtual environment with conda
 conda create -n <env_name> python=3.11
 conda activate <env_name>
-pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+pip install biofefi
 ```
 
 ## Windows
@@ -48,14 +48,14 @@ pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.g
 # Create a virtual environment with venv
 python -m venv <path\to\env>
 <path/to/env>\Scripts\activate
-pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+pip install biofefi
 
 # -- OR --
 
 # Create a virtual environment with conda
 conda create -n <env_name> python=3.11
 conda activate <env_name>
-pip install git+https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+pip install biofefi
 ```
 
 ## Running BioFEFI
