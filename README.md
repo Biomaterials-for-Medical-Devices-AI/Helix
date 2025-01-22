@@ -21,6 +21,24 @@ BioFEFI is a no-code application for training and interpreting machine learning 
 
 ## Install and run BioFEFI
 
+You will need to install **Python 3.11** or **3.12** to use BioFEFI. Make sure you also install `pip` (The Python package installer). If you don't already have it installed, [get Python.](https://www.python.org/downloads/)
+
+You may need to make sure you have OpenMP installed on your machine before you can install BioFEFI. In the terminal use the following commands for your OS:
+
+On Mac:
+```shell
+brew install libomp
+```
+
+You may need to try `brew3` if `brew` does not work. Make sure you [install Homebrew](https://brew.sh/) on your Mac to use the `brew`/`brew3` command.
+
+On Linux (Ubuntu)
+```shell
+sudo apt install libomp-dev
+```
+
+On Windows, this doesn't seem to be a problem. You should be able to proceed with installation.
+
 For information on how to install and run BioFEFI, check the [instructions](https://biomaterials-for-medical-devices-ai.github.io/BioFEFI/users/installation.html).
 
 ## Usage

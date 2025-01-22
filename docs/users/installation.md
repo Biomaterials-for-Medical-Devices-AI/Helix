@@ -10,7 +10,7 @@ BioFEFI is installed and run via the command line. You can find the terminal on 
 
 ## Installation
 ### Pre-requirements
-You will need to install **Python 3.11** or greater to use BioFEFI. Make sure you also install `pip` (The Python package installer). If you don't already have it installed, [get Python.](https://www.python.org/downloads/)
+You will need to install **Python 3.11** or **3.12** to use BioFEFI. Make sure you also install `pip` (The Python package installer). If you don't already have it installed, [get Python.](https://www.python.org/downloads/)
 
 You may need to make sure you have OpenMP installed on your machine before you can install BioFEFI. In the terminal use the following commands for your OS:
 
@@ -18,6 +18,8 @@ On Mac:
 ```shell
 brew install libomp
 ```
+
+You may need to try `brew3` if `brew` does not work. Make sure you [install Homebrew](https://brew.sh/) on your Mac to use the `brew`/`brew3` command.
 
 On Linux (Ubuntu)
 ```shell
@@ -38,10 +40,12 @@ pip install biofefi
 # -- OR --
 
 # Create a virtual environment with conda
-conda create -n <env_name> python=3.11
+conda create -n <env_name> python=3.11  # or 3.12
 conda activate <env_name>
 pip install biofefi
 ```
+
+You may need to try `python3` and `pip3` if `python` and `pip` do not work.
 
 ## Windows
 ```shell
@@ -53,7 +57,7 @@ pip install biofefi
 # -- OR --
 
 # Create a virtual environment with conda
-conda create -n <env_name> python=3.11
+conda create -n <env_name> python=3.11 # or 3.12
 conda activate <env_name>
 pip install biofefi
 ```
@@ -64,5 +68,3 @@ Once you have installed BioFEFI, you can run it from the terminal like so:
 biofefi
 ```
 A browser window will open to the main page of the app.
-
-<!-- insert image here -->

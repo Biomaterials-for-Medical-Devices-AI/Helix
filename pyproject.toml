@@ -14,7 +14,7 @@ include = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = ">=3.11,<3.13"
 numpy = "1.26.4"
 pandas = "2.2.2"
 streamlit = "1.36"
