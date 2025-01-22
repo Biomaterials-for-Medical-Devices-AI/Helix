@@ -50,6 +50,7 @@ def run(
             ml_opts=ml_opts,
             plot_opts=plot_opts,
             n_bootstraps=exec_opts.n_bootstraps,
+            trained_models=trained_models,
         )
 
     return trained_models, metric_res_stats
