@@ -132,7 +132,9 @@ save_dir = _save_directory_selector()
 # it's invalid.
 is_valid = _directory_is_valid(save_dir)
 if not is_valid and st.session_state.get(ConfigStateKeys.ExperimentName):
-    st.markdown(f":red[Cannot use {save_dir}; it already exists.]")
+    st.warning(
+        f"Cannot use {save_dir}; it already exists. If you have just created this experiment, please continue."
+    )
 else:
     st.session_state[ConfigStateKeys.ExperimentName] = (
         save_dir.name
@@ -144,9 +146,17 @@ st.write(
     split between training and test data.
     """
 )
+
+st.write(
+    """
+    **Please notice that last column of the uploaded file should be the dependent variable.**
+    """
+)
+
 st.file_uploader("Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName)
 st.text_input(
-    "Name of the dependent variable", key=ConfigStateKeys.DependentVariableName
+    "Name of the dependent variable. **This will be used for the plots.**",
+    key=ConfigStateKeys.DependentVariableName,
 )
 
 st.subheader("Configure data options")
