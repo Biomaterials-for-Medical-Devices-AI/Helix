@@ -89,6 +89,7 @@ def get_models(
     problem_type: str,
     logger: object = None,
     use_params: bool = True,
+    use_grid_search: bool = False,
 ) -> dict:
     """
     Constructs and initializes machine learning models
@@ -121,7 +122,9 @@ def get_models(
             (model.lower(), problem_type.lower())
         ):
             if problem_type.lower() == ProblemTypes.Classification:
-                model_params["class_weight"] = "balanced"
+                model_params["class_weight"] = (
+                    ["balanced"] if use_grid_search else "balanced"
+                )
             models[model] = model_class(**model_params) if use_params else model_class()
             logger.info(
                 f"Using model {model_class.__name__} with parameters {model_params}"

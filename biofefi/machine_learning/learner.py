@@ -276,6 +276,7 @@ class GridSearchLearner:
             self._problem_type,
             logger=self._logger,
             use_params=False,
+            use_grid_search=True,
         )
         # Extract the data
         X_train = data.X_train[0]
