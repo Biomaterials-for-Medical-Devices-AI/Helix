@@ -62,7 +62,7 @@ BioFEFI will open in your internet browser when you run it. The main screen will
 - [Eduardo Aguilar](https://edaguilarb.github.io./) (Chemist, Data Scientist, Research Software Engineer)
 - Karthikeyan Sivakumar (Data Scientist, Software Engineer)
 - Jimiama M Mase (Data Scientist and Engineer)
-- Reza Omidvar (Data Scientist, Research Software Engineer)
+- [Reza Omidvar](https://github.com/ahmadrezaomidvar) (Data Scientist, Research Software Engineer)
 - James Mitchel-White (Data Scientist, Research Software Engineer)
 - [Grazziela Figueredo](https://scholar.google.com/citations?user=DXNNUcUAAAAJ&hl=en) (Associate Professor, Principal Investigator)
 
