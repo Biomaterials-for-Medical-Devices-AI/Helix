@@ -34,5 +34,5 @@ jobs:
       - name: Install dependencies
         run: poetry install
       - name: Run Flake8
-        run: poetry run flake8 biofefi
+        run: poetry run flake8 biofefi tests
 

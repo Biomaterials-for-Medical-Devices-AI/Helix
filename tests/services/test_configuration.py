@@ -1,12 +1,12 @@
 import dataclasses
 import json
-import logging
 from pathlib import Path
 from typing import Generator
+
 import pytest
 
-from biofefi.options.execution import ExecutionOptions
 from biofefi.options.choices import DATA_SPLITS
+from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import (
     execution_options_path,
