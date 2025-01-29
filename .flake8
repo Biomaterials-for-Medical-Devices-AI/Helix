@@ -5,3 +5,12 @@ extend-ignore =
     W503,
     E501,
 max-complexity = 12
+extend-exclude =
+    docs,
+    .github,
+    .gitignore,
+    LICENSE,
+    .pytest_cache,
+    README.md,
+    static,
+    .venv, 

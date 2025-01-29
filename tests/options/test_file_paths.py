@@ -1,0 +1,224 @@
+from pathlib import Path
+
+import biofefi.options.file_paths as fp
+
+
+def test_biofefi_experiments_base_dir():
+    # Arrange
+    expected_output = Path.home() / "BioFEFIExperiments"
+
+    # Act
+    actual_output = fp.biofefi_experiments_base_dir()
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_uploaded_file_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    file_name = "test_data.csv"
+    expected_output = experiment_path / file_name
+
+    # Act
+    actual_output = fp.uploaded_file_path(file_name, experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_log_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "logs"
+
+    # Act
+    actual_output = fp.log_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_ml_plot_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "plots" / "ml"
+
+    # Act
+    actual_output = fp.ml_plot_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_ml_model_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "models"
+
+    # Act
+    actual_output = fp.ml_model_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_ml_metrics_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "results" / "ml_metrics" / "metrics.json"
+
+    # Act
+    actual_output = fp.ml_metrics_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fi_plot_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "plots" / "fi"
+
+    # Act
+    actual_output = fp.fi_plot_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fi_result_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "results" / "fi"
+
+    # Act
+    actual_output = fp.fi_result_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fi_options_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "options" / "fi"
+
+    # Act
+    actual_output = fp.fi_options_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fuzzy_plot_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "plots" / "fuzzy"
+
+    # Act
+    actual_output = fp.fuzzy_plot_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fuzzy_result_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "results" / "fuzzy"
+
+    # Act
+    actual_output = fp.fuzzy_result_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_data_analysis_plots_dir():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "plots" / "data_analysis"
+
+    # Act
+    actual_output = fp.data_analysis_plots_dir(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_plot_options_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "plot_options.json"
+
+    # Act
+    actual_output = fp.plot_options_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_execution_options_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "execution_options.json"
+
+    # Act
+    actual_output = fp.execution_options_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_ml_options_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "ml_options.json"
+
+    # Act
+    actual_output = fp.ml_options_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fi_options_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "fi_options.json"
+
+    # Act
+    actual_output = fp.fi_options_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_fuzzy_options_path():
+    # Arrange
+    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "fuzzy_options.json"
+
+    # Act
+    actual_output = fp.fuzzy_options_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
