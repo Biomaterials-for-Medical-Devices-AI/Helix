@@ -13,6 +13,7 @@
 ![Build docs status][build-docs-badge]
 ![Publish docs status][publish-docs-badge]
 ![Code quality status][code-quality-badge]
+![Unit tests status][tests-badge]
 ![PyPI downloads][downloads-badge]
 
 ## Overview
@@ -79,6 +80,8 @@ BioFEFI will open in your internet browser when you run it. The main screen will
 [code-quality-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/format-code.yml?style=for-the-badge&label=Code%20quality
 [license-badge]: https://img.shields.io/github/license/Biomaterials-for-Medical-Devices-AI/BioFEFI?style=for-the-badge&label=License
 [downloads-badge]: https://img.shields.io/pypi/dm/biofefi?style=for-the-badge
+[tests-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/run-unit-tests.yml?style=for-the-badge&label=Tests
+
 
 ## Contact
 
