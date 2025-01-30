@@ -39,7 +39,7 @@ jobs:
 
     - name: Upload artifacts (optional)
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.artifact_name }}
         path: docs/_build/html
