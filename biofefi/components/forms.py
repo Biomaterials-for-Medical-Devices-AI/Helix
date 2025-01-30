@@ -219,7 +219,7 @@ def fi_options_form():
     )
 
     # Fuzzy Options
-    st.write("### Fuzzy Feature Selection Options")
+    st.write("### Fuzzy Feature Importance Options")
     st.write(
         "Activate fuzzy methods to capture interactions between features in a fuzzy rule-based system. "
         "Define the number of features, clusters, and granular options for enhanced interpretability."
@@ -234,14 +234,14 @@ def fi_options_form():
             "You must configure both ensemble and local importance methods to use fuzzy feature selection.",
             icon="⚠",
         )
-    fuzzy_feature_selection = st.checkbox(
-        "Enable Fuzzy Feature Selection",
-        help="Toggle fuzzy feature selection to analyze feature interactions.",
+    fuzzy_feature_importance = st.checkbox(
+        "Enable Fuzzy Feature Importance",
+        help="Toggle fuzzy feature importance to analyze feature interactions.",
         key=ConfigStateKeys.FuzzyFeatureSelection,
         disabled=fuzzy_is_disabled,
     )
 
-    if fuzzy_feature_selection:
+    if fuzzy_feature_importance:
 
         st.number_input(
             "Number of features for fuzzy interpretation",
@@ -260,7 +260,7 @@ def fi_options_form():
         st.number_input(
             "Number of clusters for target variable",
             min_value=2,
-            value=3,
+            value=5,
             help="Set the number of clusters to categorise the target variable for fuzzy interpretation.",
             key=ConfigStateKeys.NumberOfClusters,
         )
