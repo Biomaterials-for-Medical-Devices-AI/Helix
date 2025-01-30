@@ -6,11 +6,14 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import streamlit as st
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from biofefi.options.choices import SVM_KERNELS
 from biofefi.options.enums import (
     ConfigStateKeys,
     ExecutionStateKeys,
+    Normalisations,
     PlotOptionKeys,
     ProblemTypes,
 )
@@ -543,51 +546,106 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
 
 
 @st.experimental_fragment
-def tSNE_plot_form(data, random_state, data_analysis_plot_dir, plot_opts):
-
-    from sklearn.manifold import TSNE
-    from sklearn.preprocessing import StandardScaler
+def tSNE_plot_form(
+    data, random_state, data_analysis_plot_dir, plot_opts, scaler: Normalisations = None
+):
 
     X = data.drop(columns=[data.columns[-1]])
     y = data[data.columns[-1]]
 
-    X = StandardScaler().fit_transform(X)
+    if scaler == Normalisations.NoNormalisation:
+        scaler = st.selectbox(
+            "Select Normalisation for Comparison (this will not affect the normalisation for ML models)",
+            options=[Normalisations.Standardization, Normalisations.MinMax],
+            key=ConfigStateKeys.SelectNormTsne,
+        )
+
+    if scaler == Normalisations.MinMax:
+        X_scaled = MinMaxScaler().fit_transform(X)
+    elif scaler == Normalisations.Standardization:
+        X_scaled = StandardScaler().fit_transform(X)
+
+    perplexity = st.slider(
+        "Perplexity",
+        min_value=5,
+        max_value=50,
+        value=30,
+        help="The perplexity parameter controls the balance between local and global aspects of the data.",
+        key=ConfigStateKeys.Perplexity,
+    )
 
     if st.checkbox("Create t-SNE Plot", key=ConfigStateKeys.tSNEPlot):
 
-        tsne = TSNE(n_components=2, random_state=random_state)
+        tsne = TSNE(n_components=2, random_state=random_state, perplexity=perplexity)
+        X_embedded_normalised = tsne.fit_transform(X_scaled)
         X_embedded = tsne.fit_transform(X)
 
-        df = pd.DataFrame(X_embedded, columns=["x", "y"])
+        df_normalised = pd.DataFrame(X_embedded, columns=["x", "y"])
+        df_normalised["target"] = y
+
+        df = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
         df["target"] = y
 
         plt.style.use(plot_opts.plot_colour_scheme)
-        fig = plt.figure(figsize=(8, 8))
-        sns.scatterplot(data=df, x="x", y="y", hue="target", palette="viridis")
-        plt.title(
-            "t-SNE Plot",
+        fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+
+        # Plot 1: Normalized Data
+        sns.scatterplot(
+            data=df_normalised,
+            x="x",
+            y="y",
+            hue="target",
+            palette="viridis",
+            ax=axes[0],
+        )
+        axes[0].set_title(
+            "t-SNE Plot (Normalised Features)",
             fontsize=plot_opts.plot_title_font_size,
             family=plot_opts.plot_font_family,
         )
-        plt.ylabel(
-            "t-SNE Component 2",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
-        plt.xlabel(
+        axes[0].set_xlabel(
             "t-SNE Component 1",
             fontsize=plot_opts.plot_axis_font_size,
             family=plot_opts.plot_font_family,
         )
+        axes[0].set_ylabel(
+            "t-SNE Component 2",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+
+        # Plot 2: Original Data
+        sns.scatterplot(
+            data=df, x="x", y="y", hue="target", palette="viridis", ax=axes[1]
+        )
+        axes[1].set_title(
+            "t-SNE Plot (Original Features)",
+            fontsize=plot_opts.plot_title_font_size,
+            family=plot_opts.plot_font_family,
+        )
+        axes[1].set_xlabel(
+            "t-SNE Component 1",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+        axes[1].set_ylabel(
+            "t-SNE Component 2",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+
         plt.xticks(
             fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
         )
         plt.yticks(
             fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
         )
+
+        plt.tight_layout()
+
         st.pyplot(fig)
 
-        if st.button("Create and Save Plot", key=ConfigStateKeys.SaveTSNEPlot):
+        if st.button("Save Plot", key=ConfigStateKeys.SaveTSNEPlot):
 
             fig.savefig(data_analysis_plot_dir / "tsne_plot.png")
             plt.clf()

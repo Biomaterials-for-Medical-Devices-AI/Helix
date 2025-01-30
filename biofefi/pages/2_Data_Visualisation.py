@@ -89,6 +89,12 @@ if experiment_name:
 
     st.write("#### t-SNE Plot")
 
-    tSNE_plot_form(data, exec_opt.random_state, data_analysis_plot_dir, plot_opt)
+    tSNE_plot_form(
+        data,
+        exec_opt.random_state,
+        data_analysis_plot_dir,
+        plot_opt,
+        exec_opt.normalization,
+    )
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
