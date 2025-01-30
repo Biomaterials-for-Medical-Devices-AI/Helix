@@ -20,14 +20,23 @@ from biofefi.services.configuration import save_options
 from biofefi.utils.utils import create_directory, delete_directory, delete_file
 
 
-def get_experiments() -> list[str]:
+def get_experiments(base_dir: Path | None = None) -> list[str]:
     """Get the list of experiments in the BioFEFI experiment directory.
+
+    If `base_dir` is not specified, the default from `biofefi_experiments_base_dir`
+    is used
+
+    Args:
+        base_dir (Path | None, optional): Specify a base directory for experiments.
+        Defaults to None.
 
     Returns:
         list[str]: The list of experiments.
     """
     # Get the base directory of all experiments
-    base_dir = biofefi_experiments_base_dir()
+    if base_dir is None:
+        base_dir = biofefi_experiments_base_dir()
+
     if not base_dir.exists():
         # if no experiments directory, return empty list
         return []
@@ -38,7 +47,7 @@ def get_experiments() -> list[str]:
     experiments = filter(
         lambda x: os.path.isdir(os.path.join(base_dir, x)), experiments
     )
-    return experiments
+    return list(experiments)
 
 
 def create_experiment(
@@ -85,7 +94,7 @@ def find_previous_fi_results(experiment_path: Path) -> bool:
     return any([d.exists() for d in directories])
 
 
-def delete_previous_FI_results(experiment_path: Path):
+def delete_previous_fi_results(experiment_path: Path):
     """Delete previous feature importance results.
 
     Args:

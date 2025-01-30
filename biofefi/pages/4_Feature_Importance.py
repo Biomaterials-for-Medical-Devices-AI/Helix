@@ -33,7 +33,7 @@ from biofefi.services.configuration import (
     save_options,
 )
 from biofefi.services.experiments import (
-    delete_previous_FI_results,
+    delete_previous_fi_results,
     find_previous_fi_results,
     get_experiments,
 )
@@ -278,7 +278,7 @@ if experiment_name:
             fi_options_form()
 
             if st.button("Run Feature Importance", type="primary"):
-                delete_previous_FI_results(base_dir / experiment_name)
+                delete_previous_fi_results(base_dir / experiment_name)
                 config = build_configuration()
                 # save FI options
                 fi_options_file = fi_options_path(base_dir / experiment_name)
