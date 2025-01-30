@@ -24,7 +24,9 @@ def test_get_experiments_with_base_dir(experiment_dir: tuple[Path, list[str]]):
 
     # Assert
     assert isinstance(actual_experiments, list)
-    assert actual_experiments == expected_experiments
+    # use `sorted` to wrap values, as `os.listdir` in `get_experiments`
+    # leads to different orders on different OS's
+    assert sorted(actual_experiments) == sorted(expected_experiments)
 
 
 def test_get_experiments_without_base_dir():
