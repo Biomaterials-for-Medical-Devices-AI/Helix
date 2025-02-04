@@ -343,23 +343,6 @@ def execution_options_box_manual():
         PROBLEM_TYPES,
         key=ConfigStateKeys.ProblemType,
     )
-    st.write(
-        """
-        If you select **"Standardization"**, your data will be normalised by subtracting the
-        mean and dividing by the standard deviation for each feature. The resulting transformation has a
-        mean of 0 and values are between -1 and 1.
-
-        If you select **"Minmax"**, your data will be scaled based on the minimum and maximum
-        value of each feature. The resulting transformation will have values between 0 and 1.
-
-        If you select **"None"**, the data will not be normalised.
-        """
-    )
-    st.selectbox(
-        "Normalisation",
-        NORMALISATIONS,
-        key=ConfigStateKeys.Normalization,
-    )
     data_split = st.selectbox("Data split method", DATA_SPLITS)
     if data_split.lower() == DataSplitMethods.Holdout:
         split_size = st.number_input(
@@ -410,23 +393,6 @@ def execution_options_box_auto():
         "Problem type",
         PROBLEM_TYPES,
         key=ConfigStateKeys.ProblemType,
-    )
-    st.write(
-        """
-        If you select **"Standardization"**, your data will be normalised by subtracting the
-        mean and dividing by the standard deviation for each feature. The resulting transformation has a
-        mean of 0 and values are between -1 and 1.
-
-        If you select **"Minmax"**, your data will be scaled based on the minimum and maximum
-        value of each feature. The resulting transformation will have values between 0 and 1.
-
-        If you select **"None"**, the data will not be normalised.
-        """
-    )
-    st.selectbox(
-        "Normalisation",
-        NORMALISATIONS,
-        key=ConfigStateKeys.Normalization,
     )
     test_split = st.number_input(
         "Test split",

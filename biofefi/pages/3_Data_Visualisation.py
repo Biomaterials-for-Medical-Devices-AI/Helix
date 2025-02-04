@@ -16,6 +16,7 @@ from biofefi.options.file_paths import (
     data_analysis_plots_dir,
     execution_options_path,
     plot_options_path,
+    raw_data_path,
 )
 from biofefi.services.configuration import load_execution_options, load_plot_options
 from biofefi.services.experiments import get_experiments
@@ -63,6 +64,11 @@ if experiment_name:
 
     data = pd.read_csv(exec_opt.data_path)
 
+    path_to_raw_data = raw_data_path(
+        exec_opt.data_path.split("/")[-1],
+        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName],
+    )
+
     st.write("### Data")
 
     st.write(data)
@@ -73,10 +79,22 @@ if experiment_name:
 
     st.write("### Data Visualisation")
 
+    if path_to_raw_data.exists():
+        data_tsne = pd.read_csv(path_to_raw_data)
+
+        if st.toggle(
+            "Visualise raw data",
+            help="Turn this on if you'd like to analyse your raw data (before pre-processing).",
+        ):
+            data = pd.read_csv(path_to_raw_data)
+
     st.write("#### Target Variable Distribution")
 
     target_variable_dist_form(
-        data, exec_opt.dependent_variable, data_analysis_plot_dir, plot_opt
+        data,
+        exec_opt.dependent_variable,
+        data_analysis_plot_dir,
+        plot_opt,
     )
 
     st.write("#### Correlation Heatmap")
@@ -90,7 +108,7 @@ if experiment_name:
     st.write("#### t-SNE Plot")
 
     tSNE_plot_form(
-        data,
+        data_tsne,
         exec_opt.random_state,
         data_analysis_plot_dir,
         plot_opt,

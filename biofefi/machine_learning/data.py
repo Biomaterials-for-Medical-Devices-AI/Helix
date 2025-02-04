@@ -192,8 +192,7 @@ class DataBuilder:
 
     def ingest(self):
         X, y = self._load_data()
-        X_norm = self._normalise_data(X)
-        data = self._generate_data_splits(X_norm, y)
+        data = self._generate_data_splits(X, y)
 
         return TabularData(
             X_train=data["X_train"],

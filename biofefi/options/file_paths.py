@@ -14,6 +14,21 @@ def uploaded_file_path(file_name: str, experiment_path: Path) -> Path:
     return experiment_path / file_name
 
 
+def raw_data_path(file_name: str, experiment_path: Path) -> Path:
+    """Create the full path to the directory to save raw data.
+
+    Args:
+        file_name (str): The name of the file.
+        experiment_path (Path): The path of the experiment.
+
+    Returns:
+        Path: The full path for the raw data directory.
+    """
+    file_name = file_name.split(".")[0] + "_raw.csv"
+
+    return experiment_path / file_name
+
+
 def log_dir(experiment_path: Path) -> Path:
     """Create the full upload path for experiment log files.
 
@@ -185,6 +200,26 @@ def execution_options_path(experiment_path: Path) -> Path:
     ```
     """
     return experiment_path / "execution_options.json"
+
+
+def data_preprocessing_options_path(experiment_path: Path) -> Path:
+    """Return the path to an experiment's data preprocessing options.
+    The path will be to a `json` file called `data_preprocessing_options.json`
+
+    Args:
+        experiment_path (str): The path of the experiment.
+
+    Returns:
+        Path: The path to the experiment's data preprocessing options.
+
+    Examples:
+    ```python
+    experiment_name = "test"
+    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    data_preprocessing_options_file = data_preprocessing_options_path(experiment_path)
+    ```
+    """
+    return experiment_path / "data_preprocessing_options.json"
 
 
 def ml_options_path(experiment_path: Path) -> Path:
