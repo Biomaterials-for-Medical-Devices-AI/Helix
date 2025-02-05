@@ -576,14 +576,20 @@ def tSNE_plot_form(
 
     if st.checkbox("Create t-SNE Plot", key=ConfigStateKeys.tSNEPlot):
 
-        tsne = TSNE(n_components=2, random_state=random_state, perplexity=perplexity)
-        X_embedded_normalised = tsne.fit_transform(X_scaled)
-        X_embedded = tsne.fit_transform(X)
+        tsne_normalised = TSNE(
+            n_components=2, random_state=random_state, perplexity=perplexity
+        )
+        tsne_original = TSNE(
+            n_components=2, random_state=random_state, perplexity=perplexity
+        )
 
-        df_normalised = pd.DataFrame(X_embedded, columns=["x", "y"])
+        X_embedded_normalised = tsne_normalised.fit_transform(X_scaled)
+        X_embedded = tsne_original.fit_transform(X)
+
+        df_normalised = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
         df_normalised["target"] = y
 
-        df = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
+        df = pd.DataFrame(X_embedded, columns=["x", "y"])
         df["target"] = y
 
         plt.style.use(plot_opts.plot_colour_scheme)

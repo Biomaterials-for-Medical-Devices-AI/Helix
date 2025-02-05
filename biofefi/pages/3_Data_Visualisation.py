@@ -88,6 +88,9 @@ if experiment_name:
         ):
             data = pd.read_csv(path_to_raw_data)
 
+    else:
+        data_tsne = pd.read_csv(exec_opt.data_path)
+
     st.write("#### Target Variable Distribution")
 
     target_variable_dist_form(
