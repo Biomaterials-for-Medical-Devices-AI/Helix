@@ -9,7 +9,7 @@ from biofefi.options.enums import Metrics, ProblemTypes
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
-from biofefi.services.plotting import plot_auc_roc, plot_scatter
+from biofefi.services.plotting import plot_auc_roc, plot_confusion_matrix, plot_scatter
 
 
 def save_actual_pred_plots(
@@ -120,6 +120,16 @@ def save_actual_pred_plots(
                         plot_opts=plot_opts,
                     )
 
+                    plot_confusion_matrix(
+                        estimator=model,
+                        X=data.X_train[i],
+                        y=y_train[i],
+                        set_name="Train",
+                        model_name=model_name,
+                        directory=directory,
+                        plot_opts=plot_opts,
+                    )
+
                     y_score_test = model.predict_proba(data.X_test[i])
                     y_test_labels = encoder.transform(
                         y_test[i].reshape(-1, 1)
@@ -128,6 +138,16 @@ def save_actual_pred_plots(
                     plot_auc_roc(
                         y_classes_labels=y_test_labels,
                         y_score_probs=y_score_test,
+                        set_name="Test",
+                        model_name=model_name,
+                        directory=directory,
+                        plot_opts=plot_opts,
+                    )
+
+                    plot_confusion_matrix(
+                        estimator=model,
+                        X=data.X_test[i],
+                        y=y_test[i],
                         set_name="Test",
                         model_name=model_name,
                         directory=directory,
