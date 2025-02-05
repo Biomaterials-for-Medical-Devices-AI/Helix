@@ -1,4 +1,4 @@
-from biofefi.options.choices import CLASSIFICATION_METRICS, REGRESSION_METRICS
+from biofefi.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
 from biofefi.options.enums import ProblemTypes
 
 

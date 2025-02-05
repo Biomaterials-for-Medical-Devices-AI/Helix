@@ -9,7 +9,7 @@ import streamlit as st
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from biofefi.options.choices import SVM_KERNELS
+from biofefi.options.choices.ui import SVM_KERNELS
 from biofefi.options.enums import (
     ConfigStateKeys,
     ExecutionStateKeys,

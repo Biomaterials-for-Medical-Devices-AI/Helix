@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from pickle import UnpicklingError, dump, load
 
-from biofefi.options.choices import MODEL_PROBLEM_CHOICES
+from biofefi.options.choices.ml_models import CLASSIFIERS, REGRESSORS
 from biofefi.options.enums import ProblemTypes
 from biofefi.utils.utils import create_directory
 
@@ -107,7 +107,7 @@ def get_models(
         ValueError: If a model type is not recognized or unsupported
 
     Returns:
-        dict: A dictionary of initialized models where th
+        dict: A dictionary of initialized models where the
         keys are model names and the values are instances
         of the corresponding models.
     """
@@ -118,19 +118,19 @@ def get_models(
         if model["use"]
     ]
     for model, model_params in model_list:
-        if model_class := MODEL_PROBLEM_CHOICES.get(
-            (model.lower(), problem_type.lower())
-        ):
-            if problem_type.lower() == ProblemTypes.Classification:
-                model_params["class_weight"] = (
-                    ["balanced"] if use_grid_search else "balanced"
-                )
-            models[model] = model_class(**model_params) if use_params else model_class()
-            logger.info(
-                f"Using model {model_class.__name__} with parameters {model_params}"
+        if problem_type.lower() == ProblemTypes.Classification:
+            model_class = CLASSIFIERS.get(model.lower())
+            model_params["class_weight"] = (
+                ["balanced"] if use_grid_search else "balanced"
             )
+        elif problem_type.lower() == ProblemTypes.Regression:
+            model_class = REGRESSORS.get(model.lower())
 
-        else:
+        models[model] = model_class(**model_params) if use_params else model_class()
+        logger.info(
+            f"Using model {model_class.__name__} with parameters {model_params}"
+        )
+        if not model_class:
             raise ValueError(f"Model type {model} not recognized")
     return models
 

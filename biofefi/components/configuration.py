@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-from biofefi.options.choices import (
+from biofefi.options.choices.ui import (
     DATA_SPLITS,
     NORMALISATIONS,
     PLOT_FONT_FAMILIES,

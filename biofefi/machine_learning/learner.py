@@ -6,11 +6,7 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
 
 from biofefi.machine_learning.data import TabularData
-from biofefi.options.choices import (
-    CLASSIFICATION_METRICS,
-    MODEL_PROBLEM_CHOICES,
-    REGRESSION_METRICS,
-)
+from biofefi.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
 from biofefi.options.enums import (
     DataSplitMethods,
     Metrics,
@@ -297,17 +293,21 @@ class GridSearchLearner:
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._models.keys()}
         metric_res_stats = {model_name: {} for model_name in self._models.keys()}
-        for model_name, model in self._models.items():
+        models = get_models(
+            self._model_types,
+            self._problem_type,
+            logger=self._logger,
+            use_params=False,  # params will be passed to models by GridSearchCV
+            use_grid_search=True,
+        )
+        for model_name, model in models.items():
             res[0][model_name] = {}
             # Set up grid search
-            model = MODEL_PROBLEM_CHOICES.get(
-                (model_name.lower(), self._problem_type.lower())
-            )
             refit = (
                 "R2" if self._problem_type == ProblemTypes.Regression else "accuracy"
             )
             gs = GridSearchCV(
-                estimator=model(),
+                estimator=model,
                 param_grid=self._model_types[model_name]["params"],
                 scoring=scorers,
                 refit=refit,
