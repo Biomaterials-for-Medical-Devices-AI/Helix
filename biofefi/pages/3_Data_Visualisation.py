@@ -10,7 +10,7 @@ from biofefi.components.forms import (
 )
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.plots import plot_box
-from biofefi.options.enums import ConfigStateKeys
+from biofefi.options.enums import ExecutionStateKeys
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     data_analysis_plots_dir,
@@ -43,19 +43,13 @@ experiment_name = experiment_selector(choices)
 biofefi_base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
-    st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
+    st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
 
-    path_to_exec_opts = execution_options_path(
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName]
-    )
+    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
 
-    path_to_plot_opts = plot_options_path(
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName]
-    )
+    path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
 
-    data_analysis_plot_dir = data_analysis_plots_dir(
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName]
-    )
+    data_analysis_plot_dir = data_analysis_plots_dir(biofefi_base_dir / experiment_name)
 
     create_directory(data_analysis_plot_dir)
 
@@ -66,7 +60,7 @@ if experiment_name:
 
     path_to_raw_data = raw_data_path(
         exec_opt.data_path.split("/")[-1],
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName],
+        biofefi_base_dir / experiment_name,
     )
 
     st.write("### Data")

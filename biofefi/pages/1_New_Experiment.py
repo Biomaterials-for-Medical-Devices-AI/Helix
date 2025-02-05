@@ -10,7 +10,7 @@ from biofefi.components.configuration import (
 )
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.options.enums import (
-    ConfigStateKeys,
+    ExecutionStateKeys,
     Normalisations,
     PlotOptionKeys,
     ProblemTypes,
@@ -53,7 +53,7 @@ def _file_is_uploaded() -> bool:
     Returns:
         bool: `True` if a file was uploaded, else `False`.
     """
-    return st.session_state.get(ConfigStateKeys.UploadedFileName) is not None
+    return st.session_state.get(ExecutionStateKeys.UploadedFileName) is not None
 
 
 def _entrypoint(save_dir: Path):
@@ -66,24 +66,24 @@ def _entrypoint(save_dir: Path):
     """
     # Set up options to save
     path_to_data = uploaded_file_path(
-        st.session_state[ConfigStateKeys.UploadedFileName].name,
+        st.session_state[ExecutionStateKeys.UploadedFileName].name,
         biofefi_experiments_base_dir()
-        / st.session_state[ConfigStateKeys.ExperimentName],
+        / st.session_state[ExecutionStateKeys.ExperimentName],
     )
     exec_opts = ExecutionOptions(
         data_path=str(path_to_data),  # Path objects aren't JSON serialisable
-        data_split=st.session_state[ConfigStateKeys.DataSplit],
+        data_split=st.session_state[ExecutionStateKeys.DataSplit],
         problem_type=st.session_state.get(
-            ConfigStateKeys.ProblemType, ProblemTypes.Auto
+            ExecutionStateKeys.ProblemType, ProblemTypes.Auto
         ).lower(),
         normalization=st.session_state.get(
-            ConfigStateKeys.Normalization, Normalisations.NoNormalisation
+            ExecutionStateKeys.Normalisation, Normalisations.NoNormalisation
         ).lower(),
-        random_state=st.session_state[ConfigStateKeys.RandomSeed],
-        dependent_variable=st.session_state[ConfigStateKeys.DependentVariableName],
-        experiment_name=st.session_state[ConfigStateKeys.ExperimentName],
-        n_bootstraps=st.session_state.get(ConfigStateKeys.NumberOfBootstraps, 1),
-        use_hyperparam_search=st.session_state[ConfigStateKeys.UseHyperParamSearch],
+        random_state=st.session_state[ExecutionStateKeys.RandomSeed],
+        dependent_variable=st.session_state[ExecutionStateKeys.DependentVariableName],
+        experiment_name=st.session_state[ExecutionStateKeys.ExperimentName],
+        n_bootstraps=st.session_state.get(ExecutionStateKeys.NumberOfBootstraps, 1),
+        use_hyperparam_search=st.session_state[ExecutionStateKeys.UseHyperParamSearch],
     )
     plot_opts = PlottingOptions(
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
@@ -100,7 +100,7 @@ def _entrypoint(save_dir: Path):
     create_experiment(save_dir, plotting_options=plot_opts, execution_options=exec_opts)
 
     # Save the data
-    uploaded_file = st.session_state[ConfigStateKeys.UploadedFileName]
+    uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
     save_upload(path_to_data, uploaded_file.read().decode("utf-8-sig"))
 
 
@@ -131,12 +131,12 @@ save_dir = _save_directory_selector()
 # if it's valid, else show some red text showing the destination and saying
 # it's invalid.
 is_valid = _directory_is_valid(save_dir)
-if not is_valid and st.session_state.get(ConfigStateKeys.ExperimentName):
+if not is_valid and st.session_state.get(ExecutionStateKeys.ExperimentName):
     st.warning(
         f"Cannot use {save_dir}; it already exists. If you have just created this experiment, please continue."
     )
 else:
-    st.session_state[ConfigStateKeys.ExperimentName] = (
+    st.session_state[ExecutionStateKeys.ExperimentName] = (
         save_dir.name
     )  # get the experiment name from the file path
 
@@ -153,15 +153,17 @@ st.write(
     """
 )
 
-st.file_uploader("Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName)
+st.file_uploader(
+    "Choose a CSV file", type="csv", key=ExecutionStateKeys.UploadedFileName
+)
 st.text_input(
     "Name of the dependent variable. **This will be used for the plots.**",
-    key=ConfigStateKeys.DependentVariableName,
+    key=ExecutionStateKeys.DependentVariableName,
 )
 
 st.subheader("Configure data options")
 if st.toggle(
-    "Use hyper-parameter search", value=True, key=ConfigStateKeys.UseHyperParamSearch
+    "Use hyper-parameter search", value=True, key=ExecutionStateKeys.UseHyperParamSearch
 ):
     st.write(
         """

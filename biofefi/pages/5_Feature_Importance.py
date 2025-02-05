@@ -11,7 +11,12 @@ from biofefi.components.logs import log_box
 from biofefi.components.plots import plot_box
 from biofefi.feature_importance import feature_importance, fuzzy_interpretation
 from biofefi.machine_learning.data import DataBuilder
-from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
+from biofefi.options.enums import (
+    ExecutionStateKeys,
+    FeatureImportanceStateKeys,
+    FuzzyStateKeys,
+    ViewExperimentKeys,
+)
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import (
@@ -59,35 +64,32 @@ def build_configuration() -> (
         and the list of models to explain.
     """
     biofefi_base_dir = biofefi_experiments_base_dir()
+    experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
 
     # Load plotting options
-    path_to_plot_opts = plot_options_path(
-        biofefi_base_dir / st.session_state[ViewExperimentKeys.ExperimentName]
-    )
+    path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
     plotting_options = load_plot_options(path_to_plot_opts)
 
     # Load executuon options
-    path_to_exec_opts = execution_options_path(
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName]
-    )
+    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
     exec_opt = load_execution_options(path_to_exec_opts)
 
     # Set up fuzzy options
     fuzzy_opt = None
-    if st.session_state.get(ConfigStateKeys.FuzzyFeatureSelection, False):
+    if st.session_state.get(FuzzyStateKeys.FuzzyFeatureSelection, False):
         fuzzy_opt = FuzzyOptions(
             fuzzy_feature_selection=st.session_state[
-                ConfigStateKeys.FuzzyFeatureSelection
+                FuzzyStateKeys.FuzzyFeatureSelection
             ],
             number_fuzzy_features=st.session_state[
-                ConfigStateKeys.NumberOfFuzzyFeatures
+                FuzzyStateKeys.NumberOfFuzzyFeatures
             ],
-            granular_features=st.session_state[ConfigStateKeys.GranularFeatures],
-            number_clusters=st.session_state[ConfigStateKeys.NumberOfClusters],
-            cluster_names=st.session_state.get(ConfigStateKeys.ClusterNames, "").split(
+            granular_features=st.session_state[FuzzyStateKeys.GranularFeatures],
+            number_clusters=st.session_state[FuzzyStateKeys.NumberOfClusters],
+            cluster_names=st.session_state.get(FuzzyStateKeys.ClusterNames, "").split(
                 ", "
             ),
-            number_rules=st.session_state[ConfigStateKeys.NumberOfTopRules],
+            number_rules=st.session_state[FuzzyStateKeys.NumberOfTopRules],
             save_fuzzy_set_plots=plotting_options.save_plots,
             fuzzy_log_dir=str(
                 log_dir(
@@ -101,15 +103,17 @@ def build_configuration() -> (
     # Set up feature importance options
     fi_opt = FeatureImportanceOptions(
         num_features_to_plot=st.session_state[
-            ConfigStateKeys.NumberOfImportantFeatures
+            FeatureImportanceStateKeys.NumberOfImportantFeatures
         ],
         permutation_importance_scoring=st.session_state[
-            ConfigStateKeys.ScoringFunction
+            FeatureImportanceStateKeys.ScoringFunction
         ],
         permutation_importance_repeat=st.session_state[
-            ConfigStateKeys.NumberOfRepetitions
+            FeatureImportanceStateKeys.NumberOfRepetitions
         ],
-        shap_reduce_data=st.session_state[ConfigStateKeys.ShapDataPercentage],
+        shap_reduce_data=st.session_state[
+            FeatureImportanceStateKeys.ShapDataPercentage
+        ],
         save_feature_importance_plots=plotting_options.save_plots,
         fi_log_dir=str(
             log_dir(
@@ -118,17 +122,19 @@ def build_configuration() -> (
             / "fi"
         ),
         save_feature_importance_options=st.session_state[
-            ConfigStateKeys.SaveFeatureImportanceOptions
+            FeatureImportanceStateKeys.SaveFeatureImportanceOptions
         ],
         save_feature_importance_results=st.session_state[
-            ConfigStateKeys.SaveFeatureImportanceResults
+            FeatureImportanceStateKeys.SaveFeatureImportanceResults
         ],
         local_importance_methods=st.session_state[
-            ConfigStateKeys.LocalImportanceFeatures
+            FeatureImportanceStateKeys.LocalImportanceFeatures
         ],
-        feature_importance_ensemble=st.session_state[ConfigStateKeys.EnsembleMethods],
+        feature_importance_ensemble=st.session_state[
+            FeatureImportanceStateKeys.EnsembleMethods
+        ],
         global_importance_methods=st.session_state[
-            ConfigStateKeys.GlobalFeatureImportanceMethods
+            FeatureImportanceStateKeys.GlobalFeatureImportanceMethods
         ],
     )
 
@@ -137,8 +143,8 @@ def build_configuration() -> (
         fi_opt,
         exec_opt,
         plotting_options,
-        st.session_state[ConfigStateKeys.ExperimentName],
-        st.session_state[ConfigStateKeys.ExplainModels],
+        experiment_name,
+        st.session_state[FeatureImportanceStateKeys.ExplainModels],
     )
 
 
@@ -253,28 +259,30 @@ if experiment_name:
         st.checkbox(
             "Would you like to rerun feature importance? This will overwrite the existing results.",
             value=True,
-            key=ConfigStateKeys.RerunFI,
+            key=FuzzyStateKeys.RerunFI,
         )
     else:
-        st.session_state[ConfigStateKeys.RerunFI] = True
+        st.session_state[FuzzyStateKeys.RerunFI] = True
 
-    if st.session_state[ConfigStateKeys.RerunFI]:
+    if st.session_state[FuzzyStateKeys.RerunFI]:
 
-        st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
+        st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
 
         model_choices = os.listdir(ml_model_dir(base_dir / experiment_name))
         model_choices = [x for x in model_choices if x.endswith(".pkl")]
 
         explain_all_models = st.toggle(
-            "Explain all models", key=ConfigStateKeys.ExplainAllModels
+            "Explain all models", key=FeatureImportanceStateKeys.ExplainAllModels
         )
 
         if explain_all_models:
-            st.session_state[ConfigStateKeys.ExplainModels] = model_choices
+            st.session_state[FeatureImportanceStateKeys.ExplainModels] = model_choices
         else:
             model_selector(model_choices)
 
-        if model_choices := st.session_state.get(ConfigStateKeys.ExplainModels):
+        if model_choices := st.session_state.get(
+            FeatureImportanceStateKeys.ExplainModels
+        ):
             fi_options_form()
 
             if st.button("Run Feature Importance", type="primary"):
@@ -300,17 +308,17 @@ if experiment_name:
                     # wait for the process to finish or be cancelled
                     process.join()
                 try:
-                    st.session_state[ConfigStateKeys.FILogBox] = get_logs(
+                    st.session_state[FeatureImportanceStateKeys.FILogBox] = get_logs(
                         log_dir(base_dir / experiment_name) / "fi"
                     )
-                    st.session_state[ConfigStateKeys.FuzzyLogBox] = get_logs(
+                    st.session_state[FuzzyStateKeys.FuzzyLogBox] = get_logs(
                         log_dir(base_dir / experiment_name) / "fuzzy"
                     )
                     log_box(
                         box_title="Feature Importance Logs",
-                        key=ConfigStateKeys.FILogBox,
+                        key=FeatureImportanceStateKeys.FILogBox,
                     )
-                    log_box(box_title="Fuzzy FI Logs", key=ConfigStateKeys.FuzzyLogBox)
+                    log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
                 except NotADirectoryError:
                     pass
                 fi_plots = fi_plot_dir(base_dir / experiment_name)

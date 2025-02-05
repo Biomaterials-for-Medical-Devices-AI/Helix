@@ -11,7 +11,11 @@ from biofefi.components.logs import log_box
 from biofefi.components.plots import display_metrics_table, plot_box
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
-from biofefi.options.enums import ConfigStateKeys, PlotOptionKeys
+from biofefi.options.enums import (
+    ExecutionStateKeys,
+    MachineLearningStateKeys,
+    PlotOptionKeys,
+)
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
@@ -48,37 +52,28 @@ def build_configuration() -> (
         experiment name
     """
 
+    experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
+
     path_to_plot_opts = plot_options_path(
-        biofefi_experiments_base_dir()
-        / st.session_state[ConfigStateKeys.ExperimentName]
+        biofefi_experiments_base_dir() / experiment_name
     )
     plot_opt = load_plot_options(path_to_plot_opts)
 
     path_to_exec_opts = execution_options_path(
-        biofefi_experiments_base_dir()
-        / st.session_state[ConfigStateKeys.ExperimentName]
+        biofefi_experiments_base_dir() / experiment_name
     )
     exec_opt = load_execution_options(path_to_exec_opts)
     ml_opt = MachineLearningOptions(
         save_actual_pred_plots=st.session_state[PlotOptionKeys.SavePlots],
-        model_types=st.session_state[ConfigStateKeys.ModelTypes],
-        ml_plot_dir=str(
-            ml_plot_dir(
-                biofefi_experiments_base_dir()
-                / st.session_state[ConfigStateKeys.ExperimentName]
-            )
-        ),
+        model_types=st.session_state[MachineLearningStateKeys.ModelTypes],
+        ml_plot_dir=str(ml_plot_dir(biofefi_experiments_base_dir() / experiment_name)),
         ml_log_dir=str(
-            log_dir(
-                biofefi_experiments_base_dir()
-                / st.session_state[ConfigStateKeys.ExperimentName]
-            )
-            / "ml"
+            log_dir(biofefi_experiments_base_dir() / experiment_name) / "ml"
         ),
-        save_models=st.session_state[ConfigStateKeys.SaveModels],
+        save_models=st.session_state[MachineLearningStateKeys.SaveModels],
     )
 
-    return ml_opt, exec_opt, plot_opt, st.session_state[ConfigStateKeys.ExperimentName]
+    return ml_opt, exec_opt, plot_opt, experiment_name
 
 
 def pipeline(
@@ -161,7 +156,7 @@ st.write(
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
-    st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
+    st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
     biofefi_base_dir = biofefi_experiments_base_dir()
     path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
     exec_opt = load_execution_options(path_to_exec_opts)
@@ -169,7 +164,7 @@ if experiment_name:
     ml_options_form(exec_opt.use_hyperparam_search)
 
     if st.button("Run Training", type="primary") and (
-        st.session_state[ConfigStateKeys.RerunML]
+        st.session_state[MachineLearningStateKeys.RerunML]
     ):
 
         if os.path.exists(ml_model_dir(biofefi_base_dir / experiment_name)):
@@ -186,10 +181,12 @@ if experiment_name:
             # wait for the process to finish or be cancelled
             process.join()
         try:
-            st.session_state[ConfigStateKeys.MLLogBox] = get_logs(
+            st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
                 log_dir(biofefi_base_dir / experiment_name) / "ml"
             )
-            log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
+            log_box(
+                box_title="Machine Learning Logs", key=MachineLearningStateKeys.MLLogBox
+            )
         except NotADirectoryError:
             pass
         metrics = ml_metrics_path(biofefi_base_dir / experiment_name)
@@ -199,7 +196,7 @@ if experiment_name:
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")
 
-    elif not st.session_state[ConfigStateKeys.RerunML]:
+    elif not st.session_state[MachineLearningStateKeys.RerunML]:
         st.success(
             "You have chosen not to rerun the machine learning experiments. "
             "You can proceed to feature importance analysis."

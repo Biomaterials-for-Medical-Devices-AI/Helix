@@ -2,7 +2,11 @@ from pathlib import Path
 
 import streamlit as st
 
-from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
+from biofefi.options.enums import (
+    ExecutionStateKeys,
+    FeatureImportanceStateKeys,
+    ViewExperimentKeys,
+)
 
 
 def experiment_selector(options: list) -> str:
@@ -40,7 +44,7 @@ def model_selector(options: list) -> Path:
         options=options,
         default=None,
         placeholder="Models to explain",
-        key=ConfigStateKeys.ExplainModels,
+        key=FeatureImportanceStateKeys.ExplainModels,
     )
 
 
@@ -60,5 +64,5 @@ def data_selector(options: list) -> Path:
         options=options,
         index=None,
         placeholder="Dataset to explain",
-        key=ConfigStateKeys.UploadedFileName,
+        key=ExecutionStateKeys.UploadedFileName,
     )

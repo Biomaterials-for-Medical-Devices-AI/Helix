@@ -1,6 +1,3 @@
-import os
-from pathlib import Path
-
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -11,8 +8,11 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from biofefi.options.choices.ui import SVM_KERNELS
 from biofefi.options.enums import (
-    ConfigStateKeys,
+    DataAnalysisStateKeys,
     ExecutionStateKeys,
+    FeatureImportanceStateKeys,
+    FuzzyStateKeys,
+    MachineLearningStateKeys,
     Normalisations,
     PlotOptionKeys,
     ProblemTypes,
@@ -25,63 +25,6 @@ from biofefi.options.search_grids import (
     XGB_GRID,
 )
 from biofefi.services.ml_models import models_exist
-
-
-def data_upload_form():
-    """
-    The main form for BioFEFI where the user supplies the data
-    and says where they want their experiment to be saved.
-    """
-    st.header("Data Upload")
-    save_dir = _save_directory_selector()
-    # If a user has tried to enter a destination to save an experiment, show it
-    # if it's valid, else show some red text showing the destination and saying
-    # it's invalid.
-    if not _directory_is_valid(save_dir) and st.session_state.get(
-        ConfigStateKeys.ExperimentName
-    ):
-        st.markdown(f":red[Cannot use {save_dir}; it already exists.]")
-    else:
-        st.session_state[ConfigStateKeys.ExperimentName] = save_dir.name
-    st.text_input(
-        "Name of the dependent variable", key=ConfigStateKeys.DependentVariableName
-    )
-    st.file_uploader(
-        "Choose a CSV file", type="csv", key=ConfigStateKeys.UploadedFileName
-    )
-    if not st.session_state.get(ConfigStateKeys.IsMachineLearning, False):
-        st.file_uploader(
-            "Upload machine leaerning models",
-            type="pkl",
-            accept_multiple_files=True,
-            key=ConfigStateKeys.UploadedModels,
-        )
-    st.button("Run", key=ExecutionStateKeys.RunPipeline)
-
-
-def _save_directory_selector() -> Path:
-    """Create a selector for the directory to save experiments."""
-    root = biofefi_experiments_base_dir()
-
-    col1, col2 = st.columns([0.3, 0.7], vertical_alignment="bottom")
-
-    col1.text(f"{root}{os.path.sep}", help="Your experiment will be saved here")
-    sub_dir = col2.text_input("Name of the experiment", placeholder="e.g. MyExperiment")
-
-    return root / sub_dir
-
-
-def _directory_is_valid(directory: Path) -> bool:
-    """Determine if the directory supplied by the user is valid. If it already exists,
-    it is invalid.
-
-    Args:
-        directory (Path): The path to check.
-
-    Returns:
-        bool: `True` if the directory doesn't already exist, else `False`
-    """
-    return not directory.exists()
 
 
 @st.experimental_fragment
@@ -110,7 +53,9 @@ def fi_options_form():
     )
     global_methods["SHAP"] = {"type": "global", "value": use_shap}
 
-    st.session_state[ConfigStateKeys.GlobalFeatureImportanceMethods] = global_methods
+    st.session_state[FeatureImportanceStateKeys.GlobalFeatureImportanceMethods] = (
+        global_methods
+    )
 
     st.write("### Ensemble Feature Importance Methods")
     st.write(
@@ -139,7 +84,7 @@ def fi_options_form():
     )
     ensemble_methods["Majority Vote"] = use_majority
 
-    st.session_state[ConfigStateKeys.EnsembleMethods] = ensemble_methods
+    st.session_state[FeatureImportanceStateKeys.EnsembleMethods] = ensemble_methods
 
     st.write("### Local Feature Importance Methods")
     st.write(
@@ -162,7 +107,9 @@ def fi_options_form():
         "value": use_local_shap,
     }
 
-    st.session_state[ConfigStateKeys.LocalImportanceFeatures] = local_importance_methods
+    st.session_state[FeatureImportanceStateKeys.LocalImportanceFeatures] = (
+        local_importance_methods
+    )
 
     st.write("### Additional Configuration Options")
 
@@ -172,12 +119,12 @@ def fi_options_form():
         min_value=1,
         value=10,
         help="Select how many top features to visualise based on their importance score.",
-        key=ConfigStateKeys.NumberOfImportantFeatures,
+        key=FeatureImportanceStateKeys.NumberOfImportantFeatures,
     )
 
     # Scoring function for permutation importance
     if (
-        st.session_state.get(ConfigStateKeys.ProblemType, ProblemTypes.Auto).lower()
+        st.session_state.get(ExecutionStateKeys.ProblemType, ProblemTypes.Auto).lower()
         == ProblemTypes.Regression
     ):
         scoring_options = [
@@ -185,7 +132,7 @@ def fi_options_form():
             "neg_root_mean_squared_error",
         ]
     elif (
-        st.session_state.get(ConfigStateKeys.ProblemType, ProblemTypes.Auto).lower()
+        st.session_state.get(ExecutionStateKeys.ProblemType, ProblemTypes.Auto).lower()
         == ProblemTypes.Classification
     ):
         scoring_options = ["accuracy", "f1"]
@@ -196,7 +143,7 @@ def fi_options_form():
         "Scoring function for permutation importance",
         scoring_options,
         help="Choose a scoring function to evaluate the model during permutation importance.",
-        key=ConfigStateKeys.ScoringFunction,
+        key=FeatureImportanceStateKeys.ScoringFunction,
     )
 
     # Number of repetitions for permutation importance
@@ -205,7 +152,7 @@ def fi_options_form():
         min_value=1,
         value=5,
         help="Specify the number of times to shuffle each feature for importance estimation.",
-        key=ConfigStateKeys.NumberOfRepetitions,
+        key=FeatureImportanceStateKeys.NumberOfRepetitions,
     )
 
     # Percentage of data to consider for SHAP
@@ -215,7 +162,7 @@ def fi_options_form():
         100,
         100,
         help="Set the percentage of data used to calculate SHAP values.",
-        key=ConfigStateKeys.ShapDataPercentage,
+        key=FeatureImportanceStateKeys.ShapDataPercentage,
     )
 
     # Fuzzy Options
@@ -237,7 +184,7 @@ def fi_options_form():
     fuzzy_feature_importance = st.checkbox(
         "Enable Fuzzy Feature Importance",
         help="Toggle fuzzy feature importance to analyze feature interactions.",
-        key=ConfigStateKeys.FuzzyFeatureSelection,
+        key=FuzzyStateKeys.FuzzyFeatureSelection,
         disabled=fuzzy_is_disabled,
     )
 
@@ -248,13 +195,13 @@ def fi_options_form():
             min_value=1,
             value=5,
             help="Set the number of features for fuzzy analysis.",
-            key=ConfigStateKeys.NumberOfFuzzyFeatures,
+            key=FuzzyStateKeys.NumberOfFuzzyFeatures,
         )
 
         st.checkbox(
             "Granular features",
             help="Divide features into granular categories for in-depth analysis.",
-            key=ConfigStateKeys.GranularFeatures,
+            key=FuzzyStateKeys.GranularFeatures,
         )
 
         st.number_input(
@@ -262,13 +209,13 @@ def fi_options_form():
             min_value=2,
             value=5,
             help="Set the number of clusters to categorise the target variable for fuzzy interpretation.",
-            key=ConfigStateKeys.NumberOfClusters,
+            key=FuzzyStateKeys.NumberOfClusters,
         )
 
         st.text_input(
             "Names of clusters (comma-separated)",
             help="Specify names for each cluster (e.g., Low, Medium, High).",
-            key=ConfigStateKeys.ClusterNames,
+            key=FuzzyStateKeys.ClusterNames,
             value=", ".join(["very low", "low", "medium", "high", "very high"]),
         )
 
@@ -277,7 +224,7 @@ def fi_options_form():
             min_value=1,
             value=10,
             help="Set the number of most frequent fuzzy rules for synergy analysis.",
-            key=ConfigStateKeys.NumberOfTopRules,
+            key=FuzzyStateKeys.NumberOfTopRules,
         )
 
     st.subheader("Select outputs to save")
@@ -286,14 +233,14 @@ def fi_options_form():
     st.toggle(
         "Save feature importance options",
         help="Save the selected configuration of feature importance methods.",
-        key=ConfigStateKeys.SaveFeatureImportanceOptions,
+        key=FeatureImportanceStateKeys.SaveFeatureImportanceOptions,
         value=True,
     )
 
     st.toggle(
         "Save feature importance results",
         help="Store the results from feature importance computations.",
-        key=ConfigStateKeys.SaveFeatureImportanceResults,
+        key=FeatureImportanceStateKeys.SaveFeatureImportanceResults,
         value=True,
     )
 
@@ -311,19 +258,19 @@ def ml_options_form(use_hyperparam_search: bool):
     if models_exist(
         ml_model_dir(
             biofefi_experiments_base_dir()
-            / st.session_state[ConfigStateKeys.ExperimentName]
+            / st.session_state[ExecutionStateKeys.ExperimentName]
         )
     ):
         st.warning("You have trained models in this experiment.")
         st.checkbox(
             "Would you like to rerun the experiments? This will overwrite the existing models.",
             value=True,
-            key=ConfigStateKeys.RerunML,
+            key=MachineLearningStateKeys.RerunML,
         )
     else:
-        st.session_state[ConfigStateKeys.RerunML] = True
+        st.session_state[MachineLearningStateKeys.RerunML] = True
 
-    if st.session_state[ConfigStateKeys.RerunML]:
+    if st.session_state[MachineLearningStateKeys.RerunML]:
         if use_hyperparam_search:
             st.success("**✨ Hyper-parameters will be searched automatically**")
 
@@ -344,11 +291,11 @@ def ml_options_form(use_hyperparam_search: bool):
             svm_model_type = _svm_opts(use_hyperparam_search)
             model_types.update(svm_model_type)
 
-        st.session_state[ConfigStateKeys.ModelTypes] = model_types
+        st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
         st.subheader("Select outputs to save")
         st.toggle(
             "Save models",
-            key=ConfigStateKeys.SaveModels,
+            key=MachineLearningStateKeys.SaveModels,
             value=True,
             help="Save the models that are trained to disk?",
         )
@@ -366,18 +313,18 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_o
     Form to create the target variable distribution plot.
     """
 
-    show_kde = st.toggle("Show KDE", value=True, key=ConfigStateKeys.ShowKDE)
+    show_kde = st.toggle("Show KDE", value=True, key=DataAnalysisStateKeys.ShowKDE)
     n_bins = st.slider(
         "Number of Bins",
         min_value=5,
         max_value=50,
         value=10,
-        key=ConfigStateKeys.NBins,
+        key=DataAnalysisStateKeys.NBins,
     )
 
     if st.checkbox(
         "Create Target Variable Distribution Plot",
-        key=ConfigStateKeys.TargetVarDistribution,
+        key=DataAnalysisStateKeys.TargetVarDistribution,
     ):
         plt.style.use(plot_opts.plot_colour_scheme)
         plt.figure(figsize=(10, 6))
@@ -411,7 +358,7 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_o
 
         st.pyplot(displot)
 
-        if st.button("Save Plot", key=ConfigStateKeys.SaveTargetVarDistribution):
+        if st.button("Save Plot", key=DataAnalysisStateKeys.SaveTargetVarDistribution):
 
             displot.savefig(data_analysis_plot_dir / f"{dep_var_name}_distribution.png")
             plt.clf()
@@ -427,7 +374,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
     if st.toggle(
         "Select All Descriptors",
         value=False,
-        key=ConfigStateKeys.SelectAllDescriptorsCorrelation,
+        key=DataAnalysisStateKeys.SelectAllDescriptorsCorrelation,
     ):
         default_corr = list(data.columns[:-1])
     else:
@@ -437,7 +384,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
         "Select columns to include in the correlation heatmap",
         data.columns[:-1],
         default=default_corr,
-        key=ConfigStateKeys.DescriptorCorrelation,
+        key=DataAnalysisStateKeys.DescriptorCorrelation,
     )
 
     corr_data = data[corr_descriptors + [data.columns[-1]]]
@@ -448,7 +395,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
         )
 
     if st.checkbox(
-        "Create Correlation Heatmap Plot", key=ConfigStateKeys.CorrelationHeatmap
+        "Create Correlation Heatmap Plot", key=DataAnalysisStateKeys.CorrelationHeatmap
     ):
 
         corr = corr_data.corr()
@@ -496,7 +443,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
 
         st.pyplot(fig)
 
-        if st.button("Save Plot", key=ConfigStateKeys.SaveHeatmap):
+        if st.button("Save Plot", key=DataAnalysisStateKeys.SaveHeatmap):
 
             fig.savefig(data_analysis_plot_dir / "correlation_heatmap.png")
             plt.clf()
@@ -512,7 +459,7 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
     if st.toggle(
         "Select All Descriptors",
         value=False,
-        key=ConfigStateKeys.SelectAllDescriptorsPairPlot,
+        key=DataAnalysisStateKeys.SelectAllDescriptorsPairPlot,
     ):
         default_corr = list(data.columns[:-1])
     else:
@@ -522,7 +469,7 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
         "Select columns to include in the pairplot",
         data.columns[:-1],
         default=default_corr,
-        key=ConfigStateKeys.DescriptorPairPlot,
+        key=DataAnalysisStateKeys.DescriptorPairPlot,
     )
 
     pairplot_data = data[descriptors + [data.columns[-1]]]
@@ -532,14 +479,14 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
             "Please select at least one descriptor to create the correlation plot."
         )
 
-    if st.checkbox("Create Pairplot", key=ConfigStateKeys.PairPlot):
+    if st.checkbox("Create Pairplot", key=DataAnalysisStateKeys.PairPlot):
 
         plt.style.use(plot_opts.plot_colour_scheme)
         plt.figure(figsize=(10, 6))
         pairplot = sns.pairplot(pairplot_data, corner=True)
         st.pyplot(plt)
 
-        if st.button("Save Plot", key=ConfigStateKeys.SavePairPlot):
+        if st.button("Save Plot", key=DataAnalysisStateKeys.SavePairPlot):
             pairplot.savefig(data_analysis_plot_dir / "pairplot.png")
             plt.clf()
             st.success("Plot created and saved successfully.")
@@ -557,7 +504,7 @@ def tSNE_plot_form(
         scaler = st.selectbox(
             "Select Normalisation for Comparison (this will not affect the normalisation for ML models)",
             options=[Normalisations.Standardization, Normalisations.MinMax],
-            key=ConfigStateKeys.SelectNormTsne,
+            key=DataAnalysisStateKeys.SelectNormTsne,
         )
 
     if scaler == Normalisations.MinMax:
@@ -571,10 +518,10 @@ def tSNE_plot_form(
         max_value=50,
         value=30,
         help="The perplexity parameter controls the balance between local and global aspects of the data.",
-        key=ConfigStateKeys.Perplexity,
+        key=DataAnalysisStateKeys.Perplexity,
     )
 
-    if st.checkbox("Create t-SNE Plot", key=ConfigStateKeys.tSNEPlot):
+    if st.checkbox("Create t-SNE Plot", key=DataAnalysisStateKeys.TSNEPlot):
 
         tsne_normalised = TSNE(
             n_components=2, random_state=random_state, perplexity=perplexity
@@ -651,7 +598,7 @@ def tSNE_plot_form(
 
         st.pyplot(fig)
 
-        if st.button("Save Plot", key=ConfigStateKeys.SaveTSNEPlot):
+        if st.button("Save Plot", key=DataAnalysisStateKeys.SaveTSNEPlot):
 
             fig.savefig(data_analysis_plot_dir / "tsne_plot.png")
             plt.clf()

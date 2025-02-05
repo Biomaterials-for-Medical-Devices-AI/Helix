@@ -6,7 +6,11 @@ from sklearn.feature_selection import VarianceThreshold
 from sklearn.linear_model import Lasso
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from biofefi.options.enums import ConfigStateKeys, Normalisations, TransformationsY
+from biofefi.options.enums import (
+    DataPreprocessingStateKeys,
+    Normalisations,
+    TransformationsY,
+)
 from biofefi.options.file_paths import data_preprocessing_options_path
 from biofefi.options.preprocessing import PreprocessingOptions
 from biofefi.services.configuration import save_options
@@ -100,13 +104,13 @@ def run_feature_selection(
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
 
-    if feature_selection_methods[ConfigStateKeys.VarianceThreshold]:
+    if feature_selection_methods[DataPreprocessingStateKeys.VarianceThreshold]:
         varianceselector = VarianceThreshold(preprocessing_opts.variance_threshold)
         X = varianceselector.fit_transform(X)
         variance_columns = varianceselector.get_feature_names_out()
         X = pd.DataFrame(X, columns=variance_columns)
 
-    if feature_selection_methods[ConfigStateKeys.CorrelationThreshold]:
+    if feature_selection_methods[DataPreprocessingStateKeys.CorrelationThreshold]:
         corr_matrix = X.corr().abs()
         upper_triangle = corr_matrix.where(
             np.triu(np.ones(corr_matrix.shape), k=1).astype(bool)
@@ -118,7 +122,7 @@ def run_feature_selection(
         ]
         X = X.drop(columns=to_drop)
 
-    if feature_selection_methods[ConfigStateKeys.LassoFeatureSelection]:
+    if feature_selection_methods[DataPreprocessingStateKeys.LassoFeatureSelection]:
         lasso = Lasso(alpha=preprocessing_opts.lasso_regularisation_term)
         lasso.fit(X, y)
         selected_features = X.columns[lasso.coef_ != 0]

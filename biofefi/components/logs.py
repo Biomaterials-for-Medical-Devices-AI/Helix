@@ -2,14 +2,20 @@ from typing import Literal
 
 import streamlit as st
 
-from biofefi.options.enums import ConfigStateKeys
+from biofefi.options.enums import (
+    FeatureImportanceStateKeys,
+    FuzzyStateKeys,
+    MachineLearningStateKeys,
+)
 
 
 @st.experimental_fragment
 def log_box(
     box_title: str,
     key: Literal[
-        ConfigStateKeys.MLLogBox, ConfigStateKeys.FILogBox, ConfigStateKeys.FuzzyLogBox
+        MachineLearningStateKeys.MLLogBox,
+        FeatureImportanceStateKeys.FILogBox,
+        FuzzyStateKeys.FuzzyLogBox,
     ],
 ):
     """Display a text area which shows that logs of the current pipeline run."""

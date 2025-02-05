@@ -4,7 +4,12 @@ from biofefi.components.experiments import experiment_selector
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
 from biofefi.components.plots import display_metrics_table, plot_box
-from biofefi.options.enums import ConfigStateKeys, ViewExperimentKeys
+from biofefi.options.enums import (
+    FeatureImportanceStateKeys,
+    FuzzyStateKeys,
+    MachineLearningStateKeys,
+    ViewExperimentKeys,
+)
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     data_analysis_plots_dir,
@@ -57,23 +62,27 @@ if experiment_name:
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")
     try:
-        st.session_state[ConfigStateKeys.MLLogBox] = get_logs(
+        st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"
         )
-        log_box(box_title="Machine Learning Logs", key=ConfigStateKeys.MLLogBox)
+        log_box(
+            box_title="Machine Learning Logs", key=MachineLearningStateKeys.MLLogBox
+        )
     except NotADirectoryError:
         pass
     try:
-        st.session_state[ConfigStateKeys.FILogBox] = get_logs(
+        st.session_state[FeatureImportanceStateKeys.FILogBox] = get_logs(
             log_dir(experiment_path) / "fi"
         )
-        log_box(box_title="Feature Importance Logs", key=ConfigStateKeys.FILogBox)
+        log_box(
+            box_title="Feature Importance Logs", key=FeatureImportanceStateKeys.FILogBox
+        )
     except NotADirectoryError:
         pass
     try:
-        st.session_state[ConfigStateKeys.FuzzyLogBox] = get_logs(
+        st.session_state[FuzzyStateKeys.FuzzyLogBox] = get_logs(
             log_dir(experiment_path) / "fuzzy"
         )
-        log_box(box_title="Fuzzy FI Logs", key=ConfigStateKeys.FuzzyLogBox)
+        log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
     except NotADirectoryError:
         pass

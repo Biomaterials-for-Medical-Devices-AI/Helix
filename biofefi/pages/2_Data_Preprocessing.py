@@ -4,7 +4,11 @@ import streamlit as st
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.options.choices.ui import NORMALISATIONS, TRANSFORMATIONS_Y
-from biofefi.options.enums import ConfigStateKeys, TransformationsY
+from biofefi.options.enums import (
+    DataPreprocessingStateKeys,
+    ExecutionStateKeys,
+    TransformationsY,
+)
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     execution_options_path,
@@ -24,24 +28,30 @@ def build_config() -> PreprocessingOptions:
 
     preprocessing_options = PreprocessingOptions(
         feature_selection_methods={
-            ConfigStateKeys.VarianceThreshold: st.session_state[
-                ConfigStateKeys.VarianceThreshold
+            DataPreprocessingStateKeys.VarianceThreshold: st.session_state[
+                DataPreprocessingStateKeys.VarianceThreshold
             ],
-            ConfigStateKeys.CorrelationThreshold: st.session_state[
-                ConfigStateKeys.CorrelationThreshold
+            DataPreprocessingStateKeys.CorrelationThreshold: st.session_state[
+                DataPreprocessingStateKeys.CorrelationThreshold
             ],
-            ConfigStateKeys.LassoFeatureSelection: st.session_state[
-                ConfigStateKeys.LassoFeatureSelection
+            DataPreprocessingStateKeys.LassoFeatureSelection: st.session_state[
+                DataPreprocessingStateKeys.LassoFeatureSelection
             ],
         },
-        variance_threshold=st.session_state[ConfigStateKeys.ThresholdVariance],
-        correlation_threshold=st.session_state[ConfigStateKeys.ThresholdCorrelation],
-        lasso_regularisation_term=st.session_state[ConfigStateKeys.RegularisationTerm],
+        variance_threshold=st.session_state[
+            DataPreprocessingStateKeys.ThresholdVariance
+        ],
+        correlation_threshold=st.session_state[
+            DataPreprocessingStateKeys.ThresholdCorrelation
+        ],
+        lasso_regularisation_term=st.session_state[
+            DataPreprocessingStateKeys.RegularisationTerm
+        ],
         independent_variable_normalisation=st.session_state[
-            ConfigStateKeys.IndependentNormalisation
+            DataPreprocessingStateKeys.IndependentNormalisation
         ].lower(),
         dependent_variable_transformation=st.session_state[
-            ConfigStateKeys.DependentNormalisation
+            DataPreprocessingStateKeys.DependentNormalisation
         ].lower(),
     )
     return preprocessing_options
@@ -66,21 +76,17 @@ experiment_name = experiment_selector(choices)
 biofefi_base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
-    st.session_state[ConfigStateKeys.ExperimentName] = experiment_name
+    st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
 
-    path_to_exec_opts = execution_options_path(
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName]
-    )
+    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
 
     exec_opt = load_execution_options(path_to_exec_opts)
 
-    path_to_plot_opts = plot_options_path(
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName]
-    )
+    path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
 
     path_to_raw_data = raw_data_path(
         exec_opt.data_path.split("/")[-1],
-        biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName],
+        biofefi_base_dir / experiment_name,
     )
 
     if path_to_raw_data.exists():
@@ -120,7 +126,7 @@ if experiment_name:
     st.selectbox(
         "Normalisation",
         NORMALISATIONS,
-        key=ConfigStateKeys.IndependentNormalisation,
+        key=DataPreprocessingStateKeys.IndependentNormalisation,
         index=len(NORMALISATIONS) - 1,  # default to no normalisation
     )
 
@@ -129,7 +135,7 @@ if experiment_name:
     transformationy = st.selectbox(
         "Transformations",
         TRANSFORMATIONS_Y,
-        key=ConfigStateKeys.DependentNormalisation,
+        key=DataPreprocessingStateKeys.DependentNormalisation,
         index=len(TRANSFORMATIONS_Y) - 1,  # default to no transformation
     )
 
@@ -145,7 +151,7 @@ if experiment_name:
             )
             if st.checkbox(
                 "Proceed with transformation. This option will add a constant to the dependent variable to make it positive.",
-                key=ConfigStateKeys.ProceedTransformation,
+                key=DataPreprocessingStateKeys.ProceedTransformation,
             ):
                 pass
             else:
@@ -158,7 +164,7 @@ if experiment_name:
     variance_disabled = True
     if st.checkbox(
         "Variance threshold",
-        key=ConfigStateKeys.VarianceThreshold,
+        key=DataPreprocessingStateKeys.VarianceThreshold,
         help="Delete features with variance below a certain threshold",
     ):
         variance_disabled = False
@@ -167,14 +173,14 @@ if experiment_name:
         min_value=0.0,
         max_value=1.0,
         value=0.1,
-        key=ConfigStateKeys.ThresholdVariance,
+        key=DataPreprocessingStateKeys.ThresholdVariance,
         disabled=variance_disabled,
     )
 
     correlation_disabled = True
     if st.checkbox(
         "Correlation threshold",
-        key=ConfigStateKeys.CorrelationThreshold,
+        key=DataPreprocessingStateKeys.CorrelationThreshold,
         help="Delete features with correlation above a certain threshold",
     ):
         correlation_disabled = False
@@ -183,14 +189,14 @@ if experiment_name:
         min_value=0.0,
         max_value=1.0,
         value=0.8,
-        key=ConfigStateKeys.ThresholdCorrelation,
+        key=DataPreprocessingStateKeys.ThresholdCorrelation,
         disabled=correlation_disabled,
     )
 
     lasso_disabled = True
     if st.checkbox(
         "Lasso Feature Selection",
-        key=ConfigStateKeys.LassoFeatureSelection,
+        key=DataPreprocessingStateKeys.LassoFeatureSelection,
         help="Select features using Lasso regression",
     ):
         lasso_disabled = False
@@ -198,7 +204,7 @@ if experiment_name:
         "Set regularisation term",
         min_value=0.0,
         value=0.05,
-        key=ConfigStateKeys.RegularisationTerm,
+        key=DataPreprocessingStateKeys.RegularisationTerm,
         disabled=lasso_disabled,
     )
 
@@ -210,7 +216,7 @@ if experiment_name:
 
         processed_data = run_preprocessing(
             data,
-            biofefi_base_dir / st.session_state[ConfigStateKeys.ExperimentName],
+            biofefi_base_dir / experiment_name,
             config,
         )
 

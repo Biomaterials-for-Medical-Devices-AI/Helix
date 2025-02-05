@@ -1,27 +1,18 @@
 from enum import StrEnum
 
 
-class ConfigStateKeys(StrEnum):
-    """Enum containing the state key names for UI configuration inputs."""
+class MachineLearningStateKeys(StrEnum):
+    """Enum for the state keys related to machine learning."""
 
-    IsFeatureEngineering = "is_feature_engineering"
-    # Machine Learning options
-    IsMachineLearning = "is_machine_learning"
-    ProblemType = "problem_type"
-    DataSplit = "data_split"
-    NumberOfBootstraps = "num_bootstraps"
-    UseLinear = "use_linear"
-    UseRandomForest = "use_rf"
-    UseXGBoost = "use_xgb"
-    Normalization = "normalization"
     ModelTypes = "model_types"
     SaveModels = "save_models"
-    # rerun ML
     RerunML = "rerun_ml"
-    # rerun FI
-    RerunFI = "rerun_fi"
-    # Feature Importance options
-    IsFeatureImportance = "is_feature_importance"
+    MLLogBox = "ml_log_box"
+
+
+class FeatureImportanceStateKeys(StrEnum):
+    """Enum for the state keys related to feature importance."""
+
     NumberOfImportantFeatures = "num_important_features"
     ScoringFunction = "scoring_function"
     NumberOfRepetitions = "num_repetitions"
@@ -33,24 +24,39 @@ class ConfigStateKeys(StrEnum):
     GlobalFeatureImportanceMethods = "global_feature_importance_methods"
     ExplainModels = "explain_models"
     ExplainAllModels = "explain_all_models"
-    # Fuzzy options
+    FILogBox = "fi_log_box"
+
+
+class FuzzyStateKeys(StrEnum):
+    """Enum for the state keys related to fuzzy importance."""
+
     FuzzyFeatureSelection = "fuzzy_feature_selection"
     NumberOfFuzzyFeatures = "num_fuzzy_features"
     GranularFeatures = "granular_features"
     NumberOfClusters = "num_clusters"
     ClusterNames = "cluster_names"
     NumberOfTopRules = "num_top_rules"
-    # Base options
+    RerunFI = "rerun_fi"
+    FuzzyLogBox = "fuzzy_log_box"
+
+
+class ExecutionStateKeys(StrEnum):
+    """Enum for state keys related to the execution of experiments."""
+
     ExperimentName = "experiment_name"
     DependentVariableName = "dependent_variable_name"
     UploadedFileName = "uploaded_file_name"
     RandomSeed = "random_seed"
-    MLLogBox = "ml_log_box"
-    FILogBox = "fi_log_box"
-    FuzzyLogBox = "fuzzy_log_box"
-    UploadedModels = "uploaded_models"
     UseHyperParamSearch = "use_hyperparam_search"
-    # Data Analysis options
+    ProblemType = "problem_type"
+    DataSplit = "data_split"
+    NumberOfBootstraps = "num_bootstraps"
+    Normalisation = "normalisation"
+
+
+class DataAnalysisStateKeys(StrEnum):
+    """Enum for app state keys relating to the Data Visualisation page."""
+
     TargetVarDistribution = "target_var_distribution"
     ShowKDE = "show_kde"
     NBins = "n_bins"
@@ -63,11 +69,15 @@ class ConfigStateKeys(StrEnum):
     SelectAllDescriptorsPairPlot = "select_all_descriptors_pair_plot"
     DescriptorPairPlot = "descriptor_pair_plot"
     SavePairPlot = "save_pair_plot"
-    tSNEPlot = "tsne_plot"
+    TSNEPlot = "tsne_plot"
     SelectNormTsne = "select_norm_tsne"
     Perplexity = "perplexity"
     SaveTSNEPlot = "save_tsne_plot"
-    # Data Preprocessing options
+
+
+class DataPreprocessingStateKeys(StrEnum):
+    """Enum for app state keys relating to the Data Preprocessing page."""
+
     DependentNormalisation = "dependent_normalisation"
     IndependentNormalisation = "independent_normalisation"
     ProceedTransformation = "proceed_transformation"
@@ -77,10 +87,6 @@ class ConfigStateKeys(StrEnum):
     ThresholdCorrelation = "threshold_correlation"
     LassoFeatureSelection = "lasso_feature_selection"
     RegularisationTerm = "regularisation_term"
-
-
-class ExecutionStateKeys(StrEnum):
-    RunPipeline = "run_pipeline"
 
 
 class OptimiserTypes(StrEnum):
