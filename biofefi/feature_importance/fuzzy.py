@@ -1,19 +1,19 @@
 import pandas as pd
 
-from biofefi.feature_importance.call_methods import (
-    save_fuzzy_sets_plots,
-    save_importance_results,
-    save_target_clusters_plots,
-)
-from biofefi.feature_importance.feature_importance_methods import (
-    calculate_lime_values,
-    calculate_shap_values,
-)
 from biofefi.options.enums import ProblemTypes
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions
 from biofefi.options.plotting import PlottingOptions
+from biofefi.services.feature_importance.local_methods import (
+    calculate_lime_values,
+    calculate_local_shap_values,
+)
+from biofefi.services.feature_importance.results import (
+    save_fuzzy_sets_plots,
+    save_importance_results,
+    save_target_clusters_plots,
+)
 from biofefi.utils.logging_utils import Logger
 
 
@@ -521,11 +521,10 @@ class Fuzzy:
 
                         if feature_importance_type == "SHAP":
                             # Run SHAP
-                            shap_df, shap_values = calculate_shap_values(
+                            shap_df, shap_values = calculate_local_shap_values(
                                 model=model[0],
                                 X=X,
-                                shap_type=value["type"],
-                                fi_opt=self._fi_opt,
+                                shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
                             )
                             # Normalise SHAP values between 0 and 1 (0 being the lowest impact and 1 being the highest impact)

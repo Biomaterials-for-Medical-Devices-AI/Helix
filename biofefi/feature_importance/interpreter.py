@@ -2,24 +2,24 @@ import os
 
 import pandas as pd
 
-from biofefi.feature_importance.call_methods import save_importance_results
-from biofefi.feature_importance.ensemble_methods import (
-    calculate_ensemble_majorityvote,
-    calculate_ensemble_mean,
-)
-from biofefi.feature_importance.feature_importance_methods import (
-    calculate_lime_values,
-    calculate_permutation_importance,
-)
 from biofefi.machine_learning.data import TabularData
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import biofefi_experiments_base_dir, fi_plot_dir
 from biofefi.options.plotting import PlottingOptions
-from biofefi.services.fi import (
+from biofefi.services.feature_importance.ensemble_methods import (
+    calculate_ensemble_majorityvote,
+    calculate_ensemble_mean,
+)
+from biofefi.services.feature_importance.global_methods import (
     calculate_global_shap_values,
+    calculate_permutation_importance,
+)
+from biofefi.services.feature_importance.local_methods import (
+    calculate_lime_values,
     calculate_local_shap_values,
 )
+from biofefi.services.feature_importance.results import save_importance_results
 from biofefi.services.plotting import (
     plot_global_shap_importance,
     plot_lime_importance,
