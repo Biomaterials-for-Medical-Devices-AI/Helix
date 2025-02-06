@@ -22,4 +22,5 @@ SVM_GRID = {
     "kernel": [k.lower() for k in SVM_KERNELS],
     "degree": [2, 3, 4],
     "C": [1.0, 10.0, 100],
+    "probability": [True],
 }

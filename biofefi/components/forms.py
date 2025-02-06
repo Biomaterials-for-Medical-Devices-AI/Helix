@@ -722,6 +722,7 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
             "kernel": kernel.lower(),
             "degree": degree,
             "C": c,
+            "probability": True,
         }
         st.divider()
     else:
