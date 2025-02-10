@@ -80,31 +80,31 @@ def save_actual_pred_plots(
 
                 # Plotting the training and test results
                 if opt.problem_type == ProblemTypes.Regression:
-                    plot_scatter(
+                    test_plot = plot_scatter(
                         y_test[i],
                         y_pred_test,
                         ml_metric_results[model_name][i]["R2"]["test"],
                         "Test",
                         opt.dependent_variable,
                         model_name,
-                        directory,
                         plot_opts=plot_opts,
                     )
-                    plot_scatter(
+                    test_plot.savefig(directory / f"{model_name}-{i}-Test.png")
+                    train_plot = plot_scatter(
                         y_train[i],
                         y_pred_train,
                         ml_metric_results[model_name][i]["R2"]["train"],
                         "Train",
                         opt.dependent_variable,
                         model_name,
-                        directory,
                         plot_opts=plot_opts,
                     )
+                    train_plot.savefig(directory / f"{model_name}-{i}-Train.png")
 
                 else:
 
                     model = trained_models[model_name][i]
-                    y_score_train = model.predict_proba(data.X_train[i])
+                    y_score_train = ml_results[i][model_name]["y_pred_train_proba"]
                     encoder = OneHotEncoder()
                     encoder.fit(y_train[i].reshape(-1, 1))
                     y_train_labels = encoder.transform(
@@ -130,7 +130,7 @@ def save_actual_pred_plots(
                         plot_opts=plot_opts,
                     )
 
-                    y_score_test = model.predict_proba(data.X_test[i])
+                    y_score_test = ml_results[i][model_name]["y_pred_test_proba"]
                     y_test_labels = encoder.transform(
                         y_test[i].reshape(-1, 1)
                     ).toarray()

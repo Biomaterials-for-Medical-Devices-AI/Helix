@@ -167,6 +167,9 @@ def plot_auc_roc(
     num_classes = y_score_probs.shape[1]
     start_index = 1 if num_classes == 2 else 0
 
+    # Set colour scheme
+    plt.style.use(plot_opts.plot_colour_scheme)
+
     for i in range(start_index, num_classes):
 
         auroc = RocCurveDisplay.from_predictions(
@@ -280,7 +283,6 @@ def plot_scatter(
     set_name: str,
     dependent_variable: str,
     model_name: str,
-    directory: Path,
     plot_opts: PlottingOptions | None = None,
 ):
     """_summary_
@@ -292,7 +294,6 @@ def plot_scatter(
         set_name (str): "Train" or "Test".
         dependent_variable (str): The name of the dependent variable.
         model_name (str): Name of the model.
-        directory (str): The directory to save the plot.
         plot_opts (PlottingOptions | None, optional):
         Options for styling the plot. Defaults to None.
     """
@@ -325,7 +326,7 @@ def plot_scatter(
     )
 
     # Add legend
-    legend = "R2: " + str(float("{0:.2f}".format(r2["value"])))
+    legend = f"R2: {(r2['value']):.3f}"
     ax.legend(
         ["Best fit", legend],
         prop={
@@ -338,6 +339,4 @@ def plot_scatter(
     # Add grid
     ax.grid(visible=True, axis="both")
 
-    # Save the figure
-    fig.savefig(directory / f"{model_name}-{set_name}.png")
-    plt.close()
+    return fig

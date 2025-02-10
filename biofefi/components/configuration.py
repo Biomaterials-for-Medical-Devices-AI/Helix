@@ -35,7 +35,8 @@ def plot_options_box():
         )
         tfs = st.number_input(
             "Title font size",
-            min_value=20,
+            value=20,
+            min_value=8,
             key=PlotOptionKeys.TitleFontSize,
             disabled=not save,
         )

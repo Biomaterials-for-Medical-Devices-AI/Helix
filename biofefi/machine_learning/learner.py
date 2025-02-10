@@ -161,7 +161,9 @@ class Learner:
                 res[i][model_name]["y_pred_test"] = y_pred_test
                 if self._problem_type == ProblemTypes.Classification:
                     y_pred_probs_train = model.predict_proba(X_train)
+                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
                     y_pred_probs_test = model.predict_proba(X_test)
+                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
                 else:
                     y_pred_probs_train = None
                     y_pred_probs_test = None

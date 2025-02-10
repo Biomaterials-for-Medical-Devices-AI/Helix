@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
-from biofefi.machine_learning.nn_networks import BaseNetwork
+from biofefi.machine_learning.models.nn_networks import BaseNetwork
 from biofefi.options.enums import ModelNames, OptimiserTypes, ProblemTypes
 from biofefi.options.ml import BrnnOptions
 
