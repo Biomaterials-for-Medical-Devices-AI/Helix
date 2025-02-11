@@ -1,7 +1,8 @@
-from sklearn.svm import SVC, SVR
+from sklearn.svm import SVC as SkLeanSVC
+from sklearn.svm import SVR as SkLearnSVR
 
 
-class BioFefiSVC(SVC):
+class SVC(SkLeanSVC):
     """A BioFEFI implementation of scikit-learn's SVC.
 
     It is exactly the same, except it always sets `probability` to `True`
@@ -47,7 +48,7 @@ class BioFefiSVC(SVC):
         )
 
 
-class BioFefiSVR(SVR):
+class SVR(SkLearnSVR):
     """A BioFEFI implementation of scikit-learn's SVR.
 
     It is exactly the same, except it always sets `max_iter` to 1000, similar

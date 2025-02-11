@@ -6,14 +6,14 @@ from biofefi.machine_learning.models.nn_models import (
     BayesianRegularisedNNClassifier,
     BayesianRegularisedNNRegressor,
 )
-from biofefi.machine_learning.models.svm import BioFefiSVC, BioFefiSVR
+from biofefi.machine_learning.models.svm import SVC, SVR
 from biofefi.options.enums import ModelNames
 
 CLASSIFIERS = {
     ModelNames.LinearModel: LogisticRegression,
     ModelNames.RandomForest: RandomForestClassifier,
     ModelNames.XGBoost: XGBClassifier,
-    ModelNames.SVM: BioFefiSVC,
+    ModelNames.SVM: SVC,
     ModelNames.BRNNClassifier: BayesianRegularisedNNClassifier,
 }
 
@@ -21,6 +21,6 @@ REGRESSORS = {
     ModelNames.LinearModel: LinearRegression,
     ModelNames.RandomForest: RandomForestRegressor,
     ModelNames.XGBoost: XGBRegressor,
-    ModelNames.SVM: BioFefiSVR,
+    ModelNames.SVM: SVR,
     ModelNames.BRNNClassifier: BayesianRegularisedNNRegressor,
 }
