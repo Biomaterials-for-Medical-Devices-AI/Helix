@@ -58,6 +58,12 @@ def plot_options_box():
             key=PlotOptionKeys.ColourScheme,
             disabled=not save,
         )
+        cm = st.selectbox(
+            "Colour map",
+            options=plt.colormaps(),
+            key=PlotOptionKeys.ColourMap,
+            disabled=not save,
+        )
         font = st.selectbox(
             "Font",
             options=PLOT_FONT_FAMILIES,
@@ -66,19 +72,42 @@ def plot_options_box():
             index=1,
         )
         if save:
-            st.write("### Preview")
+            """Here we show a preview of plots with the selected colour style
+            colour map, font size and style, etc"""
+
+            plt.rcParams["image.cmap"] = cm  # default colour map
+            plt.rcParams["axes.titlesize"] = tfs
+            plt.rcParams["axes.labelsize"] = afs
+            plt.rcParams["font.family"] = font
+            plt.rcParams["xtick.labelsize"] = ats
+            plt.rcParams["ytick.labelsize"] = ats
+
+            st.write("### Preview of the selected styles")
             plt.style.use(cs)
+            # Generate some random data for demonstration
             arr = np.random.normal(1, 0.5, size=100)
+            # Create a violin plot
             data = pd.DataFrame({"A": arr, "B": arr, "C": arr})
             fig, ax = plt.subplots()
             sns.violinplot(data=data, ax=ax)
-            ax.set_title("Title", fontsize=tfs, family=font)
-            ax.set_xlabel("X axis", fontsize=afs, family=font)
-            ax.set_ylabel("Y axis", fontsize=afs, family=font)
+            ax.set_title("Title")
+            ax.set_xlabel("X axis")
+            ax.set_ylabel("Y axis")
             ax.tick_params(labelsize=ats)
-            ax.set_xticklabels(ax.get_xticklabels(), rotation=rotate_x, family=font)
-            ax.set_yticklabels(ax.get_yticklabels(), rotation=rotate_y, family=font)
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=rotate_x)
+            ax.set_yticklabels(ax.get_yticklabels(), rotation=rotate_y)
             st.pyplot(fig, clear_figure=True)
+            fig.clear()
+            # Create a figure and axis (object-oriented approach)
+            fig_cmap = plt.figure()
+            ax_cmap = fig_cmap.add_subplot(111)
+
+            # Create a scatter plot to show how the colour map is applied
+            scatter_plot = ax_cmap.scatter(arr, arr / 2, c=arr)
+            fig_cmap.colorbar(scatter_plot, ax=ax_cmap, label="Mapped Values")
+            ax_cmap.set_title("Colour Map Preview")
+            # Display the figure
+            st.pyplot(fig_cmap, clear_figure=True)
             fig.clear()
 
 

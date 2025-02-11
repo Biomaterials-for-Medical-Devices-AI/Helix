@@ -89,6 +89,7 @@ def _entrypoint(save_dir: Path):
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
         plot_axis_tick_size=st.session_state[PlotOptionKeys.AxisTickSize],
         plot_colour_scheme=st.session_state[PlotOptionKeys.ColourScheme],
+        plot_colour_map=st.session_state[PlotOptionKeys.ColourMap],
         angle_rotate_xaxis_labels=st.session_state[PlotOptionKeys.RotateXAxisLabels],
         angle_rotate_yaxis_labels=st.session_state[PlotOptionKeys.RotateYAxisLabels],
         save_plots=st.session_state[PlotOptionKeys.SavePlots],
