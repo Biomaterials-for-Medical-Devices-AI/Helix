@@ -88,7 +88,7 @@ def transform_dependent_variable(transformation_y_method: str, y):
 
 def run_feature_selection(
     preprocessing_opts: PreprocessingOptions, data: pd.DataFrame
-) -> None:
+) -> pd.DataFrame:
     """
     Run feature selection on the data based on the selected methods.
 
@@ -135,7 +135,7 @@ def run_feature_selection(
 
 def run_preprocessing(
     data: pd.DataFrame, experiment_path: Path, config: PreprocessingOptions
-) -> None:
+) -> pd.DataFrame:
 
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]

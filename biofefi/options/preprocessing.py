@@ -9,3 +9,4 @@ class PreprocessingOptions:
     lasso_regularisation_term: float
     independent_variable_normalisation: str = "none"
     dependent_variable_transformation: str = "none"
+    data_is_preprocessed: bool = False

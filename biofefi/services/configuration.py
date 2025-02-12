@@ -8,6 +8,7 @@ from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
+from biofefi.options.preprocessing import PreprocessingOptions
 
 T = TypeVar(
     "T",
@@ -16,6 +17,7 @@ T = TypeVar(
     MachineLearningOptions,
     FeatureImportanceOptions,
     FuzzyOptions,
+    PreprocessingOptions,
 )
 
 
@@ -27,7 +29,7 @@ def load_execution_options(path: Path) -> ExecutionOptions:
         path (Path): The path the `json` file containing the options.
 
     Returns:
-        ExecutionOptions: The plotting options.
+        ExecutionOptions: The execution options.
     """
     with open(path, "r") as json_file:
         options_json = json.load(json_file)
@@ -83,3 +85,19 @@ def load_fi_options(path: Path) -> FeatureImportanceOptions | None:
         fi_options = None
 
     return fi_options
+
+
+def load_data_preprocessing_options(path: Path) -> PreprocessingOptions:
+    """Load data preprocessing options from the given path.
+    The path will be to a `json` file containing the options.
+
+    Args:
+        path (Path): The path the `json` file containing the options.
+
+    Returns:
+        PreprocessingOptions: The data preprocessing options.
+    """
+    with open(path, "r") as json_file:
+        options_json = json.load(json_file)
+    options = PreprocessingOptions(**options_json)
+    return options

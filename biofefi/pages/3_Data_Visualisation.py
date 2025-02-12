@@ -16,7 +16,7 @@ from biofefi.options.file_paths import (
     data_analysis_plots_dir,
     execution_options_path,
     plot_options_path,
-    raw_data_path,
+    preprocessed_data_path,
 )
 from biofefi.services.configuration import load_execution_options, load_plot_options
 from biofefi.services.experiments import get_experiments
@@ -58,7 +58,7 @@ if experiment_name:
 
     data = pd.read_csv(exec_opt.data_path)
 
-    path_to_raw_data = raw_data_path(
+    path_to_raw_data = preprocessed_data_path(
         exec_opt.data_path.split("/")[-1],
         biofefi_base_dir / experiment_name,
     )

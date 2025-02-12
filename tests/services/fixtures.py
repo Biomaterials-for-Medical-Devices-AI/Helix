@@ -9,6 +9,7 @@ from biofefi.options.choices.ui import DATA_SPLITS
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import (
+    data_preprocessing_options_path,
     execution_options_path,
     fi_options_dir,
     fi_options_path,
@@ -24,6 +25,7 @@ from biofefi.options.file_paths import (
 from biofefi.options.fuzzy import FuzzyOptions
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
+from biofefi.options.preprocessing import PreprocessingOptions
 from biofefi.utils.utils import delete_directory
 
 
@@ -279,3 +281,63 @@ def previous_fi_results(
     fuzzy_logs = log_dir(exp_dir) / "fuzzy"
     fuzzy_logs.mkdir(parents=True)  # make the intermediate directories
     return exp_dir
+
+
+@pytest.fixture
+def data_preprocessing_opts() -> PreprocessingOptions:
+    """Produce a test instance of `PreprocessingOptions`.
+
+    Returns:
+        PreprocessingOptions: The test instance.
+    """
+    # Arrange
+    return PreprocessingOptions(
+        feature_selection_methods={},
+        correlation_threshold=0.0,
+        variance_threshold=0.0,
+        lasso_regularisation_term=0.0,
+    )
+
+
+@pytest.fixture
+def data_preprocessing_opts_file_path() -> Generator[Path, None, None]:
+    """Produce the test `Path` to some data preprocessing options.
+
+    Delete the file if it has been created by a test.
+
+    Yields:
+        Generator[Path, None, None]: The `Path` to the data preprocessing options file.
+    """
+    # Arrange
+    experiment_path = Path.cwd()
+    options_file = data_preprocessing_options_path(experiment_path)
+    yield options_file
+
+    # Cleanup
+    if options_file.exists():
+        options_file.unlink()
+
+
+@pytest.fixture
+def data_preprocessing_opts_file(
+    data_preprocessing_opts: PreprocessingOptions,
+    data_preprocessing_opts_file_path: Path,
+) -> Path:
+    """Saves an `PreprocessingOptions` object to a file given by `data_preprocessing_opts_file_path`
+    and returns the `Path` to that file.
+
+    Cleanup is handled by the `data_preprocessing_opts_file_path` fixture passed in the second
+    argument.
+
+    Args:
+        data_preprocessing_opts (PreprocessingOptions): PreprocessingOptions options fixture.
+        data_preprocessing_opts_file_path (Generator[Path, None, None]): File path fixture.
+
+    Returns:
+        Path: `data_preprocessing_opts_file_path`
+    """
+    # Arrange
+    options_json = dataclasses.asdict(data_preprocessing_opts)
+    with open(data_preprocessing_opts_file_path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
+    return data_preprocessing_opts_file_path

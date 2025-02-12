@@ -14,7 +14,7 @@ def uploaded_file_path(file_name: str, experiment_path: Path) -> Path:
     return experiment_path / file_name
 
 
-def raw_data_path(file_name: str, experiment_path: Path) -> Path:
+def preprocessed_data_path(file_name: str, experiment_path: Path) -> Path:
     """Create the full path to the directory to save raw data.
 
     Args:
@@ -24,7 +24,7 @@ def raw_data_path(file_name: str, experiment_path: Path) -> Path:
     Returns:
         Path: The full path for the raw data directory.
     """
-    file_name = file_name.split(".")[0] + "_raw.csv"
+    file_name = file_name.split(".")[0] + "_preprocessed.csv"
 
     return experiment_path / file_name
 
