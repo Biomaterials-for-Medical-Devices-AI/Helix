@@ -12,8 +12,9 @@ Welcome to BioFEFI's documentation!
 
    users/index.md
    users/installation.md
-   users/data_visualisation.md
    users/create_experiment.md
+   users/data_preprocessing.md
+   users/data_visualisation.md
    users/train_models.md
    users/feature_importance.md
    users/view_experiments.md

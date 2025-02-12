@@ -57,7 +57,7 @@ These methods are used to interpret feature importance on a *per prediction* bas
 
 ![Additional feature importance configuration](../_static/additional-fi-config.png)
 
-## Fuzzy feature selection
+## Fuzzy feature importance
 Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
 
 - Number of features for fuzzy interpretation

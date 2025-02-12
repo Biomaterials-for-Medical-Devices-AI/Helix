@@ -1,5 +1,5 @@
 # Data Visualisation
-The **Data Visualisation** page allows you to explore and analyze your data using a variety of visual tools. This helps in understanding data distributions, correlations, and feature interactions.
+The **Data Visualisation** page allows you to explore and analyse your data using a variety of visual tools. This helps in understanding data distributions, correlations, and feature interactions.
 
 ![Data Visualisation Page](../_static/data-visualisation-page.png)
 

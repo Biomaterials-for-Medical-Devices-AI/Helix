@@ -62,6 +62,7 @@ def plot_options_box():
             "Colour map",
             options=plt.colormaps(),
             key=PlotOptionKeys.ColourMap,
+            index=3,
             disabled=not save,
         )
         font = st.selectbox(
@@ -179,6 +180,7 @@ def execution_options_box_auto():
         "Problem type",
         PROBLEM_TYPES,
         key=ExecutionStateKeys.ProblemType,
+        index=1,
     )
     test_split = st.number_input(
         "Test split",

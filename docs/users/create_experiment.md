@@ -22,21 +22,13 @@ In BioFEFI, you must create an experiment before you can train models and perfor
 
     If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
 
-- Select how you wish to normalise your data.
-
-    If you select **"Standardization"**, your data will be normalised by subtracting the mean and dividing by the standard deviation for each feature. The resulting transformation has a mean of 0 and values are between -1 and 1.
-
-    If you select **"Minmax"**, your data will be scaled based on the minimum and maximum value of each feature. The resulting transformation will have values between 0 and 1.
-
-    If you select **"None"**, the data will not be normalised.
-
 - Select your data split method
+
+    **Data split methods are not available if using automatic hyper-parameter search.**
 
     **"Holdout"** will create a train-test split with a portion of the data randomly held out to test the model, which will be trained on the remaining portion of the data.
 
     **"K-fold"** stands for *K-fold cross validation*. The test data is split from the training data, then the training data is split into *k*-folds. The folds are used to find the model parameters and the test set is used to evaluate the models.
-
-    **Data split methods are not available if using automatic hyper-parameter search.**
 
 - Specify a test split size. This is a number between 0 and 1. The default is 0.20, i.e. 20% of the data will be used is the test data and 80% for training.
 
@@ -98,6 +90,11 @@ In BioFEFI, you must create an experiment before you can train models and perfor
   - seaborn-v0_8-white
   - seaborn-v0_8-whitegrid
   - tableau-colorblind10
+
+- Colour map. Defaults to "viridis"
+
+  Options:
+  - The list is very long but the full reference can be viewed [here](https://matplotlib.org/stable/gallery/color/colormap_reference.html).
 
 - Font. Defaults to "sans-serif".
 
