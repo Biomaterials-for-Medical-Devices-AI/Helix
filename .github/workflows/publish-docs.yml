@@ -1,9 +1,9 @@
 name: Publish Sphinx Docs to GitHub Pages
 
 on:
-  push:
-    branches:
-      - main
+  release:
+    types:
+      - released
 
 permissions:
   contents: write

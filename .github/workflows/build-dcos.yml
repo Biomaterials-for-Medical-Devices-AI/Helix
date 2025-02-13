@@ -1,9 +1,9 @@
 name: Check docs build
 
 on:
-  release:
-    types:
-      - released
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build-docs:
