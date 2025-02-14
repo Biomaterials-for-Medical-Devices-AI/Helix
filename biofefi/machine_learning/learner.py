@@ -3,7 +3,7 @@ from typing import Any, Tuple
 import numpy as np
 import pandas as pd
 from sklearn.metrics import make_scorer
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from biofefi.machine_learning.data import TabularData
 from biofefi.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
@@ -290,7 +290,24 @@ class GridSearchLearner:
             if self._problem_type == ProblemTypes.Regression
             else CLASSIFICATION_METRICS
         )
-        scorers = {key: make_scorer(value) for key, value in metrics.items()}
+        if (
+            np.unique(y_train).shape[0] > 2
+            and self._problem_type == ProblemTypes.Classification
+        ):
+            scorers = {}
+            for metric_name, metric in metrics.items():
+                if metric_name == Metrics.Accuracy:
+                    scorers[metric_name] = make_scorer(metric)
+                elif metric_name == Metrics.ROC_AUC:
+                    scorers[metric_name] = make_scorer(
+                        metric, multi_class="ovr", needs_proba=True
+                    )
+                else:
+                    scorers[metric_name] = make_scorer(metric, average="micro")
+            cv = StratifiedKFold(n_splits=self._data_split["n_splits"], shuffle=True)
+        else:
+            scorers = {key: make_scorer(value) for key, value in metrics.items()}
+            cv = self._data_split["n_splits"]
 
         # Fit models
         res = {0: {}}
@@ -315,7 +332,7 @@ class GridSearchLearner:
                 param_grid=self._model_types[model_name]["params"],
                 scoring=scorers,
                 refit=refit,
-                cv=self._data_split["n_splits"],
+                cv=cv,
                 return_train_score=True,
             )
 

@@ -129,11 +129,16 @@ class DataBuilder:
             self._data_split is not None
             and self._data_split["type"].lower() == DataSplitMethods.NoSplit
         ):
+            if self._problem_type == ProblemTypes.Regression:
+                stratify = None
+            else:
+                stratify = y
             X_train, X_test, y_train, y_test = train_test_split(
                 X,
                 y,
                 test_size=self._data_split["test_size"],
                 random_state=self._random_state,
+                stratify=stratify,
             )
             X_train_list.append(X_train)
             X_test_list.append(X_test)
