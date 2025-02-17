@@ -61,3 +61,16 @@ def display_metrics_table(metrics_path: Path):
         " automatic hyper-parameter search)."
     )
     st.dataframe(table, use_container_width=True)
+
+
+@st.experimental_fragment
+def display_predictions(predictions_path: Path):
+    """
+    Display the predictions in the UI.
+
+    Args:
+        predictions_path (Path): The path to the predictions file.
+    """
+    predictions = pd.read_csv(predictions_path)
+    st.write("### Predictions")
+    st.write(predictions)
