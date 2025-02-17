@@ -1,8 +1,43 @@
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
 
 from biofefi.options.enums import ProblemTypes
-from biofefi.services.ml_models import MlModel, get_model, get_model_type
+from biofefi.services.ml_models import (
+    MlModel,
+    get_model,
+    get_model_type,
+    save_model_predictions,
+)
+
+
+def test_save_model_predictions():
+    with TemporaryDirectory() as tmpdir:
+        # Define file path
+        file_path = Path(tmpdir) / "predictions.csv"
+
+        # Create sample DataFrame
+        data = {
+            "y_true": [1, 0, 1],
+            "y_pred": [1, 0, 0],
+            "y_pred_proba": [0.9, 0.3, 0.6],
+            "model_name": ["ModelA", "ModelA", "ModelA"],
+            "Set": ["train", "test", "val"],
+            "Fold": [1, 1, 1],
+        }
+        predictions_df = pd.DataFrame(data)
+
+        # Save predictions
+        save_model_predictions(predictions_df, file_path)
+
+        # Load the saved file
+        loaded_df = pd.read_csv(file_path)
+
+        # Check if the loaded DataFrame matches the original
+        pd.testing.assert_frame_equal(predictions_df, loaded_df)
 
 
 def test_get_model_type_returns_type():
