@@ -113,16 +113,12 @@ class Learner:
             trained models for each model type.
         """
         if self._data_split["type"] == DataSplitMethods.Holdout:
-            res, metric_res, metric_res_stats, trained_models, predictions = (
-                self._fit_holdout(data)
-            )
-            return res, metric_res, metric_res_stats, trained_models, predictions
+            res, metric_res, metric_res_stats, trained_models = self._fit_holdout(data)
+            return res, metric_res, metric_res_stats, trained_models
 
         elif self._data_split["type"] == DataSplitMethods.KFold:
-            res, metric_res, metric_res_stats, trained_models, predictions = (
-                self._fit_kfold(data)
-            )
-            return res, metric_res, metric_res_stats, trained_models, predictions
+            res, metric_res, metric_res_stats, trained_models = self._fit_kfold(data)
+            return res, metric_res, metric_res_stats, trained_models
 
     def _fit_holdout(self, data: Tuple) -> None:
         """
@@ -146,9 +142,6 @@ class Learner:
         res = {}
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
-        predictions = pd.DataFrame(
-            columns=["Y True", "Y Prediction", "Model Name", "Set", "Bootstrap"]
-        )
 
         for i in range(self._n_bootstraps):
             self._logger.info(f"Processing bootstrap sample {i+1}...")
@@ -194,39 +187,14 @@ class Learner:
                 )
                 trained_models[model_name].append(model)
 
-                predictions_train = {
-                    "Y True": y_train,
-                    "Y Prediction": y_pred_train,
-                    "Model Name": model_name,
-                    "Set": "Train",
-                    "Bootstrap": i + 1,
-                }
-                df_train = pd.DataFrame(predictions_train)
-
-                predictions_test = {
-                    "Y True": y_test,
-                    "Y Prediction": y_pred_test,
-                    "Model Name": model_name,
-                    "Set": "Test",
-                    "Bootstrap": i + 1,
-                }
-                df_test = pd.DataFrame(predictions_test)
-
-                predictions = pd.concat(
-                    [predictions, df_train, df_test], ignore_index=True
-                )
-
         metric_res_stats = _compute_metrics_statistics(metric_res)
-        return res, metric_res, metric_res_stats, trained_models, predictions
+        return res, metric_res, metric_res_stats, trained_models
 
     def _fit_kfold(self, data: Tuple) -> None:
         self._logger.info("Fitting cross validation datasets...")
         res = {}
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
-        predictions = pd.DataFrame(
-            columns=["Y True", "Y Prediction", "Model Name", "Set", "Fold"]
-        )
 
         for i in range(self._data_split["n_splits"]):
             self._logger.info(f"Processing test fold sample {i+1}...")
@@ -273,30 +241,8 @@ class Learner:
                 )
                 trained_models[model_name].append(model)
 
-                predictions_train = {
-                    "Y True": y_train,
-                    "Y Prediction": y_pred_train,
-                    "Model Name": model_name,
-                    "Set": "Train",
-                    "Fold": i + 1,
-                }
-                df_train = pd.DataFrame(predictions_train)
-
-                predictions_test = {
-                    "Y True": y_test,
-                    "Y Prediction": y_pred_test,
-                    "Model Name": model_name,
-                    "Set": "Test",
-                    "Fold": i + 1,
-                }
-                df_test = pd.DataFrame(predictions_test)
-
-                predictions = pd.concat(
-                    [predictions, df_train, df_test], ignore_index=True
-                )
-
         metric_res_stats = _compute_metrics_statistics(metric_res)
-        return res, metric_res, metric_res_stats, trained_models, predictions
+        return res, metric_res, metric_res_stats, trained_models
 
 
 class GridSearchLearner:
@@ -370,9 +316,6 @@ class GridSearchLearner:
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
         metric_res_stats = {model_name: {} for model_name in self._model_types.keys()}
-        predictions = pd.DataFrame(
-            columns=["Y True", "Y Prediction", "Model Name", "Set"]
-        )
 
         for model_name, params in self._model_types.items():
             res[0][model_name] = {}
@@ -433,25 +376,7 @@ class GridSearchLearner:
                 self._compute_metrics_statistics(gs.cv_results_, gs.best_index_)
             )
 
-            predictions_train = {
-                "Y True": y_train,
-                "Y Prediction": y_pred_train,
-                "Model Name": model_name,
-                "Set": "Train",
-            }
-            df_train = pd.DataFrame(predictions_train)
-
-            predictions_test = {
-                "Y True": y_test,
-                "Y Prediction": y_pred_test,
-                "Model Name": model_name,
-                "Set": "Test",
-            }
-            df_test = pd.DataFrame(predictions_test)
-
-            predictions = pd.concat([predictions, df_train, df_test], ignore_index=True)
-
-        return res, metric_res, metric_res_stats, trained_models, predictions
+        return res, metric_res, metric_res_stats, trained_models
 
     def _compute_metrics_statistics(self, cv_results: dict, best_index: int) -> dict:
         """
