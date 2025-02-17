@@ -4,6 +4,7 @@ from pathlib import Path
 from pickle import UnpicklingError, dump, load
 from typing import TypeVar
 
+from pandas import DataFrame
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 from biofefi.options.choices.ml_models import CLASSIFIERS, REGRESSORS
@@ -11,6 +12,18 @@ from biofefi.options.enums import ProblemTypes
 from biofefi.utils.utils import create_directory
 
 MlModel = TypeVar("MlModel", BaseEstimator, ClassifierMixin, RegressorMixin)
+
+
+def save_model_predictions(predictions: DataFrame, path: Path):
+    """Save the predictions of the models to the given file path.
+
+    Args:
+        predictions (DataFrame): The predictions to save.
+        path (Path): The file path to save the predictions.
+    """
+    create_directory(path.parent)
+
+    predictions.to_csv(path, index=False)
 
 
 def save_models_metrics(metrics: dict, path: Path):
