@@ -1,3 +1,4 @@
+import pandas as pd
 import streamlit as st
 
 from biofefi.components.experiments import experiment_selector
@@ -61,7 +62,8 @@ if experiment_name:
     if ml_plots.exists() and ml_metrics.exists():
         display_metrics_table(ml_metrics)
         plot_box(ml_plots, "Machine learning plots")
-        display_predictions(predictions)
+        preds = pd.read_csv(predictions)
+        display_predictions(preds)
     fi_plots = fi_plot_dir(experiment_path)
     if fi_plots.exists():
         plot_box(fi_plots, "Feature importance plots")

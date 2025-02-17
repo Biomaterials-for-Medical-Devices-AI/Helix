@@ -2,6 +2,7 @@ import os
 from multiprocessing import Process
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from biofefi.components.experiments import experiment_selector
@@ -16,6 +17,7 @@ from biofefi.components.plots import (
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
 from biofefi.options.enums import (
+    DataSplitMethods,
     ExecutionStateKeys,
     MachineLearningStateKeys,
     PlotOptionKeys,
@@ -116,7 +118,7 @@ def pipeline(
     ).ingest()
 
     # Machine learning
-    trained_models, metrics_stats, predictions = train.run(
+    trained_models, metrics_stats = train.run(
         ml_opts=ml_opts,
         exec_opts=exec_opts,
         plot_opts=plotting_opts,
@@ -124,13 +126,45 @@ def pipeline(
         logger=logger,
     )
     if ml_opts.save_models:
+        predictions = pd.DataFrame(
+            columns=["Y True", "Y Prediction", "Model Name", "Set", "Bootstrap"]
+        )
+
         for model_name in trained_models:
+
             for i, model in enumerate(trained_models[model_name]):
                 save_path = (
                     ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
                     / f"{model_name}-{i}.pkl"
                 )
                 save_model(model, save_path)
+
+                predictions_train = model.predict(data.X_train[i])
+                predictions_train = {
+                    "Y True": data.y_train[i],
+                    "Y Prediction": predictions_train,
+                    "Model Name": model_name,
+                    "Set": "Train",
+                    "Bootstrap": i,
+                }
+                df_train = pd.DataFrame(predictions_train)
+                predictions_test = model.predict(data.X_test[i])
+                predictions_test = {
+                    "Y True": data.y_test[i],
+                    "Y Prediction": predictions_test,
+                    "Model Name": model_name,
+                    "Set": "Test",
+                    "Bootstrap": i,
+                }
+                df_test = pd.DataFrame(predictions_test)
+                predictions = pd.concat(
+                    [predictions, df_train, df_test], ignore_index=True
+                )
+
+    if exec_opts.use_hyperparam_search:
+        predictions = predictions[["Y True", "Y Prediction", "Model Name", "Set"]]
+    elif exec_opts.data_split["type"] == DataSplitMethods.KFold:
+        predictions = predictions.rename(columns={"Bootstrap": "Fold"})
 
     save_models_metrics(
         metrics_stats,
@@ -210,7 +244,8 @@ if experiment_name:
             plot_box(ml_plots, "Machine learning plots")
         predictions = ml_predictions_path(biofefi_base_dir / experiment_name)
         if predictions.exists():
-            display_predictions(predictions)
+            preds = pd.read_csv(predictions)
+            display_predictions(preds)
 
     elif not st.session_state[MachineLearningStateKeys.RerunML]:
         st.success(
