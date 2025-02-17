@@ -64,13 +64,12 @@ def display_metrics_table(metrics_path: Path):
 
 
 @st.experimental_fragment
-def display_predictions(predictions_path: Path):
+def display_predictions(predictions_df: pd.DataFrame):
     """
     Display the predictions in the UI.
 
     Args:
         predictions_path (Path): The path to the predictions file.
     """
-    predictions = pd.read_csv(predictions_path)
     st.write("### Predictions")
-    st.write(predictions)
+    st.write(predictions_df)
