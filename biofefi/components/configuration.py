@@ -129,6 +129,7 @@ def execution_options_box_manual():
         "Problem type",
         PROBLEM_TYPES,
         key=ExecutionStateKeys.ProblemType,
+        index=1,
     )
     data_split = st.selectbox("Data split method", DATA_SPLITS)
     if data_split.lower() == DataSplitMethods.Holdout:

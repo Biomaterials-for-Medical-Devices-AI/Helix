@@ -2,10 +2,15 @@ import json
 import os
 from pathlib import Path
 from pickle import UnpicklingError, dump, load
+from typing import TypeVar
+
+from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 from biofefi.options.choices.ml_models import CLASSIFIERS, REGRESSORS
 from biofefi.options.enums import ProblemTypes
 from biofefi.utils.utils import create_directory
+
+MlModel = TypeVar("MlModel", BaseEstimator, ClassifierMixin, RegressorMixin)
 
 
 def save_models_metrics(metrics: dict, path: Path):
@@ -84,55 +89,28 @@ def load_models_to_explain(path: Path, model_names: list) -> dict[str, list]:
     return models
 
 
-def get_models(
-    model_types: dict[str, dict],
-    problem_type: str,
-    logger: object = None,
-    use_params: bool = True,
-    use_grid_search: bool = False,
-) -> dict:
+def get_model_type(model_type: str, problem_type: ProblemTypes) -> type:
     """
-    Constructs and initializes machine learning models
-    based on the given configuration.
+    Fetch the appropriate type for a given model name based on the problem type.
 
     Args:
-        model_types (dict): Dictionary containing model types
-        and their parameters.
-        problem_type (str): Type of problem (
-            classification or regression).
-        logger (object): Logger object to log messages.
-        use_params (bool, optional): Add the parameters to models or leave them blank. Defaults to True.
+        model_type (dict): The kind of model.
+        problem_type (ProblemTypes): Type of problem (classification or regression).
 
     Raises:
-        ValueError: If a model type is not recognized or unsupported
+        ValueError: If a model type is not recognised or unsupported.
 
     Returns:
-        dict: A dictionary of initialized models where the
-        keys are model names and the values are instances
-        of the corresponding models.
+        type: The constructor for a machine learning model class.
     """
-    models = {}
-    model_list = [
-        (model_type, model["params"])
-        for model_type, model in model_types.items()
-        if model["use"]
-    ]
-    for model, model_params in model_list:
-        if problem_type.lower() == ProblemTypes.Classification:
-            model_class = CLASSIFIERS.get(model.lower())
-            model_params["class_weight"] = (
-                ["balanced"] if use_grid_search else "balanced"
-            )
-        elif problem_type.lower() == ProblemTypes.Regression:
-            model_class = REGRESSORS.get(model.lower())
+    if problem_type.lower() == ProblemTypes.Classification:
+        model_class = CLASSIFIERS.get(model_type.lower())
+    elif problem_type.lower() == ProblemTypes.Regression:
+        model_class = REGRESSORS.get(model_type.lower())
+    if not model_class:
+        raise ValueError(f"Model type {model_type} not recognised")
 
-        models[model] = model_class(**model_params) if use_params else model_class()
-        logger.info(
-            f"Using model {model_class.__name__} with parameters {model_params}"
-        )
-        if not model_class:
-            raise ValueError(f"Model type {model} not recognized")
-    return models
+    return model_class
 
 
 def models_exist(path: Path) -> bool:
@@ -146,3 +124,23 @@ def models_exist(path: Path) -> bool:
 
     except Exception:
         return False
+
+
+def get_model(
+    model_type: type,
+    model_params: dict | None = None,
+) -> MlModel:
+    """Produce a machine learning model with the provided parameters, configured for the
+    given problem type.
+
+    If the model is to be used in a grid search, specify `model_params=None`.
+
+    Args:
+        model_type (type): The Python type (constructor) of the model to instantiate.
+        model_params (dict, optional): The parameters to pass to the model constructor. Defaults to None.
+
+    Returns:
+        MlModel: A new instance of the requested machine learning model.
+    """
+
+    return model_type(**model_params) if model_params is not None else model_type()

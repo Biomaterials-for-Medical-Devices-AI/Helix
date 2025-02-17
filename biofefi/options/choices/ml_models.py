@@ -9,7 +9,7 @@ from biofefi.machine_learning.models.nn_models import (
 from biofefi.machine_learning.models.svm import SVC, SVR
 from biofefi.options.enums import ModelNames
 
-CLASSIFIERS = {
+CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.LinearModel: LogisticRegression,
     ModelNames.RandomForest: RandomForestClassifier,
     ModelNames.XGBoost: XGBClassifier,
@@ -17,7 +17,7 @@ CLASSIFIERS = {
     ModelNames.BRNNClassifier: BayesianRegularisedNNClassifier,
 }
 
-REGRESSORS = {
+REGRESSORS: dict[ModelNames, type] = {
     ModelNames.LinearModel: LinearRegression,
     ModelNames.RandomForest: RandomForestRegressor,
     ModelNames.XGBoost: XGBRegressor,
