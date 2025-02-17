@@ -169,5 +169,9 @@ if experiment_name:
             exec_opt.data_path = str(path_to_preprocessed_data)
             save_options(path_to_exec_opts, exec_opt)
 
+            # Update config to show preprocessing is complete
+            config.data_is_preprocessed = True
+            save_options(path_to_preproc_opts, config)
+
             st.success("Data Preprocessing Complete")
             preprocessed_view(processed_data)
