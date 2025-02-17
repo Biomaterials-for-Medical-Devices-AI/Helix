@@ -98,7 +98,7 @@ def test_ml_metrics_path():
 def test_ml_predictions_path():
     # Arrange
     experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
-    expected_output = experiment_path / "results" / "ml_predictions" / "predictions.csv"
+    expected_output = experiment_path / "results" / "ml_metrics" / "predictions.csv"
 
     # Act
     actual_output = fp.ml_predictions_path(experiment_path)
