@@ -3,7 +3,11 @@ import streamlit as st
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.plots import display_metrics_table, plot_box
+from biofefi.components.plots import (
+    display_metrics_table,
+    display_predictions,
+    plot_box,
+)
 from biofefi.options.enums import (
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
@@ -18,6 +22,7 @@ from biofefi.options.file_paths import (
     log_dir,
     ml_metrics_path,
     ml_plot_dir,
+    ml_predictions_path,
 )
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
@@ -52,9 +57,11 @@ if experiment_name:
         plot_box(data_analysis, "Data Analysis Plots")
     ml_metrics = ml_metrics_path(experiment_path)
     ml_plots = ml_plot_dir(experiment_path)
+    predictions = ml_predictions_path(experiment_path)
     if ml_plots.exists() and ml_metrics.exists():
         display_metrics_table(ml_metrics)
         plot_box(ml_plots, "Machine learning plots")
+        display_predictions(predictions)
     fi_plots = fi_plot_dir(experiment_path)
     if fi_plots.exists():
         plot_box(fi_plots, "Feature importance plots")
