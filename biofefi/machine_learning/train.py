@@ -37,7 +37,7 @@ def run(
             n_bootstraps=exec_opts.n_bootstraps,
             logger=logger,
         )
-    res, metric_res, metric_res_stats, trained_models = learner.fit(data)
+    res, metric_res, metric_res_stats, trained_models, predictions = learner.fit(data)
     logger.info(f"Performance Metric Statistics: {os.linesep}{metric_res_stats}")
     if ml_opts.save_actual_pred_plots:
         save_actual_pred_plots(
@@ -53,4 +53,4 @@ def run(
             trained_models=trained_models,
         )
 
-    return trained_models, metric_res_stats
+    return trained_models, metric_res_stats, predictions
