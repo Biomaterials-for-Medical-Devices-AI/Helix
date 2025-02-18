@@ -54,22 +54,19 @@ if experiment_name:
     base_dir = biofefi_experiments_base_dir()
     experiment_path = base_dir / experiment_name
     data_analysis = data_analysis_plots_dir(experiment_path)
-    if data_analysis.exists():
-        plot_box(data_analysis, "Data Analysis Plots")
+    plot_box(data_analysis, "Data Analysis Plots")
     ml_metrics = ml_metrics_path(experiment_path)
+    display_metrics_table(ml_metrics)
     ml_plots = ml_plot_dir(experiment_path)
+    plot_box(ml_plots, "Machine learning plots")
     predictions = ml_predictions_path(experiment_path)
-    if ml_plots.exists() and ml_metrics.exists():
-        display_metrics_table(ml_metrics)
-        plot_box(ml_plots, "Machine learning plots")
+    if predictions.exists():
         preds = pd.read_csv(predictions)
         display_predictions(preds)
     fi_plots = fi_plot_dir(experiment_path)
-    if fi_plots.exists():
-        plot_box(fi_plots, "Feature importance plots")
+    plot_box(fi_plots, "Feature importance plots")
     fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    if fuzzy_plots.exists():
-        plot_box(fuzzy_plots, "Fuzzy plots")
+    plot_box(fuzzy_plots, "Fuzzy plots")
     try:
         st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"
