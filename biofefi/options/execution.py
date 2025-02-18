@@ -13,4 +13,4 @@ class ExecutionOptions:
     dependent_variable: str | None = None
     normalization: Normalisations = Normalisations.NoNormalisation
     n_bootstraps: int = 3
-    use_hyperparam_search: bool = True
+    use_hyperparam_search: bool = True  # TODO: remove
