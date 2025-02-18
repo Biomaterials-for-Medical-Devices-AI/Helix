@@ -160,6 +160,7 @@ def pipeline(
                 predictions = pd.concat(
                     [predictions, df_train, df_test], ignore_index=True
                 )
+        st.session_state[MachineLearningStateKeys.Predictions] = predictions
 
     if exec_opts.use_hyperparam_search:
         predictions = predictions[["Y True", "Y Prediction", "Model Name", "Set"]]
@@ -242,10 +243,15 @@ if experiment_name:
         ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")
-        predictions = ml_predictions_path(biofefi_base_dir / experiment_name)
-        if predictions.exists():
-            preds = pd.read_csv(predictions)
-            display_predictions(preds)
+        if st.session_state.get(MachineLearningStateKeys.Predictions):
+            display_predictions(
+                st.session_state.get(MachineLearningStateKeys.Predictions)
+            )
+        else:
+            predictions = ml_predictions_path(biofefi_base_dir / experiment_name)
+            if predictions.exists():
+                preds = pd.read_csv(predictions)
+                display_predictions(preds)
 
     elif not st.session_state[MachineLearningStateKeys.RerunML]:
         st.success(
