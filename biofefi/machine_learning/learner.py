@@ -186,6 +186,7 @@ class Learner:
                     )
                 )
                 trained_models[model_name].append(model)
+
         metric_res_stats = _compute_metrics_statistics(metric_res)
         return res, metric_res, metric_res_stats, trained_models
 
@@ -239,6 +240,7 @@ class Learner:
                     )
                 )
                 trained_models[model_name].append(model)
+
         metric_res_stats = _compute_metrics_statistics(metric_res)
         return res, metric_res, metric_res_stats, trained_models
 
@@ -373,6 +375,7 @@ class GridSearchLearner:
             metric_res_stats[model_name].update(
                 self._compute_metrics_statistics(gs.cv_results_, gs.best_index_)
             )
+
         return res, metric_res, metric_res_stats, trained_models
 
     def _compute_metrics_statistics(self, cv_results: dict, best_index: int) -> dict:

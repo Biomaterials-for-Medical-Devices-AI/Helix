@@ -2,16 +2,22 @@ import os
 from multiprocessing import Process
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.forms import ml_options_form
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.plots import display_metrics_table, plot_box
+from biofefi.components.plots import (
+    display_metrics_table,
+    display_predictions,
+    plot_box,
+)
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
 from biofefi.options.enums import (
+    DataSplitMethods,
     ExecutionStateKeys,
     MachineLearningStateKeys,
     PlotOptionKeys,
@@ -25,6 +31,7 @@ from biofefi.options.file_paths import (
     ml_model_dir,
     ml_options_path,
     ml_plot_dir,
+    ml_predictions_path,
     plot_options_path,
 )
 from biofefi.options.ml import MachineLearningOptions
@@ -36,7 +43,11 @@ from biofefi.services.configuration import (
 )
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
-from biofefi.services.ml_models import save_model, save_models_metrics
+from biofefi.services.ml_models import (
+    save_model,
+    save_model_predictions,
+    save_models_metrics,
+)
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import cancel_pipeline, delete_directory, set_seed
 
@@ -115,7 +126,12 @@ def pipeline(
         logger=logger,
     )
     if ml_opts.save_models:
+        predictions = pd.DataFrame(
+            columns=["Y True", "Y Prediction", "Model Name", "Set", "Bootstrap"]
+        )
+
         for model_name in trained_models:
+
             for i, model in enumerate(trained_models[model_name]):
                 save_path = (
                     ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
@@ -123,9 +139,41 @@ def pipeline(
                 )
                 save_model(model, save_path)
 
+                predictions_train = model.predict(data.X_train[i])
+                predictions_train = {
+                    "Y True": data.y_train[i],
+                    "Y Prediction": predictions_train,
+                    "Model Name": model_name,
+                    "Set": "Train",
+                    "Bootstrap": i,
+                }
+                df_train = pd.DataFrame(predictions_train)
+                predictions_test = model.predict(data.X_test[i])
+                predictions_test = {
+                    "Y True": data.y_test[i],
+                    "Y Prediction": predictions_test,
+                    "Model Name": model_name,
+                    "Set": "Test",
+                    "Bootstrap": i,
+                }
+                df_test = pd.DataFrame(predictions_test)
+                predictions = pd.concat(
+                    [predictions, df_train, df_test], ignore_index=True
+                )
+        st.session_state[MachineLearningStateKeys.Predictions] = predictions
+
+    if exec_opts.use_hyperparam_search:
+        predictions = predictions[["Y True", "Y Prediction", "Model Name", "Set"]]
+    elif exec_opts.data_split["type"] == DataSplitMethods.KFold:
+        predictions = predictions.rename(columns={"Bootstrap": "Fold"})
+
     save_models_metrics(
         metrics_stats,
         ml_metrics_path(biofefi_experiments_base_dir() / experiment_name),
+    )
+    save_model_predictions(
+        predictions,
+        ml_predictions_path(biofefi_experiments_base_dir() / experiment_name),
     )
     # Close the logger
     close_logger(logger_instance, logger)
@@ -190,11 +238,18 @@ if experiment_name:
         except NotADirectoryError:
             pass
         metrics = ml_metrics_path(biofefi_base_dir / experiment_name)
-        if metrics.exists():
-            display_metrics_table(metrics)
+        display_metrics_table(metrics)
         ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
-        if ml_plots.exists():
-            plot_box(ml_plots, "Machine learning plots")
+        plot_box(ml_plots, "Machine learning plots")
+        if st.session_state.get(MachineLearningStateKeys.Predictions):
+            display_predictions(
+                st.session_state.get(MachineLearningStateKeys.Predictions)
+            )
+        else:
+            predictions = ml_predictions_path(biofefi_base_dir / experiment_name)
+            if predictions.exists():
+                preds = pd.read_csv(predictions)
+                display_predictions(preds)
 
     elif not st.session_state[MachineLearningStateKeys.RerunML]:
         st.success(
