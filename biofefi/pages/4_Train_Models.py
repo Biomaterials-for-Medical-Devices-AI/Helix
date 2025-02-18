@@ -238,11 +238,9 @@ if experiment_name:
         except NotADirectoryError:
             pass
         metrics = ml_metrics_path(biofefi_base_dir / experiment_name)
-        if metrics.exists():
-            display_metrics_table(metrics)
+        display_metrics_table(metrics)
         ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
-        if ml_plots.exists():
-            plot_box(ml_plots, "Machine learning plots")
+        plot_box(ml_plots, "Machine learning plots")
         if st.session_state.get(MachineLearningStateKeys.Predictions):
             display_predictions(
                 st.session_state.get(MachineLearningStateKeys.Predictions)
