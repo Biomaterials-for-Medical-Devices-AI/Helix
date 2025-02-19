@@ -5,6 +5,7 @@ import seaborn as sns
 import streamlit as st
 
 from biofefi.options.choices.ui import DATA_SPLITS, PLOT_FONT_FAMILIES, PROBLEM_TYPES
+from biofefi.options.data import DataSplitOptions
 from biofefi.options.enums import DataSplitMethods, ExecutionStateKeys, PlotOptionKeys
 
 
@@ -203,3 +204,39 @@ def execution_options_box_auto():
     st.number_input(
         "Random seed", value=1221, min_value=0, key=ExecutionStateKeys.RandomSeed
     )
+
+
+@st.experimental_fragment
+def data_split_options_box(data_split: DataSplitMethods) -> DataSplitOptions:
+    """Component for configuring data split options.
+
+    Args:
+        data_split (DataSplitMethods): The method to be used to split the data.
+
+    Returns:
+        DataSplitOptions: The options used to split the data.
+    """
+    n_bootsraps = None
+    k = None
+    if data_split.lower() == DataSplitMethods.Holdout:
+        n_bootsraps = st.number_input(
+            "Number of bootstraps",
+            min_value=1,
+            value=10,
+            key=ExecutionStateKeys.NumberOfBootstraps,
+        )
+    else:
+        k = st.number_input(
+            "k",
+            min_value=1,
+            value=5,
+            help="k is the number of folds in Cross-Validation",
+        )
+    test_size = st.number_input(
+        "Test split",
+        min_value=0.0,
+        max_value=1.0,
+        value=0.2,
+    )
+
+    return DataSplitOptions(n_bootstraps=n_bootsraps, k_folds=k, test_size=test_size)
