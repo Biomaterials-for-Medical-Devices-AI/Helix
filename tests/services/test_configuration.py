@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from biofefi.options.data import DataOptions
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions
@@ -7,6 +8,7 @@ from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.options.preprocessing import PreprocessingOptions
 from biofefi.services.configuration import (
+    load_data_options,
     load_data_preprocessing_options,
     load_execution_options,
     load_fi_options,
@@ -114,3 +116,24 @@ def test_load_data_preprocessing_options(
     # Assert
     assert isinstance(opts, PreprocessingOptions)
     assert opts == data_preprocessing_opts
+
+
+def test_save_data_opts(
+    data_opts: DataOptions,
+    data_opts_file_path: Path,
+):
+    # Act
+    save_options(data_opts_file_path, data_opts)
+
+    # Assert
+    assert data_opts_file_path.exists()
+
+
+def test_load_data_options(data_opts: DataOptions, data_opts_file: Path):
+    # Act
+    opts = load_data_options(data_opts_file)
+
+    # Assert
+    assert isinstance(opts, DataOptions)
+    assert isinstance(opts.data_split, DataSplitOptions)
+    assert opts == data_opts

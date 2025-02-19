@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import TypeVar
 
-from biofefi.options.data import DataOptions
+from biofefi.options.data import DataOptions, DataSplitOptions
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions
@@ -102,4 +102,21 @@ def load_data_preprocessing_options(path: Path) -> PreprocessingOptions:
     with open(path, "r") as json_file:
         options_json = json.load(json_file)
     options = PreprocessingOptions(**options_json)
+    return options
+
+
+def load_data_options(path: Path) -> DataOptions:
+    """Load the data options from the JSON file given in `path`.
+
+    Args:
+        path (Path): The path to the JSON file containing the data options.
+
+    Returns:
+        DataOptions: The data options.
+    """
+    with open(path, "r") as json_file:
+        options_json: dict = json.load(json_file)
+    if split_opts := options_json.get("data_split"):
+        options_json["data_split"] = DataSplitOptions(**split_opts)
+    options = DataOptions(**options_json)
     return options
