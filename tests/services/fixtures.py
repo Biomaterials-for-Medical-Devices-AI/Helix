@@ -40,7 +40,7 @@ def execution_opts() -> ExecutionOptions:
         ExecutionOptions: The test instance.
     """
     # Arrange
-    return ExecutionOptions(data_path="test_data.csv", data_split=DATA_SPLITS[0])
+    return ExecutionOptions()
 
 
 @pytest.fixture
