@@ -239,4 +239,6 @@ def data_split_options_box(data_split: DataSplitMethods) -> DataSplitOptions:
         value=0.2,
     )
 
-    return DataSplitOptions(n_bootstraps=n_bootsraps, k_folds=k, test_size=test_size)
+    return DataSplitOptions(
+        method=data_split, n_bootstraps=n_bootsraps, k_folds=k, test_size=test_size
+    )
