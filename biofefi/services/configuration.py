@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import TypeVar
 
+from biofefi.options.data import DataOptions
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions
@@ -10,8 +11,9 @@ from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.options.preprocessing import PreprocessingOptions
 
-T = TypeVar(
-    "T",
+Options = TypeVar(
+    "Options",
+    DataOptions,
     ExecutionOptions,
     PlottingOptions,
     MachineLearningOptions,
@@ -53,7 +55,7 @@ def load_plot_options(path: Path) -> PlottingOptions:
     return options
 
 
-def save_options(path: Path, options: T):
+def save_options(path: Path, options: Options):
     """Save options to a `json` file at the specified path.
 
     Args:
