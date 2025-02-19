@@ -233,10 +233,11 @@ def data_split_options_box(data_split: DataSplitMethods) -> DataSplitOptions:
             help="k is the number of folds in Cross-Validation",
         )
     test_size = st.number_input(
-        "Test split",
+        "Test size",
         min_value=0.0,
         max_value=1.0,
         value=0.2,
+        help="The fraction (between 0 and 1) to reserve for testing models on unseen data.",
     )
 
     return DataSplitOptions(
