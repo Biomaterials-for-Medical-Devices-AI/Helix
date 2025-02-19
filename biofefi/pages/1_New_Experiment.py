@@ -8,6 +8,7 @@ from biofefi.components.configuration import (
 )
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.options.choices.ui import PROBLEM_TYPES
+from biofefi.options.data import DataOptions
 from biofefi.options.enums import (
     ExecutionStateKeys,
     PlotOptionKeys,
@@ -69,13 +70,15 @@ def _entrypoint(save_dir: Path):
         / st.session_state[ExecutionStateKeys.ExperimentName],
     )
     exec_opts = ExecutionOptions(
-        data_path=str(path_to_data),  # Path objects aren't JSON serialisable
         problem_type=st.session_state.get(
             ExecutionStateKeys.ProblemType, ProblemTypes.Auto
         ).lower(),
         random_state=st.session_state[ExecutionStateKeys.RandomSeed],
         dependent_variable=st.session_state[ExecutionStateKeys.DependentVariableName],
         experiment_name=st.session_state[ExecutionStateKeys.ExperimentName],
+    )
+    data_opts = DataOptions(
+        data_path=str(path_to_data),  # Path objects aren't JSON serialisable
     )
     plot_opts = PlottingOptions(
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
@@ -90,7 +93,12 @@ def _entrypoint(save_dir: Path):
     )
 
     # Create the experiment directory and save configs
-    create_experiment(save_dir, plotting_options=plot_opts, execution_options=exec_opts)
+    create_experiment(
+        save_dir,
+        plotting_options=plot_opts,
+        execution_options=exec_opts,
+        data_options=data_opts,
+    )
 
     # Save the data
     uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
