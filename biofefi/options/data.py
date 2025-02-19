@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from biofefi.options.enums import Normalisations
+from biofefi.options.enums import DataSplitMethods, Normalisations
 
 
 @dataclass
@@ -10,6 +10,7 @@ class DataSplitOptions:
     as well as the size of the test size.
     """
 
+    method: DataSplitMethods
     n_bootstraps: int | None = None
     k_folds: int | None = None
     test_size: float = 0.2
