@@ -259,7 +259,6 @@ def ml_options_form():
     """
     The form for setting up the machine learning pipeline.
     """
-    st.subheader("Select and cofigure which models to train")
 
     use_hyperparam_search = st.toggle(
         "Use hyper-parameter search",
@@ -275,17 +274,16 @@ def ml_options_form():
             and return the model with the best performance.
             """
         )
-        data_split = DataSplitMethods.NoSplit
     else:
         st.info(
             """
             **🛠️ Manually set the hyper-parameters you wish to use for your models.**
             """
         )
-        data_split = st.selectbox("Data split method", DATA_SPLITS)
 
-    data_split_opts = data_split_options_box(data_split)
+    data_split_opts = data_split_options_box(not use_hyperparam_search)
 
+    st.subheader("Select and cofigure which models to train")
     model_types = {}
     if st.toggle("Linear Model", value=False):
         lm_model_type = _linear_model_opts(use_hyperparam_search)

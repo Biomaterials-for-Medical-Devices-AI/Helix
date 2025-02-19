@@ -207,15 +207,24 @@ def execution_options_box_auto():
 
 
 @st.experimental_fragment
-def data_split_options_box(data_split: DataSplitMethods) -> DataSplitOptions:
+def data_split_options_box(manual: bool = False) -> DataSplitOptions:
     """Component for configuring data split options.
 
+    TODO: in a future PR remove the `manual` param when we can
+    perform holdout and kfold with grid search.
+
     Args:
-        data_split (DataSplitMethods): The method to be used to split the data.
+        manual (bool): Using manual hyperparameter setting?
 
     Returns:
         DataSplitOptions: The options used to split the data.
     """
+
+    st.subheader("Configure data split method")
+    if manual:
+        data_split = st.selectbox("Data split method", DATA_SPLITS)
+    else:
+        data_split = DataSplitMethods.NoSplit
     n_bootsraps = None
     k = None
     if data_split.lower() == DataSplitMethods.Holdout:
