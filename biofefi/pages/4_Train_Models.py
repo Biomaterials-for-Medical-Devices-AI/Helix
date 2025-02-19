@@ -1,4 +1,3 @@
-import os
 from multiprocessing import Process
 from pathlib import Path
 
@@ -36,7 +35,7 @@ from biofefi.services.configuration import (
 )
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
-from biofefi.services.ml_models import save_model, save_models_metrics
+from biofefi.services.ml_models import models_exist, save_model, save_models_metrics
 from biofefi.utils.logging_utils import Logger, close_logger
 from biofefi.utils.utils import cancel_pipeline, delete_directory, set_seed
 
@@ -158,22 +157,39 @@ experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
     biofefi_base_dir = biofefi_experiments_base_dir()
-    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
+    experiment_dir = biofefi_base_dir / experiment_name
+    path_to_exec_opts = execution_options_path(experiment_dir)
     exec_opt = load_execution_options(path_to_exec_opts)
 
-    ml_options_form(exec_opt.use_hyperparam_search)
+    if models_exist(
+        ml_model_dir(
+            biofefi_experiments_base_dir()
+            / st.session_state[ExecutionStateKeys.ExperimentName]
+        )
+    ):
+        st.warning("⚠️ You have trained models in this experiment.")
+        st.checkbox(
+            "Would you like to rerun the experiments? This will overwrite the existing models.",
+            value=True,
+            key=MachineLearningStateKeys.RerunML,
+        )
+    else:
+        st.session_state[MachineLearningStateKeys.RerunML] = True
+
+    if st.session_state[MachineLearningStateKeys.RerunML]:
+        ml_options_form()
 
     if st.button("Run Training", type="primary") and (
         st.session_state[MachineLearningStateKeys.RerunML]
     ):
 
-        if os.path.exists(ml_model_dir(biofefi_base_dir / experiment_name)):
-            delete_directory(ml_model_dir(biofefi_base_dir / experiment_name))
-        if os.path.exists(ml_plot_dir(biofefi_base_dir / experiment_name)):
-            delete_directory(ml_plot_dir(biofefi_base_dir / experiment_name))
+        if experiment_dir.exists():
+            delete_directory(ml_model_dir(experiment_dir))
+        if experiment_dir.exists():
+            delete_directory(ml_plot_dir(experiment_dir))
 
         config = build_configuration()
-        save_options(ml_options_path(biofefi_base_dir / experiment_name), config[0])
+        save_options(ml_options_path(experiment_dir), config[0])
         process = Process(target=pipeline, args=config, daemon=True)
         process.start()
         cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))
@@ -182,22 +198,22 @@ if experiment_name:
             process.join()
         try:
             st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
-                log_dir(biofefi_base_dir / experiment_name) / "ml"
+                log_dir(experiment_dir) / "ml"
             )
             log_box(
                 box_title="Machine Learning Logs", key=MachineLearningStateKeys.MLLogBox
             )
         except NotADirectoryError:
             pass
-        metrics = ml_metrics_path(biofefi_base_dir / experiment_name)
+        metrics = ml_metrics_path(experiment_dir)
         if metrics.exists():
             display_metrics_table(metrics)
-        ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
+        ml_plots = ml_plot_dir(experiment_dir)
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")
 
     elif not st.session_state[MachineLearningStateKeys.RerunML]:
-        st.success(
+        st.info(
             "You have chosen not to rerun the machine learning experiments. "
             "You can proceed to feature importance analysis."
         )
