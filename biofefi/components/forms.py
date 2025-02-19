@@ -6,10 +6,17 @@ import streamlit as st
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from biofefi.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
+from biofefi.components.configuration import data_split_options_box
+from biofefi.options.choices.ui import (
+    DATA_SPLITS,
+    NORMALISATIONS,
+    SVM_KERNELS,
+    TRANSFORMATIONS_Y,
+)
 from biofefi.options.enums import (
     DataAnalysisStateKeys,
     DataPreprocessingStateKeys,
+    DataSplitMethods,
     ExecutionStateKeys,
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
@@ -268,12 +275,16 @@ def ml_options_form():
             and return the model with the best performance.
             """
         )
+        data_split = DataSplitMethods.NoSplit
     else:
         st.info(
             """
             **🛠️ Manually set the hyper-parameters you wish to use for your models.**
             """
         )
+        data_split = st.selectbox("Data split method", DATA_SPLITS)
+
+    data_split_opts = data_split_options_box(data_split)
 
     model_types = {}
     if st.toggle("Linear Model", value=False):
