@@ -280,3 +280,23 @@ def fuzzy_options_path(experiment_path: Path) -> Path:
     ```
     """
     return experiment_path / "fuzzy_options.json"
+
+
+def data_options_path(experiment_path: Path) -> Path:
+    """Return the path to an experiment's data options.
+    The path will be to a `json` file called `data_options.json`
+
+    Args:
+        experiment_path (str): The path of the experiment.
+
+    Returns:
+        Path: The path to the experiment's data options.
+
+    Examples:
+    ```python
+    experiment_name = "test"
+    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    data_options_file = data_options_path(experiment_path)
+    ```
+    """
+    return experiment_path / "data_options.json"
