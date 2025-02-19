@@ -161,27 +161,32 @@ if experiment_name:
     path_to_exec_opts = execution_options_path(experiment_dir)
     exec_opt = load_execution_options(path_to_exec_opts)
 
-    if models_exist(
+    already_trained_models = models_exist(
         ml_model_dir(
             biofefi_experiments_base_dir()
             / st.session_state[ExecutionStateKeys.ExperimentName]
         )
-    ):
+    )
+    if already_trained_models:
         st.warning("⚠️ You have trained models in this experiment.")
         st.checkbox(
             "Would you like to rerun the experiments? This will overwrite the existing models.",
-            value=True,
+            value=False,
             key=MachineLearningStateKeys.RerunML,
         )
     else:
-        st.session_state[MachineLearningStateKeys.RerunML] = True
+        st.session_state[MachineLearningStateKeys.RerunML] = False
 
-    if st.session_state[MachineLearningStateKeys.RerunML]:
+    if not already_trained_models or st.session_state[MachineLearningStateKeys.RerunML]:
         ml_options_form()
+    else:
+        st.info(
+            "You have chosen not to rerun the machine learning experiments. "
+            "You can proceed to feature importance analysis."
+        )
+        st.stop()
 
-    if st.session_state[MachineLearningStateKeys.RerunML] and (
-        st.button("Run Training", type="primary")
-    ):
+    if st.button("Run Training", type="primary"):
 
         if experiment_dir.exists():
             delete_directory(ml_model_dir(experiment_dir))
@@ -211,9 +216,3 @@ if experiment_name:
         ml_plots = ml_plot_dir(experiment_dir)
         if ml_plots.exists():
             plot_box(ml_plots, "Machine learning plots")
-
-    elif not st.session_state[MachineLearningStateKeys.RerunML]:
-        st.info(
-            "You have chosen not to rerun the machine learning experiments. "
-            "You can proceed to feature importance analysis."
-        )
