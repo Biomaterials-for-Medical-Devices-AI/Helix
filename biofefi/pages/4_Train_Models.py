@@ -179,8 +179,8 @@ if experiment_name:
     if st.session_state[MachineLearningStateKeys.RerunML]:
         ml_options_form()
 
-    if st.button("Run Training", type="primary") and (
-        st.session_state[MachineLearningStateKeys.RerunML]
+    if st.session_state[MachineLearningStateKeys.RerunML] and (
+        st.button("Run Training", type="primary")
     ):
 
         if experiment_dir.exists():
