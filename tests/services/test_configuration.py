@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from biofefi.options.data import DataOptions
+from biofefi.options.data import DataOptions, DataSplitOptions
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.fuzzy import FuzzyOptions

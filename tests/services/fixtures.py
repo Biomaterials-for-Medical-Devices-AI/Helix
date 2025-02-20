@@ -5,7 +5,6 @@ from typing import Generator
 
 import pytest
 
-from biofefi.options.choices.ui import DATA_SPLITS
 from biofefi.options.data import DataOptions, DataSplitOptions
 from biofefi.options.enums import DataSplitMethods
 from biofefi.options.execution import ExecutionOptions

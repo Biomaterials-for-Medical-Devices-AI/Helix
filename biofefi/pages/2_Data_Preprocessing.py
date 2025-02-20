@@ -12,7 +12,6 @@ from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     data_options_path,
     data_preprocessing_options_path,
-    execution_options_path,
     plot_options_path,
     preprocessed_data_path,
 )
@@ -20,7 +19,6 @@ from biofefi.options.preprocessing import PreprocessingOptions
 from biofefi.services.configuration import (
     load_data_options,
     load_data_preprocessing_options,
-    load_execution_options,
     load_plot_options,
     save_options,
 )

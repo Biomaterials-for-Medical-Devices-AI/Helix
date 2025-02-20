@@ -7,16 +7,10 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from biofefi.components.configuration import data_split_options_box
-from biofefi.options.choices.ui import (
-    DATA_SPLITS,
-    NORMALISATIONS,
-    SVM_KERNELS,
-    TRANSFORMATIONS_Y,
-)
+from biofefi.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
 from biofefi.options.enums import (
     DataAnalysisStateKeys,
     DataPreprocessingStateKeys,
-    DataSplitMethods,
     ExecutionStateKeys,
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
@@ -26,14 +20,12 @@ from biofefi.options.enums import (
     ProblemTypes,
     TransformationsY,
 )
-from biofefi.options.file_paths import biofefi_experiments_base_dir, ml_model_dir
 from biofefi.options.search_grids import (
     LINEAR_MODEL_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
     XGB_GRID,
 )
-from biofefi.services.ml_models import models_exist
 
 
 @st.experimental_fragment
