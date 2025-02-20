@@ -8,6 +8,7 @@ class MachineLearningStateKeys(StrEnum):
     SaveModels = "save_models"
     RerunML = "rerun_ml"
     MLLogBox = "ml_log_box"
+    Predictions = "predictions"
 
 
 class FeatureImportanceStateKeys(StrEnum):

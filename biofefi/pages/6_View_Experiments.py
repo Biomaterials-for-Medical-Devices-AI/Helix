@@ -1,9 +1,14 @@
+import pandas as pd
 import streamlit as st
 
 from biofefi.components.experiments import experiment_selector
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.components.logs import log_box
-from biofefi.components.plots import display_metrics_table, plot_box
+from biofefi.components.plots import (
+    display_metrics_table,
+    display_predictions,
+    plot_box,
+)
 from biofefi.options.enums import (
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
@@ -18,6 +23,7 @@ from biofefi.options.file_paths import (
     log_dir,
     ml_metrics_path,
     ml_plot_dir,
+    ml_predictions_path,
 )
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
@@ -48,19 +54,19 @@ if experiment_name:
     base_dir = biofefi_experiments_base_dir()
     experiment_path = base_dir / experiment_name
     data_analysis = data_analysis_plots_dir(experiment_path)
-    if data_analysis.exists():
-        plot_box(data_analysis, "Data Analysis Plots")
+    plot_box(data_analysis, "Data Analysis Plots")
     ml_metrics = ml_metrics_path(experiment_path)
+    display_metrics_table(ml_metrics)
     ml_plots = ml_plot_dir(experiment_path)
-    if ml_plots.exists() and ml_metrics.exists():
-        display_metrics_table(ml_metrics)
-        plot_box(ml_plots, "Machine learning plots")
+    plot_box(ml_plots, "Machine learning plots")
+    predictions = ml_predictions_path(experiment_path)
+    if predictions.exists():
+        preds = pd.read_csv(predictions)
+        display_predictions(preds)
     fi_plots = fi_plot_dir(experiment_path)
-    if fi_plots.exists():
-        plot_box(fi_plots, "Feature importance plots")
+    plot_box(fi_plots, "Feature importance plots")
     fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    if fuzzy_plots.exists():
-        plot_box(fuzzy_plots, "Fuzzy plots")
+    plot_box(fuzzy_plots, "Fuzzy plots")
     try:
         st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"

@@ -77,6 +77,18 @@ def ml_metrics_path(experiment_path: Path) -> Path:
     return experiment_path / "results" / "ml_metrics" / "metrics.json"
 
 
+def ml_predictions_path(experiment_path: Path) -> Path:
+    """Create the full path to the directory to save ML models predictions.
+
+    Args:
+        experiment_path (Path): The path of the experiment.
+
+    Returns:
+        Path: The full path for the ml models predictions file.
+    """
+    return experiment_path / "results" / "ml_metrics" / "predictions.csv"
+
+
 def fi_plot_dir(experiment_path: Path) -> Path:
     """Create the full path to the directory to save Feature Importance plots.
 

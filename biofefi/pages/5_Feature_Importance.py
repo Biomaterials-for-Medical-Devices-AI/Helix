@@ -331,11 +331,9 @@ if experiment_name:
                 except NotADirectoryError:
                     pass
                 fi_plots = fi_plot_dir(base_dir / experiment_name)
-                if fi_plots.exists():
-                    plot_box(fi_plots, "Feature importance plots")
+                plot_box(fi_plots, "Feature importance plots")
                 fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
-                if fuzzy_plots.exists():
-                    plot_box(fuzzy_plots, "Fuzzy plots")
+                plot_box(fuzzy_plots, "Fuzzy plots")
 
     else:
         st.success(
