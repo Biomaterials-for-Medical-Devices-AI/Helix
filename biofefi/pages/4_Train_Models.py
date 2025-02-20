@@ -10,6 +10,7 @@ from biofefi.components.logs import log_box
 from biofefi.components.plots import display_metrics_table, plot_box
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
+from biofefi.options.data import DataOptions
 from biofefi.options.enums import (
     ExecutionStateKeys,
     MachineLearningStateKeys,
@@ -18,6 +19,7 @@ from biofefi.options.enums import (
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
+    data_options_path,
     execution_options_path,
     log_dir,
     ml_metrics_path,
@@ -29,6 +31,7 @@ from biofefi.options.file_paths import (
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.services.configuration import (
+    load_data_options,
     load_execution_options,
     load_plot_options,
     save_options,
@@ -41,14 +44,14 @@ from biofefi.utils.utils import cancel_pipeline, delete_directory, set_seed
 
 
 def build_configuration() -> (
-    tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, str]
+    tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, DataOptions, str]
 ):
     """Build the configuration options to run the Machine Learning pipeline.
 
     Returns:
-        tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, str]:
+        tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, DataOptions, str]:
         The machine learning options, general execution options, plotting options,
-        experiment name
+        data options, experiment name.
     """
 
     experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
@@ -61,6 +64,10 @@ def build_configuration() -> (
     path_to_exec_opts = execution_options_path(
         biofefi_experiments_base_dir() / experiment_name
     )
+    path_to_data_opts = data_options_path(
+        biofefi_experiments_base_dir() / experiment_name
+    )
+
     exec_opt = load_execution_options(path_to_exec_opts)
     ml_opt = MachineLearningOptions(
         save_actual_pred_plots=st.session_state[PlotOptionKeys.SavePlots],
@@ -70,15 +77,23 @@ def build_configuration() -> (
             log_dir(biofefi_experiments_base_dir() / experiment_name) / "ml"
         ),
         save_models=st.session_state[MachineLearningStateKeys.SaveModels],
+        use_hyperparam_search=st.session_state.get(
+            ExecutionStateKeys.UseHyperParamSearch, True
+        ),
     )
+    data_opts = load_data_options(path_to_data_opts)
+    # update data opts
+    data_opts.data_split = st.session_state.get(ExecutionStateKeys.DataSplit)
+    save_options(path_to_data_opts, data_opts)
 
-    return ml_opt, exec_opt, plot_opt, experiment_name
+    return ml_opt, exec_opt, plot_opt, data_opts, experiment_name
 
 
 def pipeline(
     ml_opts: MachineLearningOptions,
     exec_opts: ExecutionOptions,
     plotting_opts: PlottingOptions,
+    data_opts: DataOptions,
     experiment_name: str,
 ):
     """This function actually performs the steps of the pipeline. It can be wrapped
@@ -94,23 +109,24 @@ def pipeline(
     set_seed(seed)
     logger_instance = Logger(Path(ml_opts.ml_log_dir))
     logger = logger_instance.make_logger()
+    data_opts
 
     data = DataBuilder(
-        data_path=exec_opts.data_path,
+        data_path=data_opts.data_path,
         random_state=exec_opts.random_state,
-        normalization=exec_opts.normalization,
-        n_bootstraps=exec_opts.n_bootstraps,
+        normalisation=data_opts.normalisation,
         logger=logger,
-        data_split=exec_opts.data_split,
+        data_split=data_opts.data_split,
         problem_type=exec_opts.problem_type,
     ).ingest()
 
     # Machine learning
     trained_models, metrics_stats = train.run(
         ml_opts=ml_opts,
-        exec_opts=exec_opts,
+        data_opts=data_opts,
         plot_opts=plotting_opts,
         data=data,
+        problem_type=exec_opts.problem_type,
         logger=logger,
     )
     if ml_opts.save_models:
