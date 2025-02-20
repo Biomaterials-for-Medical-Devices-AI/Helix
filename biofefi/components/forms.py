@@ -282,6 +282,7 @@ def ml_options_form():
         )
 
     data_split_opts = data_split_options_box(not use_hyperparam_search)
+    st.session_state[ExecutionStateKeys.DataSplit] = data_split_opts
 
     st.subheader("Select and cofigure which models to train")
     model_types = {}
