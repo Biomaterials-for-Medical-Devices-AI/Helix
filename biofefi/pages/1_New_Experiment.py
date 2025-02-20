@@ -3,17 +3,11 @@ from pathlib import Path
 
 import streamlit as st
 
-from biofefi.components.configuration import (
-    plot_options_box,
-)
+from biofefi.components.configuration import plot_options_box
 from biofefi.components.images.logos import sidebar_logo
 from biofefi.options.choices.ui import PROBLEM_TYPES
 from biofefi.options.data import DataOptions
-from biofefi.options.enums import (
-    ExecutionStateKeys,
-    PlotOptionKeys,
-    ProblemTypes,
-)
+from biofefi.options.enums import ExecutionStateKeys, PlotOptionKeys, ProblemTypes
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import biofefi_experiments_base_dir, uploaded_file_path
 from biofefi.options.plotting import PlottingOptions

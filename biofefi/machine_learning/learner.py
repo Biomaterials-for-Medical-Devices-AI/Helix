@@ -8,11 +8,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 from biofefi.machine_learning.data import TabularData
 from biofefi.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
 from biofefi.options.data import DataSplitOptions
-from biofefi.options.enums import (
-    DataSplitMethods,
-    Metrics,
-    ProblemTypes,
-)
+from biofefi.options.enums import DataSplitMethods, Metrics, ProblemTypes
 from biofefi.services.metrics import get_metrics
 from biofefi.services.ml_models import get_model, get_model_type
 from biofefi.utils.logging_utils import Logger
