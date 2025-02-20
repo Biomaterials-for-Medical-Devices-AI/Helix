@@ -85,7 +85,7 @@ class DataBuilder:
                 X_train, X_test, y_train, y_test = train_test_split(
                     X,
                     y,
-                    test_size=self._data_split["test_size"],
+                    test_size=self._data_split.test_size,
                     random_state=self._random_state + i,
                     stratify=stratify,
                     shuffle=True,
@@ -98,7 +98,7 @@ class DataBuilder:
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.KFold
         ):
-            folds = self._data_split["n_splits"]
+            folds = self._data_split.k_folds
             kf = StratifiedKFold(
                 n_splits=folds, shuffle=True, random_state=self._random_state
             )
@@ -135,7 +135,7 @@ class DataBuilder:
             X_train, X_test, y_train, y_test = train_test_split(
                 X,
                 y,
-                test_size=self._data_split["test_size"],
+                test_size=self._data_split.test_size,
                 random_state=self._random_state,
                 stratify=stratify,
             )
