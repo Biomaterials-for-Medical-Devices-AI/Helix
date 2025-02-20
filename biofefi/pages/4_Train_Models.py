@@ -126,7 +126,7 @@ def pipeline(
         data_opts=data_opts,
         plot_opts=plotting_opts,
         data=data,
-        problem_type=exec_opts.problem_type,
+        exec_opts=exec_opts,
         logger=logger,
     )
     if ml_opts.save_models:

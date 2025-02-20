@@ -3,7 +3,6 @@ import os
 from biofefi.machine_learning.data import DataBuilder
 from biofefi.machine_learning.learner import GridSearchLearner, Learner
 from biofefi.options.data import DataOptions
-from biofefi.options.enums import ProblemTypes
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
@@ -16,7 +15,7 @@ def run(
     data_opts: DataOptions,
     plot_opts: PlottingOptions,
     data: DataBuilder,
-    problem_type: ProblemTypes,
+    exec_opts: ExecutionOptions,
     logger: Logger,
 ) -> None:
     """
@@ -26,14 +25,14 @@ def run(
     if ml_opts.use_hyperparam_search:
         learner = GridSearchLearner(
             model_types=ml_opts.model_types,
-            problem_type=problem_type,
+            problem_type=exec_opts.problem_type,
             data_split=data_opts.data_split,
             logger=logger,
         )
     else:
         learner = Learner(
             model_types=ml_opts.model_types,
-            problem_type=problem_type,
+            problem_type=exec_opts.problem_type,
             data_split=data_opts.data_split,
             n_bootstraps=data_opts.data_split.n_bootstraps,
             logger=logger,
@@ -44,19 +43,20 @@ def run(
         if data_opts.data_split.n_bootstraps is not None:
             n = data_opts.data_split.n_bootstraps
         elif data_opts.data_split.k_folds is not None:
-            n = data_opts.data_split.n_bootstraps
+            n = data_opts.data_split.k_folds
         else:
             n = 1
+
         save_actual_pred_plots(
             data=data,
             ml_results=res,
-            opt=data_opts,
             logger=logger,
             ml_metric_results=metric_res,
             ml_metric_results_stats=metric_res_stats,
-            ml_opts=ml_opts,
-            plot_opts=plot_opts,
             n_bootstraps=n,
+            exec_opts=exec_opts,
+            plot_opts=plot_opts,
+            ml_opts=ml_opts,
             trained_models=trained_models,
         )
 
