@@ -109,7 +109,6 @@ def pipeline(
     set_seed(seed)
     logger_instance = Logger(Path(ml_opts.ml_log_dir))
     logger = logger_instance.make_logger()
-    data_opts
 
     data = DataBuilder(
         data_path=data_opts.data_path,

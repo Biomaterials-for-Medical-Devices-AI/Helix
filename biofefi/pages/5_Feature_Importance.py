@@ -11,6 +11,7 @@ from biofefi.components.logs import log_box
 from biofefi.components.plots import plot_box
 from biofefi.feature_importance import feature_importance, fuzzy_interpretation
 from biofefi.machine_learning.data import DataBuilder
+from biofefi.options.data import DataOptions
 from biofefi.options.enums import (
     ExecutionStateKeys,
     FeatureImportanceStateKeys,
@@ -21,6 +22,7 @@ from biofefi.options.execution import ExecutionOptions
 from biofefi.options.fi import FeatureImportanceOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
+    data_options_path,
     execution_options_path,
     fi_options_path,
     fi_plot_dir,
@@ -33,6 +35,7 @@ from biofefi.options.file_paths import (
 from biofefi.options.fuzzy import FuzzyOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.services.configuration import (
+    load_data_options,
     load_execution_options,
     load_plot_options,
     save_options,
@@ -58,9 +61,10 @@ def build_configuration() -> (
             FuzzyOptions | None,
             FeatureImportanceOptions,
             ExecutionOptions,
+            DataOptions,
             str,
             list
-        ]: The configuration for fuzzy, FI and ML pipelines, the experiment name
+        ]: The configuration for fuzzy, FI and ML pipelines, the data options, the experiment name
         and the list of models to explain.
     """
     biofefi_base_dir = biofefi_experiments_base_dir()
@@ -73,6 +77,10 @@ def build_configuration() -> (
     # Load executuon options
     path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
     exec_opt = load_execution_options(path_to_exec_opts)
+
+    # Load data options
+    path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
+    data_options = load_data_options(path_to_data_opts)
 
     # Set up fuzzy options
     fuzzy_opt = None
@@ -143,6 +151,7 @@ def build_configuration() -> (
         fi_opt,
         exec_opt,
         plotting_options,
+        data_options,
         experiment_name,
         st.session_state[FeatureImportanceStateKeys.ExplainModels],
     )
@@ -153,6 +162,7 @@ def pipeline(
     fi_opts: FeatureImportanceOptions,
     exec_opts: ExecutionOptions,
     plot_opts: PlottingOptions,
+    data_opts: DataOptions,
     experiment_name: str,
     explain_models: list,
 ):
@@ -174,12 +184,11 @@ def pipeline(
     fi_logger = fi_logger_instance.make_logger()
 
     data = DataBuilder(
-        data_path=exec_opts.data_path,
+        data_path=data_opts.data_path,
         random_state=exec_opts.random_state,
-        normalization=exec_opts.normalization,
-        n_bootstraps=exec_opts.n_bootstraps,
+        normalisation=data_opts.normalisation,
         logger=fi_logger,
-        data_split=exec_opts.data_split,
+        data_split=data_opts.data_split,
         problem_type=exec_opts.problem_type,
     ).ingest()
 
