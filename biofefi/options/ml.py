@@ -8,6 +8,7 @@ class MachineLearningOptions:
     ml_log_dir: str = "ml"
     save_models: bool = True
     ml_plot_dir: str = "ml"
+    use_hyperparam_search: bool = True
 
 
 # ----- Bayesian Regularised Neural Network Parameters ----- >>>>>>>>

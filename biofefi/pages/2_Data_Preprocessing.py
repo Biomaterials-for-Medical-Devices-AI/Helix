@@ -10,15 +10,15 @@ from biofefi.components.preprocessing import original_view, preprocessed_view
 from biofefi.options.enums import DataPreprocessingStateKeys, ExecutionStateKeys
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
+    data_options_path,
     data_preprocessing_options_path,
-    execution_options_path,
     plot_options_path,
     preprocessed_data_path,
 )
 from biofefi.options.preprocessing import PreprocessingOptions
 from biofefi.services.configuration import (
+    load_data_options,
     load_data_preprocessing_options,
-    load_execution_options,
     load_plot_options,
     save_options,
 )
@@ -83,11 +83,10 @@ biofefi_base_dir = biofefi_experiments_base_dir()
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
 
-    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
-
-    exec_opt = load_execution_options(path_to_exec_opts)
-
     path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
+
+    path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
+    data_opts = load_data_options(path_to_data_opts)
 
     path_to_preproc_opts = data_preprocessing_options_path(
         biofefi_base_dir / experiment_name
@@ -107,14 +106,14 @@ if experiment_name:
         preproc_again = True
 
     if not preproc_again:
-        data = pd.read_csv(exec_opt.data_path)
+        data = pd.read_csv(data_opts.data_path)
         preprocessed_view(data)
 
     else:
         # remove preprocessed suffix to point to original data file
-        exec_opt.data_path = exec_opt.data_path.replace("_preprocessed", "")
+        data_opts.data_path = data_opts.data_path.replace("_preprocessed", "")
 
-        data = pd.read_csv(exec_opt.data_path)
+        data = pd.read_csv(data_opts.data_path)
 
         try:
             non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
@@ -160,14 +159,14 @@ if experiment_name:
             )
 
             path_to_preprocessed_data = preprocessed_data_path(
-                Path(exec_opt.data_path).name,
+                Path(data_opts.data_path).name,
                 biofefi_base_dir / experiment_name,
             )
             processed_data.to_csv(path_to_preprocessed_data, index=False)
 
-            # Update exec opts to point to the pre-processed data
-            exec_opt.data_path = str(path_to_preprocessed_data)
-            save_options(path_to_exec_opts, exec_opt)
+            # Update data opts to point to the pre-processed data
+            data_opts.data_path = str(path_to_preprocessed_data)
+            save_options(path_to_data_opts, data_opts)
 
             # Update config to show preprocessing is complete
             config.data_is_preprocessed = True

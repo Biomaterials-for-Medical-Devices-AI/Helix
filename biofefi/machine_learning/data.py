@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
+from biofefi.options.data import DataSplitOptions
 from biofefi.options.enums import DataSplitMethods, Normalisations, ProblemTypes
 
 
@@ -23,19 +24,17 @@ class DataBuilder:
         self,
         data_path: str,
         random_state: int,
-        normalization: str,
-        n_bootstraps: int,
+        normalisation: str,
         logger: object = None,
-        data_split: dict | None = None,
+        data_split: DataSplitOptions | None = None,
         problem_type: str = None,
     ) -> None:
         self._path = data_path
         self._data_split = data_split
         self._random_state = random_state
         self._logger = logger
-        self._normalization = normalization
+        self._normalization = normalisation
         self._numerical_cols = "all"
-        self._n_bootstraps = n_bootstraps
         self._problem_type = problem_type
 
     def _load_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
@@ -71,9 +70,9 @@ class DataBuilder:
 
         if (
             self._data_split is not None
-            and self._data_split["type"].lower() == DataSplitMethods.Holdout
+            and self._data_split.method.lower() == DataSplitMethods.Holdout
         ):
-            for i in range(self._n_bootstraps):
+            for i in range(self._data_split.n_bootstraps):
                 self._logger.info(
                     "Using holdout data split "
                     f"with test size {self._data_split['test_size']} "
@@ -86,7 +85,7 @@ class DataBuilder:
                 X_train, X_test, y_train, y_test = train_test_split(
                     X,
                     y,
-                    test_size=self._data_split["test_size"],
+                    test_size=self._data_split.test_size,
                     random_state=self._random_state + i,
                     stratify=stratify,
                     shuffle=True,
@@ -97,9 +96,9 @@ class DataBuilder:
                 y_test_list.append(y_test)
         elif (
             self._data_split is not None
-            and self._data_split["type"].lower() == DataSplitMethods.KFold
+            and self._data_split.method.lower() == DataSplitMethods.KFold
         ):
-            folds = self._data_split["n_splits"]
+            folds = self._data_split.k_folds
             kf = StratifiedKFold(
                 n_splits=folds, shuffle=True, random_state=self._random_state
             )
@@ -127,7 +126,7 @@ class DataBuilder:
                 y_test_list.append(y_test)
         elif (
             self._data_split is not None
-            and self._data_split["type"].lower() == DataSplitMethods.NoSplit
+            and self._data_split.method.lower() == DataSplitMethods.NoSplit
         ):
             if self._problem_type == ProblemTypes.Regression:
                 stratify = None
@@ -136,7 +135,7 @@ class DataBuilder:
             X_train, X_test, y_train, y_test = train_test_split(
                 X,
                 y,
-                test_size=self._data_split["test_size"],
+                test_size=self._data_split.test_size,
                 random_state=self._random_state,
                 stratify=stratify,
             )
@@ -146,7 +145,7 @@ class DataBuilder:
             y_test_list.append(y_test)
         else:
             raise NotImplementedError(
-                f"Data split type {self._data_split['type']} is not implemented"
+                f"Data split type {self._data_split.method} is not implemented"
             )
 
         return {

@@ -7,12 +7,8 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from biofefi.machine_learning.data import TabularData
 from biofefi.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
-from biofefi.options.enums import (
-    DataSplitMethods,
-    Metrics,
-    Normalisations,
-    ProblemTypes,
-)
+from biofefi.options.data import DataSplitOptions
+from biofefi.options.enums import DataSplitMethods, Metrics, ProblemTypes
 from biofefi.services.metrics import get_metrics
 from biofefi.services.ml_models import get_model, get_model_type
 from biofefi.utils.logging_utils import Logger
@@ -28,9 +24,7 @@ class Learner:
         and their parameters.
         - problem_type (ProblemTypes): Type of problem (
         classification or regression).
-        - data_split (dict): Dictionary containing data split type and parameters
-        - normalization (Normalisations): Type of normalization to apply to the data
-        - n_bootstraps (int): Number of bootstrap samples to generate
+        - data_split (DataSplitOptions): Object containing data split type and parameters
         - logger (Logger): Logger object to log messages
     """
 
@@ -38,17 +32,13 @@ class Learner:
         self,
         model_types: dict,
         problem_type: ProblemTypes,
-        data_split: dict,
-        normalization: Normalisations,
-        n_bootstraps: int,
+        data_split: DataSplitOptions,
         logger: Logger | None = None,
     ) -> None:
         self._logger = logger
         self._model_types = model_types
         self._problem_type = problem_type
         self._data_split = data_split
-        self._normalization = normalization
-        self._n_bootstraps = n_bootstraps
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
 
     def _process_data_for_bootstrap(self, data, i):
@@ -112,11 +102,11 @@ class Learner:
             - trained_models (Dict): Dictionary containing
             trained models for each model type.
         """
-        if self._data_split["type"] == DataSplitMethods.Holdout:
+        if self._data_split.method == DataSplitMethods.Holdout:
             res, metric_res, metric_res_stats, trained_models = self._fit_holdout(data)
             return res, metric_res, metric_res_stats, trained_models
 
-        elif self._data_split["type"] == DataSplitMethods.KFold:
+        elif self._data_split.method == DataSplitMethods.KFold:
             res, metric_res, metric_res_stats, trained_models = self._fit_kfold(data)
             return res, metric_res, metric_res_stats, trained_models
 
@@ -143,7 +133,7 @@ class Learner:
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
-        for i in range(self._n_bootstraps):
+        for i in range(self._data_split.n_bootstraps):
             self._logger.info(f"Processing bootstrap sample {i+1}...")
             X_train, X_test, y_train, y_test = self._process_data_for_bootstrap(data, i)
 
@@ -196,7 +186,7 @@ class Learner:
         metric_res = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
-        for i in range(self._data_split["n_splits"]):
+        for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
             X_train, X_test = data.X_train[i], data.X_test[i]
             y_train, y_test = data.y_train[i], data.y_test[i]
@@ -250,15 +240,13 @@ class GridSearchLearner:
         self,
         model_types: dict,
         problem_type: ProblemTypes,
-        data_split: dict,
-        normalization: Normalisations,
+        data_split: DataSplitOptions,
         logger: Logger | None = None,
     ) -> None:
         self._logger = logger
         self._model_types: dict[str, Any] = model_types
         self._problem_type = problem_type
         self._data_split = data_split
-        self._normalization = normalization
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
 
     def fit(self, data: TabularData) -> tuple[dict, dict, dict, dict]:
@@ -306,10 +294,10 @@ class GridSearchLearner:
                     )
                 else:
                     scorers[metric_name] = make_scorer(metric, average="micro")
-            cv = StratifiedKFold(n_splits=self._data_split["n_splits"], shuffle=True)
+            cv = StratifiedKFold(n_splits=self._data_split.k_folds, shuffle=True)
         else:
             scorers = {key: make_scorer(value) for key, value in metrics.items()}
-            cv = self._data_split["n_splits"]
+            cv = self._data_split.k_folds
 
         # Fit models
         res = {0: {}}

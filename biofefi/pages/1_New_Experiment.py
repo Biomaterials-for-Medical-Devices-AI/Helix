@@ -3,18 +3,11 @@ from pathlib import Path
 
 import streamlit as st
 
-from biofefi.components.configuration import (
-    execution_options_box_auto,
-    execution_options_box_manual,
-    plot_options_box,
-)
+from biofefi.components.configuration import plot_options_box
 from biofefi.components.images.logos import sidebar_logo
-from biofefi.options.enums import (
-    ExecutionStateKeys,
-    Normalisations,
-    PlotOptionKeys,
-    ProblemTypes,
-)
+from biofefi.options.choices.ui import PROBLEM_TYPES
+from biofefi.options.data import DataOptions
+from biofefi.options.enums import ExecutionStateKeys, PlotOptionKeys, ProblemTypes
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import biofefi_experiments_base_dir, uploaded_file_path
 from biofefi.options.plotting import PlottingOptions
@@ -71,19 +64,15 @@ def _entrypoint(save_dir: Path):
         / st.session_state[ExecutionStateKeys.ExperimentName],
     )
     exec_opts = ExecutionOptions(
-        data_path=str(path_to_data),  # Path objects aren't JSON serialisable
-        data_split=st.session_state[ExecutionStateKeys.DataSplit],
         problem_type=st.session_state.get(
             ExecutionStateKeys.ProblemType, ProblemTypes.Auto
-        ).lower(),
-        normalization=st.session_state.get(
-            ExecutionStateKeys.Normalisation, Normalisations.NoNormalisation
         ).lower(),
         random_state=st.session_state[ExecutionStateKeys.RandomSeed],
         dependent_variable=st.session_state[ExecutionStateKeys.DependentVariableName],
         experiment_name=st.session_state[ExecutionStateKeys.ExperimentName],
-        n_bootstraps=st.session_state.get(ExecutionStateKeys.NumberOfBootstraps, 1),
-        use_hyperparam_search=st.session_state[ExecutionStateKeys.UseHyperParamSearch],
+    )
+    data_opts = DataOptions(
+        data_path=str(path_to_data),  # Path objects aren't JSON serialisable
     )
     plot_opts = PlottingOptions(
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
@@ -98,7 +87,12 @@ def _entrypoint(save_dir: Path):
     )
 
     # Create the experiment directory and save configs
-    create_experiment(save_dir, plotting_options=plot_opts, execution_options=exec_opts)
+    create_experiment(
+        save_dir,
+        plotting_options=plot_opts,
+        execution_options=exec_opts,
+        data_options=data_opts,
+    )
 
     # Save the data
     uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
@@ -162,26 +156,27 @@ st.text_input(
     key=ExecutionStateKeys.DependentVariableName,
 )
 
-st.subheader("Configure data options")
-if st.toggle(
-    "Use hyper-parameter search", value=True, key=ExecutionStateKeys.UseHyperParamSearch
-):
-    st.write(
-        """
-        **BioFEFI will determine the best hyper-parameters
-        and return the model with the best performance.**
-        """
-    )
-    st.divider()
-    execution_options_box_auto()
-else:
-    st.write(
-        """
-        **Manually set the hyper-parameters you wish to use for your models.**
-        """
-    )
-    st.divider()
-    execution_options_box_manual()
+st.selectbox(
+    "Problem type",
+    PROBLEM_TYPES,
+    key=ExecutionStateKeys.ProblemType,
+    index=1,
+)
+st.info(
+    """
+    If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
+
+    If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
+    """
+)
+
+st.number_input(
+    "Random seed",
+    value=1221,
+    min_value=0,
+    key=ExecutionStateKeys.RandomSeed,
+    help="Setting this allows experiments to be repeatable despite random shuffling of data.",
+)
 
 # Set up plotting options for the experiment
 st.subheader("Configure experiment plots")

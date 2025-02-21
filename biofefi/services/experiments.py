@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
 
+from biofefi.options.data import DataOptions
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
+    data_options_path,
     execution_options_path,
     fi_options_dir,
     fi_options_path,
@@ -54,19 +56,24 @@ def create_experiment(
     save_dir: Path,
     plotting_options: PlottingOptions,
     execution_options: ExecutionOptions,
+    data_options: DataOptions,
 ):
-    """Create an experiment on disk with it's global plotting options
-    saved as a `json` file.
+    """Create an experiment on disk with it's global plotting options,
+    execution options and data options saved as `json` files.
 
     Args:
         save_dir (Path): The path to where the experiment will be created.
         plotting_options (PlottingOptions): The plotting options to save.
+        execution_options (ExecutionOptions): The execution options to save.
+        data_options (DataOptions): The data options to save.
     """
     create_directory(save_dir)
     plot_file_path = plot_options_path(save_dir)
     save_options(plot_file_path, plotting_options)
     execution_file_path = execution_options_path(save_dir)
     save_options(execution_file_path, execution_options)
+    data_file_path = data_options_path(save_dir)
+    save_options(data_file_path, data_options)
 
 
 def find_previous_fi_results(experiment_path: Path) -> bool:

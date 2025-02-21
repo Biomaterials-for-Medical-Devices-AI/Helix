@@ -14,11 +14,16 @@ from biofefi.options.enums import ExecutionStateKeys
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
     data_analysis_plots_dir,
+    data_options_path,
     execution_options_path,
     plot_options_path,
     preprocessed_data_path,
 )
-from biofefi.services.configuration import load_execution_options, load_plot_options
+from biofefi.services.configuration import (
+    load_data_options,
+    load_execution_options,
+    load_plot_options,
+)
 from biofefi.services.experiments import get_experiments
 from biofefi.utils.utils import create_directory
 
@@ -51,15 +56,18 @@ if experiment_name:
 
     data_analysis_plot_dir = data_analysis_plots_dir(biofefi_base_dir / experiment_name)
 
+    path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
+
     create_directory(data_analysis_plot_dir)
 
     exec_opt = load_execution_options(path_to_exec_opts)
     plot_opt = load_plot_options(path_to_plot_opts)
+    data_opts = load_data_options(path_to_data_opts)
 
-    data = pd.read_csv(exec_opt.data_path)
+    data = pd.read_csv(data_opts.data_path)
 
     path_to_raw_data = preprocessed_data_path(
-        exec_opt.data_path.split("/")[-1],
+        data_opts.data_path.split("/")[-1],
         biofefi_base_dir / experiment_name,
     )
 
@@ -83,7 +91,7 @@ if experiment_name:
             data = pd.read_csv(path_to_raw_data)
 
     else:
-        data_tsne = pd.read_csv(exec_opt.data_path)
+        data_tsne = pd.read_csv(data_opts.data_path)
 
     st.write("#### Target Variable Distribution")
 
@@ -109,7 +117,7 @@ if experiment_name:
         exec_opt.random_state,
         data_analysis_plot_dir,
         plot_opt,
-        exec_opt.normalization,
+        data_opts.normalisation,
     )
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")

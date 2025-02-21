@@ -1,4 +1,3 @@
-import os
 from multiprocessing import Process
 from pathlib import Path
 
@@ -16,6 +15,7 @@ from biofefi.components.plots import (
 )
 from biofefi.machine_learning import train
 from biofefi.machine_learning.data import DataBuilder
+from biofefi.options.data import DataOptions
 from biofefi.options.enums import (
     DataSplitMethods,
     ExecutionStateKeys,
@@ -25,6 +25,7 @@ from biofefi.options.enums import (
 from biofefi.options.execution import ExecutionOptions
 from biofefi.options.file_paths import (
     biofefi_experiments_base_dir,
+    data_options_path,
     execution_options_path,
     log_dir,
     ml_metrics_path,
@@ -37,6 +38,7 @@ from biofefi.options.file_paths import (
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.services.configuration import (
+    load_data_options,
     load_execution_options,
     load_plot_options,
     save_options,
@@ -44,6 +46,7 @@ from biofefi.services.configuration import (
 from biofefi.services.experiments import get_experiments
 from biofefi.services.logs import get_logs
 from biofefi.services.ml_models import (
+    models_exist,
     save_model,
     save_model_predictions,
     save_models_metrics,
@@ -53,14 +56,14 @@ from biofefi.utils.utils import cancel_pipeline, delete_directory, set_seed
 
 
 def build_configuration() -> (
-    tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, str]
+    tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, DataOptions, str]
 ):
     """Build the configuration options to run the Machine Learning pipeline.
 
     Returns:
-        tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, str]:
+        tuple[MachineLearningOptions, ExecutionOptions, PlottingOptions, DataOptions, str]:
         The machine learning options, general execution options, plotting options,
-        experiment name
+        data options, experiment name.
     """
 
     experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
@@ -73,6 +76,10 @@ def build_configuration() -> (
     path_to_exec_opts = execution_options_path(
         biofefi_experiments_base_dir() / experiment_name
     )
+    path_to_data_opts = data_options_path(
+        biofefi_experiments_base_dir() / experiment_name
+    )
+
     exec_opt = load_execution_options(path_to_exec_opts)
     ml_opt = MachineLearningOptions(
         save_actual_pred_plots=st.session_state[PlotOptionKeys.SavePlots],
@@ -82,15 +89,23 @@ def build_configuration() -> (
             log_dir(biofefi_experiments_base_dir() / experiment_name) / "ml"
         ),
         save_models=st.session_state[MachineLearningStateKeys.SaveModels],
+        use_hyperparam_search=st.session_state.get(
+            ExecutionStateKeys.UseHyperParamSearch, True
+        ),
     )
+    data_opts = load_data_options(path_to_data_opts)
+    # update data opts
+    data_opts.data_split = st.session_state.get(ExecutionStateKeys.DataSplit)
+    save_options(path_to_data_opts, data_opts)
 
-    return ml_opt, exec_opt, plot_opt, experiment_name
+    return ml_opt, exec_opt, plot_opt, data_opts, experiment_name
 
 
 def pipeline(
     ml_opts: MachineLearningOptions,
     exec_opts: ExecutionOptions,
     plotting_opts: PlottingOptions,
+    data_opts: DataOptions,
     experiment_name: str,
 ):
     """This function actually performs the steps of the pipeline. It can be wrapped
@@ -108,21 +123,21 @@ def pipeline(
     logger = logger_instance.make_logger()
 
     data = DataBuilder(
-        data_path=exec_opts.data_path,
+        data_path=data_opts.data_path,
         random_state=exec_opts.random_state,
-        normalization=exec_opts.normalization,
-        n_bootstraps=exec_opts.n_bootstraps,
+        normalisation=data_opts.normalisation,
         logger=logger,
-        data_split=exec_opts.data_split,
+        data_split=data_opts.data_split,
         problem_type=exec_opts.problem_type,
     ).ingest()
 
     # Machine learning
     trained_models, metrics_stats = train.run(
         ml_opts=ml_opts,
-        exec_opts=exec_opts,
+        data_opts=data_opts,
         plot_opts=plotting_opts,
         data=data,
+        exec_opts=exec_opts,
         logger=logger,
     )
     if ml_opts.save_models:
@@ -162,9 +177,9 @@ def pipeline(
                 )
         st.session_state[MachineLearningStateKeys.Predictions] = predictions
 
-    if exec_opts.use_hyperparam_search:
+    if ml_opts.use_hyperparam_search:
         predictions = predictions[["Y True", "Y Prediction", "Model Name", "Set"]]
-    elif exec_opts.data_split["type"] == DataSplitMethods.KFold:
+    elif data_opts.data_split.method == DataSplitMethods.KFold:
         predictions = predictions.rename(columns={"Bootstrap": "Fold"})
 
     save_models_metrics(
@@ -206,22 +221,44 @@ experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
     biofefi_base_dir = biofefi_experiments_base_dir()
-    path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
+    experiment_dir = biofefi_base_dir / experiment_name
+    path_to_exec_opts = execution_options_path(experiment_dir)
     exec_opt = load_execution_options(path_to_exec_opts)
 
-    ml_options_form(exec_opt.use_hyperparam_search)
+    already_trained_models = models_exist(
+        ml_model_dir(
+            biofefi_experiments_base_dir()
+            / st.session_state[ExecutionStateKeys.ExperimentName]
+        )
+    )
+    if already_trained_models:
+        st.warning("⚠️ You have trained models in this experiment.")
+        st.checkbox(
+            "Would you like to rerun the experiments? This will overwrite the existing models.",
+            value=False,
+            key=MachineLearningStateKeys.RerunML,
+        )
+    else:
+        st.session_state[MachineLearningStateKeys.RerunML] = False
 
-    if st.button("Run Training", type="primary") and (
-        st.session_state[MachineLearningStateKeys.RerunML]
-    ):
+    if not already_trained_models or st.session_state[MachineLearningStateKeys.RerunML]:
+        ml_options_form()
+    else:
+        st.info(
+            "You have chosen not to rerun the machine learning experiments. "
+            "You can proceed to feature importance analysis."
+        )
+        st.stop()
 
-        if os.path.exists(ml_model_dir(biofefi_base_dir / experiment_name)):
-            delete_directory(ml_model_dir(biofefi_base_dir / experiment_name))
-        if os.path.exists(ml_plot_dir(biofefi_base_dir / experiment_name)):
-            delete_directory(ml_plot_dir(biofefi_base_dir / experiment_name))
+    if st.button("Run Training", type="primary"):
+
+        if experiment_dir.exists():
+            delete_directory(ml_model_dir(experiment_dir))
+        if experiment_dir.exists():
+            delete_directory(ml_plot_dir(experiment_dir))
 
         config = build_configuration()
-        save_options(ml_options_path(biofefi_base_dir / experiment_name), config[0])
+        save_options(ml_options_path(experiment_dir), config[0])
         process = Process(target=pipeline, args=config, daemon=True)
         process.start()
         cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))
@@ -230,17 +267,17 @@ if experiment_name:
             process.join()
         try:
             st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
-                log_dir(biofefi_base_dir / experiment_name) / "ml"
+                log_dir(experiment_dir) / "ml"
             )
             log_box(
                 box_title="Machine Learning Logs", key=MachineLearningStateKeys.MLLogBox
             )
         except NotADirectoryError:
             pass
-        metrics = ml_metrics_path(biofefi_base_dir / experiment_name)
+
+        metrics = ml_metrics_path(experiment_dir)
         display_metrics_table(metrics)
-        ml_plots = ml_plot_dir(biofefi_base_dir / experiment_name)
-        plot_box(ml_plots, "Machine learning plots")
+
         if st.session_state.get(MachineLearningStateKeys.Predictions):
             display_predictions(
                 st.session_state.get(MachineLearningStateKeys.Predictions)
@@ -251,8 +288,5 @@ if experiment_name:
                 preds = pd.read_csv(predictions)
                 display_predictions(preds)
 
-    elif not st.session_state[MachineLearningStateKeys.RerunML]:
-        st.success(
-            "You have chosen not to rerun the machine learning experiments. "
-            "You can proceed to feature importance analysis."
-        )
+        ml_plots = ml_plot_dir(experiment_dir)
+        plot_box(ml_plots, "Machine learning plots")
