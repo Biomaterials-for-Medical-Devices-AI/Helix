@@ -1,6 +1,6 @@
 # Creating an experiment
 
-In BioFEFI, you must create an experiment before you can train models and perform feature importance analyses. To do this, navigate to the **"New Experiment"** page by clicking the link on the left hand side of the screen.
+In Helix, you must create an experiment before you can train models and perform feature importance analyses. To do this, navigate to the **"New Experiment"** page by clicking the link on the left hand side of the screen.
 
 ![New experiment page](../_static/new-exp-page.png)
 
