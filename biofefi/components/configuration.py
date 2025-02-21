@@ -4,7 +4,8 @@ import pandas as pd
 import seaborn as sns
 import streamlit as st
 
-from biofefi.options.choices.ui import DATA_SPLITS, PLOT_FONT_FAMILIES, PROBLEM_TYPES
+from biofefi.options.choices.ui import DATA_SPLITS, PLOT_FONT_FAMILIES
+from biofefi.options.data import DataSplitOptions
 from biofefi.options.enums import DataSplitMethods, ExecutionStateKeys, PlotOptionKeys
 
 
@@ -113,93 +114,48 @@ def plot_options_box():
 
 
 @st.experimental_fragment
-def execution_options_box_manual():
-    """
-    The execution options box for when the user wants to manually set the hyper-parameters
-    for their models.
-    """
-    st.write(
-        """
-        If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
+def data_split_options_box(manual: bool = False) -> DataSplitOptions:
+    """Component for configuring data split options.
 
-        If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
-        """
-    )
-    st.selectbox(
-        "Problem type",
-        PROBLEM_TYPES,
-        key=ExecutionStateKeys.ProblemType,
-        index=1,
-    )
-    data_split = st.selectbox("Data split method", DATA_SPLITS)
+    TODO: in a future PR remove the `manual` param when we can
+    perform holdout and kfold with grid search.
+
+    Args:
+        manual (bool): Using manual hyperparameter setting?
+
+    Returns:
+        DataSplitOptions: The options used to split the data.
+    """
+
+    st.subheader("Configure data split method")
+    if manual:
+        data_split = st.selectbox("Data split method", DATA_SPLITS)
+    else:
+        data_split = DataSplitMethods.NoSplit
+    n_bootsraps = None
+    k = None
     if data_split.lower() == DataSplitMethods.Holdout:
-        split_size = st.number_input(
-            "Test split",
-            min_value=0.0,
-            max_value=1.0,
-            value=0.2,
+        n_bootsraps = st.number_input(
+            "Number of bootstraps",
+            min_value=1,
+            value=10,
+            key=ExecutionStateKeys.NumberOfBootstraps,
         )
-        st.session_state[ExecutionStateKeys.DataSplit] = {
-            "type": DataSplitMethods.Holdout,
-            "test_size": split_size,
-        }
-    elif data_split.lower() == DataSplitMethods.KFold:
-        split_size = st.number_input(
-            "n splits",
-            min_value=0,
+    else:
+        k = st.number_input(
+            "k",
+            min_value=1,
             value=5,
+            help="k is the number of folds in Cross-Validation",
         )
-        st.session_state[ExecutionStateKeys.DataSplit] = {
-            "type": DataSplitMethods.KFold,
-            "n_splits": split_size,
-        }
-    st.number_input(
-        "Number of bootstraps",
-        min_value=1,
-        value=10,
-        key=ExecutionStateKeys.NumberOfBootstraps,
-    )
-    st.number_input(
-        "Random seed", value=1221, min_value=0, key=ExecutionStateKeys.RandomSeed
-    )
-
-
-@st.experimental_fragment
-def execution_options_box_auto():
-    """
-    The execution options box for when the user wants to use automatic
-    hyper-parameter search.
-    """
-    st.write(
-        """
-        If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
-
-        If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
-        """
-    )
-    st.selectbox(
-        "Problem type",
-        PROBLEM_TYPES,
-        key=ExecutionStateKeys.ProblemType,
-        index=1,
-    )
-    test_split = st.number_input(
-        "Test split",
+    test_size = st.number_input(
+        "Test size",
         min_value=0.0,
         max_value=1.0,
         value=0.2,
+        help="The fraction (between 0 and 1) to reserve for testing models on unseen data.",
     )
-    split_size = st.number_input(
-        "n splits",
-        min_value=0,
-        value=5,
-    )
-    # Set data split to none for grid search but specify the test size
-    st.session_state[ExecutionStateKeys.DataSplit] = {
-        "type": DataSplitMethods.NoSplit,
-        "n_splits": split_size,
-        "test_size": test_split,
-    }
-    st.number_input(
-        "Random seed", value=1221, min_value=0, key=ExecutionStateKeys.RandomSeed
+
+    return DataSplitOptions(
+        method=data_split, n_bootstraps=n_bootsraps, k_folds=k, test_size=test_size
     )

@@ -10,34 +10,41 @@ from biofefi.options.execution import ExecutionOptions
 from biofefi.options.ml import MachineLearningOptions
 from biofefi.options.plotting import PlottingOptions
 from biofefi.services.plotting import plot_auc_roc, plot_confusion_matrix, plot_scatter
+from biofefi.utils.logging_utils import Logger
 
 
 def save_actual_pred_plots(
     data: DataBuilder,
-    ml_results,
-    opt: ExecutionOptions,
-    logger,
-    ml_metric_results,
-    ml_metric_results_stats,
+    ml_results: dict,
+    logger: Logger,
+    ml_metric_results: dict,
+    ml_metric_results_stats: dict,
     n_bootstraps: int,
+    exec_opts: ExecutionOptions,
     plot_opts: PlottingOptions | None = None,
     ml_opts: MachineLearningOptions | None = None,
     trained_models: dict | None = None,
 ) -> None:
-    """Save Actual vs Predicted plots for Regression models
+    """Save actual vs prediction plots for classification and regression.
+
+    TODO: There must be a way to break this down. There's lots of parameters and
+    the function is massive.
+
     Args:
-        data: Data object
-        ml_results: Results of the model
-        opt: Options
-        logger: Logger
-        ml_metric_results: metrics of machine learning models
-        ml_metric_results_stats: metrics mean and std
-    Returns:
-        None
+        data (DataBuilder): The data.
+        ml_results (dict): The machine learning results.
+        logger (Logger): The logger
+        ml_metric_results (dict): The the results for the ML metrics.
+        ml_metric_results_stats (dict): The statistics for the ML metrics.
+        n_bootstraps (int): The number of bootstraps or the number of k-folds.
+        exec_opts (ExecutionOptions): The execution options.
+        plot_opts (PlottingOptions | None, optional): The plot options. Defaults to None.
+        ml_opts (MachineLearningOptions | None, optional): The machine learning options. Defaults to None.
+        trained_models (dict | None, optional): The machine learning models. Defaults to None.
     """
-    if opt.problem_type == ProblemTypes.Regression:
+    if exec_opts.problem_type == ProblemTypes.Regression:
         metric = Metrics.R2
-    elif opt.problem_type == ProblemTypes.Classification:
+    elif exec_opts.problem_type == ProblemTypes.Classification:
         metric = Metrics.ROC_AUC
 
     model_boots_plot = {}
@@ -79,13 +86,13 @@ def save_actual_pred_plots(
                 y_pred_train = ml_results[i][model_name]["y_pred_train"]
 
                 # Plotting the training and test results
-                if opt.problem_type == ProblemTypes.Regression:
+                if exec_opts.problem_type == ProblemTypes.Regression:
                     test_plot = plot_scatter(
                         y_test[i],
                         y_pred_test,
                         ml_metric_results[model_name][i]["R2"]["test"],
                         "Test",
-                        opt.dependent_variable,
+                        exec_opts.dependent_variable,
                         model_name,
                         plot_opts=plot_opts,
                     )
@@ -95,7 +102,7 @@ def save_actual_pred_plots(
                         y_pred_train,
                         ml_metric_results[model_name][i]["R2"]["train"],
                         "Train",
-                        opt.dependent_variable,
+                        exec_opts.dependent_variable,
                         model_name,
                         plot_opts=plot_opts,
                     )

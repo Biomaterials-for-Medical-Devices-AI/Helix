@@ -6,6 +6,7 @@ import streamlit as st
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
+from biofefi.components.configuration import data_split_options_box
 from biofefi.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
 from biofefi.options.enums import (
     DataAnalysisStateKeys,
@@ -19,14 +20,12 @@ from biofefi.options.enums import (
     ProblemTypes,
     TransformationsY,
 )
-from biofefi.options.file_paths import biofefi_experiments_base_dir, ml_model_dir
 from biofefi.options.search_grids import (
     LINEAR_MODEL_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
     XGB_GRID,
 )
-from biofefi.services.ml_models import models_exist
 
 
 @st.experimental_fragment
@@ -248,65 +247,67 @@ def fi_options_form():
 
 
 @st.experimental_fragment
-def ml_options_form(use_hyperparam_search: bool):
+def ml_options_form():
     """
     The form for setting up the machine learning pipeline.
-
-    Args:
-        use_hyperparam_search (bool): Is the user using hyper-parameter search?
     """
-    st.subheader("Select and cofigure which models to train")
 
-    if models_exist(
-        ml_model_dir(
-            biofefi_experiments_base_dir()
-            / st.session_state[ExecutionStateKeys.ExperimentName]
-        )
-    ):
-        st.warning("You have trained models in this experiment.")
-        st.checkbox(
-            "Would you like to rerun the experiments? This will overwrite the existing models.",
-            value=True,
-            key=MachineLearningStateKeys.RerunML,
+    use_hyperparam_search = st.toggle(
+        "Use hyper-parameter search",
+        value=True,
+        key=ExecutionStateKeys.UseHyperParamSearch,
+    )
+    if use_hyperparam_search:
+        st.success(
+            """
+            **✨ Hyper-parameters will be searched automatically**.
+
+            Helix will determine the best hyper-parameters
+            and return the model with the best performance.
+            """
         )
     else:
-        st.session_state[MachineLearningStateKeys.RerunML] = True
-
-    if st.session_state[MachineLearningStateKeys.RerunML]:
-        if use_hyperparam_search:
-            st.success("**✨ Hyper-parameters will be searched automatically**")
-
-        model_types = {}
-        if st.toggle("Linear Model", value=False):
-            lm_model_type = _linear_model_opts(use_hyperparam_search)
-            model_types.update(lm_model_type)
-
-        if st.toggle("Random Forest", value=False):
-            rf_model_type = _random_forest_opts(use_hyperparam_search)
-            model_types.update(rf_model_type)
-
-        if st.toggle("XGBoost", value=False):
-            xgb_model_type = _xgboost_opts(use_hyperparam_search)
-            model_types.update(xgb_model_type)
-
-        if st.toggle("Support Vector Machine", value=False):
-            svm_model_type = _svm_opts(use_hyperparam_search)
-            model_types.update(svm_model_type)
-
-        st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
-        st.subheader("Select outputs to save")
-        st.toggle(
-            "Save models",
-            key=MachineLearningStateKeys.SaveModels,
-            value=True,
-            help="Save the models that are trained to disk?",
+        st.info(
+            """
+            **🛠️ Manually set the hyper-parameters you wish to use for your models.**
+            """
         )
-        st.toggle(
-            "Save plots",
-            key=PlotOptionKeys.SavePlots,
-            value=True,
-            help="Save the plots to disk?",
-        )
+
+    data_split_opts = data_split_options_box(not use_hyperparam_search)
+    st.session_state[ExecutionStateKeys.DataSplit] = data_split_opts
+
+    st.subheader("Select and cofigure which models to train")
+    model_types = {}
+    if st.toggle("Linear Model", value=False):
+        lm_model_type = _linear_model_opts(use_hyperparam_search)
+        model_types.update(lm_model_type)
+
+    if st.toggle("Random Forest", value=False):
+        rf_model_type = _random_forest_opts(use_hyperparam_search)
+        model_types.update(rf_model_type)
+
+    if st.toggle("XGBoost", value=False):
+        xgb_model_type = _xgboost_opts(use_hyperparam_search)
+        model_types.update(xgb_model_type)
+
+    if st.toggle("Support Vector Machine", value=False):
+        svm_model_type = _svm_opts(use_hyperparam_search)
+        model_types.update(svm_model_type)
+
+    st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
+    st.subheader("Select outputs to save")
+    st.toggle(
+        "Save models",
+        key=MachineLearningStateKeys.SaveModels,
+        value=True,
+        help="Save the models that are trained to disk?",
+    )
+    st.toggle(
+        "Save plots",
+        key=PlotOptionKeys.SavePlots,
+        value=True,
+        help="Save the plots to disk?",
+    )
 
 
 @st.experimental_fragment
