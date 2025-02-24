@@ -164,6 +164,6 @@ def test_load_ml_options(ml_opts: MachineLearningOptions, ml_opts_file: Path):
     non_existent_opts = load_ml_options(path_to_non_existent)
 
     # Assert
-    assert isinstance(opts, ml_opts)
+    assert isinstance(opts, MachineLearningOptions)
     assert opts == ml_opts
     assert non_existent_opts is None
