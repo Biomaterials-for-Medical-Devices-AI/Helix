@@ -4,11 +4,7 @@ import streamlit as st
 from helix.components.experiments import experiment_selector
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import (
-    display_metrics_table,
-    display_predictions,
-    plot_box,
-)
+from helix.components.plots import display_metrics_table, display_predictions, plot_box
 from helix.options.enums import (
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
