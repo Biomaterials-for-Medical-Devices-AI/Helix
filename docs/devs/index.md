@@ -7,7 +7,7 @@ The contents of the Helix source code look like this:
 ├── .github
 ├── .gitignore
 ├── README.md
-├── biofefi
+├── helix
 ├── docs
 ├── poetry.lock
 ├── pyproject.toml
@@ -23,7 +23,7 @@ This file tells `git` to not track files and directories listed within.
 ### `README.md`
 This file gives a quick overview of Helix and is displayed on the main page of the repository.
 
-### `biofefi`
+### `helix`
 This is where the application code lives.
 
 ### `docs`

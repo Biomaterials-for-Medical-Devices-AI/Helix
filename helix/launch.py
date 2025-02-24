@@ -9,7 +9,7 @@ from helix.utils.utils import create_directory
 
 def main():
     """The entrypoint of BioFEFI.
-    This method shouldn't be called explicitly. Use the `biofefi` command in the
+    This method shouldn't be called explicitly. Use the `helix` command in the
     terminal after installing the app.
     """
     app_path = os.path.join(os.path.dirname(__file__), "Home.py")
