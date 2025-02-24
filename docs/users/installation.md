@@ -1,6 +1,6 @@
 # Installation and running
 ## Before you start...
-BioFEFI is installed and run via the command line. You can find the terminal on your computer in the following ways:
+Helix is installed and run via the command line. You can find the terminal on your computer in the following ways:
 
 **On Mac:** [How to find the terminal on Mac](https://support.apple.com/en-gb/guide/terminal/apd5265185d-f365-44cb-8b09-71a064a42125/mac)
 
@@ -10,9 +10,9 @@ BioFEFI is installed and run via the command line. You can find the terminal on 
 
 ## Installation
 ### Pre-requirements
-You will need to install **Python 3.11** or **3.12** to use BioFEFI. Make sure you also install `pip` (The Python package installer). If you don't already have it installed, [get Python.](https://www.python.org/downloads/)
+You will need to install **Python 3.11** or **3.12** to use Helix. Make sure you also install `pip` (The Python package installer). If you don't already have it installed, [get Python.](https://www.python.org/downloads/)
 
-You may need to make sure you have OpenMP installed on your machine before you can install BioFEFI. In the terminal use the following commands for your OS:
+You may need to make sure you have OpenMP installed on your machine before you can install Helix. In the terminal use the following commands for your OS:
 
 On Mac:
 ```shell
@@ -62,8 +62,8 @@ conda activate <env_name>
 pip install biofefi
 ```
 
-## Running BioFEFI
-Once you have installed BioFEFI, you can run it from the terminal like so:
+## Running Helix
+Once you have installed Helix, you can run it from the terminal like so:
 ```shell
 biofefi
 ```

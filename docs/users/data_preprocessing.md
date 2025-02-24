@@ -1,5 +1,5 @@
 # Preprocessing your data
-BioFEFI allows you preprocess your data before training any models. This includes normalising your data, removing low variance features or highly correlated features.
+Helix allows you preprocess your data before training any models. This includes normalising your data, removing low variance features or highly correlated features.
 
 ![Data preprocessing page](../_static/data-preprocessing-page.png)
 
