@@ -8,15 +8,6 @@ import streamlit as st
 from helix.options.data import DataOptions, DataSplitOptions
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
-from helix.options.file_paths import (
-    data_options_path,
-    data_preprocessing_options_path,
-    execution_options_path,
-    fi_options_path,
-    fuzzy_options_path,
-    ml_options_path,
-    plot_options_path,
-)
 from helix.options.fuzzy import FuzzyOptions
 from helix.options.ml import MachineLearningOptions
 from helix.options.plotting import PlottingOptions
@@ -181,58 +172,3 @@ def load_ml_options(path: Path) -> MachineLearningOptions:
         options = None
 
     return options
-
-
-def display_options(experiment_path: Path) -> None:
-    """Display the options in the sidebar."""
-
-    path_to_exec_opts = execution_options_path(experiment_path)
-    execution_options = load_execution_options(path_to_exec_opts)
-
-    path_to_plot_opts = plot_options_path(experiment_path)
-    plot_opts = load_plot_options(path_to_plot_opts)
-
-    path_to_data_opts = data_options_path(experiment_path)
-    data_opts = load_data_options(path_to_data_opts)
-
-    path_to_preproc_opts = data_preprocessing_options_path(experiment_path)
-    preprocessing_opts = load_data_preprocessing_options(path_to_preproc_opts)
-
-    path_to_ML_opts = ml_options_path(experiment_path)
-    ml_opts = load_ml_options(path_to_ML_opts)
-
-    path_to_fi_opts = fi_options_path(experiment_path)
-    fi_opts = load_fi_options(path_to_fi_opts)
-
-    path_to_fuzzy_opts = fuzzy_options_path(experiment_path)
-    fuzzy_opts = load_fuzzy_options(path_to_fuzzy_opts)
-
-    with st.expander("Show Experiment Options", expanded=False):
-
-        if execution_options:
-            st.write("Execution Options")
-            st.write(execution_options)
-
-        if data_opts:
-            st.write("Data Options")
-            st.write(data_opts)
-
-        if plot_opts:
-            st.write("Plotting Options")
-            st.write(plot_opts)
-
-        if preprocessing_opts:
-            st.write("Preprocessing Options")
-            st.write(preprocessing_opts)
-
-        if ml_opts:
-            st.write("Machine Learning Options")
-            st.write(ml_opts)
-
-        if fi_opts:
-            st.write("Feature Importance Options")
-            st.write(fi_opts)
-
-        if fuzzy_opts:
-            st.write("Fuzzy Options")
-            st.write(fuzzy_opts)
