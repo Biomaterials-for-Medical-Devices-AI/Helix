@@ -1,3 +1,4 @@
+from dataclasses import fields
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -184,53 +185,38 @@ def data_split_options_box(manual: bool = False) -> DataSplitOptions:
 def display_options(experiment_path: Path) -> None:
     """Display the options in the sidebar."""
 
-    path_to_exec_opts = execution_options_path(experiment_path)
-    execution_options = load_execution_options(path_to_exec_opts)
-
-    path_to_plot_opts = plot_options_path(experiment_path)
-    plot_opts = load_plot_options(path_to_plot_opts)
-
-    path_to_data_opts = data_options_path(experiment_path)
-    data_opts = load_data_options(path_to_data_opts)
-
-    path_to_preproc_opts = data_preprocessing_options_path(experiment_path)
-    preprocessing_opts = load_data_preprocessing_options(path_to_preproc_opts)
-
-    path_to_ML_opts = ml_options_path(experiment_path)
-    ml_opts = load_ml_options(path_to_ML_opts)
-
-    path_to_fi_opts = fi_options_path(experiment_path)
-    fi_opts = load_fi_options(path_to_fi_opts)
-
-    path_to_fuzzy_opts = fuzzy_options_path(experiment_path)
-    fuzzy_opts = load_fuzzy_options(path_to_fuzzy_opts)
+    # Load all options
+    options_dict = {
+        "Execution Options": load_execution_options(
+            execution_options_path(experiment_path)
+        ),
+        "Data Options": load_data_options(data_options_path(experiment_path)),
+        "Plotting Options": load_plot_options(plot_options_path(experiment_path)),
+        "Preprocessing Options": load_data_preprocessing_options(
+            data_preprocessing_options_path(experiment_path)
+        ),
+        "Machine Learning Options": load_ml_options(ml_options_path(experiment_path)),
+        "Feature Importance Options": load_fi_options(fi_options_path(experiment_path)),
+        "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
+    }
 
     with st.expander("Show Experiment Options", expanded=False):
 
-        if execution_options:
-            st.write("Execution Options")
-            st.write(execution_options)
+        # Display Execution Options (dataclass format)
+        for option in options_dict:
 
-        if data_opts:
-            st.write("Data Options")
-            st.write(data_opts)
+            if options_dict[option] is None:
+                continue
 
-        if plot_opts:
-            st.write("Plotting Options")
-            st.write(plot_opts)
+            st.write(f"### {option}")
+            execution_options = options_dict[option]
 
-        if preprocessing_opts:
-            st.write("Preprocessing Options")
-            st.write(preprocessing_opts)
+            data = {
+                "Variable": [field.name for field in fields(execution_options)],
+                "Value": [
+                    getattr(execution_options, field.name)
+                    for field in fields(execution_options)
+                ],
+            }
 
-        if ml_opts:
-            st.write("Machine Learning Options")
-            st.write(ml_opts)
-
-        if fi_opts:
-            st.write("Feature Importance Options")
-            st.write(fi_opts)
-
-        if fuzzy_opts:
-            st.write("Fuzzy Options")
-            st.write(fuzzy_opts)
+            st.table(pd.DataFrame(data).set_index("Variable"))
