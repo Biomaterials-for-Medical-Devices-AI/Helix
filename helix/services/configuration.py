@@ -163,7 +163,7 @@ def load_ml_options(path: Path) -> MachineLearningOptions:
     try:
         with open(path, "r") as json_file:
             options_json = json.load(json_file)
-        options = MachineLearningOptions(**options_json)
+            options = MachineLearningOptions(**options_json)
     except FileNotFoundError:
         options = None
     except TypeError:
