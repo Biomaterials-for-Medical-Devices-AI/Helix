@@ -75,7 +75,7 @@ class DataBuilder:
             for i in range(self._data_split.n_bootstraps):
                 self._logger.info(
                     "Using holdout data split "
-                    f"with test size {self._data_split['test_size']} "
+                    f"with test size {self._data_split.test_size} "
                     f"for bootstrap {i+1}"
                 )
                 if self._problem_type == ProblemTypes.Regression:
