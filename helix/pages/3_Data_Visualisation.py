@@ -23,6 +23,7 @@ from helix.services.configuration import (
     load_data_options,
     load_execution_options,
     load_plot_options,
+    display_options,
 )
 from helix.services.experiments import get_experiments
 from helix.utils.utils import create_directory
@@ -49,6 +50,8 @@ biofefi_base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+
+    display_options(biofefi_base_dir / experiment_name)
 
     path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
 

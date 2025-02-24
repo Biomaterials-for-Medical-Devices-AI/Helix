@@ -21,6 +21,7 @@ from helix.services.configuration import (
     load_data_preprocessing_options,
     load_plot_options,
     save_options,
+    display_options,
 )
 from helix.services.experiments import get_experiments
 from helix.services.preprocessing import find_non_numeric_columns, run_preprocessing
@@ -82,6 +83,8 @@ biofefi_base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+
+    display_options(biofefi_base_dir / experiment_name)
 
     path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
 

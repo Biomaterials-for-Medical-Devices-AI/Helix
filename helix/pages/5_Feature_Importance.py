@@ -39,6 +39,7 @@ from helix.services.configuration import (
     load_execution_options,
     load_plot_options,
     save_options,
+    display_options,
 )
 from helix.services.experiments import (
     delete_previous_fi_results,
@@ -262,6 +263,7 @@ if experiment_name:
     previous_results_exist = find_previous_fi_results(
         biofefi_experiments_base_dir() / experiment_name
     )
+    display_options(base_dir / experiment_name)
 
     if previous_results_exist:
         st.warning("You have run feature importance in this experiment previously.")

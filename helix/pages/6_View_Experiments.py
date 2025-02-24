@@ -23,6 +23,7 @@ from helix.options.file_paths import (
 )
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs
+from helix.services.configuration import display_options
 
 st.set_page_config(
     page_title="View Experiment",
@@ -49,6 +50,7 @@ experiment_name = experiment_selector(choices)
 if experiment_name:
     base_dir = biofefi_experiments_base_dir()
     experiment_path = base_dir / experiment_name
+    display_options(experiment_path)
     data_analysis = data_analysis_plots_dir(experiment_path)
     plot_box(data_analysis, "Data Analysis Plots")
     ml_metrics = ml_metrics_path(experiment_path)
