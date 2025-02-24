@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "BioFEFI"
+project = "Helix"
 copyright = (
     "2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo"
 )

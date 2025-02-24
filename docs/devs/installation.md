@@ -69,6 +69,6 @@ poetry install
 ## Running Helix
 Once you have installed Helix, you can run it from the terminal like so:
 ```shell
-poetry run biofefi
+poetry run helix
 ```
 A browser window will open to the main page of the app.

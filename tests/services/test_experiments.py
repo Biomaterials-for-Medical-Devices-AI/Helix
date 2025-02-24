@@ -1,15 +1,15 @@
 import os
 from pathlib import Path
 
-from biofefi.options.data import DataOptions
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.file_paths import (
+from helix.options.data import DataOptions
+from helix.options.execution import ExecutionOptions
+from helix.options.file_paths import (
     data_options_path,
     execution_options_path,
     plot_options_path,
 )
-from biofefi.options.plotting import PlottingOptions
-from biofefi.services.experiments import (
+from helix.options.plotting import PlottingOptions
+from helix.services.experiments import (
     create_experiment,
     delete_previous_fi_results,
     find_previous_fi_results,

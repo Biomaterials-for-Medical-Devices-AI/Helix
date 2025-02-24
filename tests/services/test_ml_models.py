@@ -5,8 +5,8 @@ import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
 
-from biofefi.options.enums import ProblemTypes
-from biofefi.services.ml_models import (
+from helix.options.enums import ProblemTypes
+from helix.services.ml_models import (
     MlModel,
     get_model,
     get_model_type,

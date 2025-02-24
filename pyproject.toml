@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "biofefi"
-version = "1.1.0"
+name = "helix"
+version = "1.0.0"
 description = ""
 authors = [
     "Daniel Lea <Daniel.Lea@nottingham.ac.uk>",
@@ -29,7 +29,7 @@ shap = "0.45.0"
 torch = "^2.5.1"
 
 [tool.poetry.scripts]
-biofefi = "biofefi.launch:main"
+helix = "helix.launch:main"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.1"

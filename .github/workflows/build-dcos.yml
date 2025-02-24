@@ -29,7 +29,7 @@ jobs:
 
     - name: Generate API documentation
       run: |
-        poetry run sphinx-apidoc -o docs/apidocs biofefi
+        poetry run sphinx-apidoc -o docs/apidocs helix
 
     - name: Build HTML documentation
       working-directory: docs
