@@ -102,11 +102,11 @@ class Learner:
             - trained_models (Dict): Dictionary containing
             trained models for each model type.
         """
-        if self._data_split.method == DataSplitMethods.Holdout:
+        if self._data_split.method.lower() == DataSplitMethods.Holdout:
             res, metric_res, metric_res_stats, trained_models = self._fit_holdout(data)
             return res, metric_res, metric_res_stats, trained_models
 
-        elif self._data_split.method == DataSplitMethods.KFold:
+        elif self._data_split.method.lower() == DataSplitMethods.KFold:
             res, metric_res, metric_res_stats, trained_models = self._fit_kfold(data)
             return res, metric_res, metric_res_stats, trained_models
 

@@ -34,7 +34,6 @@ def run(
             model_types=ml_opts.model_types,
             problem_type=exec_opts.problem_type,
             data_split=data_opts.data_split,
-            n_bootstraps=data_opts.data_split.n_bootstraps,
             logger=logger,
         )
     res, metric_res, metric_res_stats, trained_models = learner.fit(data)
