@@ -4,6 +4,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector, model_selector
 from helix.components.forms import fi_options_form
 from helix.components.images.logos import sidebar_logo
@@ -35,7 +36,6 @@ from helix.options.file_paths import (
 from helix.options.fuzzy import FuzzyOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import (
-    display_options,
     load_data_options,
     load_execution_options,
     load_plot_options,

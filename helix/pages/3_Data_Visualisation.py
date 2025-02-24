@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.forms import (
     correlation_heatmap_form,
@@ -20,7 +21,6 @@ from helix.options.file_paths import (
     preprocessed_data_path,
 )
 from helix.services.configuration import (
-    display_options,
     load_data_options,
     load_execution_options,
     load_plot_options,

@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
@@ -21,7 +22,6 @@ from helix.options.file_paths import (
     ml_plot_dir,
     ml_predictions_path,
 )
-from helix.services.configuration import display_options
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs
 
