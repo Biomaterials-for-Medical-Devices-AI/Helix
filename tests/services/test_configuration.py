@@ -1,13 +1,13 @@
 from pathlib import Path
 
-from biofefi.options.data import DataOptions, DataSplitOptions
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.fi import FeatureImportanceOptions
-from biofefi.options.fuzzy import FuzzyOptions
-from biofefi.options.ml import MachineLearningOptions
-from biofefi.options.plotting import PlottingOptions
-from biofefi.options.preprocessing import PreprocessingOptions
-from biofefi.services.configuration import (
+from helix.options.data import DataOptions, DataSplitOptions
+from helix.options.execution import ExecutionOptions
+from helix.options.fi import FeatureImportanceOptions
+from helix.options.fuzzy import FuzzyOptions
+from helix.options.ml import MachineLearningOptions
+from helix.options.plotting import PlottingOptions
+from helix.options.preprocessing import PreprocessingOptions
+from helix.services.configuration import (
     load_data_options,
     load_data_preprocessing_options,
     load_execution_options,

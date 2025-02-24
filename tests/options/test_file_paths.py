@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import biofefi.options.file_paths as fp
+import helix.options.file_paths as fp
 
 
 def test_biofefi_experiments_base_dir():

@@ -5,11 +5,11 @@ from typing import Generator
 
 import pytest
 
-from biofefi.options.data import DataOptions, DataSplitOptions
-from biofefi.options.enums import DataSplitMethods
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.fi import FeatureImportanceOptions
-from biofefi.options.file_paths import (
+from helix.options.data import DataOptions, DataSplitOptions
+from helix.options.enums import DataSplitMethods
+from helix.options.execution import ExecutionOptions
+from helix.options.fi import FeatureImportanceOptions
+from helix.options.file_paths import (
     data_options_path,
     data_preprocessing_options_path,
     execution_options_path,
@@ -24,11 +24,11 @@ from biofefi.options.file_paths import (
     ml_options_path,
     plot_options_path,
 )
-from biofefi.options.fuzzy import FuzzyOptions
-from biofefi.options.ml import MachineLearningOptions
-from biofefi.options.plotting import PlottingOptions
-from biofefi.options.preprocessing import PreprocessingOptions
-from biofefi.utils.utils import delete_directory
+from helix.options.fuzzy import FuzzyOptions
+from helix.options.ml import MachineLearningOptions
+from helix.options.plotting import PlottingOptions
+from helix.options.preprocessing import PreprocessingOptions
+from helix.utils.utils import delete_directory
 
 
 @pytest.fixture

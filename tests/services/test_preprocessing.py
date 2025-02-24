@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from biofefi.services.preprocessing import find_non_numeric_columns
+from helix.services.preprocessing import find_non_numeric_columns
 
 
 def test_find_non_numeric_columns():
