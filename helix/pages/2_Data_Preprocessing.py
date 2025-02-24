@@ -17,11 +17,11 @@ from helix.options.file_paths import (
 )
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import (
+    display_options,
     load_data_options,
     load_data_preprocessing_options,
     load_plot_options,
     save_options,
-    display_options,
 )
 from helix.services.experiments import get_experiments
 from helix.services.preprocessing import find_non_numeric_columns, run_preprocessing

@@ -21,9 +21,9 @@ from helix.options.file_paths import (
     ml_plot_dir,
     ml_predictions_path,
 )
+from helix.services.configuration import display_options
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs
-from helix.services.configuration import display_options
 
 st.set_page_config(
     page_title="View Experiment",

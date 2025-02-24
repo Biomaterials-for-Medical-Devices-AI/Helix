@@ -20,10 +20,10 @@ from helix.options.file_paths import (
     preprocessed_data_path,
 )
 from helix.services.configuration import (
+    display_options,
     load_data_options,
     load_execution_options,
     load_plot_options,
-    display_options,
 )
 from helix.services.experiments import get_experiments
 from helix.utils.utils import create_directory
