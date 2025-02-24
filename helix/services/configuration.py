@@ -3,8 +3,6 @@ import json
 from pathlib import Path
 from typing import TypeVar
 
-import streamlit as st
-
 from helix.options.data import DataOptions, DataSplitOptions
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
