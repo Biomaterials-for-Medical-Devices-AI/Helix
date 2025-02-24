@@ -3,7 +3,7 @@ from sklearn.svm import SVR as SkLearnSVR
 
 
 class SVC(SkLeanSVC):
-    """A BioFEFI implementation of scikit-learn's SVC.
+    """A Helix implementation of scikit-learn's SVC.
 
     It is exactly the same, except it always sets `probability` to `True`
     to get access to the `predict_proba` method, and `max_iter` to 1000, similar
@@ -49,7 +49,7 @@ class SVC(SkLeanSVC):
 
 
 class SVR(SkLearnSVR):
-    """A BioFEFI implementation of scikit-learn's SVR.
+    """A Helix implementation of scikit-learn's SVR.
 
     It is exactly the same, except it always sets `max_iter` to 1000, similar
     to `LinearSVR`, to avoid hanging on infinte iterations.

@@ -5,7 +5,7 @@ import helix.options.file_paths as fp
 
 def test_biofefi_experiments_base_dir():
     # Arrange
-    expected_output = Path.home() / "BioFEFIExperiments"
+    expected_output = Path.home() / "HelixExperiments"
 
     # Act
     actual_output = fp.biofefi_experiments_base_dir()

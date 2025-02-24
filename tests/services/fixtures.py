@@ -246,7 +246,7 @@ def fuzzy_opts_file_path() -> Generator[Path, None, None]:
 @pytest.fixture
 def experiment_dir():
     # Arrange
-    base_dir = Path.cwd() / "BioFEFIExperiments"
+    base_dir = Path.cwd() / "HelixExperiments"
     base_dir.mkdir()
     experiment_dirs = ["experiment1", "experiment2"]
     for exp in experiment_dirs:

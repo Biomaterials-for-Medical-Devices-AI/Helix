@@ -150,16 +150,16 @@ def fuzzy_result_dir(experiment_path: Path) -> Path:
 
 
 def biofefi_experiments_base_dir() -> Path:
-    """Return the path the base directory of all BioFEFI experiments.
+    """Return the path the base directory of all Helix experiments.
 
-    This will be `/Users/<username>/BioFEFIExperiments` on MacOS,
-    `/home/<username>/BioFEFIExperiments` on Linux, and
-    `C:\\Users\\<username>\\BioFEFIExperiments` on Windows.
+    This will be `/Users/<username>/HelixExperiments` on MacOS,
+    `/home/<username>/HelixExperiments` on Linux, and
+    `C:\\Users\\<username>\\HelixExperiments` on Windows.
 
     Returns:
-        Path: The path to the BioFEFI experiments base directory.
+        Path: The path to the Helix experiments base directory.
     """
-    return Path.home() / "BioFEFIExperiments"
+    return Path.home() / "HelixExperiments"
 
 
 def data_analysis_plots_dir(experiment_path: Path) -> Path:

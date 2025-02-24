@@ -8,7 +8,7 @@ from helix.utils.utils import create_directory
 
 
 def main():
-    """The entrypoint of BioFEFI.
+    """The entrypoint of Helix.
     This method shouldn't be called explicitly. Use the `helix` command in the
     terminal after installing the app.
     """
@@ -20,4 +20,4 @@ def main():
     try:
         subprocess.run(["streamlit", "run", app_path])
     except KeyboardInterrupt:
-        logging.info("Shutting down BioFEFI...")
+        logging.info("Shutting down Helix...")
