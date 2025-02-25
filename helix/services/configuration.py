@@ -150,7 +150,7 @@ def load_data_options(path: Path) -> DataOptions:
     return options
 
 
-def load_ml_options(path: Path) -> MachineLearningOptions:
+def load_ml_options(path: Path) -> MachineLearningOptions | None:
     """Load machine learning options from the given path.
     The path will be to a `json` file containing the options.
 
@@ -161,12 +161,12 @@ def load_ml_options(path: Path) -> MachineLearningOptions:
         MachineLearningOptions: The machine learning options.
     """
     try:
-        with open(path, "r") as json_file:
-            options_json = json.load(json_file)
-            options = MachineLearningOptions(**options_json)
+        with open(path, "r") as file:
+            ml_json_options = json.load(file)
+            ml_options = MachineLearningOptions(**ml_json_options)
     except FileNotFoundError:
-        options = None
+        ml_options = None
     except TypeError:
-        options = None
+        ml_options = None
 
-    return options
+    return ml_options
