@@ -407,7 +407,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
 
         # Set up the matplotlib figure
         plt.style.use(plot_opts.plot_colour_scheme)
-        fig, ax = plt.subplots(figsize=(11, 9), dpi = plot_opts.dpi)
+        fig, ax = plt.subplots(figsize=(11, 9), dpi=plot_opts.dpi)
 
         ax.set_title(
             "Correlation Heatmap",

@@ -45,7 +45,7 @@ def plot_options_box():
             max_value=300,
             value=150,
             key=PlotOptionKeys.DPI,
-            )
+        )
         rotate_x = st.number_input(
             "Angle to rotate X-axis labels",
             min_value=0,

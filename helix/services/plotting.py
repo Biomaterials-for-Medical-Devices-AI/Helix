@@ -215,7 +215,9 @@ def plot_auc_roc(
             loc="lower right",
         )
 
-        auroc.figure_.savefig(directory / f"{model_name}-{set_name}-{i}_vs_rest.png", dpi=plot_opts.dpi)
+        auroc.figure_.savefig(
+            directory / f"{model_name}-{set_name}-{i}_vs_rest.png", dpi=plot_opts.dpi
+        )
 
         plt.close()
 
@@ -275,7 +277,9 @@ def plot_confusion_matrix(
         fontfamily=plot_opts.plot_font_family,
     )
 
-    disp.figure_.savefig(directory / f"{model_name}-{set_name}-confusion_matrix.png", dpi=plot_opts.dpi)
+    disp.figure_.savefig(
+        directory / f"{model_name}-{set_name}-confusion_matrix.png", dpi=plot_opts.dpi
+    )
 
     plt.close()
     plt.clf()
