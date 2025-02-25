@@ -158,7 +158,14 @@ def ml_opts() -> MachineLearningOptions:
 
 
 @pytest.fixture
-def ml_opts_file() -> Generator[Path, None, None]:
+def ml_opts_file_path() -> Generator[Path, None, None]:
+    """Produce the test `Path` to some ml options.
+
+    Delete the file if it has been created by a test.
+
+    Yields:
+        Generator[Path, None, None]: The `Path` to the plotting options file.
+    """
     # Arrange
     experiment_path = Path.cwd()
     options_file = ml_options_path(experiment_path)
@@ -167,6 +174,18 @@ def ml_opts_file() -> Generator[Path, None, None]:
     # Cleanup
     if options_file.exists():
         options_file.unlink()
+
+
+@pytest.fixture
+def ml_opts_file(
+    ml_opts: MachineLearningOptions, ml_opts_file_path: Path
+) -> Generator[Path, None, None]:
+
+    # Arrange
+    options_json = dataclasses.asdict(ml_opts)
+    with open(ml_opts_file_path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
+    return ml_opts_file_path
 
 
 @pytest.fixture
@@ -241,6 +260,28 @@ def fuzzy_opts_file_path() -> Generator[Path, None, None]:
     # Cleanup
     if options_file.exists():
         options_file.unlink()
+
+
+@pytest.fixture
+def fuzzy_opts_file(fuzzy_opts: FuzzyOptions, fuzzy_opts_file_path: Path) -> Path:
+    """Saves and `FuzzyOptions` object to a file given by `fuzzy_opts_file_path`
+    and returns the `Path` to that file.
+
+    Cleanup is handled by the `fi_opts_file_path` fixture passed in the second
+    argument.
+
+    Args:
+        fuzzy_opts (FuzzyOptions): Fuzzy options fixture.
+        fuzzy_opts_file_path (Generator[Path, None, None]): File path fixture.
+
+    Returns:
+        Path: `fuzzy_opts_file_path`
+    """
+    # Arrange
+    options_json = dataclasses.asdict(fuzzy_opts)
+    with open(fuzzy_opts_file_path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
+    return fuzzy_opts_file_path
 
 
 @pytest.fixture
