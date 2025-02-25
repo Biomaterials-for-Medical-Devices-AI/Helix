@@ -215,7 +215,7 @@ def plot_auc_roc(
             loc="lower right",
         )
 
-        auroc.figure_.savefig(directory / f"{model_name}-{set_name}-{i}_vs_rest.png")
+        auroc.figure_.savefig(directory / f"{model_name}-{set_name}-{i}_vs_rest.png", dpi=plot_opts.dpi)
 
         plt.close()
 
@@ -275,7 +275,7 @@ def plot_confusion_matrix(
         fontfamily=plot_opts.plot_font_family,
     )
 
-    disp.figure_.savefig(directory / f"{model_name}-{set_name}-confusion_matrix.png")
+    disp.figure_.savefig(directory / f"{model_name}-{set_name}-confusion_matrix.png", dpi=plot_opts.dpi)
 
     plt.close()
     plt.clf()
@@ -305,7 +305,7 @@ def plot_scatter(
 
     # Create a scatter plot using Seaborn
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
     sns.scatterplot(x=y, y=yp, ax=ax)
 
     # Add the best fit line
