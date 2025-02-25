@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.forms import preprocessing_opts_form
 from helix.components.images.logos import sidebar_logo
@@ -82,6 +83,8 @@ biofefi_base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+
+    display_options(biofefi_base_dir / experiment_name)
 
     path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
 

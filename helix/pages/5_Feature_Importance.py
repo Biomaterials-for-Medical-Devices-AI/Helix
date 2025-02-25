@@ -4,6 +4,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector, model_selector
 from helix.components.forms import fi_options_form
 from helix.components.images.logos import sidebar_logo
@@ -262,6 +263,7 @@ if experiment_name:
     previous_results_exist = find_previous_fi_results(
         biofefi_experiments_base_dir() / experiment_name
     )
+    display_options(base_dir / experiment_name)
 
     if previous_results_exist:
         st.warning("You have run feature importance in this experiment previously.")

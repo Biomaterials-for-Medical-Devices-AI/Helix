@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
@@ -49,6 +50,7 @@ experiment_name = experiment_selector(choices)
 if experiment_name:
     base_dir = biofefi_experiments_base_dir()
     experiment_path = base_dir / experiment_name
+    display_options(experiment_path)
     data_analysis = data_analysis_plots_dir(experiment_path)
     plot_box(data_analysis, "Data Analysis Plots")
     ml_metrics = ml_metrics_path(experiment_path)

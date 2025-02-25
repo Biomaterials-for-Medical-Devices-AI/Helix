@@ -12,6 +12,8 @@ from helix.services.configuration import (
     load_data_preprocessing_options,
     load_execution_options,
     load_fi_options,
+    load_fuzzy_options,
+    load_ml_options,
     load_plot_options,
     save_options,
 )
@@ -96,6 +98,20 @@ def test_load_fi_options(fi_opts: FeatureImportanceOptions, fi_opts_file: Path):
     assert non_existent_opts is None
 
 
+def test_load_fuzzy_options(fuzzy_opts: FuzzyOptions, fuzzy_opts_file: Path):
+    # Arrange
+    path_to_non_existent = Path("non_existent.json")  # test the `None` case
+
+    # Act
+    opts = load_fuzzy_options(fuzzy_opts_file)
+    non_existent_opts = load_fuzzy_options(path_to_non_existent)
+
+    # Assert
+    assert isinstance(opts, FuzzyOptions)
+    assert opts == fuzzy_opts
+    assert non_existent_opts is None
+
+
 def test_save_data_preprocessing_opts(
     data_preprocessing_opts: PreprocessingOptions,
     data_preprocessing_opts_file_path: Path,
@@ -137,3 +153,17 @@ def test_load_data_options(data_opts: DataOptions, data_opts_file: Path):
     assert isinstance(opts, DataOptions)
     assert isinstance(opts.data_split, DataSplitOptions)
     assert opts == data_opts
+
+
+def test_load_ml_options(ml_opts: MachineLearningOptions, ml_opts_file: Path):
+    # Arrange
+    path_to_non_existent = Path("non_existent.json")  # test the `None` case
+
+    # Act
+    opts = load_ml_options(ml_opts_file)
+    non_existent_opts = load_ml_options(path_to_non_existent)
+
+    # Assert
+    assert isinstance(opts, MachineLearningOptions)
+    assert opts == ml_opts
+    assert non_existent_opts is None

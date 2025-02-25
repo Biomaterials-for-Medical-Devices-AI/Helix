@@ -1,3 +1,6 @@
+from dataclasses import fields
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -7,6 +10,24 @@ import streamlit as st
 from helix.options.choices.ui import DATA_SPLITS, PLOT_FONT_FAMILIES
 from helix.options.data import DataSplitOptions
 from helix.options.enums import DataSplitMethods, ExecutionStateKeys, PlotOptionKeys
+from helix.options.file_paths import (
+    data_options_path,
+    data_preprocessing_options_path,
+    execution_options_path,
+    fi_options_path,
+    fuzzy_options_path,
+    ml_options_path,
+    plot_options_path,
+)
+from helix.services.configuration import (
+    load_data_options,
+    load_data_preprocessing_options,
+    load_execution_options,
+    load_fi_options,
+    load_fuzzy_options,
+    load_ml_options,
+    load_plot_options,
+)
 
 
 @st.experimental_fragment
@@ -159,3 +180,43 @@ def data_split_options_box(manual: bool = False) -> DataSplitOptions:
     return DataSplitOptions(
         method=data_split, n_bootstraps=n_bootsraps, k_folds=k, test_size=test_size
     )
+
+
+def display_options(experiment_path: Path) -> None:
+    """Display the options in the sidebar."""
+
+    # Load all options
+    options_dict = {
+        "Execution Options": load_execution_options(
+            execution_options_path(experiment_path)
+        ),
+        "Data Options": load_data_options(data_options_path(experiment_path)),
+        "Plotting Options": load_plot_options(plot_options_path(experiment_path)),
+        "Preprocessing Options": load_data_preprocessing_options(
+            data_preprocessing_options_path(experiment_path)
+        ),
+        "Machine Learning Options": load_ml_options(ml_options_path(experiment_path)),
+        "Feature Importance Options": load_fi_options(fi_options_path(experiment_path)),
+        "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
+    }
+
+    with st.expander("Show Experiment Options", expanded=False):
+
+        # Display Execution Options (dataclass format)
+        for option in options_dict:
+
+            if options_dict[option] is None:
+                continue
+
+            st.write(f"### {option}")
+            execution_options = options_dict[option]
+
+            data = {
+                "Variable": [field.name for field in fields(execution_options)],
+                "Value": [
+                    getattr(execution_options, field.name)
+                    for field in fields(execution_options)
+                ],
+            }
+
+            st.table(pd.DataFrame(data).set_index("Variable"))
