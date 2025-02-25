@@ -59,7 +59,7 @@ def save_importance_results(
         # Plot bar plot - sort values in descending order and plot top n features
         # rotate x-axis labels for better readability
         plt.style.use(plot_opt.plot_colour_scheme)
-        fig, ax = plt.subplots(layout="constrained")
+        fig, ax = plt.subplots(layout="constrained", dpi = plot_opt.dpi)
 
         top_features = (
             feature_importance_df.sort_values(by=0, ascending=False)
@@ -89,7 +89,7 @@ def save_importance_results(
 
         if feature_importance_type == "SHAP":
             # Plot bee swarm plot
-            fig, ax = plt.subplots(layout="constrained")
+            fig, ax = plt.subplots(layout="constrained", dpi = plot_opt.dpi)
             ax.set_title(
                 f"{feature_importance_type} - {model_type}",
                 family=plot_opt.plot_font_family,
@@ -148,7 +148,7 @@ def save_fuzzy_sets_plots(
     plt.style.use(plot_opt.plot_colour_scheme)
     plt.rcParams["font.family"] = plot_opt.plot_font_family
     for feature in x_cols:
-        fig, ax = plt.subplots(layout="constrained")
+        fig, ax = plt.subplots(layout="constrained", dpi = plot_opt.dpi)
         ax.plot(
             universe[feature],
             membership_functions[feature]["low"],
@@ -198,7 +198,7 @@ def save_target_clusters_plots(
 
     # Plot boxplot of the target (continuous values) and target clusters (categories) using seaborn
     plt.style.use(plot_opt.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi = plot_opt.dpi)
     sns.boxplot(data=df_cluster, x="cluster", y="target", hue="cluster", ax=ax)
     ax.set_xticklabels(
         ax.get_xticklabels(),

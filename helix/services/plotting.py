@@ -38,7 +38,7 @@ def plot_lime_importance(
     )
 
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
 
     sns.violinplot(data=df.loc[:, most_importance_features], fill=True, ax=ax)
 
@@ -77,7 +77,7 @@ def plot_local_shap_importance(
     """
     # Plot bee swarm plot
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
@@ -122,7 +122,7 @@ def plot_global_shap_importance(
     """
     # Plot bar chart
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
