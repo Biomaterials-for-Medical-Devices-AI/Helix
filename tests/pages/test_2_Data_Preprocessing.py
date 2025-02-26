@@ -1,13 +1,14 @@
 # 3. Fixture for PreprocessingOptions to test behaviour when they already exist
 # 6. Test the page produces fresh PreprocessingOptions json
-# 7. Test the page produces preprocessed data file
 
+from pathlib import Path
 import uuid
 import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
 
+from helix.options.choices.ui import NORMALISATIONS
 from helix.options.data import DataOptions
 from helix.options.enums import ProblemTypes
 from helix.options.execution import ExecutionOptions
@@ -16,6 +17,7 @@ from helix.options.file_paths import (
     data_options_path,
     execution_options_path,
     plot_options_path,
+    preprocessed_data_path,
 )
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
@@ -99,7 +101,7 @@ def new_experiment(
         delete_directory(experiment_dir)
 
 
-def test_page_loads_without_exception(new_experiment):
+def test_page_loads_without_exception():
     # Arrange
     at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
 
@@ -125,3 +127,37 @@ def test_page_can_find_experiment(new_experiment: str):
     with pytest.raises(ValueError):
         # check for error for non existent experiment
         at.selectbox[0].select("non-existent").run()
+
+
+def test_page_produces_preprocessed_data_file(
+    new_experiment: str,
+    execution_opts: ExecutionOptions,
+    data_opts: DataOptions,
+):
+    # Arrange
+    at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
+    at.run()
+
+    expected_file = preprocessed_data_path(
+        Path(data_opts.data_path).name,
+        biofefi_experiments_base_dir() / execution_opts.experiment_name,
+    )
+
+    # Act
+    # select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # normalise the features
+    at.selectbox[1].select(NORMALISATIONS[0]).run()  # standardisation
+    # select variance threshold
+    at.checkbox[0].check().run()
+    # select correlation threshold
+    at.checkbox[1].check().run()
+    # select Lasso
+    at.checkbox[2].check().run()
+    # click the button
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
