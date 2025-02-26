@@ -22,7 +22,7 @@ from helix.options.enums import (
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
-    biofefi_experiments_base_dir,
+    helix_experiments_base_dir,
     data_options_path,
     execution_options_path,
     fi_options_path,
@@ -68,7 +68,7 @@ def build_configuration() -> (
         ]: The configuration for fuzzy, FI and ML pipelines, the data options, the experiment name
         and the list of models to explain.
     """
-    biofefi_base_dir = biofefi_experiments_base_dir()
+    biofefi_base_dir = helix_experiments_base_dir()
     experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
 
     # Load plotting options
@@ -178,7 +178,7 @@ def pipeline(
         experiment_name (str): The experiment name.
         explain_models (list): The models to analyse.
     """
-    biofefi_base_dir = biofefi_experiments_base_dir()
+    biofefi_base_dir = helix_experiments_base_dir()
     seed = exec_opts.random_state
     set_seed(seed)
     fi_logger_instance = Logger(Path(fi_opts.fi_log_dir))
@@ -255,13 +255,13 @@ st.write(
 
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
-base_dir = biofefi_experiments_base_dir()
+base_dir = helix_experiments_base_dir()
 
 
 if experiment_name:
 
     previous_results_exist = find_previous_fi_results(
-        biofefi_experiments_base_dir() / experiment_name
+        helix_experiments_base_dir() / experiment_name
     )
     display_options(base_dir / experiment_name)
 

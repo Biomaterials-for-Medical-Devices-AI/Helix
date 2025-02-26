@@ -5,7 +5,7 @@ import pandas as pd
 from helix.machine_learning.data import TabularData
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
-from helix.options.file_paths import biofefi_experiments_base_dir, fi_plot_dir
+from helix.options.file_paths import helix_experiments_base_dir, fi_plot_dir
 from helix.options.plotting import PlottingOptions
 from helix.services.feature_importance.ensemble_methods import (
     calculate_ensemble_majorityvote,
@@ -144,7 +144,7 @@ class Interpreter:
                                 title=f"{feature_importance_type} - {value['type']} - {model_type}",
                             )
                             save_dir = fi_plot_dir(
-                                biofefi_experiments_base_dir()
+                                helix_experiments_base_dir()
                                 / self._exec_opt.experiment_name
                             )
                             create_directory(
@@ -202,7 +202,7 @@ class Interpreter:
                                 title=f"{feature_importance_type} - {model_type}",
                             )
                             save_dir = fi_plot_dir(
-                                biofefi_experiments_base_dir()
+                                helix_experiments_base_dir()
                                 / self._exec_opt.experiment_name
                             )
                             create_directory(
@@ -231,7 +231,7 @@ class Interpreter:
                                 title=f"{feature_importance_type} - {value['type']} - {model_type}",
                             )
                             save_dir = fi_plot_dir(
-                                biofefi_experiments_base_dir()
+                                helix_experiments_base_dir()
                                 / self._exec_opt.experiment_name
                             )
                             create_directory(

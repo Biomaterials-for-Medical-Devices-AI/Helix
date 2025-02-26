@@ -4,7 +4,7 @@ from pathlib import Path
 from helix.options.data import DataOptions
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
-    biofefi_experiments_base_dir,
+    helix_experiments_base_dir,
     data_options_path,
     execution_options_path,
     fi_options_dir,
@@ -37,7 +37,7 @@ def get_experiments(base_dir: Path | None = None) -> list[str]:
     """
     # Get the base directory of all experiments
     if base_dir is None:
-        base_dir = biofefi_experiments_base_dir()
+        base_dir = helix_experiments_base_dir()
 
     if not base_dir.exists():
         # if no experiments directory, return empty list
