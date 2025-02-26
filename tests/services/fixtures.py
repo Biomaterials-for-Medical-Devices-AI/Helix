@@ -103,6 +103,7 @@ def plotting_opts() -> PlottingOptions:
         save_plots=True,
         plot_font_family="sans-serif",
         plot_title_font_size=14,
+        dpi=300,
     )
 
 

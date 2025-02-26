@@ -39,6 +39,13 @@ def plot_options_box():
             key=PlotOptionKeys.SavePlots,
             value=True,
         )
+        dpi = st.slider(
+            "DPI",
+            min_value=50,
+            max_value=300,
+            value=150,
+            key=PlotOptionKeys.DPI,
+        )
         rotate_x = st.number_input(
             "Angle to rotate X-axis labels",
             min_value=0,
@@ -111,7 +118,7 @@ def plot_options_box():
             arr = np.random.normal(1, 0.5, size=100)
             # Create a violin plot
             data = pd.DataFrame({"A": arr, "B": arr, "C": arr})
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(dpi=dpi)
             sns.violinplot(data=data, ax=ax)
             ax.set_title("Title")
             ax.set_xlabel("X axis")
@@ -122,7 +129,7 @@ def plot_options_box():
             st.pyplot(fig, clear_figure=True)
             fig.clear()
             # Create a figure and axis (object-oriented approach)
-            fig_cmap = plt.figure()
+            fig_cmap = plt.figure(dpi=dpi)
             ax_cmap = fig_cmap.add_subplot(111)
 
             # Create a scatter plot to show how the colour map is applied

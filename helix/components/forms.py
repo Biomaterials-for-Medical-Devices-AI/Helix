@@ -330,7 +330,7 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_o
         key=DataAnalysisStateKeys.TargetVarDistribution,
     ):
         plt.style.use(plot_opts.plot_colour_scheme)
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(10, 6), dpi=plot_opts.dpi)
         displot = sns.displot(data=data, x=data.columns[-1], kde=show_kde, bins=n_bins)
         plt.title(
             f"{dep_var_name} Distribution",
@@ -407,7 +407,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
 
         # Set up the matplotlib figure
         plt.style.use(plot_opts.plot_colour_scheme)
-        fig, ax = plt.subplots(figsize=(11, 9))
+        fig, ax = plt.subplots(figsize=(11, 9), dpi=plot_opts.dpi)
 
         ax.set_title(
             "Correlation Heatmap",
@@ -485,7 +485,7 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
     if st.checkbox("Create Pairplot", key=DataAnalysisStateKeys.PairPlot):
 
         plt.style.use(plot_opts.plot_colour_scheme)
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(10, 6), dpi=plot_opts.dpi)
         pairplot = sns.pairplot(pairplot_data, corner=True)
         st.pyplot(plt)
 
@@ -543,7 +543,7 @@ def tSNE_plot_form(
         df["target"] = y
 
         plt.style.use(plot_opts.plot_colour_scheme)
-        fig, axes = plt.subplots(1, 2, figsize=(16, 8))
+        fig, axes = plt.subplots(1, 2, figsize=(16, 8), dpi=plot_opts.dpi)
 
         # TODO: these two plots below can be plotted using a single function and the dataset
         # as an argument. The code appears to be the same for both plots.
