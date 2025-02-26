@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.forms import (
     correlation_heatmap_form,
@@ -49,6 +50,8 @@ biofefi_base_dir = biofefi_experiments_base_dir()
 
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+
+    display_options(biofefi_base_dir / experiment_name)
 
     path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
 

@@ -38,7 +38,7 @@ def plot_lime_importance(
     )
 
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
 
     sns.violinplot(data=df.loc[:, most_importance_features], fill=True, ax=ax)
 
@@ -77,7 +77,7 @@ def plot_local_shap_importance(
     """
     # Plot bee swarm plot
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
@@ -122,7 +122,7 @@ def plot_global_shap_importance(
     """
     # Plot bar chart
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
@@ -215,7 +215,9 @@ def plot_auc_roc(
             loc="lower right",
         )
 
-        auroc.figure_.savefig(directory / f"{model_name}-{set_name}-{i}_vs_rest.png")
+        auroc.figure_.savefig(
+            directory / f"{model_name}-{set_name}-{i}_vs_rest.png", dpi=plot_opts.dpi
+        )
 
         plt.close()
 
@@ -275,7 +277,9 @@ def plot_confusion_matrix(
         fontfamily=plot_opts.plot_font_family,
     )
 
-    disp.figure_.savefig(directory / f"{model_name}-{set_name}-confusion_matrix.png")
+    disp.figure_.savefig(
+        directory / f"{model_name}-{set_name}-confusion_matrix.png", dpi=plot_opts.dpi
+    )
 
     plt.close()
     plt.clf()
@@ -305,7 +309,7 @@ def plot_scatter(
 
     # Create a scatter plot using Seaborn
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained")
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
     sns.scatterplot(x=y, y=yp, ax=ax)
 
     # Add the best fit line

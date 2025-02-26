@@ -84,6 +84,7 @@ def _entrypoint(save_dir: Path):
         save_plots=st.session_state[PlotOptionKeys.SavePlots],
         plot_title_font_size=st.session_state[PlotOptionKeys.TitleFontSize],
         plot_font_family=st.session_state[PlotOptionKeys.FontFamily],
+        dpi=st.session_state[PlotOptionKeys.DPI],
     )
 
     # Create the experiment directory and save configs

@@ -4,6 +4,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.forms import ml_options_form
 from helix.components.images.logos import sidebar_logo
@@ -218,6 +219,7 @@ if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
     biofefi_base_dir = biofefi_experiments_base_dir()
     experiment_dir = biofefi_base_dir / experiment_name
+    display_options(experiment_dir)
     path_to_exec_opts = execution_options_path(experiment_dir)
     exec_opt = load_execution_options(path_to_exec_opts)
 

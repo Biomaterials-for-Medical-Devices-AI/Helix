@@ -89,6 +89,28 @@ def load_fi_options(path: Path) -> FeatureImportanceOptions | None:
     return fi_options
 
 
+def load_fuzzy_options(path: Path) -> FuzzyOptions | None:
+    """Load fuzzy options.
+
+    Args:
+        path (Path): The path to the fuzzy options file.
+
+    Returns:
+        FuzzyOptions | None: The fuzzy options.
+    """
+
+    try:
+        with open(path, "r") as file:
+            fuzzy_json_options = json.load(file)
+            fuzzy_options = FuzzyOptions(**fuzzy_json_options)
+    except FileNotFoundError:
+        fuzzy_options = None
+    except TypeError:
+        fuzzy_options = None
+
+    return fuzzy_options
+
+
 def load_data_preprocessing_options(path: Path) -> PreprocessingOptions:
     """Load data preprocessing options from the given path.
     The path will be to a `json` file containing the options.
@@ -99,10 +121,16 @@ def load_data_preprocessing_options(path: Path) -> PreprocessingOptions:
     Returns:
         PreprocessingOptions: The data preprocessing options.
     """
-    with open(path, "r") as json_file:
-        options_json = json.load(json_file)
-    options = PreprocessingOptions(**options_json)
-    return options
+
+    try:
+        with open(path, "r") as json_file:
+            options_json = json.load(json_file)
+        preprocessing_options = PreprocessingOptions(**options_json)
+    except FileNotFoundError:
+        preprocessing_options = None
+    except TypeError:
+        preprocessing_options = None
+    return preprocessing_options
 
 
 def load_data_options(path: Path) -> DataOptions:
@@ -120,3 +148,25 @@ def load_data_options(path: Path) -> DataOptions:
         options_json["data_split"] = DataSplitOptions(**split_opts)
     options = DataOptions(**options_json)
     return options
+
+
+def load_ml_options(path: Path) -> MachineLearningOptions | None:
+    """Load machine learning options from the given path.
+    The path will be to a `json` file containing the options.
+
+    Args:
+        path (Path): The path the `json` file containing the options.
+
+    Returns:
+        MachineLearningOptions: The machine learning options.
+    """
+    try:
+        with open(path, "r") as file:
+            ml_json_options = json.load(file)
+            ml_options = MachineLearningOptions(**ml_json_options)
+    except FileNotFoundError:
+        ml_options = None
+    except TypeError:
+        ml_options = None
+
+    return ml_options
