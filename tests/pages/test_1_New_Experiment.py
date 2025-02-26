@@ -1,8 +1,7 @@
-# 1. Test no exceptin occurs loading the page
-# 2. Test an experiment is created at the given directory
-# 3. Check the execution options exist and have the expected values
-# 4. Check the plotting options exist and have the expected values
-# 5. Check the data has been uploaded to the experiment
+# TODO: Test an experiment is created at the given directory
+# TODO: Check the execution options exist and have the expected values
+# TODO: Check the plotting options exist and have the expected values
+# TODO: Check the data has been uploaded to the experiment
 
 from streamlit.testing.v1 import AppTest
 
