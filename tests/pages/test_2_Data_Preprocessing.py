@@ -50,6 +50,7 @@ def plotting_opts():
         plot_title_font_size=20,
         plot_colour_map="viridis",
         plot_font_family="sans-serif",
+        dpi=150,
     )
 
 
