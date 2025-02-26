@@ -1,6 +1,4 @@
 # 3. Fixture for PreprocessingOptions to test behaviour when they already exist
-# 4. Fixture for fake data to preprocess
-# 5. Test page loads without exception
 # 6. Test the page produces fresh PreprocessingOptions json
 # 7. Test the page produces preprocessed data file
 
@@ -95,7 +93,7 @@ def new_experiment(
 
     np.savetxt(data_opts.data_path, X=dummy_data, delimiter=",")
 
-    yield experiment_dir
+    yield execution_opts.experiment_name
 
     if experiment_dir.exists():
         delete_directory(experiment_dir)
@@ -111,3 +109,19 @@ def test_page_loads_without_exception(new_experiment):
     # Assert
     assert not at.exception
     assert not at.error
+
+
+def test_page_can_find_experiment(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
+    at.run()
+
+    # Act
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    with pytest.raises(ValueError):
+        # check for error for non existent experiment
+        at.selectbox[0].select("non-existent").run()
