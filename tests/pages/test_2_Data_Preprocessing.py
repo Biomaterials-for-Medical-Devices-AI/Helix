@@ -159,7 +159,7 @@ def test_page_loads_without_exception():
     at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
 
     # Act
-    at.run()
+    at.run(10.0)
 
     # Assert
     assert not at.exception
@@ -169,7 +169,7 @@ def test_page_loads_without_exception():
 def test_page_can_find_experiment(new_experiment: str):
     # Arrange
     at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
-    at.run()
+    at.run(10.0)
 
     # Act
     at.selectbox[0].select(new_experiment).run()
@@ -189,7 +189,7 @@ def test_page_produces_preprocessed_data_file(
 ):
     # Arrange
     at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
-    at.run()
+    at.run(10.0)
 
     expected_file = preprocessed_data_path(
         Path(data_opts.data_path).name,
@@ -221,7 +221,7 @@ def test_page_produces_preprocessing_options_file(
 ):
     # Arrange
     at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
-    at.run()
+    at.run(10.0)
 
     expected_file = data_preprocessing_options_path(
         biofefi_experiments_base_dir() / execution_opts.experiment_name,
@@ -267,7 +267,7 @@ def test_page_detects_old_opts(
 ):
     # Arrange
     at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
-    at.run()
+    at.run(10.0)
 
     # Act
     # select the experiment
