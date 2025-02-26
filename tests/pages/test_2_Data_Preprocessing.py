@@ -10,17 +10,19 @@ from streamlit.testing.v1 import AppTest
 
 from helix.options.choices.ui import NORMALISATIONS
 from helix.options.data import DataOptions
-from helix.options.enums import ProblemTypes
+from helix.options.enums import DataPreprocessingStateKeys, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     biofefi_experiments_base_dir,
     data_options_path,
+    data_preprocessing_options_path,
     execution_options_path,
     plot_options_path,
     preprocessed_data_path,
 )
 from helix.options.plotting import PlottingOptions
-from helix.services.configuration import save_options
+from helix.options.preprocessing import PreprocessingOptions
+from helix.services.configuration import load_data_preprocessing_options, save_options
 from helix.utils.utils import create_directory, delete_directory
 
 
@@ -161,3 +163,49 @@ def test_page_produces_preprocessed_data_file(
     assert not at.exception
     assert not at.error
     assert expected_file.exists()
+
+
+def test_page_produces_preprocessing_options_file(
+    new_experiment: str, execution_opts: ExecutionOptions
+):
+    # Arrange
+    at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
+    at.run()
+
+    expected_file = data_preprocessing_options_path(
+        biofefi_experiments_base_dir() / execution_opts.experiment_name,
+    )
+    expected_opts = PreprocessingOptions(
+        feature_selection_methods={
+            DataPreprocessingStateKeys.VarianceThreshold: True,
+            DataPreprocessingStateKeys.CorrelationThreshold: True,
+            DataPreprocessingStateKeys.LassoFeatureSelection: True,
+        },
+        variance_threshold=0.10,
+        correlation_threshold=0.80,
+        lasso_regularisation_term=0.05,
+        independent_variable_normalisation=NORMALISATIONS[0].lower(),
+        dependent_variable_transformation=NORMALISATIONS[-1].lower(),
+        data_is_preprocessed=True,
+    )
+
+    # Act
+    # select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # normalise the features
+    at.selectbox[1].select(NORMALISATIONS[0]).run()  # standardisation
+    # select variance threshold
+    at.checkbox[0].check().run()
+    # select correlation threshold
+    at.checkbox[1].check().run()
+    # select Lasso
+    at.checkbox[2].check().run()
+    # click the button
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
+    actual_opts = load_data_preprocessing_options(expected_file)
+    assert actual_opts == expected_opts
