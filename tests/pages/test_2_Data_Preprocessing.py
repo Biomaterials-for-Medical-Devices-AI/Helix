@@ -58,7 +58,7 @@ def data_opts(execution_opts: ExecutionOptions):
         / execution_opts.experiment_name
         / "data_file.csv"
     )
-    return DataOptions(data_path=data_file_name)
+    return DataOptions(data_path=str(data_file_name))
 
 
 @pytest.fixture
@@ -69,7 +69,7 @@ def dummy_data(execution_opts: ExecutionOptions):
         n_informative=4,
         random_state=execution_opts.random_state,
     )
-    data = np.concatenate((X, y), axis=1)
+    data = np.concatenate((X, y.reshape((-1, 1))), axis=1)
     return data
 
 
@@ -99,3 +99,15 @@ def new_experiment(
 
     if experiment_dir.exists():
         delete_directory(experiment_dir)
+
+
+def test_page_loads_without_exception(new_experiment):
+    # Arrange
+    at = AppTest.from_file("helix/pages/2_Data_Preprocessing.py")
+
+    # Act
+    at.run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
