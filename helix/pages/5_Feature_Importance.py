@@ -22,13 +22,13 @@ from helix.options.enums import (
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
-    helix_experiments_base_dir,
     data_options_path,
     execution_options_path,
     fi_options_path,
     fi_plot_dir,
     fuzzy_options_path,
     fuzzy_plot_dir,
+    helix_experiments_base_dir,
     log_dir,
     ml_model_dir,
     plot_options_path,

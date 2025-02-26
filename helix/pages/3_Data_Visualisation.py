@@ -13,10 +13,10 @@ from helix.components.images.logos import sidebar_logo
 from helix.components.plots import plot_box
 from helix.options.enums import ExecutionStateKeys
 from helix.options.file_paths import (
-    helix_experiments_base_dir,
     data_analysis_plots_dir,
     data_options_path,
     execution_options_path,
+    helix_experiments_base_dir,
     plot_options_path,
     preprocessed_data_path,
 )

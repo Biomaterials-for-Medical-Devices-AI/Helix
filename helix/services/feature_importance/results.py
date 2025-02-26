@@ -6,12 +6,12 @@ import shap
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
-    helix_experiments_base_dir,
     fi_options_dir,
     fi_plot_dir,
     fi_result_dir,
     fuzzy_plot_dir,
     fuzzy_result_dir,
+    helix_experiments_base_dir,
 )
 from helix.options.plotting import PlottingOptions
 from helix.utils.logging_utils import Logger
