@@ -1,8 +1,9 @@
 # 3. Fixture for PreprocessingOptions to test behaviour when they already exist
 # 6. Test the page produces fresh PreprocessingOptions json
 
-from pathlib import Path
 import uuid
+from pathlib import Path
+
 import numpy as np
 import pytest
 from sklearn.datasets import make_classification
