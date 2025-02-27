@@ -183,3 +183,32 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
     assert not at.exception
     assert not at.error
     assert expected_file.exists()
+
+
+def test_page_produces_pairplot(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run(timeout=10.0)
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    expected_file = plot_dir / "pairplot.png"
+
+    # Act
+    # select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # select all feature
+    at.toggle[2].set_value(True).run()
+    # check the box to create the plot
+    at.checkbox[2].check().run()
+    # save the plot
+    # since we only choose one visualisation, only one button is visible,
+    # hence, at.button[0]
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
