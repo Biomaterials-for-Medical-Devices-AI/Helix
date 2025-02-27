@@ -149,7 +149,7 @@ def fuzzy_result_dir(experiment_path: Path) -> Path:
     return experiment_path / "results" / "fuzzy"
 
 
-def biofefi_experiments_base_dir() -> Path:
+def helix_experiments_base_dir() -> Path:
     """Return the path the base directory of all Helix experiments.
 
     This will be `/Users/<username>/HelixExperiments` on MacOS,

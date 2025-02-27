@@ -13,10 +13,10 @@ from helix.options.enums import (
     ViewExperimentKeys,
 )
 from helix.options.file_paths import (
-    biofefi_experiments_base_dir,
     data_analysis_plots_dir,
     fi_plot_dir,
     fuzzy_plot_dir,
+    helix_experiments_base_dir,
     log_dir,
     ml_metrics_path,
     ml_plot_dir,
@@ -48,7 +48,7 @@ st.write(
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
-    base_dir = biofefi_experiments_base_dir()
+    base_dir = helix_experiments_base_dir()
     experiment_path = base_dir / experiment_name
     display_options(experiment_path)
     data_analysis = data_analysis_plots_dir(experiment_path)

@@ -9,7 +9,7 @@ from helix.options.choices.ui import PROBLEM_TYPES
 from helix.options.data import DataOptions
 from helix.options.enums import ExecutionStateKeys, PlotOptionKeys, ProblemTypes
 from helix.options.execution import ExecutionOptions
-from helix.options.file_paths import biofefi_experiments_base_dir, uploaded_file_path
+from helix.options.file_paths import helix_experiments_base_dir, uploaded_file_path
 from helix.options.plotting import PlottingOptions
 from helix.services.experiments import create_experiment
 from helix.utils.utils import save_upload
@@ -30,7 +30,7 @@ def _directory_is_valid(directory: Path) -> bool:
 
 def _save_directory_selector() -> Path:
     """Create a selector for the directory to save experiments."""
-    root = biofefi_experiments_base_dir()
+    root = helix_experiments_base_dir()
 
     col1, col2 = st.columns(2, vertical_alignment="bottom")
 
@@ -60,7 +60,7 @@ def _entrypoint(save_dir: Path):
     # Set up options to save
     path_to_data = uploaded_file_path(
         st.session_state[ExecutionStateKeys.UploadedFileName].name,
-        biofefi_experiments_base_dir()
+        helix_experiments_base_dir()
         / st.session_state[ExecutionStateKeys.ExperimentName],
     )
     exec_opts = ExecutionOptions(
