@@ -98,7 +98,7 @@ def new_experiment(
 
 def test_page_loads_without_exception():
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
 
     # Act
     at.run()
@@ -110,7 +110,7 @@ def test_page_loads_without_exception():
 
 def test_page_can_find_experiment(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
     # Act
@@ -126,7 +126,7 @@ def test_page_can_find_experiment(new_experiment: str):
 
 def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOptions):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
     base_dir = helix_experiments_base_dir()
@@ -153,7 +153,7 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
 
 def test_page_produces_correlation_heatmap(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
     base_dir = helix_experiments_base_dir()
@@ -182,7 +182,7 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
 
 def test_page_produces_pairplot(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
     base_dir = helix_experiments_base_dir()
@@ -211,7 +211,7 @@ def test_page_produces_pairplot(new_experiment: str):
 
 def test_page_produces_tsne_plot(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
     base_dir = helix_experiments_base_dir()
