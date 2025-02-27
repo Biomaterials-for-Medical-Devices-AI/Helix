@@ -3,6 +3,7 @@
 # 3. Test production of pairplot
 # 4. Test production of t-SNE plot
 
+import time
 import uuid
 
 import numpy as np
@@ -14,6 +15,7 @@ from helix.options.data import DataOptions
 from helix.options.enums import ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
+    data_analysis_plots_dir,
     data_options_path,
     execution_options_path,
     helix_experiments_base_dir,
@@ -110,3 +112,46 @@ def test_page_loads_without_exception():
     # Assert
     assert not at.exception
     assert not at.error
+
+
+def test_page_can_find_experiment(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py")
+    at.run(timeout=10.0)
+
+    # Act
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    with pytest.raises(ValueError):
+        # check for error for non existent experiment
+        at.selectbox[0].select("non-existent").run()
+
+
+def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOptions):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py")
+    at.run(timeout=10.0)
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    expected_file = plot_dir / f"{execution_opts.dependent_variable}_distribution.png"
+
+    # Act
+    # select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # select KDE plot
+    at.toggle[0].set_value(True).run()
+    # check the box to create the plot
+    at.checkbox[0].check().run()
+    # save the plot
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
