@@ -6,12 +6,12 @@ import shap
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
-    biofefi_experiments_base_dir,
     fi_options_dir,
     fi_plot_dir,
     fi_result_dir,
     fuzzy_plot_dir,
     fuzzy_result_dir,
+    helix_experiments_base_dir,
 )
 from helix.options.plotting import PlottingOptions
 from helix.utils.logging_utils import Logger
@@ -48,7 +48,7 @@ def save_importance_results(
         logger.info(f"No importance results for {feature_importance_type}...")
         return
 
-    biofefi_base_dir = biofefi_experiments_base_dir()
+    biofefi_base_dir = helix_experiments_base_dir()
     logger.info(f"Saving importance results and plots of {feature_importance_type}...")
 
     # Save plots when the flag is set to True and importance type is not fuzzy
@@ -141,7 +141,7 @@ def save_fuzzy_sets_plots(
 ):
     # Plot the membership functions
     logger.info("Saving fuzzy set plots ...")
-    save_dir = fuzzy_plot_dir(biofefi_experiments_base_dir() / exec_opt.experiment_name)
+    save_dir = fuzzy_plot_dir(helix_experiments_base_dir() / exec_opt.experiment_name)
     if not save_dir.exists():
         save_dir.mkdir(exist_ok=True, parents=True)
 
@@ -192,7 +192,7 @@ def save_target_clusters_plots(
 ):
     # Plot the target clusters
     logger.info("Saving target clusters plot ...")
-    save_dir = fuzzy_plot_dir(biofefi_experiments_base_dir() / exec_opt.experiment_name)
+    save_dir = fuzzy_plot_dir(helix_experiments_base_dir() / exec_opt.experiment_name)
     if not save_dir.exists():
         save_dir.mkdir(exist_ok=True, parents=True)
 

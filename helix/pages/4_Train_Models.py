@@ -21,9 +21,9 @@ from helix.options.enums import (
 )
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
-    biofefi_experiments_base_dir,
     data_options_path,
     execution_options_path,
+    helix_experiments_base_dir,
     log_dir,
     ml_metrics_path,
     ml_model_dir,
@@ -66,25 +66,23 @@ def build_configuration() -> (
     experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
 
     path_to_plot_opts = plot_options_path(
-        biofefi_experiments_base_dir() / experiment_name
+        helix_experiments_base_dir() / experiment_name
     )
     plot_opt = load_plot_options(path_to_plot_opts)
 
     path_to_exec_opts = execution_options_path(
-        biofefi_experiments_base_dir() / experiment_name
+        helix_experiments_base_dir() / experiment_name
     )
     path_to_data_opts = data_options_path(
-        biofefi_experiments_base_dir() / experiment_name
+        helix_experiments_base_dir() / experiment_name
     )
 
     exec_opt = load_execution_options(path_to_exec_opts)
     ml_opt = MachineLearningOptions(
         save_actual_pred_plots=st.session_state[PlotOptionKeys.SavePlots],
         model_types=st.session_state[MachineLearningStateKeys.ModelTypes],
-        ml_plot_dir=str(ml_plot_dir(biofefi_experiments_base_dir() / experiment_name)),
-        ml_log_dir=str(
-            log_dir(biofefi_experiments_base_dir() / experiment_name) / "ml"
-        ),
+        ml_plot_dir=str(ml_plot_dir(helix_experiments_base_dir() / experiment_name)),
+        ml_log_dir=str(log_dir(helix_experiments_base_dir() / experiment_name) / "ml"),
         save_models=st.session_state[MachineLearningStateKeys.SaveModels],
         use_hyperparam_search=st.session_state.get(
             ExecutionStateKeys.UseHyperParamSearch, True
@@ -146,7 +144,7 @@ def pipeline(
 
             for i, model in enumerate(trained_models[model_name]):
                 save_path = (
-                    ml_model_dir(biofefi_experiments_base_dir() / experiment_name)
+                    ml_model_dir(helix_experiments_base_dir() / experiment_name)
                     / f"{model_name}-{i}.pkl"
                 )
                 save_model(model, save_path)
@@ -181,11 +179,11 @@ def pipeline(
 
     save_models_metrics(
         metrics_stats,
-        ml_metrics_path(biofefi_experiments_base_dir() / experiment_name),
+        ml_metrics_path(helix_experiments_base_dir() / experiment_name),
     )
     save_model_predictions(
         predictions,
-        ml_predictions_path(biofefi_experiments_base_dir() / experiment_name),
+        ml_predictions_path(helix_experiments_base_dir() / experiment_name),
     )
     # Close the logger
     close_logger(logger_instance, logger)
@@ -217,7 +215,7 @@ choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
-    biofefi_base_dir = biofefi_experiments_base_dir()
+    biofefi_base_dir = helix_experiments_base_dir()
     experiment_dir = biofefi_base_dir / experiment_name
     display_options(experiment_dir)
     path_to_exec_opts = execution_options_path(experiment_dir)
@@ -225,7 +223,7 @@ if experiment_name:
 
     already_trained_models = models_exist(
         ml_model_dir(
-            biofefi_experiments_base_dir()
+            helix_experiments_base_dir()
             / st.session_state[ExecutionStateKeys.ExperimentName]
         )
     )
