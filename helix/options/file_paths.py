@@ -187,7 +187,7 @@ def plot_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     plot_options_file = plot_options_path(experiment_path)
     ```
     """
@@ -207,7 +207,7 @@ def execution_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     exec_options_file = execution_options_path(experiment_path)
     ```
     """
@@ -227,7 +227,7 @@ def data_preprocessing_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     data_preprocessing_options_file = data_preprocessing_options_path(experiment_path)
     ```
     """
@@ -247,7 +247,7 @@ def ml_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     ml_options_file = ml_options_path(experiment_path)
     ```
     """
@@ -267,7 +267,7 @@ def fi_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     fi_options_file = fi_options_path(experiment_path)
     ```
     """
@@ -287,7 +287,7 @@ def fuzzy_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     fuzzy_options_file = fuzzy_options_path(experiment_path)
     ```
     """
@@ -307,7 +307,7 @@ def data_options_path(experiment_path: Path) -> Path:
     Examples:
     ```python
     experiment_name = "test"
-    experiment_path = biofefi_experiments_base_dir() / experiment_name
+    experiment_path = helix_experiments_base_dir() / experiment_name
     data_options_file = data_options_path(experiment_path)
     ```
     """

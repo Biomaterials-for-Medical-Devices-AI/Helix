@@ -60,7 +60,7 @@ def save_options(path: Path, options: Options):
 
     Args:
         path (Path): The path to the `json` file.
-        options (T): The options to save.
+        options (Options): The options to save.
     """
     options_json = dataclasses.asdict(options)
     with open(path, "w") as json_file:
