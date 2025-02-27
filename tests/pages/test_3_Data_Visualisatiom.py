@@ -1,8 +1,3 @@
-# 2. Test production of correlation heatmap
-# 3. Test production of pairplot
-# 4. Test production of t-SNE plot
-
-import time
 import uuid
 
 import numpy as np
@@ -11,7 +6,7 @@ from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
 
 from helix.options.data import DataOptions
-from helix.options.enums import ProblemTypes
+from helix.options.enums import Normalisations, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -64,7 +59,7 @@ def data_opts(execution_opts: ExecutionOptions):
 @pytest.fixture
 def dummy_data(execution_opts: ExecutionOptions):
     X, y = make_classification(
-        n_samples=5000,
+        n_samples=500,
         n_features=10,
         n_informative=4,
         random_state=execution_opts.random_state,
@@ -103,10 +98,10 @@ def new_experiment(
 
 def test_page_loads_without_exception():
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py")
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
 
     # Act
-    at.run(timeout=10.0)
+    at.run()
 
     # Assert
     assert not at.exception
@@ -115,8 +110,8 @@ def test_page_loads_without_exception():
 
 def test_page_can_find_experiment(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py")
-    at.run(timeout=10.0)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at.run()
 
     # Act
     at.selectbox[0].select(new_experiment).run()
@@ -131,8 +126,8 @@ def test_page_can_find_experiment(new_experiment: str):
 
 def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOptions):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py")
-    at.run(timeout=10.0)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at.run()
 
     base_dir = helix_experiments_base_dir()
     experiment_dir = base_dir / new_experiment
@@ -158,8 +153,8 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
 
 def test_page_produces_correlation_heatmap(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py")
-    at.run(timeout=10.0)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at.run()
 
     base_dir = helix_experiments_base_dir()
     experiment_dir = base_dir / new_experiment
@@ -187,8 +182,8 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
 
 def test_page_produces_pairplot(new_experiment: str):
     # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
-    at.run(timeout=10.0)
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at.run()
 
     base_dir = helix_experiments_base_dir()
     experiment_dir = base_dir / new_experiment
@@ -203,6 +198,35 @@ def test_page_produces_pairplot(new_experiment: str):
     at.toggle[2].set_value(True).run()
     # check the box to create the plot
     at.checkbox[2].check().run()
+    # save the plot
+    # since we only choose one visualisation, only one button is visible,
+    # hence, at.button[0]
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
+
+
+def test_page_produces_tsne_plot(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=10)
+    at.run()
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    expected_file = plot_dir / "tsne_plot.png"
+
+    # Act
+    # select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # select tsne normalisation
+    at.selectbox[-1].select(Normalisations.Standardization)
+    # check the box to create the plot
+    at.checkbox[3].check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
     # hence, at.button[0]
