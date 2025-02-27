@@ -14,7 +14,7 @@ from helix.options.data import DataOptions
 from helix.options.enums import DataPreprocessingStateKeys, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
-    biofefi_experiments_base_dir,
+    helix_experiments_base_dir,
     data_options_path,
     data_preprocessing_options_path,
     execution_options_path,
@@ -58,9 +58,7 @@ def plotting_opts():
 @pytest.fixture
 def data_opts(execution_opts: ExecutionOptions):
     data_file_name = (
-        biofefi_experiments_base_dir()
-        / execution_opts.experiment_name
-        / "data_file.csv"
+        helix_experiments_base_dir() / execution_opts.experiment_name / "data_file.csv"
     )
     return DataOptions(data_path=str(data_file_name))
 
@@ -101,7 +99,7 @@ def new_experiment(
     data_opts: DataOptions,
     dummy_data: np.ndarray,
 ):
-    base_dir = biofefi_experiments_base_dir()
+    base_dir = helix_experiments_base_dir()
     experiment_dir = base_dir / execution_opts.experiment_name
     create_directory(experiment_dir)
 
@@ -130,7 +128,7 @@ def old_experiment(
     dummy_data: np.ndarray,
     old_preproc_opts: PreprocessingOptions,
 ):
-    base_dir = biofefi_experiments_base_dir()
+    base_dir = helix_experiments_base_dir()
     experiment_dir = base_dir / execution_opts.experiment_name
     create_directory(experiment_dir)
 
@@ -193,7 +191,7 @@ def test_page_produces_preprocessed_data_file(
 
     expected_file = preprocessed_data_path(
         Path(data_opts.data_path).name,
-        biofefi_experiments_base_dir() / execution_opts.experiment_name,
+        helix_experiments_base_dir() / execution_opts.experiment_name,
     )
 
     # Act
@@ -224,7 +222,7 @@ def test_page_produces_preprocessing_options_file(
     at.run(timeout=10.0)
 
     expected_file = data_preprocessing_options_path(
-        biofefi_experiments_base_dir() / execution_opts.experiment_name,
+        helix_experiments_base_dir() / execution_opts.experiment_name,
     )
     expected_opts = PreprocessingOptions(
         feature_selection_methods={

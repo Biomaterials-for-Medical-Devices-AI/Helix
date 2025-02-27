@@ -3,7 +3,7 @@ from pathlib import Path
 import helix.options.file_paths as fp
 
 
-def test_biofefi_experiments_base_dir():
+def test_helix_experiments_base_dir():
     # Arrange
     expected_output = Path.home() / "HelixExperiments"
 

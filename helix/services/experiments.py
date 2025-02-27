@@ -25,7 +25,7 @@ from helix.utils.utils import create_directory, delete_directory, delete_file
 def get_experiments(base_dir: Path | None = None) -> list[str]:
     """Get the list of experiments in the Helix experiment directory.
 
-    If `base_dir` is not specified, the default from `biofefi_experiments_base_dir`
+    If `base_dir` is not specified, the default from `helix_experiments_base_dir`
     is used
 
     Args:
