@@ -1,11 +1,11 @@
 import os
 
-from helix.machine_learning.data import DataBuilder
 from helix.machine_learning.learner import GridSearchLearner, Learner
 from helix.options.data import DataOptions
 from helix.options.execution import ExecutionOptions
 from helix.options.ml import MachineLearningOptions
 from helix.options.plotting import PlottingOptions
+from helix.services.data import DataBuilder
 from helix.services.machine_learning.results import save_actual_pred_plots
 from helix.utils.logging_utils import Logger
 

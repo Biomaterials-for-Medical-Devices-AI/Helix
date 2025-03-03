@@ -4,11 +4,11 @@ from pathlib import Path
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
-from helix.machine_learning.data import DataBuilder
 from helix.options.enums import Metrics, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.ml import MachineLearningOptions
 from helix.options.plotting import PlottingOptions
+from helix.services.data import DataBuilder
 from helix.services.plotting import plot_auc_roc, plot_confusion_matrix, plot_scatter
 from helix.utils.logging_utils import Logger
 

@@ -11,7 +11,6 @@ from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
 from helix.components.plots import display_metrics_table, display_predictions, plot_box
 from helix.machine_learning import train
-from helix.machine_learning.data import DataBuilder
 from helix.options.data import DataOptions
 from helix.options.enums import (
     DataSplitMethods,
@@ -40,6 +39,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
+from helix.services.data import DataBuilder
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs
 from helix.services.ml_models import (
