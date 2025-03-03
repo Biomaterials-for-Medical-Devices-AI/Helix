@@ -11,7 +11,6 @@ from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
 from helix.components.plots import plot_box
 from helix.feature_importance import feature_importance, fuzzy_interpretation
-from helix.services.data import DataBuilder
 from helix.options.data import DataOptions
 from helix.options.enums import (
     ExecutionStateKeys,
@@ -41,6 +40,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
+from helix.services.data import DataBuilder
 from helix.services.experiments import (
     delete_previous_fi_results,
     find_previous_fi_results,

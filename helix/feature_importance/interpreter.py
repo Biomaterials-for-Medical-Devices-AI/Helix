@@ -2,11 +2,11 @@ import os
 
 import pandas as pd
 
-from helix.services.data import TabularData
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import fi_plot_dir, helix_experiments_base_dir
 from helix.options.plotting import PlottingOptions
+from helix.services.data import TabularData
 from helix.services.feature_importance.ensemble_methods import (
     calculate_ensemble_majorityvote,
     calculate_ensemble_mean,
