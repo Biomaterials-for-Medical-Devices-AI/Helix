@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import time
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -198,6 +199,7 @@ class DataBuilder:
         return data
 
     def ingest(self):
+        self._logger.info("Ingesting data...")
         X, y = self._load_data()
         data = self._generate_data_splits(X, y)
 
@@ -218,9 +220,9 @@ class TabularData:
     y_test: list[pd.DataFrame]
 
 
-@st.cache_data
+@st.cache_data(show_spinner="Loading data...")
 def ingest_data(
-    exec_opts: ExecutionOptions, data_opts: DataOptions, logger: Logger
+    exec_opts: ExecutionOptions, data_opts: DataOptions, _logger: Logger
 ) -> TabularData:
     """
     Load data from disk if the data is not in the streamlit cache,
@@ -230,16 +232,17 @@ def ingest_data(
     Args:
         exec_opts (ExecutionOptions): The execution options.
         data_opts (DataOptions): The data options.
-        logger (Logger): The logger.
+        _logger (Logger): The logger.
 
     Returns:
         TabularData: The ingested data.
     """
-    return DataBuilder(
+    data = DataBuilder(
         data_path=data_opts.data_path,
         random_state=exec_opts.random_state,
         normalisation=data_opts.normalisation,
-        logger=logger,
+        logger=_logger,
         data_split=data_opts.data_split,
         problem_type=exec_opts.problem_type,
     ).ingest()
+    return data
