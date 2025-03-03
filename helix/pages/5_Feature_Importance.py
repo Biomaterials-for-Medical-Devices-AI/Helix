@@ -40,7 +40,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
-from helix.services.data import DataBuilder, TabularData, ingest_data
+from helix.services.data import TabularData, ingest_data
 from helix.services.experiments import (
     delete_previous_fi_results,
     find_previous_fi_results,
