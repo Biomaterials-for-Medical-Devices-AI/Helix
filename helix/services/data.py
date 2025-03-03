@@ -199,7 +199,6 @@ class DataBuilder:
         return data
 
     def ingest(self):
-        self._logger.info("Ingesting data...")
         X, y = self._load_data()
         data = self._generate_data_splits(X, y)
 
