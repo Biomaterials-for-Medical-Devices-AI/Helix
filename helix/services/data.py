@@ -3,11 +3,14 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
+import streamlit as st
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from helix.options.data import DataSplitOptions
+from helix.options.data import DataOptions, DataSplitOptions
 from helix.options.enums import DataSplitMethods, Normalisations, ProblemTypes
+from helix.options.execution import ExecutionOptions
+from helix.utils.logging_utils import Logger
 
 
 class DataBuilder:
@@ -213,3 +216,31 @@ class TabularData:
     X_test: list[pd.DataFrame]
     y_train: list[pd.DataFrame]
     y_test: list[pd.DataFrame]
+
+
+@st.cache_data(show_spinner="Loading data...")
+def ingest_data(
+    exec_opts: ExecutionOptions, data_opts: DataOptions, _logger: Logger
+) -> TabularData:
+    """
+    Load data from disk if the data is not in the streamlit cache,
+    else return the stored value. This behaviour is controlled by the
+    decorator on the function signature (`@st.cache_data`).
+
+    Args:
+        exec_opts (ExecutionOptions): The execution options.
+        data_opts (DataOptions): The data options.
+        _logger (Logger): The logger.
+
+    Returns:
+        TabularData: The ingested data.
+    """
+    data = DataBuilder(
+        data_path=data_opts.data_path,
+        random_state=exec_opts.random_state,
+        normalisation=data_opts.normalisation,
+        logger=_logger,
+        data_split=data_opts.data_split,
+        problem_type=exec_opts.problem_type,
+    ).ingest()
+    return data

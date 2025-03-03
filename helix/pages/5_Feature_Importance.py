@@ -40,7 +40,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
-from helix.services.data import DataBuilder
+from helix.services.data import TabularData, ingest_data
 from helix.services.experiments import (
     delete_previous_fi_results,
     find_previous_fi_results,
@@ -52,21 +52,33 @@ from helix.utils.logging_utils import Logger, close_logger
 from helix.utils.utils import cancel_pipeline, set_seed
 
 
-def build_configuration() -> (
-    tuple[FuzzyOptions | None, FeatureImportanceOptions, ExecutionOptions, str, list]
-):
+def build_configuration() -> tuple[
+    FuzzyOptions | None,
+    FeatureImportanceOptions,
+    ExecutionOptions,
+    PlottingOptions,
+    DataOptions,
+    str,
+    list,
+]:
     """Build the configuration objects for the pipeline.
 
     Returns:
         tuple[
-            FuzzyOptions | None,
-            FeatureImportanceOptions,
-            ExecutionOptions,
-            DataOptions,
-            str,
-            list
-        ]: The configuration for fuzzy, FI and ML pipelines, the data options, the experiment name
-        and the list of models to explain.
+        FuzzyOptions | None,
+        FeatureImportanceOptions,
+        ExecutionOptions,
+        PlottingOptions,
+        DataOptions,
+        str,
+        list]:
+        - The options for fuzzy,
+        - The options for feature importance
+        - The options for pipeline execution
+        - The plotting options
+        - The data options
+        - The experiment name
+        - The list of models to explain.
     """
     biofefi_base_dir = helix_experiments_base_dir()
     experiment_name = st.session_state[ExecutionStateKeys.ExperimentName]
@@ -163,9 +175,9 @@ def pipeline(
     fi_opts: FeatureImportanceOptions,
     exec_opts: ExecutionOptions,
     plot_opts: PlottingOptions,
-    data_opts: DataOptions,
     experiment_name: str,
     explain_models: list,
+    data: TabularData,
 ):
     """This function actually performs the steps of the pipeline. It can be wrapped
     in a process it doesn't block the UI.
@@ -177,21 +189,13 @@ def pipeline(
         plot_opts (PlottingOptions): Options for plotting.
         experiment_name (str): The experiment name.
         explain_models (list): The models to analyse.
+        data (TabularData): The data that will be used in the pipeline.
     """
     biofefi_base_dir = helix_experiments_base_dir()
     seed = exec_opts.random_state
     set_seed(seed)
     fi_logger_instance = Logger(Path(fi_opts.fi_log_dir))
     fi_logger = fi_logger_instance.make_logger()
-
-    data = DataBuilder(
-        data_path=data_opts.data_path,
-        random_state=exec_opts.random_state,
-        normalisation=data_opts.normalisation,
-        logger=fi_logger,
-        data_split=data_opts.data_split,
-        problem_type=exec_opts.problem_type,
-    ).ingest()
 
     # Models will already be trained before feature importance
     trained_models = load_models_to_explain(
@@ -298,16 +302,41 @@ if experiment_name:
 
             if st.button("Run Feature Importance", type="primary"):
                 delete_previous_fi_results(base_dir / experiment_name)
-                config = build_configuration()
+                (
+                    fuzzy_opts,
+                    fi_opts,
+                    exec_opts,
+                    plot_opts,
+                    data_opts,
+                    exp_name,
+                    models_to_explaion,
+                ) = build_configuration()
+                # Create the logger
+                logger_instance = Logger(Path(fi_opts.fi_log_dir))
+                logger = logger_instance.make_logger()
+                # Ingest the data
+                data = ingest_data(exec_opts, data_opts, logger)
                 # save FI options
                 fi_options_file = fi_options_path(base_dir / experiment_name)
-                save_options(fi_options_file, config[1])
+                save_options(fi_options_file, fi_opts)
                 # save Fuzzy options if configured
-                if config[0] is not None:
+                if fuzzy_opts is not None:
                     fuzzy_options_file = fuzzy_options_path(base_dir / experiment_name)
-                    save_options(fuzzy_options_file, config[0])
+                    save_options(fuzzy_options_file, fuzzy_opts)
 
-                process = Process(target=pipeline, args=config, daemon=True)
+                process = Process(
+                    target=pipeline,
+                    args=(
+                        fuzzy_opts,
+                        fi_opts,
+                        exec_opts,
+                        plot_opts,
+                        exp_name,
+                        models_to_explaion,
+                        data,
+                    ),
+                    daemon=True,
+                )
                 process.start()
                 cancel_button = st.button(
                     "Cancel", on_click=cancel_pipeline, args=(process,)

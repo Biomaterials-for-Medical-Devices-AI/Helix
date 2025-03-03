@@ -39,7 +39,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
-from helix.services.data import DataBuilder
+from helix.services.data import TabularData, ingest_data
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs
 from helix.services.ml_models import (
@@ -102,6 +102,7 @@ def pipeline(
     plotting_opts: PlottingOptions,
     data_opts: DataOptions,
     experiment_name: str,
+    data: TabularData,
 ):
     """This function actually performs the steps of the pipeline. It can be wrapped
     in a process it doesn't block the UI.
@@ -111,20 +112,12 @@ def pipeline(
         exec_opts (ExecutionOptions): General execution options.
         plotting_opts (PlottingOptions): Options for plotting.
         experiment_name (str): The name of the experiment.
+        data (TabularData): The data that will be used in the pipeline.
     """
     seed = exec_opts.random_state
     set_seed(seed)
     logger_instance = Logger(Path(ml_opts.ml_log_dir))
     logger = logger_instance.make_logger()
-
-    data = DataBuilder(
-        data_path=data_opts.data_path,
-        random_state=exec_opts.random_state,
-        normalisation=data_opts.normalisation,
-        logger=logger,
-        data_split=data_opts.data_split,
-        problem_type=exec_opts.problem_type,
-    ).ingest()
 
     # Machine learning
     trained_models, metrics_stats = train.run(
@@ -253,9 +246,19 @@ if experiment_name:
         if experiment_dir.exists():
             delete_directory(ml_plot_dir(experiment_dir))
 
-        config = build_configuration()
-        save_options(ml_options_path(experiment_dir), config[0])
-        process = Process(target=pipeline, args=config, daemon=True)
+        ml_opts, exec_opts, plot_opts, data_opts, exp_name = build_configuration()
+        # Create the logger
+        logger_instance = Logger(Path(ml_opts.ml_log_dir))
+        logger = logger_instance.make_logger()
+        # Retrieve data from state or load it from disk
+        data = ingest_data(exec_opts, data_opts, logger)
+        # Save ML options
+        save_options(ml_options_path(experiment_dir), ml_opts)
+        process = Process(
+            target=pipeline,
+            args=(ml_opts, exec_opts, plot_opts, data_opts, exp_name, data),
+            daemon=True,
+        )
         process.start()
         cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))
         with st.spinner("Model training in progress. Check the logs for progress."):
