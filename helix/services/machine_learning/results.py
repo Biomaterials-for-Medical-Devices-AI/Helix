@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
-from helix.machine_learning.data import DataBuilder
+from helix.services.data import DataBuilder
 from helix.options.enums import Metrics, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.ml import MachineLearningOptions

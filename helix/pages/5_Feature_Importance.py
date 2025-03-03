@@ -11,7 +11,7 @@ from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
 from helix.components.plots import plot_box
 from helix.feature_importance import feature_importance, fuzzy_interpretation
-from helix.machine_learning.data import DataBuilder
+from helix.services.data import DataBuilder
 from helix.options.data import DataOptions
 from helix.options.enums import (
     ExecutionStateKeys,

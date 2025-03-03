@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from helix.machine_learning.data import TabularData
+from helix.services.data import TabularData
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import fi_plot_dir, helix_experiments_base_dir

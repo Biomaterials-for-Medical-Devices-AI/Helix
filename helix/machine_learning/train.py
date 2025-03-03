@@ -1,6 +1,6 @@
 import os
 
-from helix.machine_learning.data import DataBuilder
+from helix.services.data import DataBuilder
 from helix.machine_learning.learner import GridSearchLearner, Learner
 from helix.options.data import DataOptions
 from helix.options.execution import ExecutionOptions

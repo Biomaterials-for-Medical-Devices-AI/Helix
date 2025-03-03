@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
-from helix.machine_learning.data import TabularData
+from helix.services.data import TabularData
 from helix.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
 from helix.options.data import DataSplitOptions
 from helix.options.enums import DataSplitMethods, Metrics, ProblemTypes
