@@ -95,9 +95,13 @@ def test_manual_linear_model(
     assert not at.exception
     assert not at.error
     assert expected_model_dir.exists()
-    assert list(expected_model_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
     assert expected_plot_dir.exists()
-    assert list(expected_plot_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
     assert expected_preds_file.exists()
     assert expected_metrics_file.exists()
 
@@ -141,9 +145,13 @@ def test_manual_random_forest(
     assert not at.exception
     assert not at.error
     assert expected_model_dir.exists()
-    assert list(expected_model_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
     assert expected_plot_dir.exists()
-    assert list(expected_plot_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
     assert expected_preds_file.exists()
     assert expected_metrics_file.exists()
 
@@ -187,9 +195,13 @@ def test_manual_xgboost(
     assert not at.exception
     assert not at.error
     assert expected_model_dir.exists()
-    assert list(expected_model_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
     assert expected_plot_dir.exists()
-    assert list(expected_plot_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
     assert expected_preds_file.exists()
     assert expected_metrics_file.exists()
 
@@ -233,8 +245,12 @@ def test_manual_svm(
     assert not at.exception
     assert not at.error
     assert expected_model_dir.exists()
-    assert list(expected_model_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
     assert expected_plot_dir.exists()
-    assert list(expected_plot_dir.iterdir())  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
     assert expected_preds_file.exists()
     assert expected_metrics_file.exists()
