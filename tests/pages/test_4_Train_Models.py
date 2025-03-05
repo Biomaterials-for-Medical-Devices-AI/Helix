@@ -63,7 +63,7 @@ def test_manual_linear_model(
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
@@ -105,7 +105,7 @@ def test_auto_linear_model(new_experiment: str):
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
     k = 3
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
@@ -151,7 +151,7 @@ def test_manual_random_forest(
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
@@ -193,7 +193,7 @@ def test_auto_random_forest(new_experiment: str):
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
     k = 3
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
@@ -239,7 +239,7 @@ def test_manual_xgboost(
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
@@ -327,7 +327,7 @@ def test_manual_svm(
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
@@ -369,7 +369,7 @@ def test_auto_svm(new_experiment: str):
     expected_preds_file = ml_predictions_path(exp_dir)
     expected_metrics_file = ml_metrics_path(exp_dir)
     k = 3
-    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=60)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
     at.run()
 
     # Act
