@@ -1,12 +1,3 @@
-# 3. b) Test manual Random Forest
-# 3. c) Test manual SVM
-# 3. d) Test manual XGBoost
-# 4. a) Test AHPS Linear Model
-# 4. b) Test AHPS Random Forest
-# 4. c) Test AHPS SVM
-# 4. d) Test AHPS XGBoost
-
-
 import pytest
 from streamlit.testing.v1 import AppTest
 
