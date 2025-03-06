@@ -1,4 +1,3 @@
-import os
 from multiprocessing import Process
 from pathlib import Path
 
@@ -289,14 +288,23 @@ if experiment_name:
         st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
         st.session_state[ExecutionStateKeys.ProblemType] = exec_opt.problem_type
 
-        model_choices = os.listdir(ml_model_dir(base_dir / experiment_name))
-        model_choices = [x for x in model_choices if x.endswith(".pkl")]
+        model_dir = ml_model_dir(base_dir / experiment_name)
+        if model_dir.exists():
+            model_choices = filter(
+                lambda x: x.endswith(".pkl"), map(str, model_dir.iterdir())
+            )
+        else:
+            model_choices = []
 
-        explain_all_models = st.toggle(
-            "Explain all models", key=FeatureImportanceStateKeys.ExplainAllModels
-        )
-
-        if explain_all_models:
+        if len(model_choices) == 0:
+            st.info(
+                "You don't have any trained models in this experiment. "
+                "Go to **Train Models** to create some models to evaulate."
+            )
+        elif st.toggle(
+            "Explain all models",
+            key=FeatureImportanceStateKeys.ExplainAllModels,
+        ):
             st.session_state[FeatureImportanceStateKeys.ExplainModels] = model_choices
         else:
             model_selector(model_choices)
