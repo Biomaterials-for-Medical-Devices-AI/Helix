@@ -290,8 +290,8 @@ if experiment_name:
 
         model_dir = ml_model_dir(base_dir / experiment_name)
         if model_dir.exists():
-            model_choices = filter(
-                lambda x: x.endswith(".pkl"), map(str, model_dir.iterdir())
+            model_choices = list(
+                filter(lambda x: x.endswith(".pkl"), map(str, model_dir.iterdir()))
             )
         else:
             model_choices = []
