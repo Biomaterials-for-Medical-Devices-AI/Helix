@@ -250,9 +250,7 @@ def test_ensemble_mean(new_experiment: str, models_to_evaluate: None):
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert list(
-        filter(lambda x: x.endswith(".png"), map(str, fi_plots.iterdir()))
-    )  # directory is not empty
+    assert (fi_plots / "Ensemble Mean-bar.png").exists()
     assert fi_results.exists()
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
@@ -285,9 +283,7 @@ def test_ensemble_majority_vote(new_experiment: str, models_to_evaluate: None):
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert list(
-        filter(lambda x: x.endswith(".png"), map(str, fi_plots.iterdir()))
-    )  # directory is not empty
+    assert (fi_plots / "Ensemble Majority Vote-bar.png").exists()
     assert fi_results.exists()
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
