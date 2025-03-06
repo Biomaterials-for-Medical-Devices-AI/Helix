@@ -174,7 +174,7 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
     at.checkbox[0].check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
-    # Run permutation importance
+    # Run
     at.button[0].click().run()
 
     # Assert
@@ -188,3 +188,37 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
     )  # directory is not empty
+
+
+# TODO: rename once global and ensemble nomenclature sorted
+def test_global_shap(new_experiment: str, models_to_evaluate: None):
+    # Arrange
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
+    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Select explain all models
+    at.toggle[0].set_value(True).run()
+    # Select global SHAP importance
+    at.checkbox[1].check().run()
+    # Leave additional configs as the defaults
+    # Leave save output toggles as true, the default
+    # Run
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert fi_plots.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, fi_plots.iterdir()))
+    )  # directory is not empty
+    # TODO: check that global SHAP results should be getting saved, and fix
+    # assert fi_results.exists()
+    # assert list(
+    #     filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
+    # )  # directory is not empty
