@@ -182,9 +182,9 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
     assert not at.error
     assert fi_plots.exists()
     assert list(
-        filter(lambda x: x.endswith(".pkl"), map(str, fi_plots.iterdir()))
+        filter(lambda x: x.endswith(".png"), map(str, fi_plots.iterdir()))
     )  # directory is not empty
     assert fi_results.exists()
     assert list(
-        filter(lambda x: x.endswith(".pkl"), map(str, fi_results.iterdir()))
+        filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
     )  # directory is not empty
