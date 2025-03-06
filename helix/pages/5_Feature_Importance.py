@@ -269,7 +269,9 @@ if experiment_name:
     )
     display_options(base_dir / experiment_name)
 
-    path_to_exec_opts = execution_options_path(helix_experiments_base_dir() / experiment_name)
+    path_to_exec_opts = execution_options_path(
+        helix_experiments_base_dir() / experiment_name
+    )
     exec_opt = load_execution_options(path_to_exec_opts)
 
     if previous_results_exist:
