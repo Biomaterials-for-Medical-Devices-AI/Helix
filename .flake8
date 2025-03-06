@@ -13,4 +13,6 @@ extend-exclude =
     .pytest_cache,
     README.md,
     static,
-    .venv, 
+    .venv,
+per-file-ignores =
+    tests/pages/test_4_Train_Models.py:F403,F401,F811
