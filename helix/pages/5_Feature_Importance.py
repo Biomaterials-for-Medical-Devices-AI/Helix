@@ -269,6 +269,11 @@ if experiment_name:
     )
     display_options(base_dir / experiment_name)
 
+    path_to_exec_opts = execution_options_path(
+        helix_experiments_base_dir() / experiment_name
+    )
+    exec_opt = load_execution_options(path_to_exec_opts)
+
     if previous_results_exist:
         st.warning("You have run feature importance in this experiment previously.")
         st.checkbox(
@@ -282,6 +287,7 @@ if experiment_name:
     if st.session_state[FuzzyStateKeys.RerunFI]:
 
         st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+        st.session_state[ExecutionStateKeys.ProblemType] = exec_opt.problem_type
 
         model_choices = os.listdir(ml_model_dir(base_dir / experiment_name))
         model_choices = [x for x in model_choices if x.endswith(".pkl")]
