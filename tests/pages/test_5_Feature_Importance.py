@@ -16,7 +16,14 @@ from streamlit.testing.v1 import AppTest
 from helix.options.data import DataOptions, DataSplitOptions
 from helix.options.enums import DataSplitMethods
 from helix.options.execution import ExecutionOptions
-from helix.options.file_paths import helix_experiments_base_dir, ml_model_dir
+from helix.options.file_paths import (
+    data_options_path,
+    fi_plot_dir,
+    fi_result_dir,
+    helix_experiments_base_dir,
+    ml_model_dir,
+)
+from helix.services.configuration import save_options
 from helix.services.ml_models import save_model
 
 from .fixtures import (
@@ -37,7 +44,11 @@ def models_to_evaluate(
 ):
     save_dir = ml_model_dir(helix_experiments_base_dir() / new_experiment)
     data_opts.data_split = DataSplitOptions(
-        n_bootstraps=3, method=DataSplitMethods.Holdout
+        n_bootstraps=3, method=DataSplitMethods.Holdout.capitalize()
+    )
+    # update the data options
+    save_options(
+        data_options_path(helix_experiments_base_dir() / new_experiment), data_opts
     )
     X, y = dummy_data[:, :-1], dummy_data[:, -1]
     for i in range(data_opts.data_split.n_bootstraps):
@@ -145,3 +156,35 @@ def test_fuzzy_unavailable_without_ensemble_and_local_methods(
     )
     # check these methods are disabled
     assert at.checkbox[6].disabled
+
+
+def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
+    # Arrange
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
+    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Select explain all models
+    at.toggle[0].set_value(True).run()
+    # Select permutation importance
+    at.checkbox[0].check().run()
+    # Leave additional configs as the defaults
+    # Leave save output toggles as true, the default
+    # Run permutation importance
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert fi_plots.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, fi_plots.iterdir()))
+    )  # directory is not empty
+    assert fi_results.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, fi_results.iterdir()))
+    )  # directory is not empty
