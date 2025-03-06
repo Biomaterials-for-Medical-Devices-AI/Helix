@@ -96,7 +96,8 @@ def test_page_can_find_models(new_experiment: str, models_to_evaluate: None):
     assert not at.info  # the info box saying there's no models shouldn't appear
 
 
-def test_warning_appears_with_no_global_methods_selected(
+# TODO: rename once global and ensemble nomenclature sorted
+def test_ensemble_methods_disabled_without_global(
     new_experiment: str, models_to_evaluate: None
 ):
     # Arrange
@@ -116,3 +117,6 @@ def test_warning_appears_with_no_global_methods_selected(
         at.warning[0].value
         == "You must configure at least one global feature importance method to perform ensemble methods."
     )
+    # check these methods are disabled
+    assert at.checkbox[2].disabled
+    assert at.checkbox[3].disabled
