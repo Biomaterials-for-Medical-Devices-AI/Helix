@@ -1,12 +1,3 @@
-# 1. Fixture for models to perform feature importance
-# 2. Test page loads without error
-# 3. Test page finds experiment
-# 4. Test what happens when no models to test
-# 5. Test plots are produced
-# 6. Test for results
-
-
-from pickle import dump
 import numpy as np
 import pytest
 from sklearn.linear_model import LogisticRegression

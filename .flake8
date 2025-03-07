@@ -16,3 +16,4 @@ extend-exclude =
     .venv,
 per-file-ignores =
     tests/pages/test_4_Train_Models.py:F403,F401,F811
+    tests/pages/test_5_Feature_Importance.py:F403,F401,F811
