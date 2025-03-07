@@ -20,6 +20,9 @@ from helix.options.file_paths import (
     data_options_path,
     fi_plot_dir,
     fi_result_dir,
+    fuzzy_options_path,
+    fuzzy_plot_dir,
+    fuzzy_result_dir,
     helix_experiments_base_dir,
     ml_model_dir,
 )
@@ -350,3 +353,50 @@ def test_local_shap(new_experiment: str, models_to_evaluate: None):
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
     )  # directory is not empty
+
+
+# TODO: rename once global and ensemble nomenclature sorted
+def test_fuzzy_analysis(new_experiment: str, models_to_evaluate: None):
+    # Arrange
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
+    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fuzzy_plots = fuzzy_plot_dir(helix_experiments_base_dir() / new_experiment)
+    fuzzy_results = fuzzy_result_dir(helix_experiments_base_dir() / new_experiment)
+    fuzzy_options = fuzzy_options_path(helix_experiments_base_dir() / new_experiment)
+    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=180.0)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Select explain all models
+    at.toggle[0].set_value(True).run()
+    # Select permutation importance; global method required for ensemble
+    at.checkbox[0].check().run()
+    # Select ensemble mean; required for fuzzy
+    at.checkbox[2].check().run()
+    # Select local SHAP; local also required for fuzzy
+    at.checkbox[5].check().run()
+    # Select fuzzy
+    at.checkbox[6].check().run()
+    # Select granualr analysis
+    at.checkbox[7].check().run()
+    # Leave additional configs as the defaults
+    # Leave save output toggles as true, the default
+    # Run
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert fi_plots.exists()
+    assert (fi_plots / "SHAP-local-LogisticRegression-beeswarm.png").exists()
+    assert fi_results.exists()
+    assert list(
+        filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
+    )  # directory is not empty
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, fuzzy_plots.iterdir()))
+    )  # directory is not empty
+    assert fuzzy_options.exists()
+    assert (fuzzy_results / "top contextual rules.csv").exists()
