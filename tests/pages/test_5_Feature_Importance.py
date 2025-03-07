@@ -181,9 +181,7 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert list(
-        filter(lambda x: x.endswith(".png"), map(str, fi_plots.iterdir()))
-    )  # directory is not empty
+    assert (fi_plots / "LogisticRegression-bar.png").exists()
     assert fi_results.exists()
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
@@ -214,9 +212,7 @@ def test_global_shap(new_experiment: str, models_to_evaluate: None):
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert list(
-        filter(lambda x: x.endswith(".png"), map(str, fi_plots.iterdir()))
-    )  # directory is not empty
+    assert (fi_plots / "SHAP-global-LogisticRegression-bar.png").exists()
     # TODO: check that global SHAP results should be getting saved, and fix
     # assert fi_results.exists()
     # assert list(
