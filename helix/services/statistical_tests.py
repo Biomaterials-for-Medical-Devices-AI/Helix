@@ -5,8 +5,8 @@ from typing import Tuple, Union, Optional
 
 
 def kolmogorov_smirnov_test(
-    data: Union[np.ndarray, list],
-    reference_dist: Optional[str] = 'norm'
+    data: np.ndarray | list,
+    reference_dist: str = 'norm'
 ) -> Tuple[float, float]:
     """
     Perform Kolmogorov-Smirnov test to determine if a sample comes from a reference distribution.
