@@ -124,22 +124,3 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         X = np.hstack((np.ones((n_samples, 1)), X))
 
         return X @ np.vstack(([self.intercept_], self.coefficients_.reshape(-1, 1)))
-
-    def plot_coefficients(self):
-        """
-        Plot the beta coefficients of the best linear model found,
-        with positive coefficients in blue and negative ones in red.
-        """
-        if self.coefficients_ is None:
-            raise ValueError("Model has not been trained yet.")
-
-        print("Coefficients: ", self.coefficients_)
-
-        plt.figure(figsize=(8, 5))
-        colors = ["blue" if coef > 0 else "red" for coef in self.coefficients_]
-        plt.bar(range(len(self.coefficients_)), self.coefficients_, color=colors)
-        plt.axhline(0, color="black", linewidth=0.8, linestyle="--")
-        plt.xlabel("Feature Index")
-        plt.ylabel("Coefficient Value")
-        plt.title("Beta Coefficients of EM Linear Regression")
-        plt.show()
