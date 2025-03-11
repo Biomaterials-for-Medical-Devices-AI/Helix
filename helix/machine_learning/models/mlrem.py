@@ -143,17 +143,3 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         plt.ylabel("Coefficient Value")
         plt.title("Beta Coefficients of EM Linear Regression")
         plt.show()
-
-    def plot_results(y, y_pred, r2, mse):
-        """ ""
-        Plot the scatter with predicted vs measured values for the regression model.
-        """
-        plt.figure(figsize=(8, 6))
-        # Plot scatter
-        plt.scatter(y, y_pred, alpha=0.7, label="Predicted vs Measured")
-        plt.plot([y.min(), y.max()], [y.min(), y.max()], "r--", label="Ideal Fit")
-        plt.xlabel("Measured")
-        plt.ylabel("Predicted")
-        plt.title(f"EM Linear Regression\nR²: {r2:.3f}, MSE: {mse:.3f}")
-        plt.legend()
-        plt.show()
