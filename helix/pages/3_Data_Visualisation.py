@@ -1,6 +1,6 @@
+import numpy as np
 import pandas as pd
 import streamlit as st
-import numpy as np
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
@@ -26,12 +26,12 @@ from helix.services.configuration import (
     load_execution_options,
     load_plot_options,
 )
-from helix.services.statistical_tests import (
-    shapiro_wilk_test,
-    kolmogorov_smirnov_test,
-    create_normality_test_table
-)
 from helix.services.experiments import get_experiments
+from helix.services.statistical_tests import (
+    create_normality_test_table,
+    kolmogorov_smirnov_test,
+    shapiro_wilk_test,
+)
 from helix.utils.utils import create_directory
 
 st.set_page_config(
@@ -135,31 +135,35 @@ if experiment_name:
         """Display normality test results in a formatted table."""
         if results_df is not None:
             st.write(f"#### {title}")
-            st.write("""
+            st.write(
+                """
             These tests evaluate whether the data follows a normal distribution:
             - If p-value < 0.05: Data is likely not normally distributed
             - If p-value ≥ 0.05: Data might be normally distributed
-            """)
+            """
+            )
             st.dataframe(
-                results_df.style.format({
-                    'Shapiro-Wilk Statistic': '{:.3f}',
-                    'Shapiro-Wilk p-value': '{:.3f}',
-                    'Kolmogorov-Smirnov Statistic': '{:.3f}',
-                    'Kolmogorov-Smirnov p-value': '{:.3f}'
-                })
+                results_df.style.format(
+                    {
+                        "Shapiro-Wilk Statistic": "{:.3f}",
+                        "Shapiro-Wilk p-value": "{:.3f}",
+                        "Kolmogorov-Smirnov Statistic": "{:.3f}",
+                        "Kolmogorov-Smirnov p-value": "{:.3f}",
+                    }
+                )
             )
 
     st.write("### Data Normality Tests")
-    
+
     # Create tabs for raw and normalised data tests
     raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
-    
+
     with raw_tab:
         # Get normality test results for raw data
         raw_data = pd.read_csv(path_to_raw_data) if path_to_raw_data.exists() else data
         raw_results = create_normality_test_table(raw_data)
         display_normality_test_results(raw_results, "Raw Data Normality Tests")
-    
+
     with norm_tab:
         # Get normality test results for normalized data
         norm_results = create_normality_test_table(data)

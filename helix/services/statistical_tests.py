@@ -1,12 +1,12 @@
+from typing import Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
 from scipy import stats
-from typing import Tuple, Union, Optional
 
 
 def kolmogorov_smirnov_test(
-    data: Union[np.ndarray, list],
-    reference_dist: Optional[str] = 'norm'
+    data: Union[np.ndarray, list], reference_dist: Optional[str] = "norm"
 ) -> Tuple[float, float]:
     """
     Perform Kolmogorov-Smirnov test to determine if a sample comes from a reference distribution.
@@ -26,19 +26,19 @@ def kolmogorov_smirnov_test(
 
     Note:
         - Null hypothesis: the data comes from the specified distribution
-        - If p-value < alpha (typically 0.05), reject the null hypothesis 
+        - If p-value < alpha (typically 0.05), reject the null hypothesis
           (data does not come from the specified distribution)
-        - If p-value >= alpha, fail to reject the null hypothesis 
+        - If p-value >= alpha, fail to reject the null hypothesis
           (data may come from the specified distribution)
     """
     if isinstance(data, list):
         data = np.array(data)
-    
+
     if len(data.shape) > 1:
         data = data.flatten()
-    
+
     # Fit the reference distribution to the data
-    if reference_dist == 'norm':
+    if reference_dist == "norm":
         # For normal distribution, we need mean and std
         params = stats.norm.fit(data)
         return stats.kstest(data, reference_dist, args=params)
@@ -65,17 +65,17 @@ def shapiro_wilk_test(data: Union[np.ndarray, list]) -> Tuple[float, float]:
 
     Note:
         - Null hypothesis: the data is normally distributed
-        - If p-value < alpha (typically 0.05), reject the null hypothesis 
+        - If p-value < alpha (typically 0.05), reject the null hypothesis
           (data is not normally distributed)
-        - If p-value >= alpha, fail to reject the null hypothesis 
+        - If p-value >= alpha, fail to reject the null hypothesis
           (data may be normally distributed)
     """
     if isinstance(data, list):
         data = np.array(data)
-    
+
     if len(data.shape) > 1:
         data = data.flatten()
-    
+
     return stats.shapiro(data)
 
 
@@ -91,24 +91,26 @@ def create_normality_test_table(data: pd.DataFrame) -> Optional[pd.DataFrame]:
     """
     test_results = []
     numerical_cols = data.select_dtypes(include=[np.number]).columns
-    
+
     for col in numerical_cols:
         # Skip if all values are the same (no variance)
         if len(data[col].unique()) <= 1:
             continue
-            
+
         # Perform Shapiro-Wilk test
         sw_stat, sw_p = shapiro_wilk_test(data[col].dropna())
-        
+
         # Perform Kolmogorov-Smirnov test
         ks_stat, ks_p = kolmogorov_smirnov_test(data[col].dropna())
-        
-        test_results.append({
-            'Variable': col,
-            'Shapiro-Wilk Statistic': round(sw_stat, 3),
-            'Shapiro-Wilk p-value': round(sw_p, 3),
-            'Kolmogorov-Smirnov Statistic': round(ks_stat, 3),
-            'Kolmogorov-Smirnov p-value': round(ks_p, 3)
-        })
-    
+
+        test_results.append(
+            {
+                "Variable": col,
+                "Shapiro-Wilk Statistic": round(sw_stat, 3),
+                "Shapiro-Wilk p-value": round(sw_p, 3),
+                "Kolmogorov-Smirnov Statistic": round(ks_stat, 3),
+                "Kolmogorov-Smirnov p-value": round(ks_p, 3),
+            }
+        )
+
     return pd.DataFrame(test_results) if test_results else None
