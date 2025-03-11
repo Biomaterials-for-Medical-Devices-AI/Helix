@@ -27,6 +27,7 @@ xgboost = "2.1.0"
 lime = "0.2.0.1"
 shap = "0.45.0"
 torch = "^2.5.1"
+streamlit-aggrid = "^1.1.0"
 
 [tool.poetry.scripts]
 helix = "helix.launch:main"
