@@ -1,5 +1,5 @@
 # Training models
-You can train new models in BioFEFI by clicking on **"Train Models"** on the left hand side of the screen.
+You can train new models in Helix by clicking on **"Train Models"** on the left hand side of the screen.
 
 ![train models page](../_static/train-models-page.png)
 

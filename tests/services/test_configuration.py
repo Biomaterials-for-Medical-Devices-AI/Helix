@@ -1,15 +1,19 @@
 from pathlib import Path
 
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.fi import FeatureImportanceOptions
-from biofefi.options.fuzzy import FuzzyOptions
-from biofefi.options.ml import MachineLearningOptions
-from biofefi.options.plotting import PlottingOptions
-from biofefi.options.preprocessing import PreprocessingOptions
-from biofefi.services.configuration import (
+from helix.options.data import DataOptions, DataSplitOptions
+from helix.options.execution import ExecutionOptions
+from helix.options.fi import FeatureImportanceOptions
+from helix.options.fuzzy import FuzzyOptions
+from helix.options.ml import MachineLearningOptions
+from helix.options.plotting import PlottingOptions
+from helix.options.preprocessing import PreprocessingOptions
+from helix.services.configuration import (
+    load_data_options,
     load_data_preprocessing_options,
     load_execution_options,
     load_fi_options,
+    load_fuzzy_options,
+    load_ml_options,
     load_plot_options,
     save_options,
 )
@@ -94,6 +98,20 @@ def test_load_fi_options(fi_opts: FeatureImportanceOptions, fi_opts_file: Path):
     assert non_existent_opts is None
 
 
+def test_load_fuzzy_options(fuzzy_opts: FuzzyOptions, fuzzy_opts_file: Path):
+    # Arrange
+    path_to_non_existent = Path("non_existent.json")  # test the `None` case
+
+    # Act
+    opts = load_fuzzy_options(fuzzy_opts_file)
+    non_existent_opts = load_fuzzy_options(path_to_non_existent)
+
+    # Assert
+    assert isinstance(opts, FuzzyOptions)
+    assert opts == fuzzy_opts
+    assert non_existent_opts is None
+
+
 def test_save_data_preprocessing_opts(
     data_preprocessing_opts: PreprocessingOptions,
     data_preprocessing_opts_file_path: Path,
@@ -114,3 +132,38 @@ def test_load_data_preprocessing_options(
     # Assert
     assert isinstance(opts, PreprocessingOptions)
     assert opts == data_preprocessing_opts
+
+
+def test_save_data_opts(
+    data_opts: DataOptions,
+    data_opts_file_path: Path,
+):
+    # Act
+    save_options(data_opts_file_path, data_opts)
+
+    # Assert
+    assert data_opts_file_path.exists()
+
+
+def test_load_data_options(data_opts: DataOptions, data_opts_file: Path):
+    # Act
+    opts = load_data_options(data_opts_file)
+
+    # Assert
+    assert isinstance(opts, DataOptions)
+    assert isinstance(opts.data_split, DataSplitOptions)
+    assert opts == data_opts
+
+
+def test_load_ml_options(ml_opts: MachineLearningOptions, ml_opts_file: Path):
+    # Arrange
+    path_to_non_existent = Path("non_existent.json")  # test the `None` case
+
+    # Act
+    opts = load_ml_options(ml_opts_file)
+    non_existent_opts = load_ml_options(path_to_non_existent)
+
+    # Assert
+    assert isinstance(opts, MachineLearningOptions)
+    assert opts == ml_opts
+    assert non_existent_opts is None

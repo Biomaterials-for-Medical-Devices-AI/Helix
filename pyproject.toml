@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "biofefi"
-version = "1.1.0"
+name = "helix"
+version = "1.0.0"
 description = ""
 authors = [
     "Daniel Lea <Daniel.Lea@nottingham.ac.uk>",
@@ -20,7 +20,7 @@ pandas = "2.2.2"
 streamlit = "1.36"
 matplotlib = "3.8.2"
 scikit-learn = "1.5.2"
-scikit-fuzzy = "0.4.2"
+scikit-fuzzy = "0.5.0"
 seaborn = "0.13.2"
 tqdm = "4.66.2"
 xgboost = "2.1.0"
@@ -30,7 +30,7 @@ torch = "^2.5.1"
 streamlit-aggrid = "^1.1.0"
 
 [tool.poetry.scripts]
-biofefi = "biofefi.launch:main"
+helix = "helix.launch:main"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.1"

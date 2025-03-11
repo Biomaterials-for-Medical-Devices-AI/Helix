@@ -1,10 +1,15 @@
 import os
 from pathlib import Path
 
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.file_paths import execution_options_path, plot_options_path
-from biofefi.options.plotting import PlottingOptions
-from biofefi.services.experiments import (
+from helix.options.data import DataOptions
+from helix.options.execution import ExecutionOptions
+from helix.options.file_paths import (
+    data_options_path,
+    execution_options_path,
+    plot_options_path,
+)
+from helix.options.plotting import PlottingOptions
+from helix.services.experiments import (
     create_experiment,
     delete_previous_fi_results,
     find_previous_fi_results,
@@ -41,6 +46,7 @@ def test_create_experiment(
     experiment_dir: tuple[Path, list[str]],
     execution_opts: ExecutionOptions,
     plotting_opts: PlottingOptions,
+    data_opts: DataOptions,
 ):
     # Arrange
     base_dir, experiments = experiment_dir
@@ -48,15 +54,18 @@ def test_create_experiment(
 
     execution_options_file = execution_options_path(save_dir)
     plotting_options_file = plot_options_path(save_dir)
+    data_options_file = data_options_path(save_dir)
 
     # Act
-    create_experiment(save_dir, plotting_opts, execution_opts)
+    create_experiment(save_dir, plotting_opts, execution_opts, data_opts)
 
     # Assert
     assert execution_options_file.exists()
     assert execution_options_file.is_file()
     assert plotting_options_file.exists()
     assert plotting_options_file.is_file()
+    assert data_options_file.exists()
+    assert data_options_file.is_file()
 
 
 def test_find_previous_fi_results_when_empty(

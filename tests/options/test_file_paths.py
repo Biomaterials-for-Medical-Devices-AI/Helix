@@ -1,14 +1,14 @@
 from pathlib import Path
 
-import biofefi.options.file_paths as fp
+import helix.options.file_paths as fp
 
 
-def test_biofefi_experiments_base_dir():
+def test_helix_experiments_base_dir():
     # Arrange
-    expected_output = Path.home() / "BioFEFIExperiments"
+    expected_output = Path.home() / "HelixExperiments"
 
     # Act
-    actual_output = fp.biofefi_experiments_base_dir()
+    actual_output = fp.helix_experiments_base_dir()
 
     # Assert
     assert isinstance(actual_output, Path)
@@ -17,7 +17,7 @@ def test_biofefi_experiments_base_dir():
 
 def test_uploaded_file_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     file_name = "test_data.csv"
     expected_output = experiment_path / file_name
 
@@ -31,7 +31,7 @@ def test_uploaded_file_path():
 
 def test_raw_data_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     file_name = "test_data.csv"
     expected_output = experiment_path / "test_data_preprocessed.csv"
 
@@ -45,7 +45,7 @@ def test_raw_data_path():
 
 def test_log_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "logs"
 
     # Act
@@ -58,7 +58,7 @@ def test_log_dir():
 
 def test_ml_plot_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "plots" / "ml"
 
     # Act
@@ -71,7 +71,7 @@ def test_ml_plot_dir():
 
 def test_ml_model_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "models"
 
     # Act
@@ -84,7 +84,7 @@ def test_ml_model_dir():
 
 def test_ml_metrics_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "results" / "ml_metrics" / "metrics.json"
 
     # Act
@@ -95,9 +95,22 @@ def test_ml_metrics_path():
     assert actual_output == expected_output
 
 
+def test_ml_predictions_path():
+    # Arrange
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "results" / "ml_metrics" / "predictions.csv"
+
+    # Act
+    actual_output = fp.ml_predictions_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
 def test_fi_plot_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "plots" / "fi"
 
     # Act
@@ -110,7 +123,7 @@ def test_fi_plot_dir():
 
 def test_fi_result_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "results" / "fi"
 
     # Act
@@ -123,7 +136,7 @@ def test_fi_result_dir():
 
 def test_fi_options_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "options" / "fi"
 
     # Act
@@ -136,7 +149,7 @@ def test_fi_options_dir():
 
 def test_fuzzy_plot_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "plots" / "fuzzy"
 
     # Act
@@ -149,7 +162,7 @@ def test_fuzzy_plot_dir():
 
 def test_fuzzy_result_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "results" / "fuzzy"
 
     # Act
@@ -162,7 +175,7 @@ def test_fuzzy_result_dir():
 
 def test_data_analysis_plots_dir():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "plots" / "data_analysis"
 
     # Act
@@ -175,7 +188,7 @@ def test_data_analysis_plots_dir():
 
 def test_plot_options_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "plot_options.json"
 
     # Act
@@ -188,7 +201,7 @@ def test_plot_options_path():
 
 def test_execution_options_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "execution_options.json"
 
     # Act
@@ -201,7 +214,7 @@ def test_execution_options_path():
 
 def test_data_preprocessing_options_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "data_preprocessing_options.json"
 
     # Act
@@ -214,7 +227,7 @@ def test_data_preprocessing_options_path():
 
 def test_ml_options_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "ml_options.json"
 
     # Act
@@ -227,7 +240,7 @@ def test_ml_options_path():
 
 def test_fi_options_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "fi_options.json"
 
     # Act
@@ -240,11 +253,24 @@ def test_fi_options_path():
 
 def test_fuzzy_options_path():
     # Arrange
-    experiment_path = fp.biofefi_experiments_base_dir() / "TestExperiment"
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
     expected_output = experiment_path / "fuzzy_options.json"
 
     # Act
     actual_output = fp.fuzzy_options_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_data_options_path():
+    # Arrange
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "data_options.json"
+
+    # Act
+    actual_output = fp.data_options_path(experiment_path)
 
     # Assert
     assert isinstance(actual_output, Path)

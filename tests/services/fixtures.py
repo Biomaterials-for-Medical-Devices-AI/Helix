@@ -5,10 +5,12 @@ from typing import Generator
 
 import pytest
 
-from biofefi.options.choices.ui import DATA_SPLITS
-from biofefi.options.execution import ExecutionOptions
-from biofefi.options.fi import FeatureImportanceOptions
-from biofefi.options.file_paths import (
+from helix.options.data import DataOptions, DataSplitOptions
+from helix.options.enums import DataSplitMethods
+from helix.options.execution import ExecutionOptions
+from helix.options.fi import FeatureImportanceOptions
+from helix.options.file_paths import (
+    data_options_path,
     data_preprocessing_options_path,
     execution_options_path,
     fi_options_dir,
@@ -22,11 +24,11 @@ from biofefi.options.file_paths import (
     ml_options_path,
     plot_options_path,
 )
-from biofefi.options.fuzzy import FuzzyOptions
-from biofefi.options.ml import MachineLearningOptions
-from biofefi.options.plotting import PlottingOptions
-from biofefi.options.preprocessing import PreprocessingOptions
-from biofefi.utils.utils import delete_directory
+from helix.options.fuzzy import FuzzyOptions
+from helix.options.ml import MachineLearningOptions
+from helix.options.plotting import PlottingOptions
+from helix.options.preprocessing import PreprocessingOptions
+from helix.utils.utils import delete_directory
 
 
 @pytest.fixture
@@ -37,7 +39,7 @@ def execution_opts() -> ExecutionOptions:
         ExecutionOptions: The test instance.
     """
     # Arrange
-    return ExecutionOptions(data_path="test_data.csv", data_split=DATA_SPLITS[0])
+    return ExecutionOptions()
 
 
 @pytest.fixture
@@ -101,6 +103,7 @@ def plotting_opts() -> PlottingOptions:
         save_plots=True,
         plot_font_family="sans-serif",
         plot_title_font_size=14,
+        dpi=300,
     )
 
 
@@ -156,7 +159,14 @@ def ml_opts() -> MachineLearningOptions:
 
 
 @pytest.fixture
-def ml_opts_file() -> Generator[Path, None, None]:
+def ml_opts_file_path() -> Generator[Path, None, None]:
+    """Produce the test `Path` to some ml options.
+
+    Delete the file if it has been created by a test.
+
+    Yields:
+        Generator[Path, None, None]: The `Path` to the plotting options file.
+    """
     # Arrange
     experiment_path = Path.cwd()
     options_file = ml_options_path(experiment_path)
@@ -165,6 +175,18 @@ def ml_opts_file() -> Generator[Path, None, None]:
     # Cleanup
     if options_file.exists():
         options_file.unlink()
+
+
+@pytest.fixture
+def ml_opts_file(
+    ml_opts: MachineLearningOptions, ml_opts_file_path: Path
+) -> Generator[Path, None, None]:
+
+    # Arrange
+    options_json = dataclasses.asdict(ml_opts)
+    with open(ml_opts_file_path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
+    return ml_opts_file_path
 
 
 @pytest.fixture
@@ -242,9 +264,31 @@ def fuzzy_opts_file_path() -> Generator[Path, None, None]:
 
 
 @pytest.fixture
+def fuzzy_opts_file(fuzzy_opts: FuzzyOptions, fuzzy_opts_file_path: Path) -> Path:
+    """Saves and `FuzzyOptions` object to a file given by `fuzzy_opts_file_path`
+    and returns the `Path` to that file.
+
+    Cleanup is handled by the `fi_opts_file_path` fixture passed in the second
+    argument.
+
+    Args:
+        fuzzy_opts (FuzzyOptions): Fuzzy options fixture.
+        fuzzy_opts_file_path (Generator[Path, None, None]): File path fixture.
+
+    Returns:
+        Path: `fuzzy_opts_file_path`
+    """
+    # Arrange
+    options_json = dataclasses.asdict(fuzzy_opts)
+    with open(fuzzy_opts_file_path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
+    return fuzzy_opts_file_path
+
+
+@pytest.fixture
 def experiment_dir():
     # Arrange
-    base_dir = Path.cwd() / "BioFEFIExperiments"
+    base_dir = Path.cwd() / "HelixExperiments"
     base_dir.mkdir()
     experiment_dirs = ["experiment1", "experiment2"]
     for exp in experiment_dirs:
@@ -341,3 +385,59 @@ def data_preprocessing_opts_file(
     with open(data_preprocessing_opts_file_path, "w") as json_file:
         json.dump(options_json, json_file, indent=4)
     return data_preprocessing_opts_file_path
+
+
+@pytest.fixture
+def data_opts() -> DataOptions:
+    """Produce a test instance of `PreprocessingOptions`.
+
+    Returns:
+        PreprocessingOptions: The test instance.
+    """
+    # Arrange
+    data_split = DataSplitOptions(method=DataSplitMethods.Holdout)
+    return DataOptions(data_path="path/to/data.csv", data_split=data_split)
+
+
+@pytest.fixture
+def data_opts_file_path() -> Generator[Path, None, None]:
+    """Produce the test `Path` to some data preprocessing options.
+
+    Delete the file if it has been created by a test.
+
+    Yields:
+        Generator[Path, None, None]: The `Path` to the data preprocessing options file.
+    """
+    # Arrange
+    experiment_path = Path.cwd()
+    options_file = data_options_path(experiment_path)
+    yield options_file
+
+    # Cleanup
+    if options_file.exists():
+        options_file.unlink()
+
+
+@pytest.fixture
+def data_opts_file(
+    data_opts: DataOptions,
+    data_opts_file_path: Path,
+) -> Path:
+    """Saves an `PreprocessingOptions` object to a file given by `data_preprocessing_opts_file_path`
+    and returns the `Path` to that file.
+
+    Cleanup is handled by the `data_preprocessing_opts_file_path` fixture passed in the second
+    argument.
+
+    Args:
+        data_preprocessing_opts (PreprocessingOptions): PreprocessingOptions options fixture.
+        data_preprocessing_opts_file_path (Generator[Path, None, None]): File path fixture.
+
+    Returns:
+        Path: `data_preprocessing_opts_file_path`
+    """
+    # Arrange
+    options_json = dataclasses.asdict(data_opts)
+    with open(data_opts_file_path, "w") as json_file:
+        json.dump(options_json, json_file, indent=4)
+    return data_opts_file_path

@@ -1,5 +1,5 @@
 # Installation
-**N.B.:** You may need to make sure you have OpenMP installed on your machine before you can install BioFEFI.
+**N.B.:** You may need to make sure you have OpenMP installed on your machine before you can install Helix.
 
 On Mac:
 ```shell
@@ -16,15 +16,15 @@ On Windows, this doesn't seem to be a problem. You should be able to proceed wit
 ---
 
 ## Getting the code
-You can obtain the BioFEFI source code by cloning the repository from Github.
+You can obtain the Helix source code by cloning the repository from Github.
 ```shell
-git clone https://github.com/Biomaterials-for-Medical-Devices-AI/BioFEFI.git
+git clone https://github.com/Biomaterials-for-Medical-Devices-AI/Helix.git
 ```
 
 ## Setting up your developer environment
-First you will need to ensure that you have Python installed. BioFEFI requires version **3.11** or higher to run.
+First you will need to ensure that you have Python installed. Helix requires version **3.11** or higher to run.
 
-Next you need to create a virtual environment to run BioFEFI. 
+Next you need to create a virtual environment to run Helix. 
 
 ### Mac/Linux
 ```shell
@@ -59,16 +59,16 @@ Once you have activated your virtual environment, you need to install [poetry](h
 pip install poetry
 ```
 
-## Install BioFEFI requirements
-To install the requirements for BioFEFI, use the following command:
+## Install Helix requirements
+To install the requirements for Helix, use the following command:
 
 ```shell
 poetry install
 ```
 
-## Running BioFEFI
-Once you have installed BioFEFI, you can run it from the terminal like so:
+## Running Helix
+Once you have installed Helix, you can run it from the terminal like so:
 ```shell
-poetry run biofefi
+poetry run helix
 ```
 A browser window will open to the main page of the app.

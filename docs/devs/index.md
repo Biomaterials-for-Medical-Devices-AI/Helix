@@ -1,13 +1,13 @@
-# Welcome to the BioFEFI developer documentation
+# Welcome to the Helix developer documentation
 
 ## Code tour
-The contents of the BioFEFI source code look like this:
+The contents of the Helix source code look like this:
 
 ```
 ├── .github
 ├── .gitignore
 ├── README.md
-├── biofefi
+├── helix
 ├── docs
 ├── poetry.lock
 ├── pyproject.toml
@@ -21,9 +21,9 @@ This directory is files relating to Github Actions and templates for issues and 
 This file tells `git` to not track files and directories listed within.
 
 ### `README.md`
-This file gives a quick overview of BioFEFI and is displayed on the main page of the repository.
+This file gives a quick overview of Helix and is displayed on the main page of the repository.
 
-### `biofefi`
+### `helix`
 This is where the application code lives.
 
 ### `docs`

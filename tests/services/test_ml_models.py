@@ -1,8 +1,44 @@
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
+import pandas as pd
 import pytest
 from sklearn.ensemble import RandomForestClassifier
 
-from biofefi.options.enums import ProblemTypes
-from biofefi.services.ml_models import MlModel, get_model, get_model_type
+from helix.options.enums import ProblemTypes
+from helix.services.ml_models import (
+    MlModel,
+    get_model,
+    get_model_type,
+    save_model_predictions,
+)
+
+
+def test_save_model_predictions():
+    """Test that save_model_predictions correctly writes a DataFrame to a CSV file."""
+
+    # Arrange
+    with TemporaryDirectory() as tmpdir:
+        file_path = Path(tmpdir) / "predictions.csv"
+
+        # Create sample DataFrame
+        predictions_df = pd.DataFrame(
+            {
+                "y_true": [1, 0, 1],
+                "y_pred": [1, 0, 0],
+                "y_pred_proba": [0.9, 0.3, 0.6],
+                "model_name": ["ModelA", "ModelA", "ModelA"],
+                "Set": ["train", "test", "val"],
+                "Fold": [1, 1, 1],
+            }
+        )
+
+        # Act
+        save_model_predictions(predictions_df, file_path)
+
+        # Assert
+        loaded_df = pd.read_csv(file_path)
+        pd.testing.assert_frame_equal(predictions_df, loaded_df)
 
 
 def test_get_model_type_returns_type():

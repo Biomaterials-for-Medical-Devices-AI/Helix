@@ -2187,19 +2187,15 @@ files = [
 
 [[package]]
 name = "scikit-fuzzy"
-version = "0.4.2"
+version = "0.5.0"
 description = "Fuzzy logic toolkit for SciPy"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "scikit-fuzzy-0.4.2.tar.gz", hash = "sha256:1ab12424d847ede1bc79670d8058167be7c8dd660b00756e9b844817ceb1e12e"},
+    {file = "scikit_fuzzy-0.5.0-py2.py3-none-any.whl", hash = "sha256:e456c365146bc5c58d9f593f4127ac783112e2daf89f87b12c6ef3c38e4087dd"},
+    {file = "scikit_fuzzy-0.5.0.tar.gz", hash = "sha256:2ee5340523aa7635ca568b9d8029c7738d05f9ea550fc89d4054b4cb50f34e7f"},
 ]
-
-[package.dependencies]
-networkx = ">=1.9.0"
-numpy = ">=1.6.0"
-scipy = ">=0.9.0"
 
 [[package]]
 name = "scikit-image"
@@ -2670,23 +2666,6 @@ watchdog = {version = ">=2.1.5,<5", markers = "platform_system != \"Darwin\""}
 snowflake = ["snowflake-connector-python (>=2.8.0) ; python_version < \"3.12\"", "snowflake-snowpark-python (>=0.9.0) ; python_version < \"3.12\""]
 
 [[package]]
-name = "streamlit-aggrid"
-version = "1.1.0"
-description = "Streamlit component implementation of ag-grid"
-optional = false
-python-versions = ">=3.10"
-groups = ["main"]
-files = [
-    {file = "streamlit_aggrid-1.1.0-py3-none-any.whl", hash = "sha256:216b3880a325f1e900b3a43d840503a33031e9ef9d94178c2d22628ada17f946"},
-    {file = "streamlit_aggrid-1.1.0.tar.gz", hash = "sha256:4541d135de98acc5796676bc1ed9564612ef6a88ec0cd99a0875f20c0f1fecc8"},
-]
-
-[package.dependencies]
-pandas = ">=1.4.0"
-python-decouple = "*"
-streamlit = ">=1.2"
-
-[[package]]
 name = "sympy"
 version = "1.13.1"
 description = "Computer algebra system (CAS) in Python"
@@ -3011,4 +2990,4 @@ scikit-learn = ["scikit-learn"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.13"
-content-hash = "6a24e53a2fc2cf245d7fec8c6c6d345e5c6a460fcd210ec9d930eb7c09aab712"
+content-hash = "54d4bc7f4914f93c755c072043cbb0752157ed50dcb3ab29661f2bc574e4b433"
