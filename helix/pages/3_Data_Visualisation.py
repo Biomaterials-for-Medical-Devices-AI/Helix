@@ -11,6 +11,7 @@ from helix.components.forms import (
 )
 from helix.components.images.logos import sidebar_logo
 from helix.components.plots import plot_box
+from helix.components.statistical_tests import display_normality_test_results
 from helix.options.enums import ExecutionStateKeys
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -26,6 +27,7 @@ from helix.services.configuration import (
     load_plot_options,
 )
 from helix.services.experiments import get_experiments
+from helix.services.statistical_tests import create_normality_test_table
 from helix.utils.utils import create_directory
 
 st.set_page_config(
@@ -124,3 +126,19 @@ if experiment_name:
     )
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
+
+    st.write("### Data Normality Tests")
+
+    # Create tabs for raw and normalised data tests
+    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
+
+    with raw_tab:
+        # Get normality test results for raw data
+        raw_data = pd.read_csv(path_to_raw_data) if path_to_raw_data.exists() else data
+        raw_results = create_normality_test_table(raw_data)
+        display_normality_test_results(raw_results, "Raw Data Normality Tests")
+
+    with norm_tab:
+        # Get normality test results for normalized data
+        norm_results = create_normality_test_table(data)
+        display_normality_test_results(norm_results, "Normalised Data Normality Tests")
