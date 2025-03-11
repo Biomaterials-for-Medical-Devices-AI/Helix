@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from scipy import stats
 from typing import Tuple, Union, Optional
 
@@ -76,3 +77,38 @@ def shapiro_wilk_test(data: Union[np.ndarray, list]) -> Tuple[float, float]:
         data = data.flatten()
     
     return stats.shapiro(data)
+
+
+def create_normality_test_table(data: pd.DataFrame) -> Optional[pd.DataFrame]:
+    """Create a dataframe with normality test results for numerical columns.
+
+    Args:
+        data: Input DataFrame containing the data to test
+
+    Returns:
+        DataFrame containing normality test results for each numerical column,
+        or None if no valid columns are found
+    """
+    test_results = []
+    numerical_cols = data.select_dtypes(include=[np.number]).columns
+    
+    for col in numerical_cols:
+        # Skip if all values are the same (no variance)
+        if len(data[col].unique()) <= 1:
+            continue
+            
+        # Perform Shapiro-Wilk test
+        sw_stat, sw_p = shapiro_wilk_test(data[col].dropna())
+        
+        # Perform Kolmogorov-Smirnov test
+        ks_stat, ks_p = kolmogorov_smirnov_test(data[col].dropna())
+        
+        test_results.append({
+            'Variable': col,
+            'Shapiro-Wilk Statistic': round(sw_stat, 3),
+            'Shapiro-Wilk p-value': round(sw_p, 3),
+            'Kolmogorov-Smirnov Statistic': round(ks_stat, 3),
+            'Kolmogorov-Smirnov p-value': round(ks_p, 3)
+        })
+    
+    return pd.DataFrame(test_results) if test_results else None

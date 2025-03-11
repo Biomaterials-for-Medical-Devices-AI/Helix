@@ -26,7 +26,11 @@ from helix.services.configuration import (
     load_execution_options,
     load_plot_options,
 )
-from helix.services.statistical_tests import shapiro_wilk_test, kolmogorov_smirnov_test
+from helix.services.statistical_tests import (
+    shapiro_wilk_test,
+    kolmogorov_smirnov_test,
+    create_normality_test_table
+)
 from helix.services.experiments import get_experiments
 from helix.utils.utils import create_directory
 
@@ -127,32 +131,6 @@ if experiment_name:
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
 
-    def create_normality_test_table(data: pd.DataFrame) -> pd.DataFrame:
-        """Create a dataframe with normality test results for numerical columns."""
-        test_results = []
-        numerical_cols = data.select_dtypes(include=[np.number]).columns
-        
-        for col in numerical_cols:
-            # Skip if all values are the same (no variance)
-            if len(data[col].unique()) <= 1:
-                continue
-                
-            # Perform Shapiro-Wilk test
-            sw_stat, sw_p = shapiro_wilk_test(data[col].dropna())
-            
-            # Perform Kolmogorov-Smirnov test
-            ks_stat, ks_p = kolmogorov_smirnov_test(data[col].dropna())
-            
-            test_results.append({
-                'Variable': col,
-                'Shapiro-Wilk Statistic': round(sw_stat, 3),
-                'Shapiro-Wilk p-value': round(sw_p, 3),
-                'Kolmogorov-Smirnov Statistic': round(ks_stat, 3),
-                'Kolmogorov-Smirnov p-value': round(ks_p, 3)
-            })
-        
-        return pd.DataFrame(test_results) if test_results else None
-
     def display_normality_test_results(results_df: pd.DataFrame, title: str):
         """Display normality test results in a formatted table."""
         if results_df is not None:
@@ -173,8 +151,8 @@ if experiment_name:
 
     st.write("### Data Normality Tests")
     
-    # Create tabs for raw and normalized data tests
-    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalized Data"])
+    # Create tabs for raw and normalised data tests
+    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
     
     with raw_tab:
         # Get normality test results for raw data
