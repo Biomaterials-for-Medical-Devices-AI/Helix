@@ -63,7 +63,7 @@ def display_metrics_table(metrics_path: Path):
         " data split) or cross-validation folds (if using K-fold data split or"
         " automatic hyper-parameter search)."
     )
-    ## TODO: This can be moved to a separate function
+    # TODO: This can be moved to a separate function
     # Build Grid Options
     table = table.reset_index()
     gb = GridOptionsBuilder.from_dataframe(table)
