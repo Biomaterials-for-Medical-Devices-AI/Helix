@@ -14,11 +14,12 @@ def plot_box(plot_dir: Path, box_title: str):
         plot_dir (Path): The directory containing the plots.
         box_title (str): The title of the plot box.
     """
-    plots = sorted(plot_dir.iterdir(), key=lambda x: x.stat().st_ctime)
-    with st.expander(box_title, expanded=len(plots) > 0):
-        for p in plots:
-            if p.name.endswith(".png"):
-                st.image(str(p))
+    if plot_dir.exists():
+        plots = sorted(plot_dir.iterdir(), key=lambda x: x.stat().st_ctime)
+        with st.expander(box_title, expanded=len(plots) > 0):
+            for p in plots:
+                if p.name.endswith(".png"):
+                    st.image(str(p))
 
 
 @st.experimental_fragment
