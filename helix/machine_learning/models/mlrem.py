@@ -2,7 +2,6 @@ import numpy as np
 import numpy.linalg.linalg as LA
 import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, RegressorMixin
-from sklearn.metrics import r2_score, mean_squared_error
 
 
 class EMLinearRegression(RegressorMixin, BaseEstimator):
