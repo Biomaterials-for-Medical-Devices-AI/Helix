@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import numpy as np
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
@@ -25,6 +26,7 @@ from helix.services.configuration import (
     load_execution_options,
     load_plot_options,
 )
+from helix.services.statistical_tests import shapiro_wilk_test, kolmogorov_smirnov_test
 from helix.services.experiments import get_experiments
 from helix.utils.utils import create_directory
 
@@ -124,3 +126,47 @@ if experiment_name:
     )
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
+
+    st.write("### Data Normality Tests")
+    
+    # Create a dataframe to store normality test results
+    test_results = []
+    
+    # Get numerical columns only
+    numerical_cols = data.select_dtypes(include=[np.number]).columns
+    
+    for col in numerical_cols:
+        # Skip if all values are the same (no variance)
+        if len(data[col].unique()) <= 1:
+            continue
+            
+        # Perform Shapiro-Wilk test
+        sw_stat, sw_p = shapiro_wilk_test(data[col].dropna())
+        
+        # Perform Kolmogorov-Smirnov test
+        ks_stat, ks_p = kolmogorov_smirnov_test(data[col].dropna())
+        
+        test_results.append({
+            'Variable': col,
+            'Shapiro-Wilk Statistic': round(sw_stat, 3),
+            'Shapiro-Wilk p-value': round(sw_p, 3),
+            'Kolmogorov-Smirnov Statistic': round(ks_stat, 3),
+            'Kolmogorov-Smirnov p-value': round(ks_p, 3)
+        })
+    
+    # Create DataFrame and display
+    if test_results:
+        results_df = pd.DataFrame(test_results)
+        st.write("""
+        These tests evaluate whether the data follows a normal distribution:
+        - If p-value < 0.05: Data is likely not normally distributed
+        - If p-value ≥ 0.05: Data might be normally distributed
+        """)
+        st.dataframe(
+            results_df.style.format({
+                'Shapiro-Wilk Statistic': '{:.3f}',
+                'Shapiro-Wilk p-value': '{:.3f}',
+                'Kolmogorov-Smirnov Statistic': '{:.3f}',
+                'Kolmogorov-Smirnov p-value': '{:.3f}'
+            })
+        )
