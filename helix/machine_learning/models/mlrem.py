@@ -1,6 +1,5 @@
 import numpy as np
 import numpy.linalg.linalg as LA
-import matplotlib.pyplot as plt
 from sklearn.base import BaseEstimator, RegressorMixin
 
 
