@@ -327,7 +327,7 @@ if experiment_name:
                     models_to_explaion,
                 ) = build_configuration()
                 # Create the logger
-                logger_instance = Logger(Path(fi_opts.fi_log_dir))
+                logger_instance = Logger()
                 logger = logger_instance.make_logger()
                 # Ingest the data
                 data = ingest_data(exec_opts, data_opts, logger)

@@ -248,7 +248,7 @@ if experiment_name:
 
         ml_opts, exec_opts, plot_opts, data_opts, exp_name = build_configuration()
         # Create the logger
-        logger_instance = Logger(Path(ml_opts.ml_log_dir))
+        logger_instance = Logger()
         logger = logger_instance.make_logger()
         # Retrieve data from state or load it from disk
         data = ingest_data(exec_opts, data_opts, logger)
