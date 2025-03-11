@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -12,6 +11,7 @@ from helix.components.forms import (
 )
 from helix.components.images.logos import sidebar_logo
 from helix.components.plots import plot_box
+from helix.components.statistical_tests import display_normality_test_results
 from helix.options.enums import ExecutionStateKeys
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -27,11 +27,7 @@ from helix.services.configuration import (
     load_plot_options,
 )
 from helix.services.experiments import get_experiments
-from helix.services.statistical_tests import (
-    create_normality_test_table,
-    kolmogorov_smirnov_test,
-    shapiro_wilk_test,
-)
+from helix.services.statistical_tests import create_normality_test_table
 from helix.utils.utils import create_directory
 
 st.set_page_config(
@@ -130,28 +126,6 @@ if experiment_name:
     )
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
-
-    def display_normality_test_results(results_df: pd.DataFrame, title: str):
-        """Display normality test results in a formatted table."""
-        if results_df is not None:
-            st.write(f"#### {title}")
-            st.write(
-                """
-            These tests evaluate whether the data follows a normal distribution:
-            - If p-value < 0.05: Data is likely not normally distributed
-            - If p-value ≥ 0.05: Data might be normally distributed
-            """
-            )
-            st.dataframe(
-                results_df.style.format(
-                    {
-                        "Shapiro-Wilk Statistic": "{:.3f}",
-                        "Shapiro-Wilk p-value": "{:.3f}",
-                        "Kolmogorov-Smirnov Statistic": "{:.3f}",
-                        "Kolmogorov-Smirnov p-value": "{:.3f}",
-                    }
-                )
-            )
 
     st.write("### Data Normality Tests")
 
