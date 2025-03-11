@@ -127,46 +127,62 @@ if experiment_name:
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
 
+    def create_normality_test_table(data: pd.DataFrame) -> pd.DataFrame:
+        """Create a dataframe with normality test results for numerical columns."""
+        test_results = []
+        numerical_cols = data.select_dtypes(include=[np.number]).columns
+        
+        for col in numerical_cols:
+            # Skip if all values are the same (no variance)
+            if len(data[col].unique()) <= 1:
+                continue
+                
+            # Perform Shapiro-Wilk test
+            sw_stat, sw_p = shapiro_wilk_test(data[col].dropna())
+            
+            # Perform Kolmogorov-Smirnov test
+            ks_stat, ks_p = kolmogorov_smirnov_test(data[col].dropna())
+            
+            test_results.append({
+                'Variable': col,
+                'Shapiro-Wilk Statistic': round(sw_stat, 3),
+                'Shapiro-Wilk p-value': round(sw_p, 3),
+                'Kolmogorov-Smirnov Statistic': round(ks_stat, 3),
+                'Kolmogorov-Smirnov p-value': round(ks_p, 3)
+            })
+        
+        return pd.DataFrame(test_results) if test_results else None
+
+    def display_normality_test_results(results_df: pd.DataFrame, title: str):
+        """Display normality test results in a formatted table."""
+        if results_df is not None:
+            st.write(f"#### {title}")
+            st.write("""
+            These tests evaluate whether the data follows a normal distribution:
+            - If p-value < 0.05: Data is likely not normally distributed
+            - If p-value ≥ 0.05: Data might be normally distributed
+            """)
+            st.dataframe(
+                results_df.style.format({
+                    'Shapiro-Wilk Statistic': '{:.3f}',
+                    'Shapiro-Wilk p-value': '{:.3f}',
+                    'Kolmogorov-Smirnov Statistic': '{:.3f}',
+                    'Kolmogorov-Smirnov p-value': '{:.3f}'
+                })
+            )
+
     st.write("### Data Normality Tests")
     
-    # Create a dataframe to store normality test results
-    test_results = []
+    # Create tabs for raw and normalized data tests
+    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalized Data"])
     
-    # Get numerical columns only
-    numerical_cols = data.select_dtypes(include=[np.number]).columns
+    with raw_tab:
+        # Get normality test results for raw data
+        raw_data = pd.read_csv(path_to_raw_data) if path_to_raw_data.exists() else data
+        raw_results = create_normality_test_table(raw_data)
+        display_normality_test_results(raw_results, "Raw Data Normality Tests")
     
-    for col in numerical_cols:
-        # Skip if all values are the same (no variance)
-        if len(data[col].unique()) <= 1:
-            continue
-            
-        # Perform Shapiro-Wilk test
-        sw_stat, sw_p = shapiro_wilk_test(data[col].dropna())
-        
-        # Perform Kolmogorov-Smirnov test
-        ks_stat, ks_p = kolmogorov_smirnov_test(data[col].dropna())
-        
-        test_results.append({
-            'Variable': col,
-            'Shapiro-Wilk Statistic': round(sw_stat, 3),
-            'Shapiro-Wilk p-value': round(sw_p, 3),
-            'Kolmogorov-Smirnov Statistic': round(ks_stat, 3),
-            'Kolmogorov-Smirnov p-value': round(ks_p, 3)
-        })
-    
-    # Create DataFrame and display
-    if test_results:
-        results_df = pd.DataFrame(test_results)
-        st.write("""
-        These tests evaluate whether the data follows a normal distribution:
-        - If p-value < 0.05: Data is likely not normally distributed
-        - If p-value ≥ 0.05: Data might be normally distributed
-        """)
-        st.dataframe(
-            results_df.style.format({
-                'Shapiro-Wilk Statistic': '{:.3f}',
-                'Shapiro-Wilk p-value': '{:.3f}',
-                'Kolmogorov-Smirnov Statistic': '{:.3f}',
-                'Kolmogorov-Smirnov p-value': '{:.3f}'
-            })
-        )
+    with norm_tab:
+        # Get normality test results for normalized data
+        norm_results = create_normality_test_table(data)
+        display_normality_test_results(norm_results, "Normalised Data Normality Tests")
