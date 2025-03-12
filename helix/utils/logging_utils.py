@@ -28,7 +28,7 @@ class Logger(object):
 
     def __init__(
         self,
-        log_dir: Path,
+        log_dir: Path | None = None,
         logging_level: str = "INFO",
         console_logger: bool = True,
         multi_module: bool = True,
@@ -54,11 +54,6 @@ class Logger(object):
             )
 
     def make_logger(self):
-        # logging configuration
-        log_dir = self._log_dir
-        log_dir.mkdir(parents=True, exist_ok=True)
-        file_name = log_dir.joinpath(f"{time.strftime('%Y%m%d-%H%M%S')}.log")
-
         # Create a custom logger
         if self.multi_module:
             logger = logging.getLogger()
@@ -66,16 +61,18 @@ class Logger(object):
             logger = logging.getLogger(__name__)
         logger.setLevel(self._level)
 
-        # Create handlers
-        f_handler = logging.FileHandler(filename=file_name)
-        f_handler.setLevel(self._level)
-
-        # Create formatters
+        # Create formatter
         format = logging.Formatter("%(levelname)s - %(message)s - %(module)s")
-        f_handler.setFormatter(format)
 
-        # Add handlers to the logger
-        logger.addHandler(f_handler)
+        # Create file handler
+        if self._log_dir is not None:
+            # logging configuration
+            self._log_dir.mkdir(parents=True, exist_ok=True)
+            file_name = self._log_dir.joinpath(f"{time.strftime('%Y%m%d-%H%M%S')}.log")
+            f_handler = logging.FileHandler(filename=file_name)
+            f_handler.setLevel(self._level)
+            f_handler.setFormatter(format)
+            logger.addHandler(f_handler)
 
         # Console handler creation
         if self.console_logger:
