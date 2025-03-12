@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-helix = "helix:main"
+helix = "helix.launch:main"
 
 [build-system]
 requires = ["hatchling"]
