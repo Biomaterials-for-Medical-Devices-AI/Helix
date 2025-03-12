@@ -52,23 +52,24 @@ conda create -n <env_name> python=3.11
 conda activate <env_name>
 ```
 
-### Install `poetry`
-Once you have activated your virtual environment, you need to install [poetry](https://python-poetry.org/). To install poetry, use the following command:
+### Install `uv`
+Once you have activated your virtual environment, you need to install [uv](https://docs.astral.sh/uv/). To install `uv`, use the following command:
 
 ```shell
-pip install poetry
+pip install uv
 ```
 
 ## Install Helix requirements
 To install the requirements for Helix, use the following command:
 
 ```shell
-poetry install
+uv sync --all-groups
 ```
+The `--all-groups` flag here will add the developer dependencies for formatting the code, code quality checks and testing.
 
 ## Running Helix
 Once you have installed Helix, you can run it from the terminal like so:
 ```shell
-poetry run helix
+uv run helix
 ```
 A browser window will open to the main page of the app.
