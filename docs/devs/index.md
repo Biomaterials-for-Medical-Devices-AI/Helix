@@ -9,7 +9,7 @@ The contents of the Helix source code look like this:
 ├── README.md
 ├── helix
 ├── docs
-├── poetry.lock
+├── uv.lock
 ├── pyproject.toml
 └── static
 ```
@@ -29,8 +29,8 @@ This is where the application code lives.
 ### `docs`
 This is the source directory of the documentation site.
 
-### `poetry.lock`
-This file tells `poetry` all the dependencies and their version numbers that need to be installed. When you run `poetry install`, `poetry` will check this file and download those versions of dependencies.
+### `uv.lock`
+This file tells `uv` all the dependencies and their version numbers that need to be installed. When you run `uv sync`, `uv` will check this file and download those versions of dependencies.
 
 ### `pyproject.toml`
 This file specifies the metadata for the project, such as authors, version number and which packages to include. It is also where dependencies are specified. These include the app dependencies as well as the developer dependencies.

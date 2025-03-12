@@ -11,11 +11,15 @@ jobs:
        with:
          submodules: 'recursive'
          ref: ${{ github.ref }}
-     - name: Blacken Python code
-       uses: jpetrucciani/black-check@master
+     - name: Install UV
+       uses: astral-sh/setup-uv@v5
        with:
-         path: '.'
-         black_flags: '--safe --verbose --diff'
+        pyproject-file: "pyproject.toml"
+        python-version: '3.11'
+     - name: Install dependencies
+       run: uv sync --all-groups
+     - name: Run black
+       run: uv run black helix tests
 
   code_quality_check:
     runs-on: ubuntu-latest
@@ -24,15 +28,13 @@ jobs:
         with:
           submodules: 'recursive'
           ref: ${{ github.ref }}
-      - name: Install poetry
-        run: pipx install poetry
-      - name: Setup Python
-        uses: actions/setup-python@v5.3.0
+      - name: Install UV
+        uses: astral-sh/setup-uv@v5
         with:
+          pyproject-file: "pyproject.toml"
           python-version: '3.11'
-          cache: "poetry"     
       - name: Install dependencies
-        run: poetry install
+        run: uv sync --all-groups
       - name: Run Flake8
-        run: poetry run flake8 helix tests
+        run: uv run flake8 helix tests
 
