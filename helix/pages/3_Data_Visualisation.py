@@ -53,7 +53,10 @@ biofefi_base_dir = helix_experiments_base_dir()
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
 
-    display_options(biofefi_base_dir / experiment_name)
+    # Create a container for configuration options
+    config_container = st.container()
+    with config_container:
+        display_options(biofefi_base_dir / experiment_name)
 
     path_to_exec_opts = execution_options_path(biofefi_base_dir / experiment_name)
 
@@ -76,15 +79,31 @@ if experiment_name:
         biofefi_base_dir / experiment_name,
     )
 
-    st.write("### Data")
+    st.write("### Raw Data")
 
     st.write(data)
 
-    st.write("#### Data Description")
+    st.write("#### Aggregated Statistics")
 
     st.write(data.describe())
 
-    st.write("### Data Visualisation")
+    st.write("### Data Normality Tests")
+
+    # Create tabs for raw and normalised data tests
+    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
+
+    with raw_tab:
+        # Get normality test results for raw data
+        raw_data = pd.read_csv(path_to_raw_data) if path_to_raw_data.exists() else data
+        raw_results = create_normality_test_table(raw_data)
+        display_normality_test_results(raw_results, "Raw Data Normality Tests")
+
+    with norm_tab:
+        # Get normality test results for normalized data
+        norm_results = create_normality_test_table(data)
+        display_normality_test_results(norm_results, "Normalised Data Normality Tests")
+
+    st.write("### Graphical Description")
 
     if path_to_raw_data.exists():
         data_tsne = pd.read_csv(path_to_raw_data)
@@ -101,10 +120,7 @@ if experiment_name:
     st.write("#### Target Variable Distribution")
 
     target_variable_dist_form(
-        data,
-        exec_opt.dependent_variable,
-        data_analysis_plot_dir,
-        plot_opt,
+        data, exec_opt.dependent_variable, data_analysis_plot_dir, plot_opt
     )
 
     st.write("#### Correlation Heatmap")
@@ -126,19 +142,3 @@ if experiment_name:
     )
 
     plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
-
-    st.write("### Data Normality Tests")
-
-    # Create tabs for raw and normalised data tests
-    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
-
-    with raw_tab:
-        # Get normality test results for raw data
-        raw_data = pd.read_csv(path_to_raw_data) if path_to_raw_data.exists() else data
-        raw_results = create_normality_test_table(raw_data)
-        display_normality_test_results(raw_results, "Raw Data Normality Tests")
-
-    with norm_tab:
-        # Get normality test results for normalized data
-        norm_results = create_normality_test_table(data)
-        display_normality_test_results(norm_results, "Normalised Data Normality Tests")

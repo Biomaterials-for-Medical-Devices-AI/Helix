@@ -7,6 +7,7 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.configuration import data_split_options_box
+from helix.components.plot_editor import edit_plot_modal
 from helix.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
 from helix.options.enums import (
     DataAnalysisStateKeys,
@@ -314,6 +315,8 @@ def ml_options_form():
 def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_opts):
     """
     Form to create the target variable distribution plot.
+
+    Uses plot-specific settings that are not saved between sessions.
     """
 
     show_kde = st.toggle("Show KDE", value=True, key=DataAnalysisStateKeys.ShowKDE)
@@ -325,53 +328,133 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_o
         key=DataAnalysisStateKeys.NBins,
     )
 
-    if st.checkbox(
+    show_plot = st.checkbox(
         "Create Target Variable Distribution Plot",
         key=DataAnalysisStateKeys.TargetVarDistribution,
-    ):
-        plt.style.use(plot_opts.plot_colour_scheme)
-        plt.figure(figsize=(10, 6), dpi=plot_opts.dpi)
-        displot = sns.displot(data=data, x=data.columns[-1], kde=show_kde, bins=n_bins)
+    )
+    if show_plot or st.session_state.get("redraw_target_dist", False):
+        if st.session_state.get("redraw_target_dist"):
+            st.session_state["redraw_target_dist"] = False
+            plt.close("all")  # Close any existing plots
+
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            "plot_settings_target_distribution",
+            {
+                "colour_scheme": plot_opts.plot_colour_scheme,
+                "title_font_size": plot_opts.plot_title_font_size,
+                "axis_font_size": plot_opts.plot_axis_font_size,
+                "axis_tick_size": plot_opts.plot_axis_tick_size,
+                "font_family": plot_opts.plot_font_family,
+                "dpi": plot_opts.dpi,
+                "width": 10,
+                "height": 6,
+                "colour_map": plot_opts.plot_colour_map,  # Include color map from loaded options
+            },
+        )
+
+        plt.style.use(plot_settings["colour_scheme"])
+        plt.figure(
+            figsize=(plot_settings["width"], plot_settings["height"]),
+            dpi=plot_settings["dpi"],
+        )
+        displot = sns.displot(
+            data=data,
+            x=data.columns[-1],
+            kde=show_kde,
+            bins=n_bins,
+            height=plot_settings["height"],
+            aspect=plot_settings["width"] / plot_settings["height"],
+        )
+
         plt.title(
             f"{dep_var_name} Distribution",
             fontdict={
-                "fontsize": plot_opts.plot_title_font_size,
-                "family": plot_opts.plot_font_family,
+                "fontsize": plot_settings["title_font_size"],
+                "family": plot_settings["font_family"],
             },
         )
 
         plt.xlabel(
             dep_var_name,
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
+            fontsize=plot_settings["axis_font_size"],
+            family=plot_settings["font_family"],
         )
 
         plt.ylabel(
             "Frequency",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
+            fontsize=plot_settings["axis_font_size"],
+            family=plot_settings["font_family"],
         )
 
         plt.xticks(
-            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
+            rotation=plot_settings.get("angle_rotate_xaxis_labels", 45),
+            fontsize=plot_settings["axis_tick_size"],
+            family=plot_settings["font_family"],
         )
         plt.yticks(
-            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
+            rotation=plot_settings.get("angle_rotate_yaxis_labels", 0),
+            fontsize=plot_settings["axis_tick_size"],
+            family=plot_settings["font_family"],
         )
 
         st.pyplot(displot)
+        plt.close()
 
-        if st.button("Save Plot", key=DataAnalysisStateKeys.SaveTargetVarDistribution):
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(
+                "Save Plot", key=DataAnalysisStateKeys.SaveTargetVarDistribution
+            ):
+                displot.savefig(
+                    data_analysis_plot_dir / f"{dep_var_name}_distribution.png"
+                )
+                plt.clf()
+                st.success("Plot created and saved successfully.")
+        with col2:
+            if st.button(
+                "Edit Plot",
+                key=f"edit_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
+            ):
+                st.session_state[
+                    f"show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
+                ] = True
 
-            displot.savefig(data_analysis_plot_dir / f"{dep_var_name}_distribution.png")
-            plt.clf()
-            st.success("Plot created and saved successfully.")
+            if st.session_state.get(
+                f"show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "target_distribution")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "Apply Changes", key="apply_changes_target_distribution"
+                    ):
+                        # Store settings in session state
+                        st.session_state["plot_settings_target_distribution"] = settings
+                        st.session_state[
+                            "show_editor_{}".format(
+                                DataAnalysisStateKeys.SaveTargetVarDistribution
+                            )
+                        ] = False
+                        st.session_state["redraw_target_dist"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key="cancel_target_distribution"):
+                        st.session_state[
+                            "show_editor_{}".format(
+                                DataAnalysisStateKeys.SaveTargetVarDistribution
+                            )
+                        ] = False
+                        st.rerun()
 
 
 @st.experimental_fragment
 def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
     """
     Form to create the correlation heatmap plot.
+
+    Uses plot-specific settings that are not saved between sessions.
     """
 
     if st.toggle(
@@ -397,66 +480,136 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
             "Please select at least one descriptor to create the correlation heatmap."
         )
 
-    if st.checkbox(
+    show_plot = st.checkbox(
         "Create Correlation Heatmap Plot", key=DataAnalysisStateKeys.CorrelationHeatmap
-    ):
+    )
+    if show_plot or st.session_state.get("redraw_heatmap", False):
+        if st.session_state.get("redraw_heatmap"):
+            st.session_state["redraw_heatmap"] = False
+            plt.close("all")  # Close any existing plots
 
         corr = corr_data.corr()
         # Generate a mask for the upper triangle
         mask = np.triu(np.ones_like(corr, dtype=bool))
 
-        # Set up the matplotlib figure
-        plt.style.use(plot_opts.plot_colour_scheme)
-        fig, ax = plt.subplots(figsize=(11, 9), dpi=plot_opts.dpi)
-
-        ax.set_title(
-            "Correlation Heatmap",
-            fontsize=plot_opts.plot_title_font_size,
-            family=plot_opts.plot_font_family,
-            wrap=True,
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            "plot_settings_heatmap",
+            {
+                "colour_scheme": plot_opts.plot_colour_scheme,
+                "title_font_size": plot_opts.plot_title_font_size,
+                "axis_font_size": plot_opts.plot_axis_font_size,
+                "axis_tick_size": plot_opts.plot_axis_tick_size,
+                "font_family": plot_opts.plot_font_family,
+                "dpi": plot_opts.dpi,
+                "width": 12,
+                "height": 10,
+                "colour_map": plot_opts.plot_colour_map,  # Use color map from loaded options
+            },
         )
 
-        ax.set_xticklabels(
-            ax.get_xticklabels(),
-            fontsize=plot_opts.plot_axis_tick_size,
-            family=plot_opts.plot_font_family,
+        # Set up the matplotlib figure with the specified style
+        plt.style.use(plot_settings["colour_scheme"])
+        fig, ax = plt.subplots(
+            figsize=(plot_settings["width"], plot_settings["height"]),
+            dpi=plot_settings["dpi"],
         )
 
-        ax.set_yticklabels(
-            ax.get_yticklabels(),
-            fontsize=plot_opts.plot_axis_tick_size,
-            family=plot_opts.plot_font_family,
-        )
-
-        # Generate a custom diverging colormap
-        cmap = plot_opts.plot_colour_map
-
-        # Draw the heatmap with the mask and correct aspect ratio
-        _ = sns.heatmap(
+        # Draw the heatmap with enhanced styling
+        sns.heatmap(
             corr,
             mask=mask,
-            cmap=cmap,
-            vmax=0.3,
+            cmap=plot_settings["colour_map"],
+            vmax=1.0,
+            vmin=-1.0,
             center=0,
             square=True,
             linewidths=0.5,
             annot=True,
-            cbar_kws={"shrink": 0.5},
+            fmt=".2f",
+            cbar_kws={
+                "shrink": 0.5,
+                "label": "Correlation Coefficient",
+                "format": "%.1f",
+                "aspect": 30,
+                "drawedges": True,
+            },
+            annot_kws={
+                "size": plot_settings["axis_tick_size"],
+                "family": plot_settings["font_family"],
+            },
+            xticklabels=True,  # Ensure x-axis labels are shown
+            yticklabels=True,  # Ensure y-axis labels are shown
+            ax=ax,
         )
+
+        # Customize the plot appearance
+        ax.set_title(
+            "Correlation Heatmap",
+            fontsize=plot_settings["title_font_size"],
+            family=plot_settings["font_family"],
+            pad=20,  # Add padding above title
+        )
+
+        # Apply axis label rotations from plot settings
+        plt.xticks(
+            rotation=plot_settings.get("angle_rotate_xaxis_labels", 45),
+            ha="right",
+            fontsize=plot_settings["axis_tick_size"],
+            family=plot_settings["font_family"],
+        )
+        plt.yticks(
+            rotation=plot_settings.get("angle_rotate_yaxis_labels", 0),
+            fontsize=plot_settings["axis_tick_size"],
+            family=plot_settings["font_family"],
+        )
+
+        # Adjust layout to prevent label cutoff
+        plt.tight_layout()
 
         st.pyplot(fig)
 
-        if st.button("Save Plot", key=DataAnalysisStateKeys.SaveHeatmap):
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Save Plot", key=DataAnalysisStateKeys.SaveHeatmap):
+                fig.savefig(data_analysis_plot_dir / "correlation_heatmap.png")
+                plt.clf()
+                st.success("Plot created and saved successfully.")
+        with col2:
+            if st.button("Edit Plot", key=f"edit_{DataAnalysisStateKeys.SaveHeatmap}"):
+                st.session_state[f"show_editor_{DataAnalysisStateKeys.SaveHeatmap}"] = (
+                    True
+                )
 
-            fig.savefig(data_analysis_plot_dir / "correlation_heatmap.png")
-            plt.clf()
-            st.success("Plot created and saved successfully.")
+            if st.session_state.get(
+                f"show_editor_{DataAnalysisStateKeys.SaveHeatmap}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "heatmap")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Apply Changes", key="apply_changes_heatmap"):
+                        # Store settings in session state
+                        st.session_state["plot_settings_heatmap"] = settings
+                        st.session_state[
+                            f"show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+                        ] = False
+                        st.session_state["redraw_heatmap"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key="cancel_heatmap"):
+                        st.session_state[
+                            "show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+                        ] = False
+                        st.rerun()
 
 
 @st.experimental_fragment
 def pairplot_form(data, data_analysis_plot_dir, plot_opts):
     """
     Form to create the pairplot plot.
+
+    Uses plot-specific settings that are not saved between sessions.
     """
 
     if st.toggle(
@@ -482,17 +635,127 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
             "Please select at least one descriptor to create the correlation plot."
         )
 
-    if st.checkbox("Create Pairplot", key=DataAnalysisStateKeys.PairPlot):
+    show_plot = st.checkbox("Create Pairplot", key=DataAnalysisStateKeys.PairPlot)
+    if show_plot or st.session_state.get("redraw_pairplot", False):
+        if st.session_state.get("redraw_pairplot"):
+            st.session_state["redraw_pairplot"] = False
+            plt.close("all")  # Close any existing plots
 
-        plt.style.use(plot_opts.plot_colour_scheme)
-        plt.figure(figsize=(10, 6), dpi=plot_opts.dpi)
-        pairplot = sns.pairplot(pairplot_data, corner=True)
-        st.pyplot(plt)
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            "plot_settings_pairplot",
+            {
+                "colour_scheme": plot_opts.plot_colour_scheme,
+                "title_font_size": plot_opts.plot_title_font_size,
+                "axis_font_size": plot_opts.plot_axis_font_size,
+                "axis_tick_size": plot_opts.plot_axis_tick_size,
+                "font_family": plot_opts.plot_font_family,
+                "dpi": plot_opts.dpi,
+                "width": 16,
+                "height": 16,
+                "colour_map": plot_opts.plot_colour_map,  # Use color map from loaded options
+            },
+        )
 
-        if st.button("Save Plot", key=DataAnalysisStateKeys.SavePairPlot):
-            pairplot.savefig(data_analysis_plot_dir / "pairplot.png")
-            plt.clf()
-            st.success("Plot created and saved successfully.")
+        # Set the style and create the pairplot
+        plt.style.use(plot_settings["colour_scheme"])
+
+        # Create figure with proper DPI
+        with plt.rc_context({"figure.dpi": plot_settings["dpi"]}):
+            # Calculate the figure size based on number of variables
+            n_vars = len(pairplot_data.columns)
+            aspect_ratio = plot_settings["width"] / plot_settings["height"]
+            size_per_var = min(plot_settings["width"], plot_settings["height"]) / n_vars
+
+            pairplot = sns.pairplot(
+                pairplot_data,
+                height=size_per_var,
+                aspect=aspect_ratio,
+                corner=True,
+                plot_kws={"s": 50, "alpha": 0.6},  # marker size  # transparency
+                diag_kws={"bins": 20, "alpha": 0.6},
+            )
+
+            # Add title to the pairplot
+            pairplot.fig.suptitle(
+                "Pairplot",
+                fontsize=plot_settings["title_font_size"],
+                family=plot_settings["font_family"],
+                y=1.02,  # Adjust title position to prevent overlap
+            )
+
+            # Apply axis label rotations and styling to all subplots
+            for ax in pairplot.axes.flat:
+                if ax is not None:  # Some axes might be None in corner=True mode
+                    # Set x-axis label rotations
+                    ax.set_xticklabels(
+                        ax.get_xticklabels(),
+                        rotation=plot_settings.get("angle_rotate_xaxis_labels", 45),
+                        family=plot_settings["font_family"],
+                    )
+                    # Set y-axis label rotations
+                    ax.set_yticklabels(
+                        ax.get_yticklabels(),
+                        rotation=plot_settings.get("angle_rotate_yaxis_labels", 0),
+                        family=plot_settings["font_family"],
+                    )
+
+            # Customize the appearance after creating the plot
+            for ax in pairplot.axes.flat:
+                if ax is not None:
+                    # Set font sizes
+                    ax.tick_params(labelsize=plot_opts.plot_axis_tick_size, rotation=45)
+                    if ax.get_xlabel():
+                        ax.set_xlabel(
+                            ax.get_xlabel(),
+                            fontsize=plot_opts.plot_axis_font_size,
+                            family=plot_opts.plot_font_family,
+                        )
+                    if ax.get_ylabel():
+                        ax.set_ylabel(
+                            ax.get_ylabel(),
+                            fontsize=plot_opts.plot_axis_font_size,
+                            family=plot_opts.plot_font_family,
+                        )
+
+            # Adjust layout to prevent label cutoff
+            plt.tight_layout()
+        st.pyplot(pairplot)
+        plt.close()
+
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Save Plot", key=DataAnalysisStateKeys.SavePairPlot):
+                pairplot.savefig(data_analysis_plot_dir / "pairplot.png")
+                plt.clf()
+                st.success("Plot created and saved successfully.")
+        with col2:
+            if st.button("Edit Plot", key=f"edit_{DataAnalysisStateKeys.SavePairPlot}"):
+                st.session_state[
+                    f"show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+                ] = True
+
+            if st.session_state.get(
+                f"show_editor_{DataAnalysisStateKeys.SavePairPlot}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "pairplot")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Apply Changes", key="apply_changes_pairplot"):
+                        # Store settings in session state
+                        st.session_state["plot_settings_pairplot"] = settings
+                        st.session_state[
+                            "show_editor_{}".format(DataAnalysisStateKeys.SavePairPlot)
+                        ] = False
+                        st.session_state["redraw_pairplot"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key="cancel_pairplot"):
+                        st.session_state[
+                            "show_editor_{}".format(DataAnalysisStateKeys.SavePairPlot)
+                        ] = False
+                        st.rerun()
 
 
 @st.experimental_fragment
@@ -524,7 +787,11 @@ def tSNE_plot_form(
         key=DataAnalysisStateKeys.Perplexity,
     )
 
-    if st.checkbox("Create t-SNE Plot", key=DataAnalysisStateKeys.TSNEPlot):
+    show_plot = st.checkbox("Create t-SNE Plot", key=DataAnalysisStateKeys.TSNEPlot)
+    if show_plot or st.session_state.get("redraw_tsne", False):
+        if st.session_state.get("redraw_tsne"):
+            st.session_state["redraw_tsne"] = False
+            plt.close("all")  # Close any existing plots
 
         tsne_normalised = TSNE(
             n_components=2, random_state=random_state, perplexity=perplexity
@@ -542,78 +809,148 @@ def tSNE_plot_form(
         df = pd.DataFrame(X_embedded, columns=["x", "y"])
         df["target"] = y
 
-        plt.style.use(plot_opts.plot_colour_scheme)
-        fig, axes = plt.subplots(1, 2, figsize=(16, 8), dpi=plot_opts.dpi)
-
-        # TODO: these two plots below can be plotted using a single function and the dataset
-        # as an argument. The code appears to be the same for both plots.
-        # And this function should go into services/plottings.py
-        # Plot 1: Normalised Data
-        sns.scatterplot(
-            data=df_normalised,
-            x="x",
-            y="y",
-            hue="target",
-            palette=plot_opts.plot_colour_map,
-            ax=axes[0],
-        )
-        axes[0].set_title(
-            "t-SNE Plot (Normalised Features)",
-            fontsize=plot_opts.plot_title_font_size,
-            family=plot_opts.plot_font_family,
-        )
-        axes[0].set_xlabel(
-            "t-SNE Component 1",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
-        axes[0].set_ylabel(
-            "t-SNE Component 2",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            "plot_settings_tsne",
+            {
+                "colour_scheme": plot_opts.plot_colour_scheme,
+                "title_font_size": plot_opts.plot_title_font_size,
+                "axis_font_size": plot_opts.plot_axis_font_size,
+                "axis_tick_size": plot_opts.plot_axis_tick_size,
+                "font_family": plot_opts.plot_font_family,
+                "dpi": plot_opts.dpi,
+                "width": 16,
+                "height": 8,
+                "colour_map": plot_opts.plot_colour_map,  # Use color map from loaded options
+            },
         )
 
-        # Plot 2: Original Data
-        sns.scatterplot(
-            data=df,
-            x="x",
-            y="y",
-            hue="target",
-            palette=plot_opts.plot_colour_map,
-            ax=axes[1],
-        )
-        axes[1].set_title(
-            "t-SNE Plot (Original Features)",
-            fontsize=plot_opts.plot_title_font_size,
-            family=plot_opts.plot_font_family,
-        )
-        axes[1].set_xlabel(
-            "t-SNE Component 1",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
-        axes[1].set_ylabel(
-            "t-SNE Component 2",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
+        # Set style and create figure with proper DPI
+        plt.style.use(plot_settings["colour_scheme"])
+        with plt.rc_context({"figure.dpi": plot_settings["dpi"]}):
+            fig, axes = plt.subplots(
+                1, 2, figsize=(plot_settings["width"], plot_settings["height"])
+            )
 
-        plt.xticks(
-            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
-        )
-        plt.yticks(
-            fontsize=plot_opts.plot_axis_tick_size, family=plot_opts.plot_font_family
-        )
+            # Plot 1: Normalised Data
+            sns.scatterplot(
+                data=df_normalised,
+                x="x",
+                y="y",
+                hue="target",
+                palette=plot_settings["colour_map"],
+                s=100,  # marker size
+                alpha=0.6,  # transparency
+                ax=axes[0],
+            )
 
-        plt.tight_layout()
+            # Customize first plot
+            axes[0].set_title(
+                "t-SNE Plot (Normalised Features)",
+                fontsize=plot_settings["title_font_size"],
+                family=plot_settings["font_family"],
+                pad=20,  # Add padding above title
+            )
+            axes[0].set_xlabel(
+                "t-SNE Component 1",
+                fontsize=plot_settings["axis_font_size"],
+                family=plot_settings["font_family"],
+            )
+            axes[0].set_ylabel(
+                "t-SNE Component 2",
+                fontsize=plot_settings["axis_font_size"],
+                family=plot_settings["font_family"],
+            )
+            # Apply axis label rotations and styling for first plot
+            axes[0].tick_params(
+                axis="both", which="major", labelsize=plot_settings["axis_tick_size"]
+            )
+            for label in axes[0].get_xticklabels():
+                label.set_rotation(plot_settings.get("angle_rotate_xaxis_labels", 45))
+                label.set_family(plot_settings["font_family"])
+            for label in axes[0].get_yticklabels():
+                label.set_rotation(plot_settings.get("angle_rotate_yaxis_labels", 0))
+                label.set_family(plot_settings["font_family"])
+
+            # Plot 2: Original Data
+            sns.scatterplot(
+                data=df,
+                x="x",
+                y="y",
+                hue="target",
+                palette=plot_settings["colour_map"],
+                s=100,  # marker size
+                alpha=0.6,  # transparency
+                ax=axes[1],
+            )
+
+            # Customize second plot
+            axes[1].set_title(
+                "t-SNE Plot (Original Features)",
+                fontsize=plot_settings["title_font_size"],
+                family=plot_settings["font_family"],
+                pad=20,  # Add padding above title
+            )
+            axes[1].set_xlabel(
+                "t-SNE Component 1",
+                fontsize=plot_settings["axis_font_size"],
+                family=plot_settings["font_family"],
+            )
+            axes[1].set_ylabel(
+                "t-SNE Component 2",
+                fontsize=plot_settings["axis_font_size"],
+                family=plot_settings["font_family"],
+            )
+            # Apply axis label rotations and styling for second plot
+            axes[1].tick_params(
+                axis="both", which="major", labelsize=plot_settings["axis_tick_size"]
+            )
+            for label in axes[1].get_xticklabels():
+                label.set_rotation(plot_settings.get("angle_rotate_xaxis_labels", 45))
+                label.set_family(plot_settings["font_family"])
+            for label in axes[1].get_yticklabels():
+                label.set_rotation(plot_settings.get("angle_rotate_yaxis_labels", 0))
+                label.set_family(plot_settings["font_family"])
+
+            # Adjust layout to prevent label cutoff
+            plt.tight_layout()
 
         st.pyplot(fig)
+        plt.close()
 
-        if st.button("Save Plot", key=DataAnalysisStateKeys.SaveTSNEPlot):
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Save Plot", key=DataAnalysisStateKeys.SaveTSNEPlot):
+                fig.savefig(data_analysis_plot_dir / "tsne_plot.png")
+                plt.clf()
+                st.success("Plots created and saved successfully.")
+        with col2:
+            if st.button("Edit Plot", key=f"edit_{DataAnalysisStateKeys.SaveTSNEPlot}"):
+                st.session_state[
+                    f"show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+                ] = True
 
-            fig.savefig(data_analysis_plot_dir / "tsne_plot.png")
-            plt.clf()
-            st.success("Plots created and saved successfully.")
+            if st.session_state.get(
+                f"show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "tsne")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button("Apply Changes", key="apply_changes_tsne"):
+                        # Store settings in session state
+                        st.session_state["plot_settings_tsne"] = settings
+                        st.session_state[
+                            "show_editor_{}".format(DataAnalysisStateKeys.SaveTSNEPlot)
+                        ] = False
+                        st.session_state["redraw_tsne"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key="cancel_tsne"):
+                        st.session_state[
+                            "show_editor_{}".format(DataAnalysisStateKeys.SaveTSNEPlot)
+                        ] = False
+                        st.rerun()
 
 
 def _linear_model_opts(use_hyperparam_search: bool) -> dict:
