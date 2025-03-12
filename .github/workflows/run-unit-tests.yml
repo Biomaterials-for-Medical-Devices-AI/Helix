@@ -11,14 +11,12 @@ jobs:
        with:
          submodules: 'recursive'
          ref: ${{ github.ref }}
-     - name: Install poetry
-       run: pipx install poetry
-     - name: Setup Python
-       uses: actions/setup-python@v5.3.0
+     - name: Install UV
+       uses: astral-sh/setup-uv@v5
        with:
-         python-version: '3.11'
-         cache: "poetry"     
+        pyproject-file: "pyproject.toml"
+        python-version: '3.11'
      - name: Install dependencies
-       run: poetry install
+       run: uv sync --all-groups
      - name: Run pytest
-       run: poetry run pytest
+       run: uv run pytest
