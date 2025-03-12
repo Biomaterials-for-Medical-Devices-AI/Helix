@@ -20,7 +20,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies with UV
-        run: uv sync --all-groups 
+        run: uv sync
 
       - name: Publish to PyPI
         run: uv publish --token ${{ secrets.PYPI_TOKEN }}
