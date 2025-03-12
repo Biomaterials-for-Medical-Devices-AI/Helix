@@ -3,7 +3,10 @@ name = "helix"
 version = "1.0.0"
 description = ""
 authors = [
-    { name = "Daniel Lea", email = "Daniel.Lea@nottingham.ac.uk" }
+    { name = "Daniel Lea", email = "Daniel.Lea@nottingham.ac.uk" },
+    { name = "Eduardo Aguilar", email = "pcxea2@exmail.nottingham.ac.uk" },
+    { name = "Karthikeyan Sivakumar", email = "psxks12@exmail.nottingham.ac.uk" },
+    { name = "Grazziela Figueredo", email = "pmzgf@exmail.nottingham.ac.uk" }
 ]
 requires-python = ">=3.11,<3.13"
 dependencies = [
