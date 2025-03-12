@@ -15,6 +15,7 @@ from helix.options.file_paths import (
     fuzzy_plot_dir,
     fuzzy_result_dir,
     helix_experiments_base_dir,
+    log_dir,
     ml_model_dir,
 )
 from helix.services.configuration import save_options
@@ -391,3 +392,51 @@ def test_fuzzy_analysis(new_experiment: str, models_to_evaluate: None):
     )  # directory is not empty
     assert fuzzy_options.exists()
     assert (fuzzy_results / "top contextual rules.csv").exists()
+
+
+def test_page_makes_one_log_per_run(new_experiment: str, models_to_evaluate: None):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_fi_log_dir = log_dir(exp_dir) / "fi"
+    expected_fuzzy_log_dir = log_dir(exp_dir) / "fi"
+    expected_n_log_files = 1
+    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=180.0)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Select explain all models
+    at.toggle[0].set_value(True).run()
+    # Select permutation importance; global method required for ensemble
+    at.checkbox[0].check().run()
+    # Select ensemble mean; required for fuzzy
+    at.checkbox[2].check().run()
+    # Select local SHAP; local also required for fuzzy
+    at.checkbox[5].check().run()
+    # Select fuzzy
+    at.checkbox[6].check().run()
+    # Select granualr analysis
+    at.checkbox[7].check().run()
+    # Leave additional configs as the defaults
+    # Leave save output toggles as true, the default
+    # Run
+    at.button[0].click().run()
+
+    # log dir contents
+    fi_log_dir_contents = list(
+        filter(lambda x: x.endswith(".log"), map(str, expected_fi_log_dir.iterdir()))
+    )
+    fuzzy_log_dir_contents = list(
+        filter(lambda x: x.endswith(".log"), map(str, expected_fuzzy_log_dir.iterdir()))
+    )
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_fi_log_dir.exists()
+    assert fi_log_dir_contents  # directory is not empty
+    assert len(fi_log_dir_contents) == expected_n_log_files
+    assert expected_fuzzy_log_dir.exists()
+    assert fuzzy_log_dir_contents  # directory is not empty
+    assert len(fuzzy_log_dir_contents) == expected_n_log_files
