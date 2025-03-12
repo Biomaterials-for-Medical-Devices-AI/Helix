@@ -2,6 +2,7 @@
 name = "helix"
 version = "1.0.0"
 description = ""
+readme = "README.md"
 authors = [
     { name = "Daniel Lea", email = "Daniel.Lea@nottingham.ac.uk" },
     { name = "Eduardo Aguilar", email = "pcxea2@exmail.nottingham.ac.uk" },
