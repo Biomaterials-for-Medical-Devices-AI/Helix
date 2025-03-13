@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
 from helix.components.configuration import display_options
@@ -117,9 +116,8 @@ if experiment_name:
         try:
             data = read_data(Path(data_opts.data_path))
             preprocessed_view(data)
-        except:
-            st.error("Unable to load data.", icon="🔥")
-            st.stop()
+        except Exception:
+            st.error("Unable to read data.", icon="🔥")
         finally:
             close_logger(logger_instance, logger)
 
@@ -129,32 +127,21 @@ if experiment_name:
 
         try:
             data = read_data(Path(data_opts.data_path), logger)
-            try:
-                non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
+            non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
 
-                if non_numeric:
-                    st.warning(
-                        f"The following columns contain non-numeric values: {', '.join(non_numeric)}. These will be eliminated."
-                    )
-                else:
-                    st.success("All the independent variable columns are numeric.")
+            if non_numeric:
+                st.warning(
+                    f"The following columns contain non-numeric values: {', '.join(non_numeric)}. These will be eliminated."
+                )
+            else:
+                st.success("All the independent variable columns are numeric.")
 
-            except TypeError as e:
-                st.error(e)
-                st.stop()
+            non_numeric_y = find_non_numeric_columns(data.iloc[:, -1])
 
-            try:
-
-                non_numeric_y = find_non_numeric_columns(data.iloc[:, -1])
-
-                if non_numeric_y:
-                    st.warning(
-                        "The dependent variable contains non-numeric values. This will be transformed to allow training."
-                    )
-
-            except TypeError as e:
-                st.error(e)
-                st.stop()
+            if non_numeric_y:
+                st.warning(
+                    "The dependent variable contains non-numeric values. This will be transformed to allow training."
+                )
 
             plot_opt = load_plot_options(path_to_plot_opts)
 
@@ -176,10 +163,8 @@ if experiment_name:
                     Path(data_opts.data_path).name,
                     biofefi_base_dir / experiment_name,
                 )
-                try:
-                    save_data(path_to_preprocessed_data, processed_data, logger)
-                except:
-                    st.error("Failed to save preprocessed data.", icon="🔥")
+
+                save_data(path_to_preprocessed_data, processed_data, logger)
 
                 # Update data opts to point to the pre-processed data
                 data_opts.data_path = str(path_to_preprocessed_data)
@@ -191,8 +176,7 @@ if experiment_name:
 
                 st.success("Data Preprocessing Complete")
                 preprocessed_view(processed_data)
-        except Exception as e:
-            st.error("Unable to load data.", icon="🔥")
-            st.stop()
+        except Exception:
+            st.error("Unable to read data.", icon="🔥")
         finally:
             close_logger(logger_instance, logger)
