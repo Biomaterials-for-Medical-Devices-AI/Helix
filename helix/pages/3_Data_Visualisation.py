@@ -1,5 +1,5 @@
 from pathlib import Path
-import pandas as pd
+
 import streamlit as st
 
 from helix.components.configuration import display_options
