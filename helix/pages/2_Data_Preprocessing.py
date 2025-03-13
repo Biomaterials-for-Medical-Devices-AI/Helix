@@ -114,7 +114,7 @@ if experiment_name:
 
     if not preproc_again:
         try:
-            data = read_data(Path(data_opts.data_path))
+            data = read_data(Path(data_opts.data_path), logger)
             preprocessed_view(data)
         except Exception:
             st.error("Unable to read data.", icon="🔥")
