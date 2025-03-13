@@ -23,7 +23,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
-from helix.services.data import save_data
+from helix.services.data import read_data, save_data
 from helix.services.experiments import get_experiments
 from helix.services.preprocessing import find_non_numeric_columns, run_preprocessing
 from helix.utils.logging_utils import Logger, close_logger
@@ -84,6 +84,9 @@ experiment_name = experiment_selector(choices)
 biofefi_base_dir = helix_experiments_base_dir()
 
 if experiment_name:
+    logger_instance = Logger()
+    logger = logger_instance.make_logger()
+
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
 
     display_options(biofefi_base_dir / experiment_name)
@@ -111,77 +114,85 @@ if experiment_name:
         preproc_again = True
 
     if not preproc_again:
-        data = pd.read_csv(data_opts.data_path)
-        preprocessed_view(data)
+        try:
+            data = read_data(Path(data_opts.data_path))
+            preprocessed_view(data)
+        except:
+            st.error("Unable to load data.", icon="🔥")
+            st.stop()
+        finally:
+            close_logger(logger_instance, logger)
 
     else:
         # remove preprocessed suffix to point to original data file
         data_opts.data_path = data_opts.data_path.replace("_preprocessed", "")
 
-        data = pd.read_csv(data_opts.data_path)
-
         try:
-            non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
-
-            if non_numeric:
-                st.warning(
-                    f"The following columns contain non-numeric values: {', '.join(non_numeric)}. These will be eliminated."
-                )
-            else:
-                st.success("All the independent variable columns are numeric.")
-
-        except TypeError as e:
-            st.error(e)
-            st.stop()
-
-        try:
-
-            non_numeric_y = find_non_numeric_columns(data.iloc[:, -1])
-
-            if non_numeric_y:
-                st.warning(
-                    "The dependent variable contains non-numeric values. This will be transformed to allow training."
-                )
-
-        except TypeError as e:
-            st.error(e)
-            st.stop()
-
-        plot_opt = load_plot_options(path_to_plot_opts)
-
-        original_view(data)
-
-        preprocessing_opts_form(data)
-
-        if st.button("Run Data Preprocessing", type="primary"):
-
-            config = build_config()
-
-            processed_data = run_preprocessing(
-                data,
-                biofefi_base_dir / experiment_name,
-                config,
-            )
-
-            path_to_preprocessed_data = preprocessed_data_path(
-                Path(data_opts.data_path).name,
-                biofefi_base_dir / experiment_name,
-            )
+            data = read_data(Path(data_opts.data_path), logger)
             try:
-                logger_instance = Logger()
-                logger = logger_instance.make_logger()
-                save_data(path_to_preprocessed_data, processed_data, logger)
-                close_logger(logger_instance, logger)
-            except:
-                st.error("Failed to save preprocessed data", icon="🔥")
+                non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
 
-            # Update data opts to point to the pre-processed data
-            data_opts.data_path = str(path_to_preprocessed_data)
-            save_options(path_to_data_opts, data_opts)
+                if non_numeric:
+                    st.warning(
+                        f"The following columns contain non-numeric values: {', '.join(non_numeric)}. These will be eliminated."
+                    )
+                else:
+                    st.success("All the independent variable columns are numeric.")
 
-            # Update config to show preprocessing is complete
-            config.data_is_preprocessed = True
-            save_options(path_to_preproc_opts, config)
+            except TypeError as e:
+                st.error(e)
+                st.stop()
 
-            st.success("Data Preprocessing Complete")
-            preprocessed_view(processed_data)
+            try:
+
+                non_numeric_y = find_non_numeric_columns(data.iloc[:, -1])
+
+                if non_numeric_y:
+                    st.warning(
+                        "The dependent variable contains non-numeric values. This will be transformed to allow training."
+                    )
+
+            except TypeError as e:
+                st.error(e)
+                st.stop()
+
+            plot_opt = load_plot_options(path_to_plot_opts)
+
+            original_view(data)
+
+            preprocessing_opts_form(data)
+
+            if st.button("Run Data Preprocessing", type="primary"):
+
+                config = build_config()
+
+                processed_data = run_preprocessing(
+                    data,
+                    biofefi_base_dir / experiment_name,
+                    config,
+                )
+
+                path_to_preprocessed_data = preprocessed_data_path(
+                    Path(data_opts.data_path).name,
+                    biofefi_base_dir / experiment_name,
+                )
+                try:
+                    save_data(path_to_preprocessed_data, processed_data, logger)
+                except:
+                    st.error("Failed to save preprocessed data.", icon="🔥")
+
+                # Update data opts to point to the pre-processed data
+                data_opts.data_path = str(path_to_preprocessed_data)
+                save_options(path_to_data_opts, data_opts)
+
+                # Update config to show preprocessing is complete
+                config.data_is_preprocessed = True
+                save_options(path_to_preproc_opts, config)
+
+                st.success("Data Preprocessing Complete")
+                preprocessed_view(processed_data)
+        except Exception as e:
+            st.error("Unable to load data.", icon="🔥")
+            st.stop()
+        finally:
+            close_logger(logger_instance, logger)
