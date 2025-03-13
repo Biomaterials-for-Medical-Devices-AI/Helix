@@ -14,6 +14,7 @@ dependencies = [
     "lime==0.2.0.1",
     "matplotlib==3.8.2",
     "numpy==1.26.4",
+    "openpyxl>=3.1.5",
     "pandas==2.2.2",
     "scikit-fuzzy==0.5.0",
     "scikit-learn==1.5.2",
