@@ -97,7 +97,7 @@ def _entrypoint(save_dir: Path):
 
     # Save the data
     uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
-    save_upload(path_to_data, uploaded_file.read().decode("utf-8-sig"))
+    save_upload(path_to_data, uploaded_file)
 
 
 st.set_page_config(
@@ -150,7 +150,10 @@ st.write(
 )
 
 st.file_uploader(
-    "Choose a CSV file", type="csv", key=ExecutionStateKeys.UploadedFileName
+    "Choose a file",
+    type=["csv", "xlsx"],
+    key=ExecutionStateKeys.UploadedFileName,
+    help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
 st.text_input(
     "Name of the dependent variable. **This will be used for the plots.**",
