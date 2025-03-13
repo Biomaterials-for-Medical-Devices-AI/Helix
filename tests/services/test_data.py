@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.datasets import make_classification
 
 from helix.services.data import read_data
-from helix.utils.logging_utils import Logger
+from helix.utils.logging_utils import Logger, close_logger
 
 
 def test_read_data_reads_csv_files():
@@ -17,9 +17,10 @@ def test_read_data_reads_csv_files():
         n_informative=4,
         random_state=42,
     )
-    data = np.concatenate((X, y.reshape((-1, 1))), axis=1)
-    np.savetxt(file_path, data, delimiter=",")
-    logger = Logger().make_logger()
+    data = pd.DataFrame(np.concatenate((X, y.reshape((-1, 1))), axis=1))
+    data.to_csv(file_path, index=False)
+    logger_instance = Logger()
+    logger = logger_instance.make_logger()
 
     # Act
     df = read_data(file_path, logger)
@@ -27,8 +28,37 @@ def test_read_data_reads_csv_files():
     # Assert
     assert isinstance(df, pd.DataFrame)
     assert not df.empty
-    assert df.shape == (499, 11)  # 499 not 500, first row assumed to be headers
+    assert df.shape == (500, 11)
 
     # Cleanup
     if file_path.exists():
         file_path.unlink()
+    close_logger(logger_instance, logger)
+
+
+def test_read_data_reads_xlsx_files():
+    # Arrange
+    file_path = Path(f"{uuid.uuid4()}.xlsx")
+    X, y = make_classification(
+        n_samples=500,
+        n_features=10,
+        n_informative=4,
+        random_state=42,
+    )
+    data = pd.DataFrame(np.concatenate((X, y.reshape((-1, 1))), axis=1))
+    data.to_excel(file_path, index=False)
+    logger_instance = Logger()
+    logger = logger_instance.make_logger()
+
+    # Act
+    df = read_data(file_path, logger)
+
+    # Assert
+    assert isinstance(df, pd.DataFrame)
+    assert not df.empty
+    assert df.shape == (500, 11)
+
+    # Cleanup
+    if file_path.exists():
+        file_path.unlink()
+    close_logger(logger_instance, logger)

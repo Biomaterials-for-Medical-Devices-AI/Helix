@@ -264,16 +264,16 @@ def read_data(data_path: Path, logger: Logger) -> pd.DataFrame:
     if data_path.suffix == ".csv":
         try:
             logger.info(f"Reading data from {data_path}")
-            return pd.read_csv(data_path)
+            return pd.read_csv(data_path, header=0)
         except Exception as e:
             logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
             raise e
-    elif data_path.suffix == ".xslx":
+    elif data_path.suffix == ".xlsx":
         try:
             logger.info(f"Reading data from {data_path}")
-            return pd.read_excel(data_path)
+            return pd.read_excel(data_path, header=0)
         except Exception as e:
             logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
             raise e
     else:
-        raise ValueError("data_path must be to a '.csv' or '.xslx' file")
+        raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
