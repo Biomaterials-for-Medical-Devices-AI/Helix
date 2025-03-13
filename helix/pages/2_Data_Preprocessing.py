@@ -23,8 +23,10 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
+from helix.services.data import save_data
 from helix.services.experiments import get_experiments
 from helix.services.preprocessing import find_non_numeric_columns, run_preprocessing
+from helix.utils.logging_utils import Logger, close_logger
 
 
 def build_config() -> PreprocessingOptions:
@@ -165,7 +167,13 @@ if experiment_name:
                 Path(data_opts.data_path).name,
                 biofefi_base_dir / experiment_name,
             )
-            processed_data.to_csv(path_to_preprocessed_data, index=False)
+            try:
+                logger_instance = Logger()
+                logger = logger_instance.make_logger()
+                save_data(path_to_preprocessed_data, processed_data, logger)
+                close_logger(logger_instance, logger)
+            except:
+                st.error("Failed to save preprocessed data", icon="🔥")
 
             # Update data opts to point to the pre-processed data
             data_opts.data_path = str(path_to_preprocessed_data)
