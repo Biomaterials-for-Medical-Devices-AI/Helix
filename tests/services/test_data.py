@@ -2,6 +2,7 @@ from pathlib import Path
 import uuid
 import numpy as np
 import pandas as pd
+import pytest
 from sklearn.datasets import make_classification
 
 from helix.services.data import read_data
@@ -57,6 +58,42 @@ def test_read_data_reads_xlsx_files():
     assert isinstance(df, pd.DataFrame)
     assert not df.empty
     assert df.shape == (500, 11)
+
+    # Cleanup
+    if file_path.exists():
+        file_path.unlink()
+    close_logger(logger_instance, logger)
+
+
+def test_read_data_raises_value_error_on_unsupported_files():
+    # Arrange
+    file_path = Path(f"{uuid.uuid4()}.txt")
+    logger_instance = Logger()
+    logger = logger_instance.make_logger()
+
+    # Act/Assert
+    with pytest.raises(
+        ValueError, match="data_path must be to a '.csv' or '.xlsx' file"
+    ):
+        read_data(file_path, logger)
+
+    # Cleanup
+    if file_path.exists():
+        file_path.unlink()
+    close_logger(logger_instance, logger)
+
+
+@pytest.mark.parametrize(
+    "file_path", [Path(f"{uuid.uuid4()}.csv"), Path(f"{uuid.uuid4()}.xlsx")]
+)
+def test_read_data_raises_file_not_found(file_path: str):
+    # Arrange
+    logger_instance = Logger()
+    logger = logger_instance.make_logger()
+
+    # Act/Assert
+    with pytest.raises(FileNotFoundError):
+        read_data(file_path, logger)
 
     # Cleanup
     if file_path.exists():
