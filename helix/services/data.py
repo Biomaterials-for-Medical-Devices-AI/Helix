@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -244,3 +246,34 @@ def ingest_data(
         problem_type=exec_opts.problem_type,
     ).ingest()
     return data
+
+
+def read_data(data_path: Path, logger: Logger) -> pd.DataFrame:
+    """Read a data file into memory from a '.csv' or '.xlsx' file.
+
+    Args:
+        data_path (Path): The path to the file to be read.
+        logger (Logger): The logger.
+
+    Raises:
+        ValueError: The data file wasn't a '.csv' or '.xlsx' file
+
+    Returns:
+        pd.DataFrame: The data read from the file.
+    """
+    if data_path.suffix == ".csv":
+        try:
+            logger.info(f"Reading data from {data_path}")
+            return pd.read_csv(data_path)
+        except Exception as e:
+            logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
+            raise e
+    elif data_path.suffix == ".xslx":
+        try:
+            logger.info(f"Reading data from {data_path}")
+            return pd.read_excel(data_path)
+        except Exception as e:
+            logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
+            raise e
+    else:
+        raise ValueError("data_path must be to a '.csv' or '.xslx' file")
