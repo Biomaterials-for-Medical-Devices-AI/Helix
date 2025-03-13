@@ -51,7 +51,7 @@ class DataBuilder:
         Tuple[pd.DataFrame, pd.DataFrame]
             The training data (X) and the targets (y)
         """
-        df = pd.read_csv(self._path)
+        df = read_data(Path(self._path), self._logger)
         X = df.iloc[:, :-1]
         y = df.iloc[:, -1]
         return X, y
