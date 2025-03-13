@@ -267,14 +267,14 @@ def read_data(data_path: Path, logger: Logger) -> pd.DataFrame:
             return pd.read_csv(data_path, header=0)
         except Exception as e:
             logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
-            raise e
+            raise
     elif data_path.suffix == ".xlsx":
         try:
             logger.info(f"Reading data from {data_path}")
             return pd.read_excel(data_path, header=0)
         except Exception as e:
             logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
-            raise e
+            raise
     else:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
 
@@ -296,13 +296,13 @@ def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
             data.to_csv(data_path, index=False)
         except Exception as e:
             logger.error(f"Failed to save data to {data_path}{os.linesep}{e}")
-            raise e
+            raise
     elif data_path.suffix == ".xlsx":
         try:
             logger.info(f"Saving data to {data_path}")
             data.to_excel(data_path, index=False)
         except Exception as e:
             logger.error(f"Failed to save data to {data_path}{os.linesep}{e}")
-            raise e
+            raise
     else:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
