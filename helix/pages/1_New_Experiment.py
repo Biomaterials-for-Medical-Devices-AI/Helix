@@ -150,7 +150,10 @@ st.write(
 )
 
 st.file_uploader(
-    "Choose a CSV file", type="csv", key=ExecutionStateKeys.UploadedFileName
+    "Choose a file",
+    type=["csv", "xlsx"],
+    key=ExecutionStateKeys.UploadedFileName,
+    help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
 st.text_input(
     "Name of the dependent variable. **This will be used for the plots.**",
