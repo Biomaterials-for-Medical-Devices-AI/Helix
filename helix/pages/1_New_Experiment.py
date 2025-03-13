@@ -97,7 +97,7 @@ def _entrypoint(save_dir: Path):
 
     # Save the data
     uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
-    save_upload(path_to_data, uploaded_file.read().decode("utf-8-sig"))
+    save_upload(path_to_data, uploaded_file)
 
 
 st.set_page_config(
