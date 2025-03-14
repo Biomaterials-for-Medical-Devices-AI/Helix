@@ -23,3 +23,8 @@ SVM_GRID = {
     "degree": [2, 3, 4],
     "C": [1.0, 10.0, 100],
 }
+
+TABPFN_GRID = {
+        "n_estimators": 4,
+        "softmax_temperature": 0.9
+        }

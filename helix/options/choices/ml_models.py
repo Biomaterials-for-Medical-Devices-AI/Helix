@@ -1,6 +1,7 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from xgboost import XGBClassifier, XGBRegressor
+from tabpfn import TabPFNClassifier, TabPFNRegressor
 
 from helix.machine_learning.models.nn_models import (
     BayesianRegularisedNNClassifier,
@@ -15,6 +16,7 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.XGBoost: XGBClassifier,
     ModelNames.SVM: SVC,
     ModelNames.BRNNClassifier: BayesianRegularisedNNClassifier,
+    ModelNames.TabPFN: TabPFNClassifier,
 }
 
 REGRESSORS: dict[ModelNames, type] = {
@@ -22,5 +24,6 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.RandomForest: RandomForestRegressor,
     ModelNames.XGBoost: XGBRegressor,
     ModelNames.SVM: SVR,
-    ModelNames.BRNNClassifier: BayesianRegularisedNNRegressor,
+    ModelNames.BRNNRegressor: BayesianRegularisedNNRegressor,
+    ModelNames.TabPFN: TabPFNRegressor,
 }

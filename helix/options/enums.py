@@ -135,6 +135,7 @@ class ModelNames(StrEnum):
     SVM = "svm"
     BRNNClassifier = "bayesianRegularised nn classifier"
     BRNNRegressor = "bayesianRegularised nn regressor"
+    TabPFN = "tabpfn"
 
 
 class DataSplitMethods(StrEnum):

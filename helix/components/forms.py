@@ -25,6 +25,7 @@ from helix.options.search_grids import (
     RANDOM_FOREST_GRID,
     SVM_GRID,
     XGB_GRID,
+    TABPFN_GRID,
 )
 
 
@@ -293,6 +294,10 @@ def ml_options_form():
     if st.toggle("Support Vector Machine", value=False):
         svm_model_type = _svm_opts(use_hyperparam_search)
         model_types.update(svm_model_type)
+
+    if st.toggle("TabPFN", value=False):
+        tabpfn_model_type = _tabpfn_opts(use_hyperparam_search)
+        model_types.update(tabpfn_model_type)
 
     st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
     st.subheader("Select outputs to save")
@@ -742,6 +747,30 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
         "use": True,
         "params": params,
     }
+    return model_types
+
+def _tabpfn_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        st.write("Options:")
+        n_estimators = st.number_input(
+            "Number of estimators", value=4, key="n_estimators_tabpfn"
+        )
+        softmax_temp = st.number_input(
+                "Softmax temperature", value=0.9, key="softmax_temp_tabpfn"
+                )
+        params = {
+                "n_estimators": n_estimators,
+                "softmax_temperature": softmax_temp,
+                }
+        st.divider()
+    else:
+        params = TABPFN_GRID
+
+    model_types["TabPFN"] = {
+            "use": True,
+            "params": params,
+            }
     return model_types
 
 

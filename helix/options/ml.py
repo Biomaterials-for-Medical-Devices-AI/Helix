@@ -10,6 +10,13 @@ class MachineLearningOptions:
     ml_plot_dir: str = "ml"
     use_hyperparam_search: bool = True
 
+@dataclass
+class TabPFNOptions:
+    """
+    A class containing the parameters for TabPFN models
+    """
+    n_estimators: int = 100
+    random_state: int = 42
 
 # ----- Bayesian Regularised Neural Network Parameters ----- >>>>>>>>
 
