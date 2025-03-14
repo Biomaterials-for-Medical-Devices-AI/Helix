@@ -27,10 +27,14 @@ st.write(
 
     To create a **new experiment** ⚗️, go to the sidebar on the **left** and click **"New Experiment"**.
 
-    To view your previous experiments 📈, go to the sidebar on the **left** and click **"View Experiments"**.
+    To preprocess your data, go to the sidebar on the **left** and click **"Data Preprocessing"**.
+
+    To visualise your data as part of EDA, go to the sidebar on the **left** and click **"Data Visualisation"**.
 
     To train new machine learning models 🏋️, go to the sidebar on the **left** and click **"Train Models"**.
 
     To run a feature importance analysis 📊, go to the sidebar on the **left** and click **"Feature Importance"**.
+
+    To view your previous experiments 📈, go to the sidebar on the **left** and click **"View Experiments"**.
     """
 )
