@@ -4,8 +4,13 @@ import random
 import shutil
 from multiprocessing import Process
 from pathlib import Path
+from typing import Any
 
 import numpy as np
+import pandas as pd
+
+from helix.services.data import save_data
+from helix.utils.logging_utils import Logger, close_logger
 
 
 def set_seed(seed: int) -> None:
@@ -54,19 +59,32 @@ def create_directory(path: Path):
         os.makedirs(path, exist_ok=True)
 
 
-def save_upload(file_to_upload: str, content: str, mode: str = "w"):
+def save_upload(upload_path: str, content: Any, mode: str = "w"):
     """Save a file given to the UI to disk.
 
     Args:
-        file_to_upload (str): The name of the file to save.
-        content (str): The contents to save to the file.
+        upload_path (str): The path to save file to.
+        content (Any): The output from `st.file_uploader`.
         mode (str): The mode to write the file. e.g. "w", "w+", "wb", etc.
     """
-    base_dir = os.path.dirname(file_to_upload)
+    logger_instance = Logger()
+    logger = logger_instance.make_logger()
+
+    base_dir = os.path.dirname(upload_path)
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
-    with open(file_to_upload, mode) as f:
-        f.write(content)
+
+    if content.name.endswith(".csv"):
+        df = pd.read_csv(content, header=0)
+        save_data(upload_path, df, logger)
+        close_logger(logger_instance, logger)
+    elif content.name.endswith(".xlsx"):
+        df = pd.read_excel(content, header=0)
+        save_data(upload_path, df, logger)
+        close_logger(logger_instance, logger)
+    else:
+        close_logger(logger_instance, logger)
+        raise ValueError("Uploaded file must be a '.csv' or a '.xlsx' file.")
 
 
 def cancel_pipeline(p: Process):
