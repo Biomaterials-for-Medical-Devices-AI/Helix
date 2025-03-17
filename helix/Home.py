@@ -12,8 +12,6 @@ sidebar_logo()
 st.write("# Welcome")
 st.write(
     """
-    **Helix** stands for biological data feature importance fusion framework.
-
     Using Helix, you can **rapidly** develop machine learning models of many kinds, and evaluate their performance
     down to a **feature-by-feature** level.
 
