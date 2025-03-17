@@ -60,6 +60,12 @@ with open(path_to_model_file, "rb") as model_file:
 ```
 
 ## Making predictions
+When making predictions with you model, you need to take care that the new data you wish to make prdictions for, are preprocessed the same way as your training data. 
+
+If you preprocessed your data on the **Data Preprocessing** page, take note of whether you normalised your independent and dependent variables, and which normalisation methods you used. Also take note of whether you used feature selection.
+
+When you run preprocessing, you get a file in your experiment directory ending in `_preprocessed.csv`. Look here to see which features made it through feature selection. If some features don't make it through, you will need to remove those features from your new data, or your model not work.
+
 ```python
 import pandas as pd
 
