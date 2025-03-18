@@ -10,10 +10,54 @@ Please see the `scikit-learn` docs to for details about their [API](https://scik
 
 Currently we only support supervised machine learning algorithms in the form of classifiers or regressors. **Classifiers** must implement the [`ClassifierMixin`][ClassifierMixin] and **regressors** must implement the [`RegressorMixin`][RegressorMixin]. **Both** must implement the [`BaseEstimator`][BaseEstimator] class.
 
-Your model should be saveable as a pickle file (`.pkl`). This is how Helix persists the models it trains.
+```python
+class MyClassifier(ClassifierMixin, BaseEstimator):
+    ...
+
+
+class MyRegressor(RegressorMixin, BaseEstimator):
+    ...
+```
+
+You **must** then override the `fit` and `predict` methods with the logic needed to fit your model and make predictions on data, respectively. 
+For classifiers, you **must** also override the `predict_proba` method, which returns the probabilities for each class for each prediction.
+
+```python
+class MyClassifier(ClassifierMixin, BaseEstimator):
+    def fit(self, X, y):
+        # perform fitting logic
+        ...
+        return self
+
+    def predict(self, X):
+        # perform prediction logic
+        preds = ...
+        return preds
+
+    def predict_proba(self, X):
+        # perform prediction logic and estimate class probabilities
+        probs = ...
+        return probs
+
+
+class MyRegressor(RegressorMixin, BaseEstimator):
+    def fit(self, X, y):
+        # perform fitting logic
+        ...
+        return self
+
+    def predict(self, X):
+        # perform prediction logic
+        preds = ...
+        return preds
+```
+
+See [here](https://scikit-learn.org/stable/developers/develop.html#rolling-your-own-estimator) for more information.
+
+Your model **must** be saveable as a pickle file (`.pkl`). This is how Helix persists the models it trains.
 
 ## Hyperparameter tuning
-Your models should be designed with **manual** and **automatic** hyperparameter tuning in mind. Make sure your model's hyperparameters are set in the constructor of your class.
+Your models **must** be designed with *manual* and *automatic* hyperparameter tuning in mind. Make sure your model's hyperparameters are set in the constructor of your class.
 
 ```python
 class MyNewModel(ClassifierMixin, BaseEstimator):
