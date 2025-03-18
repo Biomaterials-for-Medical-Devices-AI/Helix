@@ -4,7 +4,7 @@ To use your models independently from Helix, you will need to be familiar with P
 
 Helix saves models from an experiment to `/home/<username>/HelixExperiments/<experiment name>/models` on **Linux**, `/Users/<username>/HelixExperiments/<experiment name>/models` on **MacOS**, and `C:\\Users\<username>\HelixExperiments\<experiment name>\models` on **Windows**. The models are saved as **pickle files** (`.pkl`). These models can be reused in your own code for making predictions.
 
-The following example will assume an experiment that trained a classification model. But the principles are applicable to regression models, too.
+The example on this page (see [Loading your models](#loading-your-models) and onwards) will assume an experiment that trained a classification model. But the principles are applicable to regression models, too.
 
 ## Before you start...
 Helix uses [`pickle`](https://docs.python.org/3/library/pickle.html) to save models for later use. A drawback of this approach is that to use the models again, you must use the same environment when using your models as when you trained them. See https://scikit-learn.org/stable/model_persistence.html#model-persistence
