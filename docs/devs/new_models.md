@@ -20,7 +20,7 @@ class MyRegressor(RegressorMixin, BaseEstimator):
 ```
 
 You **must** then override the `fit` and `predict` methods with the logic needed to fit your model and make predictions on data, respectively. 
-For classifiers, you **must** also override the `predict_proba` method, which returns the probabilities for each class for each prediction.
+For classifiers, you **must** also override the `predict_proba` method, which returns the probabilities for each class for each prediction. This is not a requirement of `scikit-learn` but of Helix.
 
 ```python
 class MyClassifier(ClassifierMixin, BaseEstimator):
