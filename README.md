@@ -55,7 +55,7 @@ For information on how to install and run Helix, check the [instructions](https:
 
 ## Usage
 
-Helix will open in your internet browser when you run it. The main screen will appear giving a brief introduction to the app. To the left of the screen you will see a list of pages with the different functionalities of the app. Explanations can be found in the [instructions](https://biomaterials-for-medical-devices-ai.github.io/Helix/index.html).
+Helix will open in your internet browser when you run it. The main screen will appear giving a brief introduction to the app. To the left of the screen you will see a list of pages with the different functionalities of the app. Explanations of how to use the page can be found in the [instructions](https://biomaterials-for-medical-devices-ai.github.io/Helix/index.html).
 
 
 ## Team
