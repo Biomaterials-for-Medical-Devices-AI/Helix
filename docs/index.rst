@@ -27,6 +27,7 @@ Welcome to Helix's documentation!
    devs/index.md
    devs/installation.md
    devs/code_quality.md
+   devs/new_models.md
    apidocs/modules
 
 Indices and tables
