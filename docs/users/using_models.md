@@ -7,7 +7,7 @@ Helix saves models from an experiment to `/home/<username>/HelixExperiments/<exp
 The example on this page (see [Loading your models](#loading-your-models) and onwards) will assume an experiment that trained a classification model. But the principles are applicable to regression models, too.
 
 ## Before you start...
-Helix uses [`pickle`](https://docs.python.org/3/library/pickle.html) to save models for later use. A drawback of this approach is that to use the models again, you must use the same environment when using your models as when you trained them. See https://scikit-learn.org/stable/model_persistence.html#model-persistence
+Helix uses [`pickle`](https://docs.python.org/3/library/pickle.html) to save models for later use. This means that to use the models again without warnings or, potentially, erros, you must use an environment with the same packages and versions as Helix. See this page on [model persistance](https://scikit-learn.org/stable/model_persistence.html#model-persistence).
 
 To get a similar environment to the one used by Helix, you need to install the same versions of some packages. We recommend the following:
 - scikit-learn 1.5.2
