@@ -1,6 +1,6 @@
 # Using your models
 
-To use your models independently from Helix, you will need to be familiar with Python and with the `scikit-learn` library.
+Currently, there is no ability to use your models to make predictions on new data inside Helix.Therefore, you will need to create your own Python scripts to use them. You will need to be familiar with the `scikit-learn` library. Particularly, with how to make predictions with models.
 
 Helix saves models from an experiment to `/home/<username>/HelixExperiments/<experiment name>/models` on **Linux**, `/Users/<username>/HelixExperiments/<experiment name>/models` on **MacOS**, and `C:\\Users\<username>\HelixExperiments\<experiment name>\models` on **Windows**. The models are saved as **pickle files** (`.pkl`). These models can be reused in your own code for making predictions.
 
