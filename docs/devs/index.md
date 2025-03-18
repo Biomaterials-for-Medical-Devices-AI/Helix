@@ -1,5 +1,11 @@
 # Welcome to the Helix developer documentation
 
+## Contributing to Helix
+
+Helix is free and open-source and we welcome contributions from the community.
+
+- [Adding a new model](new_models.md)
+
 ## Code tour
 The contents of the Helix source code look like this:
 
