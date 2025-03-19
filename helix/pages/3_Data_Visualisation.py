@@ -142,13 +142,6 @@ if experiment_name:
         )
 
         plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
-
-        normaility_test_tabs(
-            data=data,
-            data_opts=data_opts,
-            experiment_name=experiment_name,
-            logger=logger,
-        )
     except ValueError:
         # When the user uploaded the wrong file type, somehow
         st.error("You must upload a .csv or .xlsx file.", icon="🔥")
