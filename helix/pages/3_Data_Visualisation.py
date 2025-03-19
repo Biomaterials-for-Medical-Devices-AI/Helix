@@ -12,7 +12,10 @@ from helix.components.forms import (
 )
 from helix.components.images.logos import sidebar_logo
 from helix.components.plots import plot_box
-from helix.components.statistical_tests import display_normality_test_results
+from helix.components.statistical_tests import (
+    display_normality_test_results,
+    normaility_test_tabs,
+)
 from helix.options.enums import ExecutionStateKeys
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -94,27 +97,12 @@ if experiment_name:
 
         st.write(data.describe())
 
-        st.write("### Data Normality Tests")
-
-        # Create tabs for raw and normalised data tests
-        raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
-
-        with raw_tab:
-            # Get normality test results for raw data
-            raw_data = (
-                read_data(path_to_raw_data, logger)
-                if path_to_raw_data.exists()
-                else data
-            )
-            raw_results = create_normality_test_table(raw_data)
-            display_normality_test_results(raw_results, "Raw Data Normality Tests")
-
-        with norm_tab:
-            # Get normality test results for normalized data
-            norm_results = create_normality_test_table(data)
-            display_normality_test_results(
-                norm_results, "Normalised Data Normality Tests"
-            )
+        normaility_test_tabs(
+            data=data,
+            data_opts=data_opts,
+            experiment_name=experiment_name,
+            logger=logger,
+        )
 
         st.write("### Graphical Description")
 
@@ -159,27 +147,12 @@ if experiment_name:
 
         plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
 
-        st.write("### Data Normality Tests")
-
-        # Create tabs for raw and normalised data tests
-        raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
-
-        with raw_tab:
-            # Get normality test results for raw data
-            raw_data = (
-                read_data(path_to_raw_data, logger)
-                if path_to_raw_data.exists()
-                else data
-            )
-            raw_results = create_normality_test_table(raw_data)
-            display_normality_test_results(raw_results, "Raw Data Normality Tests")
-
-        with norm_tab:
-            # Get normality test results for normalized data
-            norm_results = create_normality_test_table(data)
-            display_normality_test_results(
-                norm_results, "Normalised Data Normality Tests"
-            )
+        normaility_test_tabs(
+            data=data,
+            data_opts=data_opts,
+            experiment_name=experiment_name,
+            logger=logger,
+        )
     except Exception:
         st.error("Unable to read data.", icon="🔥")
     finally:
