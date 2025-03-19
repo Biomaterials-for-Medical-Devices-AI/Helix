@@ -677,7 +677,7 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
             )
 
             # Add title to the pairplot
-            pairplot.fig.suptitle(
+            pairplot.figure.suptitle(
                 "Pairplot",
                 fontsize=plot_settings["title_font_size"],
                 family=plot_settings["font_family"],
