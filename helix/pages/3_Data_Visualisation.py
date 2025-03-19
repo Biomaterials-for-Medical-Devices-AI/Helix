@@ -12,10 +12,7 @@ from helix.components.forms import (
 )
 from helix.components.images.logos import sidebar_logo
 from helix.components.plots import plot_box
-from helix.components.statistical_tests import (
-    display_normality_test_results,
-    normaility_test_tabs,
-)
+from helix.components.statistical_tests import normaility_test_tabs
 from helix.options.enums import ExecutionStateKeys
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -32,7 +29,6 @@ from helix.services.configuration import (
 )
 from helix.services.data import read_data
 from helix.services.experiments import get_experiments
-from helix.services.statistical_tests import create_normality_test_table
 from helix.utils.logging_utils import Logger, close_logger
 from helix.utils.utils import create_directory
 
