@@ -179,4 +179,5 @@ def edit_plot_modal(plot_opts: PlottingOptions, plot_type: str) -> PlottingOptio
         height=height,
         angle_rotate_xaxis_labels=rotate_x,
         angle_rotate_yaxis_labels=rotate_y,
+        save_plots=plot_opts.save_plots,
     )
