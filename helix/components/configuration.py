@@ -19,6 +19,7 @@ from helix.options.file_paths import (
     ml_options_path,
     plot_options_path,
 )
+from helix.options.plotting import PlottingOptions
 from helix.services.configuration import (
     load_data_options,
     load_data_preprocessing_options,
@@ -30,7 +31,7 @@ from helix.services.configuration import (
 )
 
 
-def plot_options_box(plot_opts=None):
+def plot_options_box(plot_opts: PlottingOptions | None = None):
     """Expander containing the options for making plots
 
     Args:
@@ -45,10 +46,18 @@ def plot_options_box(plot_opts=None):
             value=plot_opts.save_plots if plot_opts else True,
         )
         width = st.number_input(
-            "Width", min_value=10, max_value=100, key=PlotOptionKeys.Width
+            "Width",
+            min_value=10,
+            max_value=100,
+            key=PlotOptionKeys.Width,
+            value=plot_opts.width if plot_opts else 10,
         )
         height = st.number_input(
-            "Height", min_value=10, max_value=100, key=PlotOptionKeys.Height
+            "Height",
+            min_value=10,
+            max_value=100,
+            key=PlotOptionKeys.Height,
+            value=plot_opts.height if plot_opts else 10,
         )
         dpi = st.slider(
             "DPI",
