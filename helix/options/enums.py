@@ -165,6 +165,8 @@ class PlotOptionKeys(StrEnum):
     TitleFontSize = "plot_title_font_size"
     FontFamily = "plot_font_family"
     DPI = "dpi"
+    Height = "plot_height"
+    Width = "plot_width"
 
 
 class ViewExperimentKeys(StrEnum):
