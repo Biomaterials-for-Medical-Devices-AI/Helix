@@ -5,6 +5,7 @@ import streamlit as st
 
 from helix.options.choices.ui import PLOT_FONT_FAMILIES
 from helix.options.enums import PlotOptionKeys
+from helix.options.plotting import PlottingOptions
 
 
 def get_safe_index(value: str, options: list[str], default_value: str) -> int:
@@ -24,16 +25,16 @@ def get_safe_index(value: str, options: list[str], default_value: str) -> int:
         return options.index(default_value)
 
 
-def edit_plot_modal(plot_opts, plot_type: str):
+def edit_plot_modal(plot_opts: PlottingOptions, plot_type: str) -> PlottingOptions:
     """Display a modal dialog for editing plot appearance.
 
     Args:
-        plot_opts: The current plotting options
-        plot_type: Type of plot being edited (e.g., 'target_distribution', 'heatmap', 'pairplot', 'tsne')
+        plot_opts (PlottingOptions): The current plotting options
+        plot_type (str): Type of plot being edited (e.g., 'target_distribution', 'heatmap', 'pairplot', 'tsne')
             Used to create unique form IDs for each plot type.
 
     Returns:
-        dict: Dictionary containing the updated plot options if submitted, None otherwise
+        PlottingOptions: The new plotting options for the specific plot.
     """
 
     # Color scheme
@@ -166,16 +167,16 @@ def edit_plot_modal(plot_opts, plot_type: str):
     )
 
     # Return the current settings
-    return {
-        PlotOptionKeys.ColourScheme: colour_scheme,
-        PlotOptionKeys.TitleFontSize: title_font_size,
-        PlotOptionKeys.AxisFontSize: axis_font_size,
-        PlotOptionKeys.AxisTickSize: tick_size,
-        PlotOptionKeys.FontFamily: font_family,
-        PlotOptionKeys.DPI: dpi,
-        PlotOptionKeys.Width: width,
-        PlotOptionKeys.Height: height,
-        PlotOptionKeys.ColourMap: colour_map,
-        PlotOptionKeys.RotateXAxisLabels: rotate_x,
-        PlotOptionKeys.RotateYAxisLabels: rotate_y,
-    }
+    return PlottingOptions(
+        plot_axis_font_size=axis_font_size,
+        plot_axis_tick_size=tick_size,
+        plot_colour_map=colour_map,
+        plot_colour_scheme=colour_scheme,
+        plot_font_family=font_family,
+        dpi=dpi,
+        plot_title_font_size=title_font_size,
+        width=width,
+        height=height,
+        angle_rotate_xaxis_labels=rotate_x,
+        angle_rotate_yaxis_labels=rotate_y,
+    )
