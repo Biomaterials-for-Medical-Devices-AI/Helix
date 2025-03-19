@@ -27,7 +27,7 @@ class SVC(SkLeanSVC):
         max_iter=1000,  # set max_iter to 1000 to avoid infinite fitting loop
         decision_function_shape="ovr",
         break_ties=False,
-        random_state=None
+        random_state=None,
     ):
         super().__init__(
             C=C,
@@ -68,7 +68,7 @@ class SVR(SkLearnSVR):
         shrinking=True,
         cache_size=200,
         verbose=False,
-        max_iter=1000  # set max_iter to 1000 to avoid infinite fitting loop
+        max_iter=1000,  # set max_iter to 1000 to avoid infinite fitting loop
     ):
         super().__init__(
             kernel=kernel,

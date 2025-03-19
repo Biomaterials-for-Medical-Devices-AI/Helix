@@ -193,14 +193,14 @@ def pipeline(
     biofefi_base_dir = helix_experiments_base_dir()
     seed = exec_opts.random_state
     set_seed(seed)
-    fi_logger_instance = Logger(Path(fi_opts.fi_log_dir))
-    fi_logger = fi_logger_instance.make_logger()
 
     # Models will already be trained before feature importance
     trained_models = load_models_to_explain(
         ml_model_dir(biofefi_base_dir / experiment_name), explain_models
     )
 
+    fi_logger_instance = Logger(Path(fi_opts.fi_log_dir))
+    fi_logger = fi_logger_instance.make_logger()
     # Feature importance
     (
         gloabl_importance_results,
@@ -214,6 +214,8 @@ def pipeline(
         models=trained_models,
         logger=fi_logger,
     )
+    # Close the fi logger
+    close_logger(fi_logger_instance, fi_logger)
 
     # Fuzzy interpretation
     if fuzzy_opts is not None and fuzzy_opts.fuzzy_feature_selection:
@@ -230,9 +232,6 @@ def pipeline(
             logger=fuzzy_logger,
         )
         close_logger(fuzzy_logger_instance, fuzzy_logger)
-
-    # Close the fi logger
-    close_logger(fi_logger_instance, fi_logger)
 
 
 # Set page contents
@@ -328,7 +327,7 @@ if experiment_name:
                     models_to_explaion,
                 ) = build_configuration()
                 # Create the logger
-                logger_instance = Logger(Path(fi_opts.fi_log_dir))
+                logger_instance = Logger()
                 logger = logger_instance.make_logger()
                 # Ingest the data
                 data = ingest_data(exec_opts, data_opts, logger)

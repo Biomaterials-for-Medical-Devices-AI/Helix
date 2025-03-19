@@ -1,4 +1,6 @@
+import os
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -49,7 +51,7 @@ class DataBuilder:
         Tuple[pd.DataFrame, pd.DataFrame]
             The training data (X) and the targets (y)
         """
-        df = pd.read_csv(self._path)
+        df = read_data(Path(self._path), self._logger)
         X = df.iloc[:, :-1]
         y = df.iloc[:, -1]
         return X, y
@@ -244,3 +246,63 @@ def ingest_data(
         problem_type=exec_opts.problem_type,
     ).ingest()
     return data
+
+
+def read_data(data_path: Path, logger: Logger) -> pd.DataFrame:
+    """Read a data file into memory from a '.csv' or '.xlsx' file.
+
+    Args:
+        data_path (Path): The path to the file to be read.
+        logger (Logger): The logger.
+
+    Raises:
+        ValueError: The data file wasn't a '.csv' or '.xlsx' file.
+
+    Returns:
+        pd.DataFrame: The data read from the file.
+    """
+    if data_path.suffix == ".csv":
+        try:
+            logger.info(f"Reading data from {data_path}")
+            return pd.read_csv(data_path, header=0)
+        except Exception as e:
+            logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
+            raise
+    elif data_path.suffix == ".xlsx":
+        try:
+            logger.info(f"Reading data from {data_path}")
+            return pd.read_excel(data_path, header=0)
+        except Exception as e:
+            logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
+            raise
+    else:
+        raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
+
+
+def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
+    """Save data to either a '.csv' or '.xlsx' file.
+
+    Args:
+        data_path (Path): The path to save the data to.
+        data (pd.DataFrame): The data to save.
+        logger (Logger): The logger.
+
+    Raises:
+        ValueError: The data file wasn't a '.csv' or '.xlsx' file.
+    """
+    if data_path.suffix == ".csv":
+        try:
+            logger.info(f"Saveing data to {data_path}")
+            data.to_csv(data_path, index=False)
+        except Exception as e:
+            logger.error(f"Failed to save data to {data_path}{os.linesep}{e}")
+            raise
+    elif data_path.suffix == ".xlsx":
+        try:
+            logger.info(f"Saving data to {data_path}")
+            data.to_excel(data_path, index=False)
+        except Exception as e:
+            logger.error(f"Failed to save data to {data_path}{os.linesep}{e}")
+            raise
+    else:
+        raise ValueError("data_path must be to a '.csv' or '.xlsx' file")

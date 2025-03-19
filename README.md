@@ -67,20 +67,20 @@ Helix will open in your internet browser when you run it. The main screen will a
 - [James Mitchell-White](https://scholar.google.com/citations?user=fecKRIYAAAAJ&hl=en) (Data Scientist, Research Software Engineer)
 - [Grazziela Figueredo](https://scholar.google.com/citations?user=DXNNUcUAAAAJ&hl=en) (Associate Professor, Principal Investigator)
 
-[poetry-badge]: https://img.shields.io/badge/Poetry-%233B82F6.svg?style=for-the-badge&logo=poetry&logoColor=0B3D8D
+[poetry-badge]: https://img.shields.io/badge/uv-purple?style=for-the-badge&logo=uv&logoColor=%23DE5FE9
 [sklearn-badge]: https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white
 [plt-badge]: https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black
 [linux-badge]: https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black
 [macos-badge]: https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=macos&logoColor=F0F0F0
 [windows-badge]: https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white
 [python-badge]: https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white
-[issues-badge]: https://img.shields.io/github/issues/Biomaterials-for-Medical-Devices-AI/BioFEFI?style=for-the-badge
-[build-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/build-dcos.yml?style=for-the-badge&label=Build%20docs
-[publish-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/publish-docs.yml?style=for-the-badge&label=Publish%20docs
-[code-quality-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/format-code.yml?style=for-the-badge&label=Code%20quality
-[license-badge]: https://img.shields.io/github/license/Biomaterials-for-Medical-Devices-AI/BioFEFI?style=for-the-badge&label=License
-[downloads-badge]: https://img.shields.io/pypi/dm/biofefi?style=for-the-badge
-[tests-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/BioFEFI/run-unit-tests.yml?style=for-the-badge&label=Tests
+[issues-badge]: https://img.shields.io/github/issues/Biomaterials-for-Medical-Devices-AI/Helix?style=for-the-badge
+[build-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/build-dcos.yml?style=for-the-badge&label=Build%20docs
+[publish-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/publish-docs.yml?style=for-the-badge&label=Publish%20docs
+[code-quality-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/format-code.yml?style=for-the-badge&label=Code%20quality
+[license-badge]: https://img.shields.io/github/license/Biomaterials-for-Medical-Devices-AI/Helix?style=for-the-badge&label=License
+[downloads-badge]: https://img.shields.io/pypi/dm/Helix?style=for-the-badge
+[tests-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/run-unit-tests.yml?style=for-the-badge&label=Tests
 
 
 ## Contact

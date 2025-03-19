@@ -4,6 +4,7 @@ from streamlit.testing.v1 import AppTest
 from helix.options.enums import DataSplitMethods
 from helix.options.file_paths import (
     helix_experiments_base_dir,
+    log_dir,
     ml_metrics_path,
     ml_model_dir,
     ml_plot_dir,
@@ -397,3 +398,37 @@ def test_auto_svm(new_experiment: str):
     )  # directory is not empty
     assert expected_preds_file.exists()
     assert expected_metrics_file.exists()
+
+
+def test_page_makes_one_log_per_run(new_experiment: str):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_log_dir = log_dir(exp_dir) / "ml"
+    expected_n_log_files = 1
+    k = 3
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Set the number of k-folds
+    at.number_input[0].set_value(k).run()
+    # Select Random Forest
+    at.toggle[2].set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    at.button[0].click().run()
+
+    # log dir contents
+    log_dir_contents = list(
+        filter(lambda x: x.endswith(".log"), map(str, expected_log_dir.iterdir()))
+    )
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_log_dir.exists()
+    assert log_dir_contents  # directory is not empty
+    assert len(log_dir_contents) == expected_n_log_files
