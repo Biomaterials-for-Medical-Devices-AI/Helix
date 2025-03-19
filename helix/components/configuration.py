@@ -121,7 +121,7 @@ def plot_options_box(plot_opts=None):
         font_index = (
             PLOT_FONT_FAMILIES.index(plot_opts.plot_font_family)
             if plot_opts
-            else PLOT_FONT_FAMILIES.index("Arial")
+            else PLOT_FONT_FAMILIES.index(PLOT_FONT_FAMILIES[1])  # sans-serif
         )
         font = st.selectbox(
             "Font",
