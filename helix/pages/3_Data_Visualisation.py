@@ -102,7 +102,9 @@ if experiment_name:
         with raw_tab:
             # Get normality test results for raw data
             raw_data = (
-                pd.read_csv(path_to_raw_data) if path_to_raw_data.exists() else data
+                read_data(path_to_raw_data, logger)
+                if path_to_raw_data.exists()
+                else data
             )
             raw_results = create_normality_test_table(raw_data)
             display_normality_test_results(raw_results, "Raw Data Normality Tests")
