@@ -31,6 +31,7 @@ from helix.services.configuration import (
 )
 
 
+@st.experimental_fragment
 def plot_options_box(plot_opts: PlottingOptions | None = None):
     """Expander containing the options for making plots
 
