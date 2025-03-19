@@ -236,12 +236,6 @@ def display_options(experiment_path: Path) -> None:
         "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
     }
 
-    # Create a container for plot options
-    plot_options_container = st.container()
-    with plot_options_container:
-        # Initialize plot options with saved values
-        plot_options_box(plot_opts=options_dict["Plotting Options"])
-
     with st.expander("Show Experiment Options", expanded=False):
 
         # Display Execution Options (dataclass format)
