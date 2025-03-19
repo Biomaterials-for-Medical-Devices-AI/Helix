@@ -44,6 +44,12 @@ def plot_options_box(plot_opts=None):
             key=PlotOptionKeys.SavePlots,
             value=plot_opts.save_plots if plot_opts else True,
         )
+        width = st.number_input(
+            "Width", min_value=10, max_value=100, key=PlotOptionKeys.Width
+        )
+        height = st.number_input(
+            "Height", min_value=10, max_value=100, key=PlotOptionKeys.Height
+        )
         dpi = st.slider(
             "DPI",
             min_value=50,
@@ -147,7 +153,7 @@ def plot_options_box(plot_opts=None):
             arr = np.random.normal(1, 0.5, size=100)
             # Create a violin plot
             data = pd.DataFrame({"A": arr, "B": arr, "C": arr})
-            fig, ax = plt.subplots(dpi=dpi)
+            fig, ax = plt.subplots(figsize=(width, height), dpi=dpi)
             sns.violinplot(data=data, ax=ax)
             ax.set_title("Title")
             ax.set_xlabel("X axis")

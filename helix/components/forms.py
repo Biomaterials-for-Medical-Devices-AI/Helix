@@ -21,6 +21,7 @@ from helix.options.enums import (
     ProblemTypes,
     TransformationsY,
 )
+from helix.options.plotting import PlottingOptions
 from helix.options.search_grids import (
     LINEAR_MODEL_GRID,
     RANDOM_FOREST_GRID,
@@ -312,7 +313,9 @@ def ml_options_form():
 
 
 @st.experimental_fragment
-def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_opts):
+def target_variable_dist_form(
+    data, dep_var_name, data_analysis_plot_dir, plot_opts: PlottingOptions
+):
     """
     Form to create the target variable distribution plot.
 
@@ -340,62 +343,55 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_o
         # Get plot-specific settings from session state or use loaded plot options
         plot_settings = st.session_state.get(
             "plot_settings_target_distribution",
-            {
-                "colour_scheme": plot_opts.plot_colour_scheme,
-                "title_font_size": plot_opts.plot_title_font_size,
-                "axis_font_size": plot_opts.plot_axis_font_size,
-                "axis_tick_size": plot_opts.plot_axis_tick_size,
-                "font_family": plot_opts.plot_font_family,
-                "dpi": plot_opts.dpi,
-                "width": 10,
-                "height": 6,
-                "colour_map": plot_opts.plot_colour_map,  # Include color map from loaded options
-            },
+            plot_opts,  # return the original plot_opts
         )
 
-        plt.style.use(plot_settings["colour_scheme"])
+        plt.style.use(plot_settings.plot_colour_scheme)
         plt.figure(
-            figsize=(plot_settings["width"], plot_settings["height"]),
-            dpi=plot_settings["dpi"],
+            figsize=(
+                plot_settings.width,
+                plot_settings.height,
+            ),
+            dpi=plot_settings.dpi,
         )
         displot = sns.displot(
             data=data,
             x=data.columns[-1],
             kde=show_kde,
             bins=n_bins,
-            height=plot_settings["height"],
-            aspect=plot_settings["width"] / plot_settings["height"],
+            height=plot_settings.height,
+            aspect=plot_settings.width / plot_settings.height,
         )
 
         plt.title(
             f"{dep_var_name} Distribution",
             fontdict={
-                "fontsize": plot_settings["title_font_size"],
-                "family": plot_settings["font_family"],
+                "fontsize": plot_settings.plot_title_font_size,
+                "family": plot_settings.plot_font_family,
             },
         )
 
         plt.xlabel(
             dep_var_name,
-            fontsize=plot_settings["axis_font_size"],
-            family=plot_settings["font_family"],
+            fontsize=plot_settings.plot_axis_font_size,
+            family=plot_settings.plot_font_family,
         )
 
         plt.ylabel(
             "Frequency",
-            fontsize=plot_settings["axis_font_size"],
-            family=plot_settings["font_family"],
+            fontsize=plot_settings.plot_axis_font_size,
+            family=plot_settings.plot_font_family,
         )
 
         plt.xticks(
-            rotation=plot_settings.get("angle_rotate_xaxis_labels", 45),
-            fontsize=plot_settings["axis_tick_size"],
-            family=plot_settings["font_family"],
+            rotation=plot_settings.angle_rotate_xaxis_labels,
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
         )
         plt.yticks(
-            rotation=plot_settings.get("angle_rotate_yaxis_labels", 0),
-            fontsize=plot_settings["axis_tick_size"],
-            family=plot_settings["font_family"],
+            rotation=plot_settings.angle_rotate_yaxis_labels,
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
         )
 
         st.pyplot(displot)
@@ -450,7 +446,7 @@ def target_variable_dist_form(data, dep_var_name, data_analysis_plot_dir, plot_o
 
 
 @st.experimental_fragment
-def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
+def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts: PlottingOptions):
     """
     Form to create the correlation heatmap plot.
 
@@ -495,31 +491,21 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
         # Get plot-specific settings from session state or use loaded plot options
         plot_settings = st.session_state.get(
             "plot_settings_heatmap",
-            {
-                "colour_scheme": plot_opts.plot_colour_scheme,
-                "title_font_size": plot_opts.plot_title_font_size,
-                "axis_font_size": plot_opts.plot_axis_font_size,
-                "axis_tick_size": plot_opts.plot_axis_tick_size,
-                "font_family": plot_opts.plot_font_family,
-                "dpi": plot_opts.dpi,
-                "width": 12,
-                "height": 10,
-                "colour_map": plot_opts.plot_colour_map,  # Use color map from loaded options
-            },
+            plot_opts,
         )
 
         # Set up the matplotlib figure with the specified style
-        plt.style.use(plot_settings["colour_scheme"])
+        plt.style.use(plot_settings.plot_colour_scheme)
         fig, ax = plt.subplots(
-            figsize=(plot_settings["width"], plot_settings["height"]),
-            dpi=plot_settings["dpi"],
+            figsize=(plot_settings.width, plot_settings.height),
+            dpi=plot_settings.dpi,
         )
 
         # Draw the heatmap with enhanced styling
         sns.heatmap(
             corr,
             mask=mask,
-            cmap=plot_settings["colour_map"],
+            cmap=plot_settings.plot_colour_map,
             vmax=1.0,
             vmin=-1.0,
             center=0,
@@ -535,8 +521,8 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
                 "drawedges": True,
             },
             annot_kws={
-                "size": plot_settings["axis_tick_size"],
-                "family": plot_settings["font_family"],
+                "size": plot_settings.plot_axis_tick_size,
+                "family": plot_settings.plot_font_family,
             },
             xticklabels=True,  # Ensure x-axis labels are shown
             yticklabels=True,  # Ensure y-axis labels are shown
@@ -546,22 +532,22 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
         # Customize the plot appearance
         ax.set_title(
             "Correlation Heatmap",
-            fontsize=plot_settings["title_font_size"],
-            family=plot_settings["font_family"],
+            fontsize=plot_settings.plot_title_font_size,
+            family=plot_settings.plot_font_family,
             pad=20,  # Add padding above title
         )
 
         # Apply axis label rotations from plot settings
         plt.xticks(
-            rotation=plot_settings.get("angle_rotate_xaxis_labels", 45),
+            rotation=plot_settings.angle_rotate_xaxis_labels,
             ha="right",
-            fontsize=plot_settings["axis_tick_size"],
-            family=plot_settings["font_family"],
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
         )
         plt.yticks(
-            rotation=plot_settings.get("angle_rotate_yaxis_labels", 0),
-            fontsize=plot_settings["axis_tick_size"],
-            family=plot_settings["font_family"],
+            rotation=plot_settings.angle_rotate_yaxis_labels,
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
         )
 
         # Adjust layout to prevent label cutoff
@@ -605,7 +591,7 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts):
 
 
 @st.experimental_fragment
-def pairplot_form(data, data_analysis_plot_dir, plot_opts):
+def pairplot_form(data, data_analysis_plot_dir, plot_opts: PlottingOptions):
     """
     Form to create the pairplot plot.
 
@@ -644,28 +630,18 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
         # Get plot-specific settings from session state or use loaded plot options
         plot_settings = st.session_state.get(
             "plot_settings_pairplot",
-            {
-                "colour_scheme": plot_opts.plot_colour_scheme,
-                "title_font_size": plot_opts.plot_title_font_size,
-                "axis_font_size": plot_opts.plot_axis_font_size,
-                "axis_tick_size": plot_opts.plot_axis_tick_size,
-                "font_family": plot_opts.plot_font_family,
-                "dpi": plot_opts.dpi,
-                "width": 16,
-                "height": 16,
-                "colour_map": plot_opts.plot_colour_map,  # Use color map from loaded options
-            },
+            plot_opts,
         )
 
         # Set the style and create the pairplot
-        plt.style.use(plot_settings["colour_scheme"])
+        plt.style.use(plot_settings.plot_colour_scheme)
 
         # Create figure with proper DPI
-        with plt.rc_context({"figure.dpi": plot_settings["dpi"]}):
+        with plt.rc_context({"figure.dpi": plot_settings.dpi}):
             # Calculate the figure size based on number of variables
             n_vars = len(pairplot_data.columns)
-            aspect_ratio = plot_settings["width"] / plot_settings["height"]
-            size_per_var = min(plot_settings["width"], plot_settings["height"]) / n_vars
+            aspect_ratio = plot_settings.width / plot_settings.height
+            size_per_var = min(plot_settings.width, plot_settings.height) / n_vars
 
             pairplot = sns.pairplot(
                 pairplot_data,
@@ -679,8 +655,8 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
             # Add title to the pairplot
             pairplot.figure.suptitle(
                 "Pairplot",
-                fontsize=plot_settings["title_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_title_font_size,
+                family=plot_settings.plot_font_family,
                 y=1.02,  # Adjust title position to prevent overlap
             )
 
@@ -690,14 +666,14 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
                     # Set x-axis label rotations
                     ax.set_xticklabels(
                         ax.get_xticklabels(),
-                        rotation=plot_settings.get("angle_rotate_xaxis_labels", 45),
-                        family=plot_settings["font_family"],
+                        rotation=plot_settings.angle_rotate_xaxis_labels,
+                        family=plot_settings.plot_font_family,
                     )
                     # Set y-axis label rotations
                     ax.set_yticklabels(
                         ax.get_yticklabels(),
-                        rotation=plot_settings.get("angle_rotate_yaxis_labels", 0),
-                        family=plot_settings["font_family"],
+                        rotation=plot_settings.angle_rotate_yaxis_labels,
+                        family=plot_settings.plot_font_family,
                     )
 
             # Customize the appearance after creating the plot
@@ -760,7 +736,11 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts):
 
 @st.experimental_fragment
 def tSNE_plot_form(
-    data, random_state, data_analysis_plot_dir, plot_opts, scaler: Normalisations = None
+    data,
+    random_state,
+    data_analysis_plot_dir,
+    plot_opts: PlottingOptions,
+    scaler: Normalisations = None,
 ):
 
     X = data.drop(columns=[data.columns[-1]])
@@ -812,24 +792,14 @@ def tSNE_plot_form(
         # Get plot-specific settings from session state or use loaded plot options
         plot_settings = st.session_state.get(
             "plot_settings_tsne",
-            {
-                "colour_scheme": plot_opts.plot_colour_scheme,
-                "title_font_size": plot_opts.plot_title_font_size,
-                "axis_font_size": plot_opts.plot_axis_font_size,
-                "axis_tick_size": plot_opts.plot_axis_tick_size,
-                "font_family": plot_opts.plot_font_family,
-                "dpi": plot_opts.dpi,
-                "width": 16,
-                "height": 8,
-                "colour_map": plot_opts.plot_colour_map,  # Use color map from loaded options
-            },
+            plot_opts,
         )
 
         # Set style and create figure with proper DPI
-        plt.style.use(plot_settings["colour_scheme"])
-        with plt.rc_context({"figure.dpi": plot_settings["dpi"]}):
+        plt.style.use(plot_settings.plot_colour_scheme)
+        with plt.rc_context({"figure.dpi": plot_settings.dpi}):
             fig, axes = plt.subplots(
-                1, 2, figsize=(plot_settings["width"], plot_settings["height"])
+                1, 2, figsize=(plot_settings.width, plot_settings.height)
             )
 
             # Plot 1: Normalised Data
@@ -838,7 +808,7 @@ def tSNE_plot_form(
                 x="x",
                 y="y",
                 hue="target",
-                palette=plot_settings["colour_map"],
+                palette=plot_settings.plot_colour_map,
                 s=100,  # marker size
                 alpha=0.6,  # transparency
                 ax=axes[0],
@@ -847,30 +817,30 @@ def tSNE_plot_form(
             # Customize first plot
             axes[0].set_title(
                 "t-SNE Plot (Normalised Features)",
-                fontsize=plot_settings["title_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_title_font_size,
+                family=plot_settings.plot_font_family,
                 pad=20,  # Add padding above title
             )
             axes[0].set_xlabel(
                 "t-SNE Component 1",
-                fontsize=plot_settings["axis_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
             )
             axes[0].set_ylabel(
                 "t-SNE Component 2",
-                fontsize=plot_settings["axis_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
             )
             # Apply axis label rotations and styling for first plot
             axes[0].tick_params(
-                axis="both", which="major", labelsize=plot_settings["axis_tick_size"]
+                axis="both", which="major", labelsize=plot_settings.plot_axis_tick_size
             )
             for label in axes[0].get_xticklabels():
-                label.set_rotation(plot_settings.get("angle_rotate_xaxis_labels", 45))
-                label.set_family(plot_settings["font_family"])
+                label.set_rotation(plot_settings.angle_rotate_xaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
             for label in axes[0].get_yticklabels():
-                label.set_rotation(plot_settings.get("angle_rotate_yaxis_labels", 0))
-                label.set_family(plot_settings["font_family"])
+                label.set_rotation(plot_settings.angle_rotate_yaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
 
             # Plot 2: Original Data
             sns.scatterplot(
@@ -878,7 +848,7 @@ def tSNE_plot_form(
                 x="x",
                 y="y",
                 hue="target",
-                palette=plot_settings["colour_map"],
+                palette=plot_settings.plot_colour_map,
                 s=100,  # marker size
                 alpha=0.6,  # transparency
                 ax=axes[1],
@@ -887,30 +857,30 @@ def tSNE_plot_form(
             # Customize second plot
             axes[1].set_title(
                 "t-SNE Plot (Original Features)",
-                fontsize=plot_settings["title_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_title_font_size,
+                family=plot_settings.plot_font_family,
                 pad=20,  # Add padding above title
             )
             axes[1].set_xlabel(
                 "t-SNE Component 1",
-                fontsize=plot_settings["axis_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
             )
             axes[1].set_ylabel(
                 "t-SNE Component 2",
-                fontsize=plot_settings["axis_font_size"],
-                family=plot_settings["font_family"],
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
             )
             # Apply axis label rotations and styling for second plot
             axes[1].tick_params(
-                axis="both", which="major", labelsize=plot_settings["axis_tick_size"]
+                axis="both", which="major", labelsize=plot_settings.plot_axis_tick_size
             )
             for label in axes[1].get_xticklabels():
-                label.set_rotation(plot_settings.get("angle_rotate_xaxis_labels", 45))
-                label.set_family(plot_settings["font_family"])
+                label.set_rotation(plot_settings.angle_rotate_xaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
             for label in axes[1].get_yticklabels():
-                label.set_rotation(plot_settings.get("angle_rotate_yaxis_labels", 0))
-                label.set_family(plot_settings["font_family"])
+                label.set_rotation(plot_settings.angle_rotate_yaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
 
             # Adjust layout to prevent label cutoff
             plt.tight_layout()
