@@ -43,6 +43,8 @@ def plotting_opts():
         plot_colour_map="viridis",
         plot_font_family="sans-serif",
         dpi=150,
+        width=10,
+        height=10,
     )
 
 
