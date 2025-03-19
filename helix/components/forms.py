@@ -591,7 +591,9 @@ def correlation_heatmap_form(data, data_analysis_plot_dir, plot_opts: PlottingOp
 
 
 @st.experimental_fragment
-def pairplot_form(data, data_analysis_plot_dir, plot_opts: PlottingOptions):
+def pairplot_form(  # noqa: C901
+    data, data_analysis_plot_dir, plot_opts: PlottingOptions
+):
     """
     Form to create the pairplot plot.
 
@@ -735,7 +737,7 @@ def pairplot_form(data, data_analysis_plot_dir, plot_opts: PlottingOptions):
 
 
 @st.experimental_fragment
-def tSNE_plot_form(
+def tSNE_plot_form(  # noqa: C901
     data,
     random_state,
     data_analysis_plot_dir,
