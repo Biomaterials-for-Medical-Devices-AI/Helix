@@ -153,7 +153,11 @@ if experiment_name:
             experiment_name=experiment_name,
             logger=logger,
         )
+    except ValueError:
+        # When the user uploaded the wrong file type, somehow
+        st.error("You must upload a .csv or .xlsx file.", icon="🔥")
     except Exception:
-        st.error("Unable to read data.", icon="🔥")
+        # Catch all error
+        st.error("Something went wrong.", icon="🔥")
     finally:
         close_logger(logger_instance, logger)
