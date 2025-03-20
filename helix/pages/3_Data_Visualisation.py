@@ -78,14 +78,31 @@ if experiment_name:
     data_opts = load_data_options(path_to_data_opts)
 
     try:
-        data = read_data(Path(data_opts.data_path), logger)
 
-        path_to_raw_data = preprocessed_data_path(
-            data_opts.data_path.split("/")[-1],
-            biofefi_base_dir / experiment_name,
+        # `raw_data` refers to the data before it gets any preprocessing,
+        # such as Standardisation or Log transformation.
+        # `data` can be preprocessed data, if the user has used the preprocessing page.
+        # If not, then `data` will be the raw data that they uploaded.
+        # In this case `raw_data` will be None.
+        path_to_raw_data = Path(data_opts.data_path.replace("_preprocessed", ""))
+        path_to_preproc_data = preprocessed_data_path(
+            str(path_to_raw_data), biofefi_base_dir / experiment_name
+        )
+        if path_to_raw_data.exists() and path_to_preproc_data.exists():
+            raw_data = read_data(path_to_raw_data, logger)
+
+            st.write("### Raw Data")
+            st.info("This is your original data **before** preprocessing.")
+            st.dataframe(raw_data)
+        else:
+            raw_data = None
+
+        data = read_data(
+            path_to_preproc_data if path_to_preproc_data.exists() else path_to_raw_data,
+            logger,
         )
 
-        st.write("### Raw Data")
+        st.write("### Data")
 
         st.write(data)
 
@@ -95,9 +112,7 @@ if experiment_name:
 
         normaility_test_tabs(
             data=data,
-            data_opts=data_opts,
-            experiment_name=experiment_name,
-            logger=logger,
+            raw_data=raw_data,
         )
 
         st.write("### Graphical Description")
@@ -142,11 +157,11 @@ if experiment_name:
         )
 
         plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
-    except ValueError:
-        # When the user uploaded the wrong file type, somehow
-        st.error("You must upload a .csv or .xlsx file.", icon="🔥")
-    except Exception:
-        # Catch all error
-        st.error("Something went wrong.", icon="🔥")
+    # except ValueError:
+    #     # When the user uploaded the wrong file type, somehow
+    #     st.error("You must upload a .csv or .xlsx file.", icon="🔥")
+    # except Exception:
+    #     # Catch all error
+    #     st.error("Something went wrong.", icon="🔥")
     finally:
         close_logger(logger_instance, logger)

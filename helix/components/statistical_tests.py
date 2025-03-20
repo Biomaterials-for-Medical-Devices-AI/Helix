@@ -3,11 +3,7 @@
 import pandas as pd
 import streamlit as st
 
-from helix.options.data import DataOptions
-from helix.options.file_paths import helix_experiments_base_dir, preprocessed_data_path
-from helix.services.data import read_data
 from helix.services.statistical_tests import create_normality_test_table
-from helix.utils.logging_utils import Logger
 
 
 def display_normality_test_results(results_df: pd.DataFrame, title: str):
@@ -40,27 +36,32 @@ def display_normality_test_results(results_df: pd.DataFrame, title: str):
 
 @st.experimental_fragment
 def normaility_test_tabs(
-    data: pd.DataFrame, data_opts: DataOptions, experiment_name: str, logger: Logger
+    data: pd.DataFrame,
+    raw_data: pd.DataFrame | None = None,
 ):
     st.write("### Data Normality Tests")
 
-    path_to_raw_data = preprocessed_data_path(
-        data_opts.data_path.split("/")[-1],
-        helix_experiments_base_dir() / experiment_name,
-    )
-
     # Create tabs for raw and normalised data tests
-    raw_tab, norm_tab = st.tabs(["Raw Data", "Normalised Data"])
+    raw_tab, norm_tab = st.tabs(["Raw Data", "Preprocessed Data"])
 
     with raw_tab:
         # Get normality test results for raw data
-        raw_data = (
-            read_data(path_to_raw_data, logger) if path_to_raw_data.exists() else data
-        )
-        raw_results = create_normality_test_table(raw_data)
-        display_normality_test_results(raw_results, "Raw Data Normality Tests")
+        if raw_data is not None:
+            raw_results = create_normality_test_table(raw_data)
+            display_normality_test_results(raw_results, "Raw Data Normality Tests")
+        else:
+            raw_results = create_normality_test_table(data)
+            display_normality_test_results(raw_results, "Raw Data Normality Tests")
 
     with norm_tab:
         # Get normality test results for normalized data
-        norm_results = create_normality_test_table(data)
-        display_normality_test_results(norm_results, "Normalised Data Normality Tests")
+        if raw_data is not None:
+            norm_results = create_normality_test_table(data)
+            display_normality_test_results(
+                norm_results, "Preprocessed Data Normality Tests"
+            )
+        else:
+            st.info(
+                "Your data has not been preprocessed in Helix. "
+                "Please go to the **Data Preprocessing** page."
+            )
