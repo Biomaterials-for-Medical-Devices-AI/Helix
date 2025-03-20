@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 import helix.options.file_paths as fp
 
 
@@ -29,11 +31,26 @@ def test_uploaded_file_path():
     assert actual_output == expected_output
 
 
-def test_raw_data_path():
+@pytest.mark.parametrize(
+    "file_name,expected_output",
+    [
+        (
+            "test_data.csv",
+            fp.helix_experiments_base_dir()
+            / "TestExperiment"
+            / "test_data_preprocessed.csv",
+        ),
+        (
+            "test_data.xlsx",
+            fp.helix_experiments_base_dir()
+            / "TestExperiment"
+            / "test_data_preprocessed.xlsx",
+        ),
+    ],
+)
+def test_raw_data_path(file_name: str, expected_output: Path):
     # Arrange
     experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
-    file_name = "test_data.csv"
-    expected_output = experiment_path / "test_data_preprocessed.csv"
 
     # Act
     actual_output = fp.preprocessed_data_path(file_name, experiment_path)
