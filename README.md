@@ -51,11 +51,11 @@ sudo apt install libomp-dev
 
 On Windows, this doesn't seem to be a problem. You should be able to proceed with installation.
 
-For information on how to install and run Helix, check the [instructions](https://biomaterials-for-medical-devices-ai.github.io/BioFEFI/users/installation.html).
+For information on how to install and run Helix, check the [instructions](https://biomaterials-for-medical-devices-ai.github.io/Helix/users/installation.html).
 
 ## Usage
 
-Helix will open in your internet browser when you run it. The main screen will appear giving a brief introduction to the app. To the left of the screen you will see a list of pages with the different functionalities of the app. Explanations can be found in the [instructions](https://biomaterials-for-medical-devices-ai.github.io/BioFEFI/index.html).
+Helix will open in your internet browser when you run it. The main screen will appear giving a brief introduction to the app. To the left of the screen you will see a list of pages with the different functionalities of the app. Explanations of how to use the page can be found in the [instructions](https://biomaterials-for-medical-devices-ai.github.io/Helix/index.html).
 
 
 ## Team

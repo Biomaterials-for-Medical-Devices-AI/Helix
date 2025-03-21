@@ -18,6 +18,7 @@ Welcome to Helix's documentation!
    users/train_models.md
    users/feature_importance.md
    users/view_experiments.md
+   users/using_models.md
 
 .. toctree::
    :maxdepth: 2
