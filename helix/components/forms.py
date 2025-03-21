@@ -23,6 +23,7 @@ from helix.options.enums import (
 )
 from helix.options.plotting import PlottingOptions
 from helix.options.search_grids import (
+    BRNN_GRID,
     LINEAR_MODEL_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
@@ -1066,7 +1067,7 @@ def _brnn_opts(use_hyperparam_search: bool) -> dict:
         epochs = st.number_input("Epochs", value=10)
         hidden_dim = st.number_input("Hidden dimension size", value=64)
         output_dim = st.number_input("Output dimension size", value=1)
-        lr = st.number_input("Learning rate", value=0.0)
+        lr = st.number_input("Learning rate", value=0.0003)
         prior_mu = st.number_input("Prior mu (\u03bc)", value=0)
         prior_sigma = st.number_input("Prior sigma (\u03c3)", value=1)
         lambda_reg = st.number_input("Lambda regularisation term", value=0.01)
@@ -1082,7 +1083,7 @@ def _brnn_opts(use_hyperparam_search: bool) -> dict:
         }
         st.divider()
     else:
-        params = ...
+        params = BRNN_GRID
 
     model_types["BRNN"] = {
         "use": True,

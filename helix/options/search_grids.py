@@ -23,3 +23,14 @@ SVM_GRID = {
     "degree": [2, 3, 4],
     "C": [1.0, 10.0, 100],
 }
+
+BRNN_GRID = {
+    "batch_size": [32],
+    "epochs": [10],
+    "hidden_dim": [64],
+    "output_dim": [1],
+    "lr": [0.0003],
+    "prior_mu": [0],
+    "prior_sigma": [1],
+    "lambda_reg": [0.01],
+}
