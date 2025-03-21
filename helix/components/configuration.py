@@ -19,6 +19,7 @@ from helix.options.file_paths import (
     ml_options_path,
     plot_options_path,
 )
+from helix.options.plotting import PlottingOptions
 from helix.services.configuration import (
     load_data_options,
     load_data_preprocessing_options,
@@ -31,26 +32,46 @@ from helix.services.configuration import (
 
 
 @st.experimental_fragment
-def plot_options_box():
-    """Expander containing the options for making plots"""
+def plot_options_box(plot_opts: PlottingOptions | None = None):
+    """Expander containing the options for making plots
+
+    Args:
+        plot_opts (PlottingOptions, optional): Plot options loaded from configuration.
+            If provided, use these values instead of defaults.
+    """
     with st.expander("Plot options", expanded=False):
+        # Use configuration values if available, otherwise use defaults
         save = st.checkbox(
             "Save all plots",
             key=PlotOptionKeys.SavePlots,
-            value=True,
+            value=plot_opts.save_plots if plot_opts else True,
+        )
+        width = st.number_input(
+            "Width",
+            min_value=10,
+            max_value=100,
+            key=PlotOptionKeys.Width,
+            value=plot_opts.width if plot_opts else 10,
+        )
+        height = st.number_input(
+            "Height",
+            min_value=10,
+            max_value=100,
+            key=PlotOptionKeys.Height,
+            value=plot_opts.height if plot_opts else 10,
         )
         dpi = st.slider(
             "DPI",
             min_value=50,
             max_value=300,
-            value=150,
+            value=plot_opts.dpi if plot_opts else 150,
             key=PlotOptionKeys.DPI,
         )
         rotate_x = st.number_input(
             "Angle to rotate X-axis labels",
             min_value=0,
             max_value=90,
-            value=10,
+            value=plot_opts.angle_rotate_xaxis_labels if plot_opts else 45,
             key=PlotOptionKeys.RotateXAxisLabels,
             disabled=not save,
         )
@@ -58,48 +79,72 @@ def plot_options_box():
             "Angle to rotate Y-axis labels",
             min_value=0,
             max_value=90,
-            value=60,
+            value=plot_opts.angle_rotate_yaxis_labels if plot_opts else 0,
             key=PlotOptionKeys.RotateYAxisLabels,
             disabled=not save,
         )
         tfs = st.number_input(
             "Title font size",
-            value=20,
+            value=plot_opts.plot_title_font_size if plot_opts else 16,
             min_value=8,
             key=PlotOptionKeys.TitleFontSize,
             disabled=not save,
         )
         afs = st.number_input(
             "Axis font size",
+            value=plot_opts.plot_axis_font_size if plot_opts else 12,
             min_value=8,
             key=PlotOptionKeys.AxisFontSize,
             disabled=not save,
         )
         ats = st.number_input(
             "Axis tick size",
+            value=plot_opts.plot_axis_tick_size if plot_opts else 10,
             min_value=8,
             key=PlotOptionKeys.AxisTickSize,
             disabled=not save,
+        )
+        # Get valid style name, defaulting to seaborn-v0_8-whitegrid
+        default_style = (
+            "seaborn-v0_8-whitegrid"
+            if "seaborn-v0_8-whitegrid" in plt.style.available
+            else plt.style.available[0]
+        )
+        style_index = (
+            plt.style.available.index(plot_opts.plot_colour_scheme)
+            if plot_opts and plot_opts.plot_colour_scheme in plt.style.available
+            else plt.style.available.index(default_style)
         )
         cs = st.selectbox(
             "Colour scheme",
             options=plt.style.available,
             key=PlotOptionKeys.ColourScheme,
             disabled=not save,
+            index=style_index,
+        )
+        colormap_index = (
+            plt.colormaps().index(plot_opts.plot_colour_map)
+            if plot_opts
+            else plt.colormaps().index("viridis")
         )
         cm = st.selectbox(
             "Colour map",
             options=plt.colormaps(),
             key=PlotOptionKeys.ColourMap,
-            index=3,
+            index=colormap_index,
             disabled=not save,
+        )
+        font_index = (
+            PLOT_FONT_FAMILIES.index(plot_opts.plot_font_family)
+            if plot_opts
+            else PLOT_FONT_FAMILIES.index(PLOT_FONT_FAMILIES[1])  # sans-serif
         )
         font = st.selectbox(
             "Font",
             options=PLOT_FONT_FAMILIES,
             key=PlotOptionKeys.FontFamily,
             disabled=not save,
-            index=1,
+            index=font_index,
         )
         if save:
             """Here we show a preview of plots with the selected colour style
@@ -118,7 +163,7 @@ def plot_options_box():
             arr = np.random.normal(1, 0.5, size=100)
             # Create a violin plot
             data = pd.DataFrame({"A": arr, "B": arr, "C": arr})
-            fig, ax = plt.subplots(dpi=dpi)
+            fig, ax = plt.subplots(figsize=(width, height), dpi=dpi)
             sns.violinplot(data=data, ax=ax)
             ax.set_title("Title")
             ax.set_xlabel("X axis")
