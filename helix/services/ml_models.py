@@ -8,7 +8,7 @@ from pandas import DataFrame
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 from helix.options.choices.ml_models import CLASSIFIERS, REGRESSORS
-from helix.options.enums import ProblemTypes
+from helix.options.enums import ModelNames, ProblemTypes
 from helix.utils.utils import create_directory
 
 MlModel = TypeVar("MlModel", BaseEstimator, ClassifierMixin, RegressorMixin)
@@ -102,12 +102,12 @@ def load_models_to_explain(path: Path, model_names: list) -> dict[str, list]:
     return models
 
 
-def get_model_type(model_type: str, problem_type: ProblemTypes) -> type:
+def get_model_type(model_type: ModelNames, problem_type: ProblemTypes) -> type:
     """
     Fetch the appropriate type for a given model name based on the problem type.
 
     Args:
-        model_type (dict): The kind of model.
+        model_type (ModelNames): The kind of model.
         problem_type (ProblemTypes): Type of problem (classification or regression).
 
     Raises:
@@ -117,9 +117,9 @@ def get_model_type(model_type: str, problem_type: ProblemTypes) -> type:
         type: The constructor for a machine learning model class.
     """
     if problem_type.lower() == ProblemTypes.Classification:
-        model_class = CLASSIFIERS.get(model_type.lower())
+        model_class = CLASSIFIERS.get(model_type)
     elif problem_type.lower() == ProblemTypes.Regression:
-        model_class = REGRESSORS.get(model_type.lower())
+        model_class = REGRESSORS.get(model_type)
     if not model_class:
         raise ValueError(f"Model type {model_type} not recognised")
 

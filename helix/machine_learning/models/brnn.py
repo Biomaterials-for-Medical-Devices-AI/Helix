@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from helix.options.enums import ModelNames, OptimiserTypes, ProblemTypes
+from helix.options.enums import OptimiserTypes, ProblemTypes
 from helix.services.weights_init import kaiming_init, normal_init, xavier_init
 
 
@@ -32,7 +32,6 @@ class BaseBRNN(nn.Module):
         Initializes the BaseNetwork class
         """
         super().__init__()
-        self._name = "BaseNetwork"
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
@@ -44,13 +43,6 @@ class BaseBRNN(nn.Module):
         self.prior_mu = prior_mu
         self.prior_sigma = prior_sigma
         self.lambda_reg = lambda_reg
-
-    @property
-    def name(self) -> str:
-        """
-        Returns the name of the network
-        """
-        return self._name
 
     def _make_loss(
         self, problem_type: ProblemTypes, outputs: torch.Tensor, targets: torch.Tensor
@@ -175,20 +167,12 @@ class BaseBRNN(nn.Module):
                 outputs = self(batch_X)
 
                 # Compute total loss
-                loss = self.compute_brnn_loss(
-                    self, outputs, batch_y, self._brnn_options, problem_type
-                )
+                loss = self.compute_brnn_loss(outputs, batch_y, problem_type)
                 loss.backward()
                 self.optimizer.step()
                 epoch_loss += loss.item()
 
         return self
-
-    def __str__(self) -> str:
-        """
-        Returns the string representation of the network
-        """
-        return self._name
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -262,9 +246,7 @@ class BaseBRNN(nn.Module):
         predictive_loss = self._make_loss(problem_type, outputs, targets)
 
         # Compute regularization loss
-        reg_loss = self._bayesian_regularization_loss(
-            prior_mu=self.prior_mu, prior_sigma=self.prior_sigma
-        )
+        reg_loss = self._bayesian_regularization_loss()
 
         # Combine both losses
         total_loss = predictive_loss + self.lambda_reg * reg_loss
@@ -314,7 +296,6 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
             prior_sigma,
             lambda_reg,
         )
-        self._name = ModelNames.BRNNClassifier
         self.classification_cutoff = classification_cutoff
 
     def _initialize_network(self, input_dim, output_dim):
@@ -461,7 +442,6 @@ class BayesianRegularisedNNRegressor(RegressorMixin, BaseEstimator, BaseBRNN):
             prior_sigma,
             lambda_reg,
         )
-        self._name = ModelNames.BRNNRegressor
 
     def _initialize_network(self, input_dim, output_dim):
         """

@@ -16,6 +16,7 @@ from helix.options.enums import (
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
     MachineLearningStateKeys,
+    ModelNames,
     Normalisations,
     PlotOptionKeys,
     ProblemTypes,
@@ -941,7 +942,7 @@ def _linear_model_opts(use_hyperparam_search: bool) -> dict:
         st.divider()
     else:
         params = LINEAR_MODEL_GRID
-    model_types["Linear Model"] = {
+    model_types[ModelNames.LinearModel] = {
         "use": True,
         "params": params,
     }
@@ -980,7 +981,7 @@ def _random_forest_opts(use_hyperparam_search: bool) -> dict:
         st.divider()
     else:
         params = RANDOM_FOREST_GRID
-    model_types["Random Forest"] = {
+    model_types[ModelNames.RandomForest] = {
         "use": True,
         "params": params,
     }
@@ -1029,7 +1030,7 @@ def _xgboost_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = XGB_GRID
 
-    model_types["XGBoost"] = {
+    model_types[ModelNames.XGBoost] = {
         "use": True,
         "params": params,
     }
@@ -1052,7 +1053,7 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = SVM_GRID
 
-    model_types["SVM"] = {
+    model_types[ModelNames.SVM] = {
         "use": True,
         "params": params,
     }
@@ -1085,7 +1086,7 @@ def _brnn_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = BRNN_GRID
 
-    model_types["BRNN"] = {
+    model_types[ModelNames.BRNN] = {
         "use": True,
         "params": params,
     }

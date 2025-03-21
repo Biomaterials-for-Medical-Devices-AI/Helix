@@ -14,7 +14,7 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.RandomForest: RandomForestClassifier,
     ModelNames.XGBoost: XGBClassifier,
     ModelNames.SVM: SVC,
-    ModelNames.BRNNClassifier: BayesianRegularisedNNClassifier,
+    ModelNames.BRNN: BayesianRegularisedNNClassifier,
 }
 
 REGRESSORS: dict[ModelNames, type] = {
@@ -22,5 +22,5 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.RandomForest: RandomForestRegressor,
     ModelNames.XGBoost: XGBRegressor,
     ModelNames.SVM: SVR,
-    ModelNames.BRNNClassifier: BayesianRegularisedNNRegressor,
+    ModelNames.BRNN: BayesianRegularisedNNRegressor,
 }
