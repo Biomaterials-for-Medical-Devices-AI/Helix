@@ -9,7 +9,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from helix.options.enums import ModelNames, OptimiserTypes, ProblemTypes
-from helix.options.ml import BrnnOptions
 from helix.services.weights_init import kaiming_init, normal_init, xavier_init
 
 
