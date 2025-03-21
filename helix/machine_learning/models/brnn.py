@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple
+from typing import Self, Tuple
 
 import numpy as np
 import pandas as pd
@@ -362,9 +362,8 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
                 f"Error occured during forward pass of BRNN Classifier: {e}"
             )
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
-        """
-        Train the Bayesian Regularized Neural Network.
+    def fit(self, X: np.ndarray, y: np.ndarray) -> Self:
+        """Train the Bayesian Regularized Neural Network.
 
         Args:
             X (np.ndarray): The input data.
@@ -372,6 +371,9 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
 
         Raises:
             ValueError: If an error occurs during training.
+
+        Returns:
+            Self: The trained model
         """
         X_tensor = torch.tensor(X, dtype=torch.float32).to(self.device)
         y_tensor = torch.tensor(y, dtype=torch.float32).squeeze().long().to(self.device)
@@ -382,6 +384,7 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
             self._initialize_network(input_dim, output_dim)
             self.train()  # set the underlying model to training mode
             self.train_brnn(X_tensor, y_tensor, ProblemTypes.Classification)
+            return self
         except Exception as e:
             raise ValueError(f"Error occured during fitting of BRNN Classifier: {e}")
 
@@ -504,9 +507,8 @@ class BayesianRegularisedNNRegressor(RegressorMixin, BaseEstimator, BaseBRNN):
                 f"Error occured during forward pass of BRNN Regressor: {e}"
             )
 
-    def fit(self, X: np.ndarray, y: np.ndarray) -> None:
-        """
-        Train the Bayesian Regularized Neural Network.
+    def fit(self, X: np.ndarray, y: np.ndarray) -> Self:
+        """Train the Bayesian Regularized Neural Network.
 
         Args:
             X (np.ndarray): The input data.
@@ -514,6 +516,9 @@ class BayesianRegularisedNNRegressor(RegressorMixin, BaseEstimator, BaseBRNN):
 
         Raises:
             ValueError: If an error occurs during training.
+
+        Returns:
+            Self: The trained model
         """
 
         X_tensor = torch.tensor(X, dtype=torch.float32)
@@ -525,6 +530,7 @@ class BayesianRegularisedNNRegressor(RegressorMixin, BaseEstimator, BaseBRNN):
             self._initialize_network(input_dim, output_dim)
             self.train()
             self.train_brnn(X_tensor, y_tensor, ProblemTypes.Regression)
+            return self
         except Exception as e:
             raise ValueError(f"Error occured during fitting of BRNN Regressor: {e}")
 
