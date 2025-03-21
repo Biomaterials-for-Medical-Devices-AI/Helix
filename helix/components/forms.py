@@ -294,6 +294,10 @@ def ml_options_form():
         svm_model_type = _svm_opts(use_hyperparam_search)
         model_types.update(svm_model_type)
 
+    if st.toggle("Bayesian Regularised Neural Network", value=False):
+        svm_model_type = _brnn_opts(use_hyperparam_search)
+        model_types.update(svm_model_type)
+
     st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
     st.subheader("Select outputs to save")
     st.toggle(
@@ -739,6 +743,39 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
         params = SVM_GRID
 
     model_types["SVM"] = {
+        "use": True,
+        "params": params,
+    }
+    return model_types
+
+
+def _brnn_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        st.write("Options:")
+        batch_size = st.number_input("Batch size", value=32)
+        epochs = st.number_input("Epochs", value=10)
+        hidden_dim = st.number_input("Hidden dimension size", value=64)
+        output_dim = st.number_input("Output dimension size", value=1)
+        lr = st.number_input("Learning rate", value=0.0)
+        prior_mu = st.number_input("Prior mu (\u03bc)", value=0)
+        prior_sigma = st.number_input("Prior sigma (\u03c3)", value=1)
+        lambda_reg = st.number_input("Lambda regularisation term", value=0.01)
+        params = {
+            "batch_size": batch_size,
+            "epochs": epochs,
+            "hidden_dim": hidden_dim,
+            "output_dim": output_dim,
+            "lr": lr,
+            "prior_mu": prior_mu,
+            "prior_sigma": prior_sigma,
+            "lambda_reg": lambda_reg,
+        }
+        st.divider()
+    else:
+        params = ...
+
+    model_types["BRNN"] = {
         "use": True,
         "params": params,
     }
