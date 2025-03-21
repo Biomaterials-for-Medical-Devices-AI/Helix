@@ -2,7 +2,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from xgboost import XGBClassifier, XGBRegressor
 
-from helix.machine_learning.models.nn_models import (
+from helix.machine_learning.models.brnn import (
     BayesianRegularisedNNClassifier,
     BayesianRegularisedNNRegressor,
 )
