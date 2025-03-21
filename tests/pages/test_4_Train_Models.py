@@ -432,3 +432,91 @@ def test_page_makes_one_log_per_run(new_experiment: str):
     assert expected_log_dir.exists()
     assert log_dir_contents  # directory is not empty
     assert len(log_dir_contents) == expected_n_log_files
+
+
+@pytest.mark.parametrize(
+    "data_split_method,holdout_or_k",
+    [
+        (DataSplitMethods.Holdout.capitalize(), 3),
+        (DataSplitMethods.KFold.capitalize(), 3),
+    ],
+)
+def test_manual_brnn(
+    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_path(exp_dir)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Unselect AHPS, which is on by default
+    at.toggle[0].set_value(False).run()
+    # Select the data split method
+    at.selectbox[1].select(data_split_method).run()
+    # Set the number of bootstraps / k-folds
+    at.number_input[0].set_value(holdout_or_k).run()
+    # Select BRNN
+    at.toggle[5].set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
+
+
+def test_auto_brnn(new_experiment: str):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_path(exp_dir)
+    k = 3
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Set the number of k-folds
+    at.number_input[0].set_value(k).run()
+    # Select BRNN
+    at.toggle[5].set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
