@@ -274,8 +274,8 @@ if experiment_name:
         except NotADirectoryError:
             pass
 
-        metrics = ml_metrics_path(experiment_dir)
-        display_metrics_table(metrics)
+        # metrics = ml_metrics_path(experiment_dir)
+        # display_metrics_table(metrics)
 
         if st.session_state.get(MachineLearningStateKeys.Predictions):
             display_predictions(
