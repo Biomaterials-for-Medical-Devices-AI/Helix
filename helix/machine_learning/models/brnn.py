@@ -18,16 +18,33 @@ class BaseBRNN(nn.Module):
     This class is an abstract class for networks
     """
 
-    def __init__(self, brnn_options: BrnnOptions) -> None:
+    def __init__(
+        self,
+        batch_size: int = 32,
+        epochs: int = 10,
+        hidden_dim: int = 64,
+        output_dim: int = 1,
+        lr: float = 0.0003,
+        prior_mu: int = 0,
+        prior_sigma: int = 1,
+        lambda_reg: float = 0.01,
+    ) -> None:
         """
         Initializes the BaseNetwork class
         """
         super().__init__()
         self._name = "BaseNetwork"
-        self._brnn_options = brnn_options
         self.device = (
             torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
         )
+        self.batch_size = batch_size
+        self.epochs = epochs
+        self.hidden_dim = hidden_dim
+        self.output_dim = output_dim
+        self.lr = lr
+        self.prior_mu = prior_mu
+        self.prior_sigma = prior_sigma
+        self.lambda_reg = lambda_reg
 
     @property
     def name(self) -> str:
@@ -147,10 +164,10 @@ class BaseBRNN(nn.Module):
 
         dataset = torch.utils.data.TensorDataset(X, y)
         dataloader = torch.utils.data.DataLoader(
-            dataset, batch_size=self._brnn_options.batch_size, shuffle=True
+            dataset, batch_size=self.batch_size, shuffle=True
         )
 
-        for _ in range(self._brnn_options.epochs):
+        for _ in range(self.epochs):
             epoch_loss = 0.0
 
             for batch_X, batch_y in dataloader:
@@ -293,17 +310,30 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
         **kwargs: Additional keyword arguments.
     """
 
-    def __init__(self, brnn_options: BrnnOptions = None, **kwargs):
-        """
-        Initialises the BayesianRegularisedNNClassifier class.
-
-        - brnn_options: BrnnOptions = None ->
-            The Bayesian Regularised Neural Network options
-            is set to None, so that it can initialise
-            values from the BrnnOptions class.
-        """
-        super().__init__(brnn_options or BrnnOptions(**kwargs))
+    def __init__(
+        self,
+        batch_size=32,
+        epochs=10,
+        hidden_dim=64,
+        output_dim=1,
+        lr=0.0003,
+        prior_mu=0,
+        prior_sigma=1,
+        lambda_reg=0.01,
+        classification_cutoff=0.5,
+    ):
+        super().__init__(
+            batch_size,
+            epochs,
+            hidden_dim,
+            output_dim,
+            lr,
+            prior_mu,
+            prior_sigma,
+            lambda_reg,
+        )
         self._name = ModelNames.BRNNClassifier
+        self.classification_cutoff = classification_cutoff
 
     def _initialize_network(self, input_dim, output_dim):
         """
@@ -316,16 +346,14 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
             data, determined dynamically.
         """
         # Define hidden layers and output layer
-        self.layer1 = nn.Linear(input_dim, self._brnn_options.hidden_dim)
-        self.layer2 = nn.Linear(
-            self._brnn_options.hidden_dim, self._brnn_options.hidden_dim
-        )
-        self.output_layer = nn.Linear(self._brnn_options.hidden_dim, output_dim)
+        self.layer1 = nn.Linear(input_dim, self.hidden_dim)
+        self.layer2 = nn.Linear(self.hidden_dim, self.hidden_dim)
+        self.output_layer = nn.Linear(self.hidden_dim, output_dim)
 
         # Initialize weights and optimizer
         self._initialise_weights()
         self._get_num_params()
-        self._make_optimizer(OptimiserTypes.Adam, self._brnn_options.lr)
+        self._make_optimizer(OptimiserTypes.Adam, self.lr)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
@@ -402,9 +430,7 @@ class BayesianRegularisedNNClassifier(ClassifierMixin, BaseEstimator, BaseBRNN):
                     return (
                         probabilities
                         if return_probs
-                        else (
-                            probabilities > self._brnn_options.classification_cutoff
-                        ).astype(int)
+                        else (probabilities > self.classification_cutoff).astype(int)
                     )
 
                 else:  # Multi-class classification
@@ -429,16 +455,27 @@ class BayesianRegularisedNNRegressor(RegressorMixin, BaseEstimator, BaseBRNN):
         Neural Network options.
     """
 
-    def __init__(self, brnn_options: BrnnOptions = None, **kwargs):
-        """
-        Initializes the BayesianRegularisedNNRegressor class.
-
-        - brnn_options: BrnnOptions = None ->
-            The Bayesian Regularised Neural Network options
-            is set to None, so that it can initialise
-            values from the BrnnOptions class.
-        """
-        super().__init__(brnn_options or BrnnOptions(**kwargs))
+    def __init__(
+        self,
+        batch_size=32,
+        epochs=10,
+        hidden_dim=64,
+        output_dim=1,
+        lr=0.0003,
+        prior_mu=0,
+        prior_sigma=1,
+        lambda_reg=0.01,
+    ):
+        super().__init__(
+            batch_size,
+            epochs,
+            hidden_dim,
+            output_dim,
+            lr,
+            prior_mu,
+            prior_sigma,
+            lambda_reg,
+        )
         self._name = ModelNames.BRNNRegressor
 
     def _initialize_network(self, input_dim, output_dim):
@@ -451,16 +488,14 @@ class BayesianRegularisedNNRegressor(RegressorMixin, BaseEstimator, BaseBRNN):
             data, determined dynamically.
         """
         # Define hidden layers and output layer
-        self.layer1 = nn.Linear(input_dim, self._brnn_options.hidden_dim)
-        self.layer2 = nn.Linear(
-            self._brnn_options.hidden_dim, self._brnn_options.hidden_dim
-        )
-        self.output_layer = nn.Linear(self._brnn_options.hidden_dim, output_dim)
+        self.layer1 = nn.Linear(input_dim, self.hidden_dim)
+        self.layer2 = nn.Linear(self.hidden_dim, self.hidden_dim)
+        self.output_layer = nn.Linear(self.hidden_dim, output_dim)
 
         # Initialize weights and optimizer
         self._initialise_weights()
         self._get_num_params()
-        self._make_optimizer(OptimiserTypes.Adam, self._brnn_options.lr)
+        self._make_optimizer(OptimiserTypes.Adam, self.lr)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
