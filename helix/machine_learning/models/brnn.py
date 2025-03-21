@@ -105,12 +105,12 @@ class BaseBRNN(nn.Module):
         else:
             raise NotImplementedError(f"Invalid init type: {init_type}")
 
-    def _make_optimizer(self, optimizer_type, lr):
+    def _make_optimizer(self, optimizer_type: OptimiserTypes, lr):
         """
         Creates and initializes the optimizer for the network.
 
         Args:
-            optimizer_type (str): The type of optimizer to use. Options are:
+            optimizer_type (OptimiserTypes): The type of optimizer to use. Options are:
                 - "Adam": Uses the Adam optimizer.
                 - "SGD": Uses Stochastic Gradient Descent.
                 - "RMSprop": Uses RMSprop optimizer.
@@ -120,11 +120,11 @@ class BaseBRNN(nn.Module):
         Raises:
             NotImplementedError: If an unsupported `optimizer_type` is provided.
         """
-        if OptimiserTypes.Adam:
+        if optimizer_type == OptimiserTypes.Adam:
             self.optimizer = torch.optim.Adam(self.parameters(), lr=lr)
-        elif OptimiserTypes.SGD:
+        elif optimizer_type == OptimiserTypes.SGD:
             self.optimizer = torch.optim.SGD(self.parameters(), lr=lr)
-        elif OptimiserTypes.RMSprop:
+        elif optimizer_type == OptimiserTypes.RMSprop:
             self.optimizer = torch.optim.RMSprop(self.parameters(), lr=lr)
         else:
             raise NotImplementedError(
