@@ -57,7 +57,7 @@ with open(path_to_model_file, "rb") as model_file:
 ## Making predictions
 When making predictions with you model, you need to take care that the new data for which you wish to make predictions are preprocessed the same way as your training data. 
 
-If you preprocessed your data on the **Data Preprocessing** page, take note of whether you normalised your independent and dependent variables, and which normalisation methods you used. Also take note of whether you used feature selection.
+If you preprocessed your data on the **Data Preprocessing** page, you can check what preprocessing your performed by going to your experiment in your machine's file explorer and opening `data_preprocessing_options.json`. 
 
 When you run preprocessing, you get a file in your experiment directory ending in `_preprocessed.csv`. Look here to see which features made it through feature selection. If some features don't make it through, you will need to remove those features from your new data, or your model not work.
 
