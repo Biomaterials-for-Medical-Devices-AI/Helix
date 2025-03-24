@@ -51,6 +51,24 @@ def load_plot_options(path: Path) -> PlottingOptions:
     """
     with open(path, "r") as json_file:
         options_json = json.load(json_file)
+
+    # Migrate old seaborn style names to new ones
+    style_migrations = {
+        "seaborn": "seaborn-v0_8",
+        "seaborn-darkgrid": "seaborn-v0_8-dark",
+        "seaborn-whitegrid": "seaborn-v0_8-whitegrid",
+        "seaborn-dark": "seaborn-v0_8-dark",
+        "seaborn-deep": "seaborn-v0_8",
+    }
+
+    if "plot_colour_scheme" in options_json:
+        old_style = options_json["plot_colour_scheme"]
+        if old_style in style_migrations:
+            options_json["plot_colour_scheme"] = style_migrations[old_style]
+            # Save the migrated style back to the file
+            with open(path, "w") as json_file:
+                json.dump(options_json, json_file, indent=4)
+
     options = PlottingOptions(**options_json)
     return options
 

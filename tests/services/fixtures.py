@@ -104,6 +104,8 @@ def plotting_opts() -> PlottingOptions:
         plot_font_family="sans-serif",
         plot_title_font_size=14,
         dpi=300,
+        height=10,
+        width=10,
     )
 
 

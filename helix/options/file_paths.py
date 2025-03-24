@@ -24,7 +24,8 @@ def preprocessed_data_path(file_name: str, experiment_path: Path) -> Path:
     Returns:
         Path: The full path for the raw data directory.
     """
-    file_name = file_name.split(".")[0] + "_preprocessed.csv"
+    name, ext = file_name.split(".")
+    file_name = f"{name}_preprocessed.{ext}"
 
     return experiment_path / file_name
 

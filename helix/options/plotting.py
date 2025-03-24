@@ -16,4 +16,6 @@ class PlottingOptions:
     save_plots: bool
     plot_title_font_size: int
     plot_font_family: str
+    height: int | float
+    width: int | float
     plot_colour_map: str = "viridis"
