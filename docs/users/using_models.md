@@ -9,12 +9,7 @@ The example on this page (see [Loading your models](#loading-your-models) and on
 ## Before you start...
 Helix uses [`pickle`](https://docs.python.org/3/library/pickle.html) to save models for later use. This means that to use the models again without warnings or, potentially, erros, you must use an environment with the same packages and versions as Helix. See this page on [model persistance](https://scikit-learn.org/stable/model_persistence.html#model-persistence).
 
-To get a similar environment to the one used by Helix, you need to install the same versions of some packages. We recommend the following:
-- scikit-learn 1.5.2
-- numpy 1.26.4
-- pandas 2.2.2
-- xgboost 2.1.0
-- torch 2.5.1 (or 2.2.0 for intel MacOS machines)
+To get a similar environment to the one used by Helix, you need to install the same versions of some packages. To do this, you can install Helix in your environment and you will get all the same packages with the same versions as Helix uses. For more information on which packages and versions Helix uses, Look at [`pyproject.toml`](https://github.com/Biomaterials-for-Medical-Devices-AI/Helix/blob/main/pyproject.toml).
 
 ### Mac/Linux
 ```shell
