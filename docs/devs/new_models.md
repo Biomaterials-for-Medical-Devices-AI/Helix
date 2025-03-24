@@ -91,6 +91,50 @@ For each field, it would be helpful to include a help message explaining what th
 ### How to integrate your model into Helix
 The following examples will show you how you can integrate your new model into Helix and make it available for users.
 
+#### Register your model name
+In `helix/options/enums.py`, edit the `ModelNames` enum by adding your model name.
+
+```python
+class ModelNames(StrEnum):
+    LinearModel = "linear model"
+    RandomForest = "random forest"
+    XGBoost = "xgboost"
+    SVM = "svm"
+    ...
+    MyNewModel = "my new model
+```
+
+#### Making your model available to Helix
+If your model is a classifier, edit `CLASSIFIERS` in `helix/options/choices/ml_models.py` by adding your model like so:
+
+```python
+# import your model
+
+CLASSIFIERS: dict[ModelNames, type] = {
+    ModelNames.LinearModel: LogisticRegression,
+    ModelNames.RandomForest: RandomForestClassifier,
+    ModelNames.XGBoost: XGBClassifier,
+    ModelNames.SVM: SVC,
+    ...
+    ModelNames.MyNewModel: MyModel
+}
+```
+
+If your model is a regressor, edit `REGRESSORS` in `helix/options/choices/ml_models.py` by adding your model like so:
+
+```python
+# import your model
+
+REGRESSORS: dict[ModelNames, type] = {
+    ModelNames.LinearModel: LinearRegression,
+    ModelNames.RandomForest: RandomForestRegressor,
+    ModelNames.XGBoost: XGBRegressor,
+    ModelNames.SVM: SVR,
+    ...
+    ModelNames.MyNewModel: MyModel
+}
+```
+
 #### Create the form component
 ```python
 # helix/components/forms.py
