@@ -61,7 +61,7 @@ def normalise_independent_variables(normalisation_method: str, X):
     if normalisation_method == Normalisations.NoNormalisation:
         return X
 
-    elif normalisation_method == Normalisations.Standardization:
+    elif normalisation_method == Normalisations.Standardisation:
         scaler = StandardScaler()
 
     elif normalisation_method == Normalisations.MinMax:

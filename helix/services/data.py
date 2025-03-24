@@ -22,7 +22,7 @@ class DataBuilder:
 
     _normalization_dict = {
         Normalisations.MinMax: MinMaxScaler,
-        Normalisations.Standardization: StandardScaler,
+        Normalisations.Standardisation: StandardScaler,
     }
 
     def __init__(

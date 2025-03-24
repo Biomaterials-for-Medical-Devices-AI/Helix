@@ -226,7 +226,7 @@ def test_page_produces_tsne_plot(new_experiment: str):
     # select the experiment
     at.selectbox[0].select(new_experiment).run()
     # select tsne normalisation
-    at.selectbox[-1].select(Normalisations.Standardization)
+    at.selectbox[-1].select(Normalisations.Standardisation)
     # check the box to create the plot
     at.checkbox[3].check().run()
     # save the plot
