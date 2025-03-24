@@ -248,7 +248,8 @@ def ingest_data(
     return data
 
 
-def read_data(data_path: Path, logger: Logger) -> pd.DataFrame:
+@st.cache_data(show_spinner="Loading data...")
+def read_data(data_path: Path, _logger: Logger) -> pd.DataFrame:
     """Read a data file into memory from a '.csv' or '.xlsx' file.
 
     Args:
@@ -263,17 +264,17 @@ def read_data(data_path: Path, logger: Logger) -> pd.DataFrame:
     """
     if data_path.suffix == ".csv":
         try:
-            logger.info(f"Reading data from {data_path}")
+            _logger.info(f"Reading data from {data_path}")
             return pd.read_csv(data_path, header=0)
         except Exception as e:
-            logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
+            _logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
             raise
     elif data_path.suffix == ".xlsx":
         try:
-            logger.info(f"Reading data from {data_path}")
+            _logger.info(f"Reading data from {data_path}")
             return pd.read_excel(data_path, header=0)
         except Exception as e:
-            logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
+            _logger.error(f"Failed to read data from {data_path}{os.linesep}{e}")
             raise
     else:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")

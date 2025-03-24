@@ -91,18 +91,28 @@ if experiment_name:
         if path_to_raw_data.exists() and path_to_preproc_data.exists():
             raw_data = read_data(path_to_raw_data, logger)
 
-            st.write("### Raw Data")
+            st.write(f"### Raw Data [{len(raw_data.columns)} variables]")
             st.info("This is your original data **before** preprocessing.")
             st.dataframe(raw_data)
         else:
             raw_data = None
 
-        data = read_data(
-            path_to_preproc_data if path_to_preproc_data.exists() else path_to_raw_data,
-            logger,
-        )
+        if path_to_raw_data.exists():
+            data_tsne = read_data(path_to_raw_data, logger)
 
-        st.write("### Data")
+            if st.toggle(
+                "Visualise raw data",
+                help="Turn this on if you'd like to analyse your raw data (before pre-processing).",
+            ):
+                data = read_data(path_to_raw_data, logger)
+            else:
+                data = read_data(path_to_preproc_data, logger)
+        else:
+            data_tsne = read_data(Path(data_opts.data_path), logger)
+            data = read_data(Path(data_opts.data_path), logger)
+
+        st.write(f"### Data [{len(data.columns)} variables]")
+        st.info("This is your dataset **after** preprocessing. If no preprocessing took place, this will be the same as the raw data.")
 
         st.write(data)
 
@@ -116,18 +126,6 @@ if experiment_name:
         )
 
         st.write("### Graphical Description")
-
-        if path_to_raw_data.exists():
-            data_tsne = read_data(path_to_raw_data, logger)
-
-            if st.toggle(
-                "Visualise raw data",
-                help="Turn this on if you'd like to analyse your raw data (before pre-processing).",
-            ):
-                data = read_data(path_to_raw_data, logger)
-
-        else:
-            data_tsne = read_data(Path(data_opts.data_path), logger)
 
         st.write("#### Target Variable Distribution")
 
@@ -155,8 +153,8 @@ if experiment_name:
             plot_opt,
             data_opts.normalisation,
         )
-
-        plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
+        
+        #plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
     # except ValueError:
     #     # When the user uploaded the wrong file type, somehow
     #     st.error("You must upload a .csv or .xlsx file.", icon="🔥")

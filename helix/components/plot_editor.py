@@ -36,6 +36,8 @@ def edit_plot_modal(plot_opts: PlottingOptions, plot_type: str) -> PlottingOptio
     Returns:
         PlottingOptions: The new plotting options for the specific plot.
     """
+    # Create a container for the plot
+    plot_container = st.empty()
 
     # Color scheme
     colour_scheme = st.selectbox(
