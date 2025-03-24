@@ -28,6 +28,7 @@ from helix.services.configuration import (
 )
 from helix.services.data import read_data
 from helix.services.experiments import get_experiments
+from helix.services.preprocessing import convert_nominal_to_numeric
 from helix.utils.logging_utils import Logger, close_logger
 from helix.utils.utils import create_directory
 
@@ -87,73 +88,162 @@ if experiment_name:
         path_to_preproc_data = preprocessed_data_path(
             str(path_to_raw_data), biofefi_base_dir / experiment_name
         )
-        if path_to_raw_data.exists() and path_to_preproc_data.exists():
-            raw_data = read_data(path_to_raw_data, logger)
-
-            st.write(f"### Raw Data [{len(raw_data.columns)} variables]")
-            st.info("This is your original data **before** preprocessing.")
-            st.dataframe(raw_data)
-        else:
-            raw_data = None
-
+        # Load data based on what's available
+        raw_data = None
+        preprocessed_data = None
         if path_to_raw_data.exists():
-            data_tsne = read_data(path_to_raw_data, logger)
+            raw_data = read_data(path_to_raw_data, logger)
+            # if the data contains any nominal variables, convert them into numeric, including the dependent variable, to allow for visualisation
+            raw_data = convert_nominal_to_numeric(raw_data)
+            print(raw_data)
+            data_tsne = raw_data
+            if path_to_preproc_data.exists():
+                preprocessed_data = read_data(path_to_preproc_data, logger)
+                data_tsne = preprocessed_data
 
-            if st.toggle(
-                "Visualise raw data",
-                help="Turn this on if you'd like to analyse your raw data (before pre-processing).",
-            ):
-                data = read_data(path_to_raw_data, logger)
+        st.write("### Dataset Overview")
+
+        # Create tabs for data display
+        raw_tab, preprocessed_tab = st.tabs(["Raw Data", "Preprocessed Data"])
+
+        with raw_tab:
+            if raw_data is not None:
+                st.write(
+                    f"#### Raw Data [{len(raw_data.columns)-1} independent variables]"
+                )
+                st.info("This is your original data **before** preprocessing.")
+                st.dataframe(raw_data)
+
+                st.write("#### Data Statistics")
+                raw_stats_tab, processed_stats_tab = st.tabs(
+                    ["Raw Data Statistics", "Preprocessed Data Statistics"]
+                )
+
+                with raw_stats_tab:
+                    st.write(raw_data.describe())
+
+                with processed_stats_tab:
+                    if preprocessed_data is not None:
+                        st.write(preprocessed_data.describe())
+                    else:
+                        st.info("No preprocessing has been applied to the data yet.")
             else:
-                data = read_data(path_to_preproc_data, logger)
-        else:
-            data_tsne = read_data(Path(data_opts.data_path), logger)
-            data = read_data(Path(data_opts.data_path), logger)
+                st.info("No raw data available. Only preprocessed data exists.")
 
-        st.write(f"### Data [{len(data.columns)} variables]")
-        st.info(
-            "This is your dataset **after** preprocessing. If no preprocessing took place, this will be the same as the raw data."
+        with preprocessed_tab:
+            if preprocessed_data is not None:
+                st.write(
+                    f"#### Preprocessed Data [{len(preprocessed_data.columns)-1} independent variables]"
+                )
+                st.info("This is your dataset **after** preprocessing.")
+                st.dataframe(preprocessed_data)
+
+                st.write("#### Data Statistics")
+                raw_stats_tab, processed_stats_tab = st.tabs(
+                    ["Raw Data Statistics", "Preprocessed Data Statistics"]
+                )
+
+                with raw_stats_tab:
+                    if raw_data is not None:
+                        st.write(raw_data.describe())
+                    else:
+                        st.info("No raw data available.")
+
+                with processed_stats_tab:
+                    st.write(preprocessed_data.describe())
+            else:
+                st.info("No preprocessing has been applied to the data yet.")
+
+        st.write("### Statistical Tests")
+        st.write(
+            """
+            The following section shows statistical tests to help you understand your data distribution.
+            This is useful for deciding which modelling approaches are most appropriate for your data.
+            """
         )
 
-        st.write(data)
-
-        st.write("#### Aggregated Statistics")
-
-        st.write(data.describe())
-
         normaility_test_tabs(
-            data=data,
+            preprocessed_data=preprocessed_data,
             raw_data=raw_data,
         )
 
         st.write("### Graphical Description")
 
-        st.write("#### Target Variable Distribution")
-
-        target_variable_dist_form(
-            data,
-            exec_opt.dependent_variable,
-            data_analysis_plot_dir,
-            plot_opt,
+        raw_plots_tab, preprocessed_plots_tab = st.tabs(
+            ["Raw Data", "Preprocessed Data"]
         )
 
-        st.write("#### Correlation Heatmap")
+        with raw_plots_tab:
+            if raw_data is not None:
+                st.write("#### Target Variable Distribution")
+                target_variable_dist_form(
+                    raw_data,
+                    exec_opt.dependent_variable,
+                    data_analysis_plot_dir,
+                    plot_opt,
+                    key_prefix="raw",  # Add unique prefix for raw data tab
+                )
 
-        correlation_heatmap_form(data, data_analysis_plot_dir, plot_opt)
+                st.write("#### Correlation Heatmap")
+                correlation_heatmap_form(
+                    raw_data, data_analysis_plot_dir, plot_opt, key_prefix="raw"
+                )
 
-        st.write("#### Pairplot")
+                st.write("#### Pairplot")
+                pairplot_form(
+                    raw_data, data_analysis_plot_dir, plot_opt, key_prefix="raw"
+                )
 
-        pairplot_form(data, data_analysis_plot_dir, plot_opt)
+                st.write("#### t-SNE Plot")
+                tSNE_plot_form(
+                    data_tsne,
+                    exec_opt.random_state,
+                    data_analysis_plot_dir,
+                    plot_opt,
+                    data_opts.normalisation,
+                    key_prefix="raw",
+                )
+            else:
+                st.info("No raw data available.")
 
-        st.write("#### t-SNE Plot")
+        with preprocessed_plots_tab:
+            if preprocessed_data is not None:
+                st.write("#### Target Variable Distribution")
+                target_variable_dist_form(
+                    preprocessed_data,
+                    exec_opt.dependent_variable,
+                    data_analysis_plot_dir,
+                    plot_opt,
+                    key_prefix="preprocessed",  # Add unique prefix for preprocessed data tab
+                )
 
-        tSNE_plot_form(
-            data_tsne,
-            exec_opt.random_state,
-            data_analysis_plot_dir,
-            plot_opt,
-            data_opts.normalisation,
-        )
+                st.write("#### Correlation Heatmap")
+                correlation_heatmap_form(
+                    preprocessed_data,
+                    data_analysis_plot_dir,
+                    plot_opt,
+                    key_prefix="preprocessed",
+                )
+
+                st.write("#### Pairplot")
+                pairplot_form(
+                    preprocessed_data,
+                    data_analysis_plot_dir,
+                    plot_opt,
+                    key_prefix="preprocessed",
+                )
+
+                st.write("#### t-SNE Plot")
+                tSNE_plot_form(
+                    data_tsne,
+                    exec_opt.random_state,
+                    data_analysis_plot_dir,
+                    plot_opt,
+                    data_opts.normalisation,
+                    key_prefix="preprocessed",
+                )
+            else:
+                st.info("No preprocessing has been applied to the data yet.")
 
     finally:
         close_logger(logger_instance, logger)

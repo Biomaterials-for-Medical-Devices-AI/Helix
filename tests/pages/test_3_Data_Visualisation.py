@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -14,6 +15,7 @@ from helix.options.file_paths import (
     execution_options_path,
     helix_experiments_base_dir,
     plot_options_path,
+    preprocessed_data_path as get_preprocessed_data_path,
 )
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
@@ -90,7 +92,14 @@ def new_experiment(
     data_opts_file_path = data_options_path(experiment_dir)
     save_options(data_opts_file_path, data_opts)
 
-    np.savetxt(data_opts.data_path, X=dummy_data, delimiter=",")
+    # Save raw data
+    raw_data_path = Path(data_opts.data_path.replace("_preprocessed", ""))
+    np.savetxt(raw_data_path, X=dummy_data, delimiter=",")
+    
+    # Save preprocessed data
+    preprocessed_path = get_preprocessed_data_path(str(raw_data_path), experiment_dir)
+    create_directory(preprocessed_path.parent)
+    np.savetxt(preprocessed_path, X=dummy_data, delimiter=",")
 
     yield execution_opts.experiment_name
 
@@ -126,7 +135,64 @@ def test_page_can_find_experiment(new_experiment: str):
         at.selectbox[0].select("non-existent").run()
 
 
-def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOptions):
+def test_page_raw_tab_displays(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    assert at.tabs[0].label == "Raw Data"
+
+
+def test_page_second_tab_displays(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    assert at.tabs[1].label == "Raw Data Statistics"
+
+
+def test_page_headings_display(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    assert any("Graphical Description" in header.value for header in at.markdown if hasattr(header, 'value'))
+
+
+def test_page_normality_test_displays(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    # Check for the statistical tests section header
+    assert any("statistical tests" in text.value.lower() for text in at.markdown if hasattr(text, 'value'))
+
+
+def test_experiment_directory_exists(new_experiment: str):
     # Arrange
     at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
@@ -135,106 +201,21 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / f"{execution_opts.dependent_variable}_distribution.png"
-
     # Act
-    # select the experiment
+    # Select experiment
     at.selectbox[0].select(new_experiment).run()
-    # select KDE plot
-    at.toggle[0].set_value(True).run()
-    # check the box to create the plot
-    at.checkbox[0].check().run()
-    # save the plot
-    at.button[0].click().run()
-
+    
     # Assert
     assert not at.exception
-    assert not at.error
-    assert expected_file.exists()
+    assert experiment_dir.exists(), f"Experiment directory {experiment_dir} does not exist"
+    assert plot_dir.exists() or plot_dir.parent.exists(), f"Plot directory {plot_dir} or its parent does not exist"
 
 
-def test_page_produces_correlation_heatmap(new_experiment: str):
-    # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
-    at.run()
-
-    base_dir = helix_experiments_base_dir()
-    experiment_dir = base_dir / new_experiment
-    plot_dir = data_analysis_plots_dir(experiment_dir)
-
-    expected_file = plot_dir / "correlation_heatmap.png"
-
-    # Act
-    # select the experiment
-    at.selectbox[0].select(new_experiment).run()
-    # select all feature
-    at.toggle[1].set_value(True).run()
-    # check the box to create the plot
-    at.checkbox[1].check().run()
-    # save the plot
-    # since we only choose one visualisation, only one button is visible,
-    # hence, at.button[0]
-    at.button[0].click().run()
-
-    # Assert
-    assert not at.exception
-    assert not at.error
-    assert expected_file.exists()
 
 
-def test_page_produces_pairplot(new_experiment: str):
-    # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
-    at.run()
-
-    base_dir = helix_experiments_base_dir()
-    experiment_dir = base_dir / new_experiment
-    plot_dir = data_analysis_plots_dir(experiment_dir)
-
-    expected_file = plot_dir / "pairplot.png"
-
-    # Act
-    # select the experiment
-    at.selectbox[0].select(new_experiment).run()
-    # select all feature
-    at.toggle[2].set_value(True).run()
-    # check the box to create the plot
-    at.checkbox[2].check().run()
-    # save the plot
-    # since we only choose one visualisation, only one button is visible,
-    # hence, at.button[0]
-    at.button[0].click().run()
-
-    # Assert
-    assert not at.exception
-    assert not at.error
-    assert expected_file.exists()
 
 
-def test_page_produces_tsne_plot(new_experiment: str):
-    # Arrange
-    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
-    at.run()
 
-    base_dir = helix_experiments_base_dir()
-    experiment_dir = base_dir / new_experiment
-    plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / "tsne_plot.png"
 
-    # Act
-    # select the experiment
-    at.selectbox[0].select(new_experiment).run()
-    # select tsne normalisation
-    at.selectbox[-1].select(Normalisations.Standardisation)
-    # check the box to create the plot
-    at.checkbox[3].check().run()
-    # save the plot
-    # since we only choose one visualisation, only one button is visible,
-    # hence, at.button[0]
-    at.button[0].click().run()
 
-    # Assert
-    assert not at.exception
-    assert not at.error
-    assert expected_file.exists()

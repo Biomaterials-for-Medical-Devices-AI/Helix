@@ -195,3 +195,13 @@ def run_preprocessing(
     processed_data = run_feature_selection(config, normalised_data)
 
     return processed_data
+
+
+# Function to convert nominal columns to numeric
+def convert_nominal_to_numeric(data: pd.DataFrame) -> pd.DataFrame:
+    for col in data.columns:
+        if (
+            data[col].dtype == "object" or data[col].dtype.name == "category"
+        ):  # Check if column is categorical
+            data[col] = pd.factorize(data[col])[0]
+    return data
