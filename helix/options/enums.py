@@ -114,7 +114,7 @@ class SvmKernels(StrEnum):
 
 class Normalisations(StrEnum):
     # changing spelling to UK here would make this not backwards-compatible
-    Standardization = "standardization"
+    Standardisation = "standardisation"
     MinMax = "minmax"
     NoNormalisation = "none"  # field name can't be None
 
@@ -124,7 +124,7 @@ class TransformationsY(StrEnum):
     Sqrt = "square-root"
     MinMaxNormalisation = "minmax"
     # changing spelling to UK here would make this not backwards-compatible
-    StandardisationNormalisation = "standardization"  # to match normalisations
+    StandardisationNormalisation = "standardisation"  # to match normalisations
     NoTransformation = "none"
 
 
