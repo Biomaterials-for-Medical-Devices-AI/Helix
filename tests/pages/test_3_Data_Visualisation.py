@@ -2,12 +2,13 @@ import uuid
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
 
 from helix.options.data import DataOptions
-from helix.options.enums import Normalisations, ProblemTypes
+from helix.options.enums import ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -209,13 +210,3 @@ def test_experiment_directory_exists(new_experiment: str):
     assert not at.exception
     assert experiment_dir.exists(), f"Experiment directory {experiment_dir} does not exist"
     assert plot_dir.exists() or plot_dir.parent.exists(), f"Plot directory {plot_dir} or its parent does not exist"
-
-
-
-
-
-
-
-
-
-
