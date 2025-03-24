@@ -66,7 +66,7 @@ import pandas as pd
 
 new_data = pd.read_csv("my_new_data.csv", header=0)
 
-# Perform preprocessing on the new data using the same methodolody as was used to preprocess the training data in the original experiment.
+# Perform preprocessing on the new data using the same methodolody that you used to preprocess the training data in the original experiment.
 preprocessed_data = ...
 
 X = prepocessed_data.iloc[:, :-1]
