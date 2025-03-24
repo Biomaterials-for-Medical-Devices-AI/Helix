@@ -19,7 +19,7 @@ PROBLEM_TYPES = [
     ProblemTypes.Regression.capitalize(),
 ]
 NORMALISATIONS = [
-    Normalisations.Standardization.capitalize(),
+    Normalisations.Standardisation.capitalize(),
     Normalisations.MinMax.capitalize(),
     Normalisations.NoNormalisation.capitalize(),
 ]
