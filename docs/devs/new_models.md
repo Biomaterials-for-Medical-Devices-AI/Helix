@@ -151,16 +151,20 @@ def ml_options_form():
 ```
 
 ## Documentation
-Please add your new model to the user documentation. To do this, edit the the **"Options"** subsection of **"Selecting models to train"** in`docs/users/train_models.md`. **If you do not document your model, your model will not be added to Helix.**
+Please add your new model to the user documentation. To do this, edit the the **"Options"** subsection of **"Selecting models to train"** in`docs/users/train_models.md`. This is a Markdown file, please see this [Markdown guide](https://www.markdownguide.org/getting-started/) for information on how to write using Markdown.
+
+**If you do not document your model, your model will not be added to Helix.**
 
 Your explanation **must** include the hyperparameters and explanations of what they do to your model. It should also include a brief explanation of the theory of the model and link to any relevant papers or documentation concerning the model.
 
 ### Example
 > - **My New Model**
->>> My model uses a super cool algorithm that optimises 2 parameters `param1` and `param2` to asymptotically approach Artificial General Intelligence (AGI).
->>> The paper can be found at [link here].
->>> - param1: The first hyperparameter to my model. The bigger it is, ther more accuarate the model.
->>> - param2: The second hyperparameter to my model. The closer the value to 1.0, the smarter it is.
+>
+>> My model uses a super cool algorithm that optimises 2 parameters `param1` and `param2` to asymptotically approach Artificial General Intelligence (AGI).
+>
+>> The paper can be found at [link here].
+>> - param1: The first hyperparameter to my model. The bigger it is, ther more accuarate the model.
+>> - param2: The second hyperparameter to my model. The closer the value to 1.0, the smarter it is.
 
 [BaseEstimator]: https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator
 [ClassifierMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html
