@@ -166,6 +166,138 @@ Your explanation **must** include the hyperparameters and explanations of what t
 >> - param1: The first hyperparameter to my model. The bigger it is, ther more accuarate the model.
 >> - param2: The second hyperparameter to my model. The closer the value to 1.0, the smarter it is.
 
+## Testing
+You **must** test that your model works with Helix for it to be included. Helix uses [`pytest`](https://docs.pytest.org/en/stable/index.html) and `streamlit`'s [testing framework](https://docs.streamlit.io/develop/concepts/app-testing/get-started).
+
+You **must** add a test for both AHPS and manual hyperparameter tuning.
+
+### What to test
+What you are testing, in this case, is not the performance of the model in terms of some metric like accuracy or R^2, but whether your model is properly integrated into Helix. Your tests should check the following:
+- That there are no errors or exceptions when running the model
+- That it creates the model directory in the experiment
+- That it creates the expected `.pkl` file
+- That it creates the plot directory for the experiment and that that directory is not empty. i.e. you get the performance plots
+- That you get the file with the expected predictions
+- That you get the file with the model metrics
+
+### How to add tests
+You should add your tests to `tests/pages/test_4_Train_Models.py`.
+
+Generally, you will write 2 test functions: one to test your model with AHPS, and one to test it with manual hyperparameter tuning. Take the tests for SVM models. You will find 2 tests: `test_auto_svm` and `test_manual_svm`. You might call your tests: `test_auto_<model_name>` and `test_manual_<model_name>`.
+
+#### Testing AHPS
+This test simulates the user setting up the model to be trained with [`GridSearchCV`][GridSearchCV]. This test should take one parameter called `new_experiment` of type `str`.
+
+Below is `test_auto_svm` as an expample:
+
+```python
+def test_auto_svm(new_experiment: str):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_path(exp_dir)
+    k = 3
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Set the number of k-folds
+    at.number_input[0].set_value(k).run()
+    # Select SVM
+    at.toggle[4].set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
+```
+
+You should be able to create a copy of this example and rename it to `test_auto_<my_model>`, edit the index on line 17 of the code to the number of the toggle you used in the page. To find this, count from **0**, from the first toggle on the page, up to the toggle for your model. e.g. SVM is the 5th toggle so the test does `at.toggle[4].set_value(True).run()`. If you added your model's toggle directly under SVM's, you'd do `at.toggle[5].set_value(True).run()`.
+
+#### Testing manual hyperparameter tuning
+This test simulates the user setting up the model to be trained without AHPS. This test should take 3 parameters called `new_experiment` of type `str`, `data_split_method` of type `DataSplitMethods` and `holdout_or_k` of type `int`.
+
+Below is `test_manual_svm` as an expample. The decorator above the function signature doesn't need to be altered; it causes the test to run the page with bootstrapping and cross-validation.
+
+```python
+@pytest.mark.parametrize(
+    "data_split_method,holdout_or_k",
+    [
+        (DataSplitMethods.Holdout.capitalize(), 3),
+        (DataSplitMethods.KFold.capitalize(), 3),
+    ],
+)
+def test_manual_svm(
+    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_path(exp_dir)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    at.selectbox[0].select(new_experiment).run()
+    # Unselect AHPS, which is on by default
+    at.toggle[0].set_value(False).run()
+    # Select the data split method
+    at.selectbox[1].select(data_split_method).run()
+    # Set the number of bootstraps / k-folds
+    at.number_input[0].set_value(holdout_or_k).run()
+    # Select SVM
+    at.toggle[4].set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    at.button[0].click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
+```
+
+Similar to the AHPS test, you should only need to adjust the line saying `at.toggle[4].set_value(True).run()` to point to the correct toggle. Again, to find this, count from **0**, from the first toggle on the page, up to the toggle for your model.
+
+### Running the tests
+The tests will run when you open a pull request to Helix. They will re-run everytime you push to that PR. You can also run them manually:
+
+```bash
+uv run pytests
+```
+
+Be patient, the tests can take several minutes. Your changes may affect other tests so be aware.
+
 [BaseEstimator]: https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator
 [ClassifierMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html
 [RegressorMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.RegressorMixin.html
