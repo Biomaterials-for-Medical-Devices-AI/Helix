@@ -61,9 +61,9 @@ def plot_options_box(plot_opts: PlottingOptions | None = None):
             value=plot_opts.height if plot_opts else 10,
         )
         dpi = st.slider(
-            "DPI",
-            min_value=50,
-            max_value=300,
+            "Image Resolution (DPI",
+            min_value=330,
+            max_value=1000,
             value=plot_opts.dpi if plot_opts else 150,
             key=PlotOptionKeys.DPI,
         )
