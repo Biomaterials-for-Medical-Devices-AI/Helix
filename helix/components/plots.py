@@ -30,6 +30,11 @@ def display_metrics_table(metrics_path: Path):
     Args:
         metrics_path (Path): The path to the metrics file.
     """
+    # Check if metrics file exists
+    if not metrics_path.exists():
+        st.info("No metrics available yet. Train some models first.")
+        return
+
     # Load the metrics from the file
     with open(metrics_path, "r") as f:
         metrics_dict = json.load(f)

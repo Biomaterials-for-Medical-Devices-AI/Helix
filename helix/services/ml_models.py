@@ -156,4 +156,12 @@ def get_model(
         MlModel: A new instance of the requested machine learning model.
     """
 
+    from helix.machine_learning.models.mlrem import EMLinearRegression
+    from helix.machine_learning.models.mlrem_learner import MLREMLearner
+    
+    # Use custom learner for MLREM
+    if model_type == EMLinearRegression:
+        return MLREMLearner(params=model_params)
+    
+    # Default behaviour for other models
     return model_type(**model_params) if model_params is not None else model_type()

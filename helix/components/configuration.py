@@ -216,13 +216,13 @@ def data_split_options_box(manual: bool = False) -> DataSplitOptions:
         )
     else:
         k = st.number_input(
-            "k",
+            "Number of folds in Cross-Validation k",
             min_value=1,
             value=5,
             help="k is the number of folds in Cross-Validation",
         )
     test_size = st.number_input(
-        "Test size",
+        "Test size (fraction of data)",
         min_value=0.0,
         max_value=1.0,
         value=0.2,

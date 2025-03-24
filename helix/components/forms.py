@@ -9,6 +9,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from helix.components.configuration import data_split_options_box
 from helix.components.plot_editor import edit_plot_modal
 from helix.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
+from helix.options.choices.ml_models import ModelNames
 from helix.options.enums import (
     DataAnalysisStateKeys,
     DataPreprocessingStateKeys,
@@ -24,6 +25,7 @@ from helix.options.enums import (
 from helix.options.plotting import PlottingOptions
 from helix.options.search_grids import (
     LINEAR_MODEL_GRID,
+    MLREM_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
     XGB_GRID,
@@ -249,7 +251,7 @@ def fi_options_form():
 
 
 @st.experimental_fragment
-def ml_options_form():
+def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
     """
     The form for setting up the machine learning pipeline.
     """
@@ -295,6 +297,12 @@ def ml_options_form():
     if st.toggle("Support Vector Machine", value=False):
         svm_model_type = _svm_opts(use_hyperparam_search)
         model_types.update(svm_model_type)
+
+    # Only show MLREM for regression problems
+    if problem_type == ProblemTypes.Regression:
+        if st.toggle("Multiple Linear Regression with Expectation Maximisation", value=False):
+            mlrem_model_type = _mlrem_opts(use_hyperparam_search)
+            model_types.update(mlrem_model_type)
 
     st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
     st.subheader("Select outputs to save")
@@ -936,7 +944,7 @@ def _linear_model_opts(use_hyperparam_search: bool) -> dict:
         st.divider()
     else:
         params = LINEAR_MODEL_GRID
-    model_types["Linear Model"] = {
+    model_types[ModelNames.LinearModel.value] = {
         "use": True,
         "params": params,
     }
@@ -975,7 +983,7 @@ def _random_forest_opts(use_hyperparam_search: bool) -> dict:
         st.divider()
     else:
         params = RANDOM_FOREST_GRID
-    model_types["Random Forest"] = {
+    model_types[ModelNames.RandomForest.value] = {
         "use": True,
         "params": params,
     }
@@ -1024,7 +1032,7 @@ def _xgboost_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = XGB_GRID
 
-    model_types["XGBoost"] = {
+    model_types[ModelNames.XGBoost.value] = {
         "use": True,
         "params": params,
     }
@@ -1047,7 +1055,54 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = SVM_GRID
 
-    model_types["SVM"] = {
+    model_types[ModelNames.SVM.value] = {
+        "use": True,
+        "params": params,
+    }
+    return model_types
+
+
+def _mlrem_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        with st.expander("MLREM Options"):
+            # Basic parameters
+            alpha = st.number_input("Alpha (regularisation)", value=0.0, min_value=0.0, step=0.1)
+            max_beta = st.number_input("Maximum Beta", value=40, min_value=1, step=1, 
+                                     help="Will test beta values from 0.1 to max_beta * 0.1")
+            weight_threshold = st.number_input(
+                "Weight Threshold", value=1e-3, min_value=0.0, step=1e-4, format="%.4f",
+                help="Features with weights below this will be removed")
+            
+            # Advanced options
+            st.write("Advanced Options:")
+            max_iterations = st.number_input("Max Iterations", value=300, min_value=1, step=50)
+            tolerance = st.number_input("Tolerance", value=0.01, format="%.4f", step=0.001)
+            
+            # Feature selection options
+            st.write("Feature Selection Options:")
+            screen_variance = st.checkbox("Screen Low Variance Features", value=False)
+            variance_threshold = st.number_input(
+                "Variance Threshold", 
+                value=0.01, 
+                min_value=0.0, 
+                step=0.01,
+                help="Features with variance below this will be removed if screening is enabled"
+            )
+        
+        params = {
+            'alpha': alpha,
+            'beta_range': [0.1 * i for i in range(1, max_beta + 1)],
+            'weight_threshold': weight_threshold,
+            'max_iterations': max_iterations,
+            'tolerance': tolerance,
+            'screen_variance': screen_variance,
+            'variance_threshold': variance_threshold,
+        }
+    else:
+        params = MLREM_GRID
+
+    model_types[ModelNames.MLREM.value] = {
         "use": True,
         "params": params,
     }

@@ -23,3 +23,11 @@ SVM_GRID = {
     "degree": [2, 3, 4],
     "C": [1.0, 10.0, 100],
 }
+
+MLREM_GRID = {
+    "alpha": [0.0, 0.1, 0.5, 1.0],
+    "beta": [10],
+    "weight_threshold": [1e-4, 1e-3, 1e-2],
+    "max_iterations": [200, 300, 400],
+    "tolerance": [0.01, 0.001],
+}
