@@ -55,7 +55,7 @@ with open(path_to_model_file, "rb") as model_file:
 ```
 
 ## Making predictions
-When making predictions with you model, you need to take care that the new data you wish to make prdictions for, are preprocessed the same way as your training data. 
+When making predictions with you model, you need to take care that the new data for which you wish to make predictions are preprocessed the same way as your training data. 
 
 If you preprocessed your data on the **Data Preprocessing** page, take note of whether you normalised your independent and dependent variables, and which normalisation methods you used. Also take note of whether you used feature selection.
 
