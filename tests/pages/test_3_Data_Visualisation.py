@@ -2,7 +2,6 @@ import uuid
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import pytest
 from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
@@ -16,6 +15,8 @@ from helix.options.file_paths import (
     execution_options_path,
     helix_experiments_base_dir,
     plot_options_path,
+)
+from helix.options.file_paths import (
     preprocessed_data_path as get_preprocessed_data_path,
 )
 from helix.options.plotting import PlottingOptions
@@ -96,7 +97,7 @@ def new_experiment(
     # Save raw data
     raw_data_path = Path(data_opts.data_path.replace("_preprocessed", ""))
     np.savetxt(raw_data_path, X=dummy_data, delimiter=",")
-    
+
     # Save preprocessed data
     preprocessed_path = get_preprocessed_data_path(str(raw_data_path), experiment_dir)
     create_directory(preprocessed_path.parent)
@@ -205,7 +206,7 @@ def test_experiment_directory_exists(new_experiment: str):
     # Act
     # Select experiment
     at.selectbox[0].select(new_experiment).run()
-    
+
     # Assert
     assert not at.exception
     assert experiment_dir.exists(), f"Experiment directory {experiment_dir} does not exist"
