@@ -751,13 +751,13 @@ def tSNE_plot_form(  # noqa: C901
     if scaler == Normalisations.NoNormalisation:
         scaler = st.selectbox(
             "Select Normalisation for Comparison (this will not affect the normalisation for ML models)",
-            options=[Normalisations.Standardization, Normalisations.MinMax],
+            options=[Normalisations.Standardisation, Normalisations.MinMax],
             key=DataAnalysisStateKeys.SelectNormTsne,
         )
 
     if scaler == Normalisations.MinMax:
         X_scaled = MinMaxScaler().fit_transform(X)
-    elif scaler == Normalisations.Standardization:
+    elif scaler == Normalisations.Standardisation:
         X_scaled = StandardScaler().fit_transform(X)
 
     perplexity = st.slider(
@@ -1062,7 +1062,7 @@ def preprocessing_opts_form(data: pd.DataFrame):
 
     st.write(
         """
-        If you select **"Standardization"**, your data will be normalised by subtracting the
+        If you select **"Standardisation"**, your data will be normalised by subtracting the
         mean and dividing by the standard deviation for each feature. The resulting transformation has a
         mean of 0 and values are between -1 and 1.
 
