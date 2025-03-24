@@ -150,6 +150,9 @@ def ml_options_form():
         model_types.update(mymodel_type)
 ```
 
+## Documentation
+Please add your new model to the user documentation. To do this, edit the the **"Options"** subsection of **"Selecting models to train"** in`docs/users/train_models.md`.
+
 [BaseEstimator]: https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator
 [ClassifierMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html
 [RegressorMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.RegressorMixin.html
