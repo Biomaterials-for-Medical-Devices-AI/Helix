@@ -145,7 +145,9 @@ if experiment_name:
 
             plot_opt = load_plot_options(path_to_plot_opts)
 
-            st.header(f"Original Data ({data.shape[1]} columns, including dependent variable)")
+            st.header(
+                f"Original Data ({data.shape[1]} columns, including dependent variable)"
+            )
             original_view(data)
 
             preprocessing_opts_form(data)

@@ -11,7 +11,6 @@ from helix.components.forms import (
     tSNE_plot_form,
 )
 from helix.components.images.logos import sidebar_logo
-from helix.components.plots import plot_box
 from helix.components.statistical_tests import normaility_test_tabs
 from helix.options.enums import ExecutionStateKeys
 from helix.options.file_paths import (
@@ -112,7 +111,9 @@ if experiment_name:
             data = read_data(Path(data_opts.data_path), logger)
 
         st.write(f"### Data [{len(data.columns)} variables]")
-        st.info("This is your dataset **after** preprocessing. If no preprocessing took place, this will be the same as the raw data.")
+        st.info(
+            "This is your dataset **after** preprocessing. If no preprocessing took place, this will be the same as the raw data."
+        )
 
         st.write(data)
 
@@ -153,13 +154,6 @@ if experiment_name:
             plot_opt,
             data_opts.normalisation,
         )
-        
-        #plot_box(data_analysis_plot_dir, "Data Visualisation Plots")
-    # except ValueError:
-    #     # When the user uploaded the wrong file type, somehow
-    #     st.error("You must upload a .csv or .xlsx file.", icon="🔥")
-    # except Exception:
-    #     # Catch all error
-    #     st.error("Something went wrong.", icon="🔥")
+
     finally:
         close_logger(logger_instance, logger)
