@@ -11,7 +11,11 @@ from streamlit.testing.v1 import AppTest
 
 from helix.options.choices.ui import NORMALISATIONS
 from helix.options.data import DataOptions
-from helix.options.enums import DataPreprocessingStateKeys, ProblemTypes
+from helix.options.enums import (
+    DataPreprocessingStateKeys,
+    ProblemTypes,
+    ViewExperimentKeys,
+)
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_options_path,
@@ -25,6 +29,7 @@ from helix.options.plotting import PlottingOptions
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import load_data_preprocessing_options, save_options
 from helix.utils.utils import create_directory, delete_directory
+from tests.utils import get_element_by_label
 
 
 @pytest.fixture
@@ -172,7 +177,10 @@ def test_page_can_find_experiment(new_experiment: str):
     at.run(timeout=10.0)
 
     # Act
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_label(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
 
     # Assert
     assert not at.exception
@@ -198,15 +206,30 @@ def test_page_produces_preprocessed_data_file(
 
     # Act
     # select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_label(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # normalise the features
-    at.selectbox[1].select(NORMALISATIONS[0]).run()  # standardisation
+    normalisation_selector = get_element_by_label(
+        at, "selectbox", DataPreprocessingStateKeys.IndependentNormalisation
+    )
+    normalisation_selector.select(NORMALISATIONS[0]).run()  # standardisation
     # select variance threshold
-    at.checkbox[0].check().run()
+    variance_checkbox = get_element_by_label(
+        at, "checkbox", DataPreprocessingStateKeys.VarianceThreshold
+    )
+    variance_checkbox.check().run()
     # select correlation threshold
-    at.checkbox[1].check().run()
+    correlation_checkbox = get_element_by_label(
+        at, "checkbox", DataPreprocessingStateKeys.CorrelationThreshold
+    )
+    correlation_checkbox.check().run()
     # select Lasso
-    at.checkbox[2].check().run()
+    lasso_checkbox = get_element_by_label(
+        at, "checkbox", DataPreprocessingStateKeys.LassoFeatureSelection
+    )
+    lasso_checkbox.check().run()
     # click the button
     at.button[0].click().run()
 
@@ -242,7 +265,10 @@ def test_page_produces_preprocessing_options_file(
 
     # Act
     # select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_label(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # normalise the features
     at.selectbox[1].select(NORMALISATIONS[0]).run()  # standardisation
     # select variance threshold
@@ -271,7 +297,10 @@ def test_page_detects_old_opts(
 
     # Act
     # select the experiment
-    at.selectbox[0].select(old_experiment).run()
+    exp_selector = get_element_by_label(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(old_experiment).run()
     # look for the redo elements
     redo_warning = at.warning[0]
     redo_checkbox = at.checkbox[0]
