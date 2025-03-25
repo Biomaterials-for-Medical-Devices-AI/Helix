@@ -75,7 +75,7 @@ y = prepocessed_data.iloc[:, -1]
 # Make predictions
 y_pred = clf.predict(X)
 
-# Score the accuracy
+# Calculate the accuracy
 from sklearn.metrics import accuracy_score
 accuracy_score(y, y_pred)
 ```
