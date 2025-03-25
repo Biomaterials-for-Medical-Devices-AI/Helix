@@ -5,8 +5,14 @@ import pytest
 from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
 
+from helix.options.choices.ui import NORMALISATIONS
 from helix.options.data import DataOptions
-from helix.options.enums import Normalisations, ProblemTypes
+from helix.options.enums import (
+    DataAnalysisStateKeys,
+    Normalisations,
+    ProblemTypes,
+    ViewExperimentKeys,
+)
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -18,6 +24,7 @@ from helix.options.file_paths import (
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
 from helix.utils.utils import create_directory, delete_directory
+from tests.utils import get_element_by_key, get_element_by_label
 
 
 @pytest.fixture
@@ -116,7 +123,10 @@ def test_page_can_find_experiment(new_experiment: str):
     at.run()
 
     # Act
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
 
     # Assert
     assert not at.exception
@@ -139,13 +149,23 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
 
     # Act
     # select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # select KDE plot
-    at.toggle[0].set_value(True).run()
+    kde_toggle = get_element_by_key(at, "toggle", DataAnalysisStateKeys.ShowKDE)
+    kde_toggle.set_value(True).run()
     # check the box to create the plot
-    at.checkbox[0].check().run()
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.TargetVarDistribution
+    )
+    create_plot_checkbox.check().run()
     # save the plot
-    at.button[0].click().run()
+    button = get_element_by_key(
+        at, "button", DataAnalysisStateKeys.SaveTargetVarDistribution
+    )
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -166,15 +186,24 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
 
     # Act
     # select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # select all feature
-    at.toggle[1].set_value(True).run()
+    correlation_toggle = get_element_by_key(
+        at, "toggle", DataAnalysisStateKeys.SelectAllDescriptorsCorrelation
+    )
+    correlation_toggle.set_value(True).run()
     # check the box to create the plot
-    at.checkbox[1].check().run()
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.CorrelationHeatmap
+    )
+    create_plot_checkbox.check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
-    # hence, at.button[0]
-    at.button[0].click().run()
+    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SaveHeatmap)
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -195,15 +224,24 @@ def test_page_produces_pairplot(new_experiment: str):
 
     # Act
     # select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # select all feature
-    at.toggle[2].set_value(True).run()
+    pairplot_toggle = get_element_by_key(
+        at, "toggle", DataAnalysisStateKeys.SelectAllDescriptorsPairPlot
+    )
+    pairplot_toggle.set_value(True).run()
     # check the box to create the plot
-    at.checkbox[2].check().run()
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.PairPlot
+    )
+    create_plot_checkbox.check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
-    # hence, at.button[0]
-    at.button[0].click().run()
+    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SavePairPlot)
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -224,15 +262,24 @@ def test_page_produces_tsne_plot(new_experiment: str):
 
     # Act
     # select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # select tsne normalisation
-    at.selectbox[-1].select(Normalisations.Standardisation)
+    normalisation_selector = get_element_by_key(
+        at, "selectbox", DataAnalysisStateKeys.SelectNormTsne
+    )
+    normalisation_selector.select(Normalisations.Standardisation).run()
     # check the box to create the plot
-    at.checkbox[3].check().run()
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.TSNEPlot
+    )
+    create_plot_checkbox.check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
-    # hence, at.button[0]
-    at.button[0].click().run()
+    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SaveTSNEPlot)
+    button.click().run()
 
     # Assert
     assert not at.exception
