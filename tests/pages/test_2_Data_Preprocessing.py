@@ -29,7 +29,7 @@ from helix.options.plotting import PlottingOptions
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import load_data_preprocessing_options, save_options
 from helix.utils.utils import create_directory, delete_directory
-from tests.utils import get_element_by_label
+from tests.utils import get_element_by_key, get_element_by_label
 
 
 @pytest.fixture
@@ -177,7 +177,7 @@ def test_page_can_find_experiment(new_experiment: str):
     at.run(timeout=10.0)
 
     # Act
-    exp_selector = get_element_by_label(
+    exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
     exp_selector.select(new_experiment).run()
@@ -206,32 +206,33 @@ def test_page_produces_preprocessed_data_file(
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_label(
+    exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
     exp_selector.select(new_experiment).run()
     # normalise the features
-    normalisation_selector = get_element_by_label(
+    normalisation_selector = get_element_by_key(
         at, "selectbox", DataPreprocessingStateKeys.IndependentNormalisation
     )
     normalisation_selector.select(NORMALISATIONS[0]).run()  # standardisation
     # select variance threshold
-    variance_checkbox = get_element_by_label(
+    variance_checkbox = get_element_by_key(
         at, "checkbox", DataPreprocessingStateKeys.VarianceThreshold
     )
     variance_checkbox.check().run()
     # select correlation threshold
-    correlation_checkbox = get_element_by_label(
+    correlation_checkbox = get_element_by_key(
         at, "checkbox", DataPreprocessingStateKeys.CorrelationThreshold
     )
     correlation_checkbox.check().run()
     # select Lasso
-    lasso_checkbox = get_element_by_label(
+    lasso_checkbox = get_element_by_key(
         at, "checkbox", DataPreprocessingStateKeys.LassoFeatureSelection
     )
     lasso_checkbox.check().run()
     # click the button
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Data Preprocessing")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -265,20 +266,33 @@ def test_page_produces_preprocessing_options_file(
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_label(
+    exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
     exp_selector.select(new_experiment).run()
     # normalise the features
-    at.selectbox[1].select(NORMALISATIONS[0]).run()  # standardisation
+    normalisation_selector = get_element_by_key(
+        at, "selectbox", DataPreprocessingStateKeys.IndependentNormalisation
+    )
+    normalisation_selector.select(NORMALISATIONS[0]).run()  # standardisation
     # select variance threshold
-    at.checkbox[0].check().run()
+    variance_checkbox = get_element_by_key(
+        at, "checkbox", DataPreprocessingStateKeys.VarianceThreshold
+    )
+    variance_checkbox.check().run()
     # select correlation threshold
-    at.checkbox[1].check().run()
+    correlation_checkbox = get_element_by_key(
+        at, "checkbox", DataPreprocessingStateKeys.CorrelationThreshold
+    )
+    correlation_checkbox.check().run()
     # select Lasso
-    at.checkbox[2].check().run()
+    lasso_checkbox = get_element_by_key(
+        at, "checkbox", DataPreprocessingStateKeys.LassoFeatureSelection
+    )
+    lasso_checkbox.check().run()
     # click the button
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Data Preprocessing")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -297,7 +311,7 @@ def test_page_detects_old_opts(
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_label(
+    exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
     exp_selector.select(old_experiment).run()
