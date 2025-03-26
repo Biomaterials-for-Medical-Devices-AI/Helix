@@ -213,7 +213,7 @@ Your explanation **must** include the hyperparameters and explanations of what t
 ## Testing
 You **must** test that your model works with Helix for it to be included. Helix uses [`pytest`](https://docs.pytest.org/en/stable/index.html) and `streamlit`'s [testing framework](https://docs.streamlit.io/develop/concepts/app-testing/get-started).
 
-You **must** add a test for both AHPS and manual hyperparameter tuning.
+You **must** add a test for both automatic hyperparameter search and manual hyperparameter tuning.
 
 ### What to test
 What you are testing, in this case, is not the performance of the model in terms of some metric like accuracy or R^2, but whether your model is properly integrated into Helix. Your tests should check the following:
