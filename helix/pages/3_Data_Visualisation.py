@@ -208,5 +208,12 @@ if experiment_name:
             else:
                 st.info("No raw data available.")
 
+    except ValueError:
+        # When the user uploaded the wrong file type, somehow
+        st.error("You must upload a .csv or .xlsx file.", icon="🔥")
+    except Exception:
+        # Catch all error
+        st.error("Something went wrong.", icon="🔥")
+
     finally:
         close_logger(logger_instance, logger)
