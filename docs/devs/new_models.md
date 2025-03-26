@@ -248,15 +248,21 @@ def test_auto_svm(new_experiment: str):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Set the number of k-folds
-    at.number_input[0].set_value(k).run()
+    k_input = get_element_by_label(at, "number_input", "k")
+    k_input.set_value(k).run()
     # Select SVM
-    at.toggle[4].set_value(True).run()
+    svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
+    svm_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
     # Click run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Training")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -273,7 +279,12 @@ def test_auto_svm(new_experiment: str):
     assert expected_metrics_file.exists()
 ```
 
-You should be able to create a copy of this example and rename it to `test_auto_<my_model>`, edit the index on line 17 of the code to the number of the toggle you used in the page. To find this, count from **0**, from the first toggle on the page, up to the toggle for your model. e.g. SVM is the 5th toggle so the test does `at.toggle[4].set_value(True).run()`. If you added your model's toggle directly under SVM's, you'd do `at.toggle[5].set_value(True).run()`.
+You should be able to create a copy of this example and rename it to `test_auto_<my_model>`. Then, replace the 2 lines underneath where it says "# Select SVM" with the following:
+```python
+my_model_toggle = get_element_by_label(at, "toggle", "My Model")
+my_model_toggle.set_value(True).run()
+```
+Subsitute "My Model" with the actual name of your model.
 
 #### Testing manual hyperparameter tuning
 This test simulates the user setting up the model to be trained without AHPS. This test should take 3 parameters called `new_experiment` of type `str`, `data_split_method` of type `DataSplitMethods` and `holdout_or_k` of type `int`.
@@ -302,19 +313,33 @@ def test_manual_svm(
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
-    # Unselect automatic hyperparameter search, which is on by default
-    at.toggle[0].set_value(False).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # Unselect AHPS, which is on by default
+    ahps_toggle = get_element_by_key(
+        at, "toggle", ExecutionStateKeys.UseHyperParamSearch
+    )
+    ahps_toggle.set_value(False).run()
     # Select the data split method
-    at.selectbox[1].select(data_split_method).run()
+    data_split_selector = get_element_by_label(at, "selectbox", "Data split method")
+    data_split_selector.select(data_split_method).run()
     # Set the number of bootstraps / k-folds
-    at.number_input[0].set_value(holdout_or_k).run()
+    if holdout_input := get_element_by_label(
+        at, "number_input", "Number of bootstraps"
+    ):
+        holdout_input.set_value(holdout_or_k).run()
+    if k_input := get_element_by_label(at, "number_input", "k"):
+        k_input.set_value(holdout_or_k).run()
     # Select SVM
-    at.toggle[4].set_value(True).run()
+    svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
+    svm_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
     # Click run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Training")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -331,7 +356,12 @@ def test_manual_svm(
     assert expected_metrics_file.exists()
 ```
 
-Similar to the automatic hyperparameter search test, you should only need to adjust the line saying `at.toggle[4].set_value(True).run()` to point to the correct toggle. Again, to find this, count from **0**, from the first toggle on the page, up to the toggle for your model.
+Similar to the automatic hyperparameter search test, you should only need to edit the lines underneath where it says "# Select SVM", replacing them with the following:
+```python
+my_model_toggle = get_element_by_label(at, "toggle", "My Model")
+my_model_toggle.set_value(True).run()
+```
+Subsitute "My Model" with the actual name of your model.
 
 ### Running the tests
 The tests will run when you open a pull request to Helix. They will re-run everytime you push to that PR. You can also run them manually:
