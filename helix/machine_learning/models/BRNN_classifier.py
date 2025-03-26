@@ -3,11 +3,11 @@ import torch
 import torch.optim as optim
 from sklearn.utils.validation import check_array, check_is_fitted
 
-from helix.machine_learning.models.BRNN_base_class import BRNN_base
+from helix.machine_learning.models.BRNN_base_class import BRNNBase
 from helix.options.enums import ProblemTypes
 
 
-class BRNN_classifier(BRNN_base):
+class BRNNClassifier(BRNNBase):
     def __init__(
         self,
         hidden_units=10,
@@ -72,10 +72,6 @@ class BRNN_classifier(BRNN_base):
             loss.backward()
             optimizer.step()
 
-            print(
-                f"Iteration {iteration + 1}: Cost = {loss.item()}, Cross Entropy = {loss.item()}, Regularisation = {reg_term.item()}"
-            )
-
             # Update error and regularisation terms
             self.error_ = loss.item()
             self.regularisation_ = reg_term.item()
@@ -90,8 +86,6 @@ class BRNN_classifier(BRNN_base):
             gamma = sum(eig / (eig + alpha) for eig in eigenvalues)
             alpha = max(gamma / (2 * self.regularisation_), 1e-6)
             beta = max((self.n_samples_ - gamma) / (2 * self.error_), 1)
-
-            print(f"Alpha = {alpha}, Beta = {beta}, Gamma = {gamma}")
 
             new_evidence = self._calculate_evidence(
                 alpha, beta, eigenvalues, self.error_, self.regularisation_
