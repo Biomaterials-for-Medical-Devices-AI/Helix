@@ -57,7 +57,13 @@ with open(path_to_model_file, "rb") as model_file:
 ## Making predictions
 When making predictions with you model, you need to take care that the new data for which you wish to make predictions are preprocessed the same way as your training data. 
 
-If you preprocessed your data on the **Data Preprocessing** page, you can check what preprocessing your performed by going to your experiment in your machine's file explorer and opening `data_preprocessing_options.json`. 
+If you preprocessed your data on the **Data Preprocessing** page, you can check how you preprocessed your data by selcting to your experiment on any of the following pages:
+- Data Preprocessing
+- Data Visualisation
+- Train Models
+- Feature Importance
+- View Experiments
+Under the experiment selection box, there will be a dropdown labelled "Show Experiment Options". Click this to expand and view your preprocessing options under the section labelled "Preprocessing Options".
 
 When you run preprocessing, you get a file in your experiment directory ending in `_preprocessed.csv` or `_preprocessed.xlsx`. Look in this file to see which features made it through feature selection. If some features do not make it through, you will need to remove those features from your new data, or your model will not work.
 
