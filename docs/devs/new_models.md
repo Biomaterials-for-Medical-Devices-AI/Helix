@@ -340,7 +340,7 @@ The tests will run when you open a pull request to Helix. They will re-run every
 uv run pytests
 ```
 
-Be patient, the tests can take several minutes. Your changes may affect other tests so be aware.
+Be patient, the tests can take several minutes. Your changes may affect other tests, so be aware.
 
 [BaseEstimator]: https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator
 [ClassifierMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html
