@@ -199,6 +199,17 @@ def run_preprocessing(
 
 # Function to convert nominal columns to numeric
 def convert_nominal_to_numeric(data: pd.DataFrame) -> pd.DataFrame:
+    """Convert all nominal (categorical) columns in a DataFrame to numeric values.
+    This function identifies all object or category type columns in the input DataFrame
+    and converts them to numeric representations using pandas' factorize method.
+    Each unique category is assigned a unique integer value.
+
+    Args:
+        data (pd.DataFrame): The input DataFrame containing columns to be converted.
+
+    Returns:
+        pd.DataFrame: A DataFrame with all categorical columns converted to numeric values.
+    """
     for col in data.columns:
         if (
             data[col].dtype == "object" or data[col].dtype.name == "category"

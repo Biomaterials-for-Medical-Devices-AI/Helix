@@ -140,14 +140,12 @@ if experiment_name:
 
             if non_numeric_y:
                 st.warning(
-                    "The dependent variable contains non-numeric values. This will be transformed to allow training."
+                    "The dependent variable contains non-numeric values. This will be transformed to allow for training."
                 )
 
             plot_opt = load_plot_options(path_to_plot_opts)
 
-            st.header(
-                f"Original Data ({data.shape[1]} columns, including dependent variable)"
-            )
+            st.header("Original Data")
             original_view(data)
 
             preprocessing_opts_form(data)
