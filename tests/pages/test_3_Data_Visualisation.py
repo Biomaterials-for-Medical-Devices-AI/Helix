@@ -7,7 +7,12 @@ from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
 
 from helix.options.data import DataOptions
-from helix.options.enums import ProblemTypes
+from helix.options.enums import (
+    DataAnalysisStateKeys,
+    Normalisations,
+    ProblemTypes,
+    ViewExperimentKeys,
+)
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_analysis_plots_dir,
@@ -22,6 +27,7 @@ from helix.options.file_paths import (
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
 from helix.utils.utils import create_directory, delete_directory
+from tests.utils import get_element_by_key
 
 
 @pytest.fixture
@@ -127,7 +133,10 @@ def test_page_can_find_experiment(new_experiment: str):
     at.run()
 
     # Act
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
 
     # Assert
     assert not at.exception
@@ -204,10 +213,140 @@ def test_experiment_directory_exists(new_experiment: str):
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
     # Act
-    # Select experiment
-    at.selectbox[0].select(new_experiment).run()
+    # select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # select KDE plot
+    kde_toggle = get_element_by_key(at, "toggle", DataAnalysisStateKeys.ShowKDE)
+    kde_toggle.set_value(True).run()
+    # check the box to create the plot
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.TargetVarDistribution
+    )
+    create_plot_checkbox.check().run()
+    # save the plot
+    button = get_element_by_key(
+        at, "button", DataAnalysisStateKeys.SaveTargetVarDistribution
+    )
+    button.click().run()
 
     # Assert
     assert not at.exception
-    assert experiment_dir.exists(), f"Experiment directory {experiment_dir} does not exist"
-    assert plot_dir.exists() or plot_dir.parent.exists(), f"Plot directory {plot_dir} or its parent does not exist"
+    assert not at.error
+    assert expected_file.exists()
+
+
+def test_page_produces_correlation_heatmap(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    expected_file = plot_dir / "correlation_heatmap.png"
+
+    # Act
+    # select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # select all feature
+    correlation_toggle = get_element_by_key(
+        at, "toggle", DataAnalysisStateKeys.SelectAllDescriptorsCorrelation
+    )
+    correlation_toggle.set_value(True).run()
+    # check the box to create the plot
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.CorrelationHeatmap
+    )
+    create_plot_checkbox.check().run()
+    # save the plot
+    # since we only choose one visualisation, only one button is visible,
+    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SaveHeatmap)
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
+
+
+def test_page_produces_pairplot(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    expected_file = plot_dir / "pairplot.png"
+
+    # Act
+    # select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # select all feature
+    pairplot_toggle = get_element_by_key(
+        at, "toggle", DataAnalysisStateKeys.SelectAllDescriptorsPairPlot
+    )
+    pairplot_toggle.set_value(True).run()
+    # check the box to create the plot
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.PairPlot
+    )
+    create_plot_checkbox.check().run()
+    # save the plot
+    # since we only choose one visualisation, only one button is visible,
+    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SavePairPlot)
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
+
+
+def test_page_produces_tsne_plot(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    expected_file = plot_dir / "tsne_plot.png"
+
+    # Act
+    # select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # select tsne normalisation
+    normalisation_selector = get_element_by_key(
+        at, "selectbox", DataAnalysisStateKeys.SelectNormTsne
+    )
+    normalisation_selector.select(Normalisations.Standardisation).run()
+    # check the box to create the plot
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.TSNEPlot
+    )
+    create_plot_checkbox.check().run()
+    # save the plot
+    # since we only choose one visualisation, only one button is visible,
+    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SaveTSNEPlot)
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_file.exists()
