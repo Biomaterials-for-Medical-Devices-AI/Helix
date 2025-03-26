@@ -95,7 +95,6 @@ if experiment_name:
             raw_data = read_data(path_to_raw_data, logger)
             # if the data contains any nominal variables, convert them into numeric, including the dependent variable, to allow for visualisation
             raw_data = convert_nominal_to_numeric(raw_data)
-            print(raw_data)
             data_tsne = raw_data
             if path_to_preproc_data.exists():
                 preprocessed_data = read_data(path_to_preproc_data, logger)
