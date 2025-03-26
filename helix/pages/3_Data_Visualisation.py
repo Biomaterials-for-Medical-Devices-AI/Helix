@@ -76,35 +76,37 @@ if experiment_name:
     plot_opt = load_plot_options(path_to_plot_opts)
     data_opts = load_data_options(path_to_data_opts)
 
-    def load_dataset(path_to_raw_data: Path, path_to_preproc_data: Path, logger) -> tuple:
+    def load_dataset(
+        path_to_raw_data: Path, path_to_preproc_data: Path, logger
+    ) -> tuple:
         """Load raw and preprocessed data if available.
-        
+
         Args:
             path_to_raw_data: Path to raw data file
             path_to_preproc_data: Path to preprocessed data file
             logger: Logger instance
-            
+
         Returns:
             tuple: (raw_data, preprocessed_data, data_for_tsne)
         """
         raw_data = None
         preprocessed_data = None
         data_tsne = None
-        
+
         if path_to_raw_data.exists():
             raw_data = read_data(path_to_raw_data, logger)
             raw_data = convert_nominal_to_numeric(raw_data)
             data_tsne = raw_data
-            
+
             if path_to_preproc_data.exists():
                 preprocessed_data = read_data(path_to_preproc_data, logger)
                 data_tsne = preprocessed_data
-                
+
         return raw_data, preprocessed_data, data_tsne
 
     def visualisation_view(data, data_tsne, prefix: str | None = None):
         """Display visualisation of data."""
-        
+
         if data is not None:
             st.write("### Graphical Description")
             st.write("#### Target Variable Distribution")
@@ -122,9 +124,7 @@ if experiment_name:
             )
 
             st.write("#### Pairplot")
-            pairplot_form(
-                data, data_analysis_plot_dir, plot_opt, key_prefix=prefix
-            )
+            pairplot_form(data, data_analysis_plot_dir, plot_opt, key_prefix=prefix)
 
             st.write("#### t-SNE Plot")
             tSNE_plot_form(
@@ -135,7 +135,7 @@ if experiment_name:
                 data_opts.normalisation,
                 key_prefix=prefix,
             )
-                
+
     try:
 
         # `raw_data` refers to the data before it gets any preprocessing,
@@ -147,9 +147,11 @@ if experiment_name:
         path_to_preproc_data = preprocessed_data_path(
             str(path_to_raw_data), biofefi_base_dir / experiment_name
         )
-        
+
         # Load data based on what's available
-        raw_data, preprocessed_data, data_tsne = load_dataset(path_to_raw_data, path_to_preproc_data, logger)
+        raw_data, preprocessed_data, data_tsne = load_dataset(
+            path_to_raw_data, path_to_preproc_data, logger
+        )
 
         st.write("### Dataset Overview")
 
@@ -168,7 +170,7 @@ if experiment_name:
                 st.write(raw_data.describe())
 
                 st.write("### Normality Tests")
-                normality_test_view(raw_data, "Raw Data")  
+                normality_test_view(raw_data, "Raw Data")
                 # Data visualisation
                 visualisation_view(raw_data, data_tsne, prefix="raw")
 
@@ -184,12 +186,12 @@ if experiment_name:
                 st.write(preprocessed_data.describe())
 
                 st.write("### Normality Tests")
-                normality_test_view(preprocessed_data, "Preprocessed Data")  
+                normality_test_view(preprocessed_data, "Preprocessed Data")
                 # Data visualisation
-                visualisation_view(preprocessed_data, data_tsne, prefix="preprocessed") 
+                visualisation_view(preprocessed_data, data_tsne, prefix="preprocessed")
 
-        else: # raw data only available, so no need for tabs
-            if raw_data is not None: 
+        else:  # raw data only available, so no need for tabs
+            if raw_data is not None:
                 st.write(
                     f"#### Raw Data [{len(raw_data.columns)-1} independent variables]"
                 )
@@ -201,7 +203,7 @@ if experiment_name:
                     st.write(raw_data.describe())
 
                 st.write("### Normality Tests")
-                normality_test_view(raw_data, "Raw Data")   
+                normality_test_view(raw_data, "Raw Data")
                 visualisation_view(raw_data, data_tsne, prefix="raw")
             else:
                 st.info("No raw data available.")

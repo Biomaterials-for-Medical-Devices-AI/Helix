@@ -36,7 +36,8 @@ def display_normality_test_results(results_df: pd.DataFrame, title: str):
 
 @st.experimental_fragment
 def normality_test_view(
-    data: pd.DataFrame, table_title: str | None = None,
+    data: pd.DataFrame,
+    table_title: str | None = None,
 ):
     st.write("### Data Normality Tests")
 
