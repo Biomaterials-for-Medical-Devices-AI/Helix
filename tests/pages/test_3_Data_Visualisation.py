@@ -211,3 +211,123 @@ def test_experiment_directory_exists(new_experiment: str):
     assert not at.exception
     assert experiment_dir.exists(), f"Experiment directory {experiment_dir} does not exist"
     assert plot_dir.exists() or plot_dir.parent.exists(), f"Plot directory {plot_dir} or its parent does not exist"
+
+
+def test_experiment_selector_exists():
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+
+    # Act
+    at.run()
+
+    # Assert
+    assert len(at.selectbox) > 0
+
+
+def test_experiment_selector_works(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+
+
+def test_statistical_tests_section_exists(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    # Check for the statistical tests section header
+    assert any("statistical tests" in text.value.lower() for text in at.markdown if hasattr(text, 'value'))
+
+
+def test_graphical_description_section_exists(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert not at.exception
+    # Check for the graphical description section header
+    assert any("graphical description" in text.value.lower() for text in at.markdown if hasattr(text, 'value'))
+
+
+def test_visualization_tabs_exist(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    # Check for visualization tabs
+    visualization_tabs = [tab for tab in at.tabs if tab.label in ["Raw Data", "Preprocessed Data"]]
+    assert len(visualization_tabs) >= 2
+    assert any("Raw Data" in tab.label for tab in visualization_tabs)
+    assert any("Preprocessed Data" in tab.label for tab in visualization_tabs)
+
+
+def test_experiment_directory_exists(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    base_dir = helix_experiments_base_dir()
+    experiment_dir = base_dir / new_experiment
+    plot_dir = data_analysis_plots_dir(experiment_dir)
+
+    # Act
+    # Select experiment
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    assert experiment_dir.exists()
+    assert plot_dir.exists()
+    assert (experiment_dir / plot_options_path(experiment_dir).name).exists()
+
+
+def test_data_statistics_tabs_exist(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    # Check for data statistics tabs
+    statistics_tabs = [tab for tab in at.tabs if "Statistics" in tab.label]
+    assert len(statistics_tabs) >= 2
+    assert any("Raw Data Statistics" in tab.label for tab in statistics_tabs)
+    assert any("Preprocessed Data Statistics" in tab.label for tab in statistics_tabs)
+
+
+def test_visualization_components_exist(new_experiment: str):
+    # Arrange
+    at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
+    at.run()
+
+    # Act
+    at.selectbox[0].select(new_experiment).run()
+
+    # Assert
+    # Check for all visualization components
+    assert any("Target Variable Distribution" in text.value for text in at.markdown if hasattr(text, 'value'))
+    assert any("Correlation Heatmap" in text.value for text in at.markdown if hasattr(text, 'value'))
+    assert any("Pairplot" in text.value for text in at.markdown if hasattr(text, 'value'))
+    assert any("t-SNE Plot" in text.value for text in at.markdown if hasattr(text, 'value'))
