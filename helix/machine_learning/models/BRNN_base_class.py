@@ -8,7 +8,7 @@ from sklearn.utils.validation import check_X_y
 from helix.options.enums import ActivationFunctions, ProblemTypes
 
 
-class BRNN_base(BaseEstimator, RegressorMixin, nn.Module):
+class BRNNBase(BaseEstimator, RegressorMixin, nn.Module):
     def __init__(
         self,
         hidden_units=25,
