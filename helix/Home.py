@@ -12,7 +12,7 @@ sidebar_logo()
 st.write("# Welcome")
 st.write(
     """
-    **Helix** is a data science tool that allows you to rapidly visualise your tabular data develop machine learning models of many kinds, and evaluate their performance down to a **feature-by-feature** level.
+    **Helix** is a data science tool that allows you to rapidly visualise your tabular data, develop machine learning models of many kinds, and evaluate their performance down to a **feature-by-feature** level.
     It implements post-training feature importance analysis using SHAP, LIME, and Permutation Importance, their ensembles and extends the interpretability library to support fuzzy logic interpretation rules.
 
     You can create models to solve either **classification** problems (e.g. is this image a cat 🐱 or a dog 🐶?)
