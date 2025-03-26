@@ -59,7 +59,7 @@ When making predictions with you model, you need to take care that the new data 
 
 If you preprocessed your data on the **Data Preprocessing** page, you can check what preprocessing your performed by going to your experiment in your machine's file explorer and opening `data_preprocessing_options.json`. 
 
-When you run preprocessing, you get a file in your experiment directory ending in `_preprocessed.csv` or `_preprocessed.xlsx`. Look in this file to see which features made it through feature selection. If some features do not make it through, you will need to remove those features from your new data, or your model not work.
+When you run preprocessing, you get a file in your experiment directory ending in `_preprocessed.csv` or `_preprocessed.xlsx`. Look in this file to see which features made it through feature selection. If some features do not make it through, you will need to remove those features from your new data, or your model will not work.
 
 ```python
 import pandas as pd
