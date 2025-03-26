@@ -303,7 +303,7 @@ def test_manual_svm(
     # Act
     # Select the experiment
     at.selectbox[0].select(new_experiment).run()
-    # Unselect AHPS, which is on by default
+    # Unselect automatic hyperparameter search, which is on by default
     at.toggle[0].set_value(False).run()
     # Select the data split method
     at.selectbox[1].select(data_split_method).run()
