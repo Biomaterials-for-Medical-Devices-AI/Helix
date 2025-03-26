@@ -1,6 +1,5 @@
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.optim as optim
 from sklearn.utils.validation import check_array, check_is_fitted
 
