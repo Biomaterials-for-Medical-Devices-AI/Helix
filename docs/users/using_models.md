@@ -1,15 +1,15 @@
 # Using your models
 
-Currently, there is no ability to use your models to make predictions on new data inside Helix.Therefore, you will need to create your own Python scripts to use them. You will need to be familiar with the `scikit-learn` library. Particularly, with how to make predictions with models.
+Currently, there is no ability to use your models to make predictions on new data inside Helix. Therefore, you will need to create your own Python scripts to use them. You will need to be familiar with the `scikit-learn` library. Particularly, with how to make predictions with models.
 
 Helix saves models from an experiment to `/home/<username>/HelixExperiments/<experiment name>/models` on **Linux**, `/Users/<username>/HelixExperiments/<experiment name>/models` on **MacOS**, and `C:\\Users\<username>\HelixExperiments\<experiment name>\models` on **Windows**. The models are saved as **pickle files** (`.pkl`). These models can be reused in your own code for making predictions.
 
-The example on this page (see [Loading your models](#loading-your-models) and onwards) will assume an experiment that trained a classification model. But the principles are applicable to regression models, too.
+The example on this page (see [Loading your models](#loading-your-models) and onwards) will assume an experiment that trained a classification model. But the principles are also applicable to regression models.
 
 ## Before you start...
 Helix uses [`pickle`](https://docs.python.org/3/library/pickle.html) to save models for later use. This means that to use the models again without warnings or, potentially, erros, you must use an environment with the same packages and versions as Helix. See this page on [model persistance](https://scikit-learn.org/stable/model_persistence.html#model-persistence).
 
-To get a similar environment to the one used by Helix, you need to install the same versions of some packages. To do this, you can install Helix in your environment and you will get all the same packages with the same versions as Helix uses. For more information on which packages and versions Helix uses, Look at [`pyproject.toml`](https://github.com/Biomaterials-for-Medical-Devices-AI/Helix/blob/main/pyproject.toml).
+To get a similar environment to that used by Helix, you will need to install the same versions of some packages. To do this, you can install Helix in your environment and you will get all the same packages with the same versions as Helix uses. For more information on which packages and versions Helix uses, Look at [`pyproject.toml`](https://github.com/Biomaterials-for-Medical-Devices-AI/Helix/blob/main/pyproject.toml).
 
 ### Mac/Linux
 ```shell
