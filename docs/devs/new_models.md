@@ -227,7 +227,7 @@ What you are testing, in this case, is not the performance of the model in terms
 ### How to add tests
 You should add your tests to `tests/pages/test_4_Train_Models.py`.
 
-Generally, you will write 2 test functions: one to test your model with AHPS, and one to test it with manual hyperparameter tuning. Take the tests for SVM models. You will find 2 tests: `test_auto_svm` and `test_manual_svm`. You might call your tests: `test_auto_<model_name>` and `test_manual_<model_name>`.
+Generally, you will write 2 test functions: one to test your model with automatic hyperparameter search, and one to test it with manual hyperparameter tuning. Take the tests for SVM models. You will find 2 tests: `test_auto_svm` and `test_manual_svm`. You might call your tests: `test_auto_<model_name>` and `test_manual_<model_name>`.
 
 #### Testing AHPS
 This test simulates the user setting up the model to be trained with [`GridSearchCV`][GridSearchCV]. This test should take one parameter called `new_experiment` of type `str`.
