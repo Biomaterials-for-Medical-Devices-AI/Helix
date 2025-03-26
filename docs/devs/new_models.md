@@ -331,7 +331,7 @@ def test_manual_svm(
     assert expected_metrics_file.exists()
 ```
 
-Similar to the AHPS test, you should only need to adjust the line saying `at.toggle[4].set_value(True).run()` to point to the correct toggle. Again, to find this, count from **0**, from the first toggle on the page, up to the toggle for your model.
+Similar to the automatic hyperparameter search test, you should only need to adjust the line saying `at.toggle[4].set_value(True).run()` to point to the correct toggle. Again, to find this, count from **0**, from the first toggle on the page, up to the toggle for your model.
 
 ### Running the tests
 The tests will run when you open a pull request to Helix. They will re-run everytime you push to that PR. You can also run them manually:
