@@ -35,29 +35,14 @@ def display_normality_test_results(results_df: pd.DataFrame, title: str):
 
 
 @st.experimental_fragment
-def normaility_test_tabs(
-    preprocessed_data: pd.DataFrame,
-    raw_data: pd.DataFrame | None = None,
+def normality_test_view(
+    data: pd.DataFrame, table_title: str | None = None,
 ):
     st.write("### Data Normality Tests")
 
-    # Create tabs for raw and preprocessed data tests
-    raw_tab, norm_tab = st.tabs(["Raw Data", "Preprocessed Data"])
-
-    with raw_tab:
-        # Get normality test results for raw data
-        if raw_data is not None:
-            raw_results = create_normality_test_table(raw_data)
-            display_normality_test_results(raw_results, "Raw Data Normality Tests")
-        else:
-            st.info("No raw data available.")
-
-    with norm_tab:
-        # Get normality test results for preprocessed data
-        if preprocessed_data is not None:
-            norm_results = create_normality_test_table(preprocessed_data)
-            display_normality_test_results(
-                norm_results, "Preprocessed Data Normality Tests"
-            )
-        else:
-            st.info("No preprocessing has been applied to the data yet.")
+    # Get normality test results for raw data
+    if data is not None:
+        results = create_normality_test_table(data)
+        display_normality_test_results(results, f"Normality Tests for {table_title}")
+    else:
+        st.info("No data available.")
