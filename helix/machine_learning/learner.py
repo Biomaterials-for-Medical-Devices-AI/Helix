@@ -147,57 +147,25 @@ class Learner:
                 model = get_model(model_type, params["params"])
                 self._logger.info(f"Fitting {model_name} for bootstrap sample {i+1}...")
 
-                # Handle MLREM learner differently
-                if hasattr(model, "fit") and model.__class__.__name__ == "MLREMLearner":
-                    # Convert to DataFrame if needed
-                    X_train_df = (
-                        pd.DataFrame(X_train)
-                        if isinstance(X_train, np.ndarray)
-                        else X_train
-                    )
-                    X_test_df = (
-                        pd.DataFrame(X_test)
-                        if isinstance(X_test, np.ndarray)
-                        else X_test
-                    )
-                    y_train_s = pd.Series(y_train, name="target")
-                    y_test_s = pd.Series(y_test, name="target")
+                # Standard model handling
+                model.fit(X_train, y_train)
+                y_pred_train = model.predict(X_train)
+                res[i][model_name]["y_pred_train"] = y_pred_train
+                y_pred_test = model.predict(X_test)
+                res[i][model_name]["y_pred_test"] = y_pred_test
 
-                    # Get predictions and metrics
-                    predictions, metrics = model.fit(
-                        X_train_df, y_train_s, X_test_df, y_test_s
-                    )
-
-                    # Store results
-                    res[i][model_name]["y_pred_train"] = predictions["train"]["y_pred"]
-                    res[i][model_name]["y_pred_test"] = predictions["test"]["y_pred"]
-                    res[i][model_name]["y_pred_train_proba"] = None
-                    res[i][model_name]["y_pred_test_proba"] = None
-
-                    if model_name not in metric_res:
-                        metric_res[model_name] = []
-                    metric_res[model_name].append(metrics)
-
+                if self._problem_type == ProblemTypes.Classification:
+                    y_pred_probs_train = model.predict_proba(X_train)
+                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
+                    y_pred_probs_test = model.predict_proba(X_test)
+                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
                 else:
-                    # Standard model handling
-                    model.fit(X_train, y_train)
-                    y_pred_train = model.predict(X_train)
-                    res[i][model_name]["y_pred_train"] = y_pred_train
-                    y_pred_test = model.predict(X_test)
-                    res[i][model_name]["y_pred_test"] = y_pred_test
+                    y_pred_probs_train = None
+                    y_pred_probs_test = None
 
-                    if self._problem_type == ProblemTypes.Classification:
-                        y_pred_probs_train = model.predict_proba(X_train)
-                        res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
-                        y_pred_probs_test = model.predict_proba(X_test)
-                        res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
-                    else:
-                        y_pred_probs_train = None
-                        y_pred_probs_test = None
-
-                    if model_name not in metric_res:
-                        metric_res[model_name] = []
-                    metric_res[model_name].append(
+                if model_name not in metric_res:
+                    metric_res[model_name] = []
+                metric_res[model_name].append(
                         _evaluate(
                             model_name,
                             self._metrics,
@@ -238,70 +206,38 @@ class Learner:
                 model_type = get_model_type(model_name, self._problem_type)
                 model = get_model(model_type, params["params"])
 
-                # Handle MLREM learner differently
-                if hasattr(model, "fit") and model.__class__.__name__ == "MLREMLearner":
-                    # Convert to DataFrame if needed
-                    X_train_df = (
-                        pd.DataFrame(X_train)
-                        if isinstance(X_train, np.ndarray)
-                        else X_train
-                    )
-                    X_test_df = (
-                        pd.DataFrame(X_test)
-                        if isinstance(X_test, np.ndarray)
-                        else X_test
-                    )
-                    y_train_s = pd.Series(y_train, name="target")
-                    y_test_s = pd.Series(y_test, name="target")
+                # Standard model handling
+                model.fit(X_train, y_train)
+                y_pred_train = model.predict(X_train)
+                res[i][model_name]["y_pred_train"] = y_pred_train
+                y_pred_test = model.predict(X_test)
+                res[i][model_name]["y_pred_test"] = y_pred_test
 
-                    # Get predictions and metrics
-                    predictions, metrics = model.fit(
-                        X_train_df, y_train_s, X_test_df, y_test_s
-                    )
-
-                    # Store results
-                    res[i][model_name]["y_pred_train"] = predictions["train"]["y_pred"]
-                    res[i][model_name]["y_pred_test"] = predictions["test"]["y_pred"]
-                    res[i][model_name]["y_pred_train_proba"] = None
-                    res[i][model_name]["y_pred_test_proba"] = None
-
-                    if model_name not in metric_res:
-                        metric_res[model_name] = []
-                    metric_res[model_name].append(metrics)
-
+                if self._problem_type == ProblemTypes.Classification:
+                    y_pred_probs_train = model.predict_proba(X_train)
+                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
+                    y_pred_probs_test = model.predict_proba(X_test)
+                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
                 else:
-                    # Standard model handling
-                    model.fit(X_train, y_train)
-                    y_pred_train = model.predict(X_train)
-                    res[i][model_name]["y_pred_train"] = y_pred_train
-                    y_pred_test = model.predict(X_test)
-                    res[i][model_name]["y_pred_test"] = y_pred_test
+                    y_pred_probs_train = None
+                    y_pred_probs_test = None
 
-                    if self._problem_type == ProblemTypes.Classification:
-                        y_pred_probs_train = model.predict_proba(X_train)
-                        res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
-                        y_pred_probs_test = model.predict_proba(X_test)
-                        res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
-                    else:
-                        y_pred_probs_train = None
-                        y_pred_probs_test = None
-
-                    if model_name not in metric_res:
-                        metric_res[model_name] = []
-                    metric_res[model_name].append(
-                        _evaluate(
-                            model_name,
-                            self._metrics,
-                            y_train,
-                            y_pred_train,
-                            y_pred_probs_train,
-                            y_test,
-                            y_pred_test,
-                            y_pred_probs_test,
-                            self._logger,
-                            self._problem_type,
-                        )
+                if model_name not in metric_res:
+                    metric_res[model_name] = []
+                metric_res[model_name].append(
+                    _evaluate(
+                        model_name,
+                        self._metrics,
+                        y_train,
+                        y_pred_train,
+                        y_pred_probs_train,
+                        y_test,
+                        y_pred_test,
+                        y_pred_probs_test,
+                        self._logger,
+                        self._problem_type,
                     )
+                )
 
                 trained_models[model_name].append(model)
 

@@ -26,15 +26,15 @@ def sort_by_feature_name(df):
 def remove_correlation(dataset, threshold):
     """Remove highly correlated features based on Pearson correlation.
 
-    Parameters
-    ----------
+    Args:
+
     dataset : pd.DataFrame
         Input DataFrame with features as columns
     threshold : float
         Correlation threshold. Features with correlation above this will be removed.
 
-    Returns
-    -------
+    Returns:
+    
     pd.DataFrame
         DataFrame with correlated features removed
     """
@@ -53,15 +53,13 @@ def remove_correlation(dataset, threshold):
 def remove_low_variance(X, threshold=0.01):
     """Remove features with low variance.
 
-    Parameters
-    ----------
+    Args:
     X : pd.DataFrame
         Input DataFrame with features as columns
     threshold : float, default=0.01
         Features with variance below this threshold will be removed
 
-    Returns
-    -------
+    Returns:
     pd.DataFrame
         DataFrame with low variance features removed
     """
@@ -73,15 +71,13 @@ def remove_low_variance(X, threshold=0.01):
 def standard_error_prediction(y_true, y_pred):
     """Calculate Standard Error of Prediction.
 
-    Parameters
-    ----------
+    Args:
     y_true : array-like
         True target values
     y_pred : array-like
         Predicted target values
 
-    Returns
-    -------
+    Returns:
     float
         Standard error of prediction
     """

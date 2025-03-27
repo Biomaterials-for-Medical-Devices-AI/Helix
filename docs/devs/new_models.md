@@ -156,5 +156,3 @@ def ml_options_form():
 [GridSearchCV]: https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV
 
 Add your model to ModelNames enum in `helix/options/enums.py`.
-Add the model to REGRESSORS in `helix/options/choices/ml_models.py`, if applicable.
-Add the model to CLASSIFIERS in `helix/options/choices/ml_models.py`, if applicable

@@ -1072,33 +1072,33 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
 def _mlrem_opts(use_hyperparam_search: bool) -> dict:
     model_types = {}
     if not use_hyperparam_search:
-        with st.expander("MLREM Options"):
-            # Basic parameters
-            alpha = st.number_input(
-                "Alpha (regularisation)", value=0.05, min_value=0.05, step=1.0
-            )
-            max_beta = st.number_input(
-                "Maximum Beta",
-                value=40,
-                help="Will test beta values from 0.1 to max_beta",
-            )
-            weight_threshold = st.number_input(
-                "Weight Threshold",
-                value=1e-3,
-                min_value=1e-3,
-                step=1e-4,
-                format="%.4f",
-                help="Features with weights below this will be removed",
-            )
+        st.write("Options")
+        # Basic parameters
+        alpha = st.number_input(
+            "Alpha (regularisation)", value=0.05, min_value=0.05, step=1.0
+        )
+        max_beta = st.number_input(
+            "Maximum Beta",
+            value=40,
+            help="Will test beta values from 0.1 to max_beta",
+        )
+        weight_threshold = st.number_input(
+            "Weight Threshold",
+            value=1e-3,
+            min_value=1e-3,
+            step=1e-4,
+            format="%.4f",
+            help="Features with weights below this will be removed",
+        )
 
-            # Advanced options
-            st.write("Advanced Options:")
-            max_iterations = st.number_input(
-                "Max Iterations", value=300, min_value=1, step=50
-            )
-            tolerance = st.number_input(
-                "Tolerance", value=0.01, format="%.4f", step=0.001
-            )
+        # Advanced options
+        st.write("Advanced Options:")
+        max_iterations = st.number_input(
+            "Max Iterations", value=300, min_value=1, step=50
+        )
+        tolerance = st.number_input(
+            "Tolerance", value=0.01, format="%.4f", step=0.001
+        )
 
         params = {
             "alpha": alpha,
@@ -1107,6 +1107,7 @@ def _mlrem_opts(use_hyperparam_search: bool) -> dict:
             "max_iterations": max_iterations,
             "tolerance": tolerance,
         }
+        st.divider()
     else:
         params = MLREM_GRID
 
