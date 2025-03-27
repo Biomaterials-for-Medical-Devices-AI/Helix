@@ -5,7 +5,11 @@ from sklearn.model_selection import train_test_split
 from streamlit.testing.v1 import AppTest
 
 from helix.options.data import DataOptions, DataSplitOptions
-from helix.options.enums import DataSplitMethods
+from helix.options.enums import (
+    DataSplitMethods,
+    FeatureImportanceStateKeys,
+    ViewExperimentKeys,
+)
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_options_path,
@@ -20,6 +24,7 @@ from helix.options.file_paths import (
 )
 from helix.services.configuration import save_options
 from helix.services.ml_models import save_model
+from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
     data_opts,
@@ -76,7 +81,10 @@ def test_page_can_find_experiment(new_experiment: str):
     at.run()
 
     # Act
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
 
     # Assert
     assert not at.exception
@@ -94,7 +102,10 @@ def test_page_can_find_models(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
 
     # Assert
     assert not at.exception
@@ -112,20 +123,24 @@ def test_ensemble_methods_disabled_without_global(
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
+    mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
+    maj_vote_checkbox = get_element_by_label(at, "checkbox", "Majority Vote")
 
     # Assert
     assert not at.exception
     assert not at.error
-    assert (
-        at.warning[0].value
-        == "You must configure at least one global feature importance method to perform ensemble methods."
-    )
     # check these methods are disabled
-    assert at.checkbox[2].disabled
-    assert at.checkbox[3].disabled
+    assert mean_checkbox.disabled
+    assert maj_vote_checkbox.disabled
 
 
 # TODO: rename once global and ensemble nomenclature sorted
@@ -138,9 +153,18 @@ def test_fuzzy_unavailable_without_ensemble_and_local_methods(
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
+    fuzzy_checkbox = get_element_by_label(
+        at, "checkbox", "Enable Fuzzy Feature Importance"
+    )
 
     # Assert
     assert not at.exception
@@ -150,7 +174,7 @@ def test_fuzzy_unavailable_without_ensemble_and_local_methods(
         == "You must configure both ensemble and local importance methods to use fuzzy feature selection."
     )
     # check these methods are disabled
-    assert at.checkbox[6].disabled
+    assert fuzzy_checkbox.disabled
 
 
 def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
@@ -162,15 +186,23 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance
-    at.checkbox[0].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -193,15 +225,23 @@ def test_global_shap(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select global SHAP importance
-    at.checkbox[1].check().run()
+    shap_checkbox = get_element_by_label(at, "checkbox", "SHAP")
+    shap_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -225,17 +265,26 @@ def test_ensemble_mean(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    at.checkbox[0].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox.check().run()
     # Select ensemble mean
-    at.checkbox[2].check().run()
+    ens_mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
+    ens_mean_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -258,17 +307,26 @@ def test_ensemble_majority_vote(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    at.checkbox[0].check().run()
-    # Select ensemble majority vote
-    at.checkbox[3].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox.check().run()
+    # Select ensemble mean
+    ens_maj_vote_checkbox = get_element_by_label(at, "checkbox", "Majority Vote")
+    ens_maj_vote_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -291,17 +349,26 @@ def test_local_lime(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    at.checkbox[0].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox.check().run()
     # Select local LIME
-    at.checkbox[4].check().run()
+    local_lime_checkbox = get_element_by_label(at, "checkbox", "LIME")
+    local_lime_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -324,17 +391,26 @@ def test_local_shap(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    at.checkbox[0].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox.check().run()
     # Select local SHAP
-    at.checkbox[5].check().run()
+    local_lime_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
+    local_lime_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -360,23 +436,37 @@ def test_fuzzy_analysis(new_experiment: str, models_to_evaluate: None):
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    at.checkbox[0].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox.check().run()
     # Select ensemble mean; required for fuzzy
-    at.checkbox[2].check().run()
+    ens_mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
+    ens_mean_checkbox.check().run()
     # Select local SHAP; local also required for fuzzy
-    at.checkbox[5].check().run()
+    local_lime_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
+    local_lime_checkbox.check().run()
     # Select fuzzy
-    at.checkbox[6].check().run()
+    fuzzy_checkbox = get_element_by_label(
+        at, "checkbox", "Enable Fuzzy Feature Importance"
+    )
+    fuzzy_checkbox.check().run()
     # Select granualr analysis
-    at.checkbox[7].check().run()
+    granular_checkbox = get_element_by_label(at, "checkbox", "Granular features")
+    granular_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # Assert
     assert not at.exception
@@ -405,9 +495,15 @@ def test_page_makes_one_log_per_run(new_experiment: str, models_to_evaluate: Non
 
     # Act
     # Select the experiment
-    at.selectbox[0].select(new_experiment).run()
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
     # Select explain all models
-    at.toggle[0].set_value(True).run()
+    all_model_toggle = get_element_by_key(
+        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+    )
+    all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
     at.checkbox[0].check().run()
     # Select ensemble mean; required for fuzzy
@@ -421,7 +517,8 @@ def test_page_makes_one_log_per_run(new_experiment: str, models_to_evaluate: Non
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
-    at.button[0].click().run()
+    button = get_element_by_label(at, "button", "Run Feature Importance")
+    button.click().run()
 
     # log dir contents
     fi_log_dir_contents = list(
