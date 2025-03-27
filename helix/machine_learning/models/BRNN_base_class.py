@@ -1,14 +1,13 @@
 import numpy as np
 import torch
 import torch.nn as nn
-from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils.validation import check_X_y
 
 from helix.options.enums import ActivationFunctions, ProblemTypes
 
 
-class BRNNBase(BaseEstimator, RegressorMixin, nn.Module):
+class BRNNBase(nn.Module):
     def __init__(
         self,
         hidden_units=25,
