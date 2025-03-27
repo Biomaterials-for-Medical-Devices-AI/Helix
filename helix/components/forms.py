@@ -327,7 +327,9 @@ def target_variable_dist_form(
     """
 
     show_kde = st.toggle(
-        "Show Kernel Density Estimation in the Distribution Plot", value=True, key=f"{key_prefix}_{DataAnalysisStateKeys.ShowKDE}"
+        "Show Kernel Density Estimation in the Distribution Plot",
+        value=True,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.ShowKDE}",
     )
     n_bins = st.slider(
         "Number of Bins",
