@@ -11,6 +11,8 @@ from helix.options.choices.ml_models import CLASSIFIERS, REGRESSORS
 from helix.options.enums import ProblemTypes
 from helix.utils.utils import create_directory
 
+from helix.machine_learning.models.mlrem import EMLinearRegression
+
 MlModel = TypeVar("MlModel", BaseEstimator, ClassifierMixin, RegressorMixin)
 
 
@@ -139,12 +141,8 @@ def models_exist(path: Path) -> bool:
         return False
 
 
-def get_model(
-    model_type: type,
-    model_params: dict | None = None,
-) -> MlModel:
-    """Produce a machine learning model with the provided parameters, configured for the
-    given problem type.
+def get_model(model_type: type, model_params: dict = None) -> MlModel:
+    """Get a new instance of the requested machine learning model.
 
     If the model is to be used in a grid search, specify `model_params=None`.
 
@@ -155,13 +153,10 @@ def get_model(
     Returns:
         MlModel: A new instance of the requested machine learning model.
     """
-
-    from helix.machine_learning.models.mlrem import EMLinearRegression
-    from helix.machine_learning.models.mlrem_learner import MLREMLearner
     
     # Use custom learner for MLREM
     if model_type == EMLinearRegression:
-        return MLREMLearner(params=model_params)
+        return EMLinearRegression() if model_params is None else EMLinearRegression(**model_params)
     
     # Default behaviour for other models
     return model_type(**model_params) if model_params is not None else model_type()

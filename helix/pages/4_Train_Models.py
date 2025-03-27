@@ -236,7 +236,7 @@ if experiment_name:
         ml_options_form(problem_type=exec_opts.problem_type)
     else:
         st.info(
-            "You have chosen not to rerun the machine learning experiments. "
+            "You have chosen not to re-run the machine learning experiments. "
             "You can proceed to feature importance analysis."
         )
         st.stop()

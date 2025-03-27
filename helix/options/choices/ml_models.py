@@ -35,13 +35,11 @@ SVM_GRID = {
 }
 
 MLREM_GRID = {
-    'alpha': [0.0, 0.1, 0.5, 1.0],
-    'beta_range': [[0.1 * i for i in range(1, 41)]],  # Test betas from 0.1 to 4.0
-    'weight_threshold': [1e-4, 1e-3, 1e-2],
+    'alpha': [0.05, 0.1, 0.5],
+    'max_beta': [40],
+    'weight_threshold': [1e-3, 1e-2],
     'max_iterations': [300],
-    'tolerance': [0.01],
-    'screen_variance': [True, False],
-    'variance_threshold': [0.01],
+    'tolerance': [0.001],
 }
 
 CLASSIFIERS: dict[ModelNames, type] = {
