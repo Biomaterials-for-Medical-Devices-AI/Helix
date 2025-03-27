@@ -145,7 +145,6 @@ if experiment_name:
 
             plot_opt = load_plot_options(path_to_plot_opts)
 
-            st.header("Original Data")
             original_view(data)
 
             preprocessing_opts_form(data)
