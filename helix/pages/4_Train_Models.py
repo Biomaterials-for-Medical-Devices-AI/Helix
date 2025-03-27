@@ -232,7 +232,9 @@ if experiment_name:
 
     if not already_trained_models or st.session_state[MachineLearningStateKeys.RerunML]:
         # Get problem type from execution options
-        exec_opts = load_execution_options(execution_options_path(helix_experiments_base_dir() / experiment_name))
+        exec_opts = load_execution_options(
+            execution_options_path(helix_experiments_base_dir() / experiment_name)
+        )
         ml_options_form(problem_type=exec_opts.problem_type)
     else:
         st.info(

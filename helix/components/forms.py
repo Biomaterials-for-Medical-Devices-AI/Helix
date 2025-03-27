@@ -8,8 +8,8 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.configuration import data_split_options_box
 from helix.components.plot_editor import edit_plot_modal
-from helix.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
 from helix.options.choices.ml_models import ModelNames
+from helix.options.choices.ui import NORMALISATIONS, SVM_KERNELS, TRANSFORMATIONS_Y
 from helix.options.enums import (
     DataAnalysisStateKeys,
     DataPreprocessingStateKeys,
@@ -285,11 +285,15 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
     if problem_type == ProblemTypes.Regression:
         string_toggle = "Linear Regression"
         # Only show MLREM for regression problems
-        if st.toggle("Multiple Linear Regression with Expectation Maximisation", value=False, help="MLREM is only available for regression problems. Note that if you run hyperparamenter optimisation, the processing time will take longer"):
+        if st.toggle(
+            "Multiple Linear Regression with Expectation Maximisation",
+            value=False,
+            help="MLREM is only available for regression problems. Note that if you run hyperparamenter optimisation, the processing time will take longer",
+        ):
             mlrem_model_type = _mlrem_opts(use_hyperparam_search)
             model_types.update(mlrem_model_type)
     else:
-        string_toggle = "Logistic Regression"   
+        string_toggle = "Logistic Regression"
 
     if st.toggle(string_toggle, value=False):
         lm_model_type = _linear_model_opts(use_hyperparam_search)
@@ -306,7 +310,6 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
     if st.toggle("Support Vector Machine", value=False):
         svm_model_type = _svm_opts(use_hyperparam_search)
         model_types.update(svm_model_type)
-
 
     st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
     st.subheader("Select outputs to save")
@@ -1071,24 +1074,38 @@ def _mlrem_opts(use_hyperparam_search: bool) -> dict:
     if not use_hyperparam_search:
         with st.expander("MLREM Options"):
             # Basic parameters
-            alpha = st.number_input("Alpha (regularisation)", value=0.05, min_value=0.05, step=1.0)
-            max_beta = st.number_input("Maximum Beta", value=40, 
-                                     help="Will test beta values from 0.1 to max_beta")
+            alpha = st.number_input(
+                "Alpha (regularisation)", value=0.05, min_value=0.05, step=1.0
+            )
+            max_beta = st.number_input(
+                "Maximum Beta",
+                value=40,
+                help="Will test beta values from 0.1 to max_beta",
+            )
             weight_threshold = st.number_input(
-                "Weight Threshold", value=1e-3, min_value=1e-3, step=1e-4, format="%.4f",
-                help="Features with weights below this will be removed")
-            
+                "Weight Threshold",
+                value=1e-3,
+                min_value=1e-3,
+                step=1e-4,
+                format="%.4f",
+                help="Features with weights below this will be removed",
+            )
+
             # Advanced options
             st.write("Advanced Options:")
-            max_iterations = st.number_input("Max Iterations", value=300, min_value=1, step=50)
-            tolerance = st.number_input("Tolerance", value=0.01, format="%.4f", step=0.001)
-        
+            max_iterations = st.number_input(
+                "Max Iterations", value=300, min_value=1, step=50
+            )
+            tolerance = st.number_input(
+                "Tolerance", value=0.01, format="%.4f", step=0.001
+            )
+
         params = {
-            'alpha': alpha,
-            'max_beta': max_beta,
-            'weight_threshold': weight_threshold,
-            'max_iterations': max_iterations,
-            'tolerance': tolerance
+            "alpha": alpha,
+            "max_beta": max_beta,
+            "weight_threshold": weight_threshold,
+            "max_iterations": max_iterations,
+            "tolerance": tolerance,
         }
     else:
         params = MLREM_GRID

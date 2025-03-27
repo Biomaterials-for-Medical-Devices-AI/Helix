@@ -26,7 +26,7 @@ SVM_GRID = {
 
 MLREM_GRID = {
     "alpha": [0.05, 0.1, 0.5, 0.8],
-    "max_beta": [40.0],   
+    "max_beta": [40.0],
     "weight_threshold": [1e-3],
     "max_iterations": [300],
     "tolerance": [0.01],

@@ -1,16 +1,16 @@
 """Feature selection utilities for Helix."""
-import pandas as pd
 import numpy as np
 from sklearn.feature_selection import VarianceThreshold
 
+
 def sort_by_feature_name(df):
     """Sort features by name length to ensure consistent ordering.
-    
+
     Parameters
     ----------
     df : pd.DataFrame
         Input DataFrame with features as columns
-        
+
     Returns
     -------
     pd.DataFrame
@@ -22,16 +22,17 @@ def sort_by_feature_name(df):
     df_sorted = df_sorted.drop(["len"], axis=1)
     return df_sorted.T
 
+
 def remove_correlation(dataset, threshold):
     """Remove highly correlated features based on Pearson correlation.
-    
+
     Parameters
     ----------
     dataset : pd.DataFrame
         Input DataFrame with features as columns
     threshold : float
         Correlation threshold. Features with correlation above this will be removed.
-        
+
     Returns
     -------
     pd.DataFrame
@@ -48,16 +49,17 @@ def remove_correlation(dataset, threshold):
                     del dataset[colname]  # deleting the column from the dataset
     return dataset
 
+
 def remove_low_variance(X, threshold=0.01):
     """Remove features with low variance.
-    
+
     Parameters
     ----------
     X : pd.DataFrame
         Input DataFrame with features as columns
     threshold : float, default=0.01
         Features with variance below this threshold will be removed
-        
+
     Returns
     -------
     pd.DataFrame
@@ -67,16 +69,17 @@ def remove_low_variance(X, threshold=0.01):
     selector.fit(X)
     return X.iloc[:, selector.get_support()]
 
+
 def standard_error_prediction(y_true, y_pred):
     """Calculate Standard Error of Prediction.
-    
+
     Parameters
     ----------
     y_true : array-like
         True target values
     y_pred : array-like
         Predicted target values
-        
+
     Returns
     -------
     float

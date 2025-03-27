@@ -7,11 +7,10 @@ from typing import TypeVar
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
+from helix.machine_learning.models.mlrem import EMLinearRegression
 from helix.options.choices.ml_models import CLASSIFIERS, REGRESSORS
 from helix.options.enums import ProblemTypes
 from helix.utils.utils import create_directory
-
-from helix.machine_learning.models.mlrem import EMLinearRegression
 
 MlModel = TypeVar("MlModel", BaseEstimator, ClassifierMixin, RegressorMixin)
 
@@ -153,10 +152,14 @@ def get_model(model_type: type, model_params: dict = None) -> MlModel:
     Returns:
         MlModel: A new instance of the requested machine learning model.
     """
-    
+
     # Use custom learner for MLREM
     if model_type == EMLinearRegression:
-        return EMLinearRegression() if model_params is None else EMLinearRegression(**model_params)
-    
+        return (
+            EMLinearRegression()
+            if model_params is None
+            else EMLinearRegression(**model_params)
+        )
+
     # Default behaviour for other models
     return model_type(**model_params) if model_params is not None else model_type()
