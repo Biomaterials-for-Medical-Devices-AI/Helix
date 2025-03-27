@@ -1,4 +1,5 @@
 """Feature selection utilities for Helix."""
+
 import numpy as np
 from sklearn.feature_selection import VarianceThreshold
 
@@ -34,7 +35,7 @@ def remove_correlation(dataset, threshold):
         Correlation threshold. Features with correlation above this will be removed.
 
     Returns:
-    
+
     pd.DataFrame
         DataFrame with correlated features removed
     """

@@ -1096,9 +1096,7 @@ def _mlrem_opts(use_hyperparam_search: bool) -> dict:
         max_iterations = st.number_input(
             "Max Iterations", value=300, min_value=1, step=50
         )
-        tolerance = st.number_input(
-            "Tolerance", value=0.01, format="%.4f", step=0.001
-        )
+        tolerance = st.number_input("Tolerance", value=0.01, format="%.4f", step=0.001)
 
         params = {
             "alpha": alpha,

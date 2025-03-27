@@ -140,7 +140,10 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
             # Check convergence
             change = 100 * np.abs(ssd2 - ssd1) / ssd1
 
-        return weights, ssd2 # Return the final weights and sum of squared differences for the EM algorithm
+        return (
+            weights,
+            ssd2,
+        )  # Return the final weights and sum of squared differences for the EM algorithm
 
     def predict(self, X):
         if self.coefficients_ is None:

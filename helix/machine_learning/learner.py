@@ -166,19 +166,19 @@ class Learner:
                 if model_name not in metric_res:
                     metric_res[model_name] = []
                 metric_res[model_name].append(
-                        _evaluate(
-                            model_name,
-                            self._metrics,
-                            y_train,
-                            y_pred_train,
-                            y_pred_probs_train,
-                            y_test,
-                            y_pred_test,
-                            y_pred_probs_test,
-                            self._logger,
-                            self._problem_type,
-                        )
+                    _evaluate(
+                        model_name,
+                        self._metrics,
+                        y_train,
+                        y_pred_train,
+                        y_pred_probs_train,
+                        y_test,
+                        y_pred_test,
+                        y_pred_probs_test,
+                        self._logger,
+                        self._problem_type,
                     )
+                )
 
                 trained_models[model_name].append(model)
 
