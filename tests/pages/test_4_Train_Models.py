@@ -245,8 +245,8 @@ def test_auto_random_forest(new_experiment: str):
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
     # Select Random Forest
-    lm_toggle = get_element_by_label(at, "toggle", "Random Forest")
-    lm_toggle.set_value(True).run()
+    rf_toggle = get_element_by_label(at, "toggle", "Random Forest")
+    rf_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
     # Click run
@@ -353,8 +353,8 @@ def test_auto_xgboost(new_experiment: str):
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
     # Select XGBoost
-    lm_toggle = get_element_by_label(at, "toggle", "XGBoost")
-    lm_toggle.set_value(True).run()
+    xgb_toggle = get_element_by_label(at, "toggle", "XGBoost")
+    xgb_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
     # Click run
@@ -461,8 +461,8 @@ def test_auto_svm(new_experiment: str):
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
     # Select SVM
-    lm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
-    lm_toggle.set_value(True).run()
+    svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
+    svm_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
     # Click run
@@ -503,8 +503,8 @@ def test_page_makes_one_log_per_run(new_experiment: str):
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
     # Select Random Forest
-    lm_toggle = get_element_by_label(at, "toggle", "Random Forest")
-    lm_toggle.set_value(True).run()
+    rf_toggle = get_element_by_label(at, "toggle", "Random Forest")
+    rf_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
     # Click run
