@@ -51,6 +51,67 @@ choices = get_experiments()
 experiment_name = experiment_selector(choices)
 biofefi_base_dir = helix_experiments_base_dir()
 
+
+def load_dataset(path_to_raw_data: Path, path_to_preproc_data: Path, logger) -> tuple:
+    """Load raw and preprocessed data if available.
+
+    Args:
+            path_to_raw_data: Path to raw data file
+            path_to_preproc_data: Path to preprocessed data file
+        logger: Logger instance
+
+    Returns:
+        tuple: (raw_data, preprocessed_data, data_for_tsne)
+    """
+    raw_data = None
+    preprocessed_data = None
+    data_tsne = None
+
+    if path_to_raw_data.exists():
+        raw_data = read_data(path_to_raw_data, logger)
+        raw_data = convert_nominal_to_numeric(raw_data)
+        data_tsne = raw_data
+
+    if path_to_preproc_data.exists():
+        preprocessed_data = read_data(path_to_preproc_data, logger)
+        data_tsne = preprocessed_data
+
+    return raw_data, preprocessed_data, data_tsne
+
+
+def visualisation_view(data, data_tsne, prefix: str | None = None):
+    """Display visualisation of data."""
+
+    if data is not None:
+        st.write("### Graphical Description")
+        st.write("#### Target Variable Distribution")
+        target_variable_dist_form(
+            data,
+            exec_opt.dependent_variable,
+            data_analysis_plot_dir,
+            plot_opt,
+            key_prefix=prefix,
+        )
+
+        st.write("#### Correlation Heatmap")
+        correlation_heatmap_form(
+            data, data_analysis_plot_dir, plot_opt, key_prefix=prefix
+        )
+
+        st.write("#### Pairplot")
+        pairplot_form(data, data_analysis_plot_dir, plot_opt, key_prefix=prefix)
+
+        st.write("#### t-SNE Plot")
+        tSNE_plot_form(
+            data_tsne,
+            exec_opt.random_state,
+            data_analysis_plot_dir,
+            plot_opt,
+            data_opts.normalisation,
+            key_prefix=prefix,
+        )
+
+
 if experiment_name:
     logger_instance = Logger()
     logger = logger_instance.make_logger()
@@ -75,66 +136,6 @@ if experiment_name:
     exec_opt = load_execution_options(path_to_exec_opts)
     plot_opt = load_plot_options(path_to_plot_opts)
     data_opts = load_data_options(path_to_data_opts)
-
-    def load_dataset(
-        path_to_raw_data: Path, path_to_preproc_data: Path, logger
-    ) -> tuple:
-        """Load raw and preprocessed data if available.
-
-        Args:
-            path_to_raw_data: Path to raw data file
-            path_to_preproc_data: Path to preprocessed data file
-            logger: Logger instance
-
-        Returns:
-            tuple: (raw_data, preprocessed_data, data_for_tsne)
-        """
-        raw_data = None
-        preprocessed_data = None
-        data_tsne = None
-
-        if path_to_raw_data.exists():
-            raw_data = read_data(path_to_raw_data, logger)
-            raw_data = convert_nominal_to_numeric(raw_data)
-            data_tsne = raw_data
-
-            if path_to_preproc_data.exists():
-                preprocessed_data = read_data(path_to_preproc_data, logger)
-                data_tsne = preprocessed_data
-
-        return raw_data, preprocessed_data, data_tsne
-
-    def visualisation_view(data, data_tsne, prefix: str | None = None):
-        """Display visualisation of data."""
-
-        if data is not None:
-            st.write("### Graphical Description")
-            st.write("#### Target Variable Distribution")
-            target_variable_dist_form(
-                data,
-                exec_opt.dependent_variable,
-                data_analysis_plot_dir,
-                plot_opt,
-                key_prefix=prefix,
-            )
-
-            st.write("#### Correlation Heatmap")
-            correlation_heatmap_form(
-                data, data_analysis_plot_dir, plot_opt, key_prefix=prefix
-            )
-
-            st.write("#### Pairplot")
-            pairplot_form(data, data_analysis_plot_dir, plot_opt, key_prefix=prefix)
-
-            st.write("#### t-SNE Plot")
-            tSNE_plot_form(
-                data_tsne,
-                exec_opt.random_state,
-                data_analysis_plot_dir,
-                plot_opt,
-                data_opts.normalisation,
-                key_prefix=prefix,
-            )
 
     try:
 
