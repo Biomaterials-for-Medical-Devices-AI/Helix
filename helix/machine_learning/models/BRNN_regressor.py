@@ -1,13 +1,14 @@
 import numpy as np
 import torch
 import torch.optim as optim
+from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils.validation import check_array, check_is_fitted
 
 from helix.machine_learning.models.BRNN_base_class import BRNNBase
 from helix.options.enums import ProblemTypes
 
 
-class BRNNRegressor(BRNNBase):
+class BRNNRegressor(BaseEstimator, RegressorMixin, BRNNBase):
     def __init__(
         self,
         hidden_units=10,
