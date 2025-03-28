@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.feature_selection import VarianceThreshold
 
 
-def sort_by_feature_name(df):
+def sort_by_feature_name(df: pd.DataFrame) -> pd.DataFrame:
     """Sort features by name length to ensure consistent ordering.
 
     Parameters
