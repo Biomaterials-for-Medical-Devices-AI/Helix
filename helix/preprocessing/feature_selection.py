@@ -24,7 +24,7 @@ def sort_by_feature_name(df: pd.DataFrame) -> pd.DataFrame:
     return df_sorted.T
 
 
-def remove_correlation(dataset, threshold):
+def remove_correlation(dataset: pd.DataFrame, threshold: float) -> pd.DataFrame:
     """Remove highly correlated features based on Pearson correlation.
 
     Args:
