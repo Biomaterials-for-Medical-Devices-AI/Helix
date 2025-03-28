@@ -69,7 +69,7 @@ def remove_low_variance(X, threshold=0.01):
     return X.iloc[:, selector.get_support()]
 
 
-def standard_error_prediction(y_true, y_pred):
+def standard_error_prediction(y_true, y_pred) -> float:
     """Calculate Standard Error of Prediction.
 
     Args:
