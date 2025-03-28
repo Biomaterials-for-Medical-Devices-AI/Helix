@@ -8,15 +8,13 @@ from sklearn.feature_selection import VarianceThreshold
 def sort_by_feature_name(df: pd.DataFrame) -> pd.DataFrame:
     """Sort features by name length to ensure consistent ordering.
 
-    Parameters
-    ----------
-    df : pd.DataFrame
-        Input DataFrame with features as columns
+    Args:
+        df : pd.DataFrame
+            Input DataFrame with features as columns
 
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame with columns sorted by name length
+    Returns:
+        pd.DataFrame
+            DataFrame with columns sorted by name length
     """
     df = df.T
     df["len"] = df.T.columns.str.len()
