@@ -52,7 +52,7 @@ def remove_correlation(dataset: pd.DataFrame, threshold: float) -> pd.DataFrame:
     return dataset
 
 
-def remove_low_variance(X, threshold=0.01):
+def remove_low_variance(X: pd.DataFrame, threshold: float = 0.01) -> pd.DataFrame:
     """Remove features with low variance.
 
     Args:
