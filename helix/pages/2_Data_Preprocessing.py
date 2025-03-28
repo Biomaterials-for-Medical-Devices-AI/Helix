@@ -140,7 +140,7 @@ if experiment_name:
 
             if non_numeric_y:
                 st.warning(
-                    "The dependent variable contains non-numeric values. This will be transformed to allow training."
+                    "The dependent variable contains non-numeric values. This will be transformed to allow for training."
                 )
 
             plot_opt = load_plot_options(path_to_plot_opts)
@@ -175,6 +175,7 @@ if experiment_name:
                 save_options(path_to_preproc_opts, config)
 
                 st.success("Data Preprocessing Complete")
+                st.header(f"Preprocessed Data ({processed_data.shape[1]} columns)")
                 preprocessed_view(processed_data)
         except Exception:
             st.error("Unable to read data.", icon="🔥")

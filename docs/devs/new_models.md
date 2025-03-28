@@ -91,6 +91,50 @@ For each field, it would be helpful to include a help message explaining what th
 ### How to integrate your model into Helix
 The following examples will show you how you can integrate your new model into Helix and make it available for users.
 
+#### Register your model name
+In `helix/options/enums.py`, edit the `ModelNames` enum by adding your model name.
+
+```python
+class ModelNames(StrEnum):
+    LinearModel = "linear model"
+    RandomForest = "random forest"
+    XGBoost = "xgboost"
+    SVM = "svm"
+    ...
+    MyNewModel = "my new model
+```
+
+#### Making your model available to Helix
+If your model is a classifier, edit `CLASSIFIERS` in `helix/options/choices/ml_models.py` by adding your model like so:
+
+```python
+# import your model
+
+CLASSIFIERS: dict[ModelNames, type] = {
+    ModelNames.LinearModel: LogisticRegression,
+    ModelNames.RandomForest: RandomForestClassifier,
+    ModelNames.XGBoost: XGBClassifier,
+    ModelNames.SVM: SVC,
+    ...
+    ModelNames.MyNewModel: MyModel
+}
+```
+
+If your model is a regressor, edit `REGRESSORS` in `helix/options/choices/ml_models.py` by adding your model like so:
+
+```python
+# import your model
+
+REGRESSORS: dict[ModelNames, type] = {
+    ModelNames.LinearModel: LinearRegression,
+    ModelNames.RandomForest: RandomForestRegressor,
+    ModelNames.XGBoost: XGBRegressor,
+    ModelNames.SVM: SVR,
+    ...
+    ModelNames.MyNewModel: MyModel
+}
+```
+
 #### Create the form component
 ```python
 # helix/components/forms.py
@@ -149,6 +193,184 @@ def ml_options_form():
         my_model_type = _my_model_opts(use_hyperparam_search)
         model_types.update(mymodel_type)
 ```
+
+## Documentation
+Please add your new model to the user documentation. To do this, edit the the **"Options"** subsection of **"Selecting models to train"** in`docs/users/train_models.md`. This is a Markdown file, please see this [Markdown guide](https://www.markdownguide.org/getting-started/) for information on how to write using Markdown.
+
+**If you do not document your model, your model will not be added to Helix.**
+
+Your explanation **must** include the hyperparameters and explanations of what they do to your model. It should also include a brief explanation of the theory of the model and link to any relevant papers or documentation concerning the model.
+
+### Example
+> - **My New Model**
+>
+>> My model uses a super cool algorithm that optimises 2 parameters `param1` and `param2` to asymptotically approach Artificial General Intelligence (AGI).
+>
+>> The paper can be found at [link here].
+>> - param1: The first hyperparameter to my model. The bigger it is, ther more accuarate the model.
+>> - param2: The second hyperparameter to my model. The closer the value to 1.0, the smarter it is.
+
+## Testing
+You **must** test that your model works with Helix for it to be included. Helix uses [`pytest`](https://docs.pytest.org/en/stable/index.html) and `streamlit`'s [testing framework](https://docs.streamlit.io/develop/concepts/app-testing/get-started).
+
+You **must** add a test for both automatic hyperparameter search and manual hyperparameter tuning.
+
+### What to test
+What you are testing, in this case, is not the performance of the model in terms of some metric like accuracy or R^2, but whether your model is properly integrated into Helix. Your tests should check the following:
+- That there are no errors or exceptions when running the model
+- That it creates the model directory in the experiment
+- That it creates the expected `.pkl` file
+- That it creates the plot directory for the experiment and that that directory is not empty. i.e. you get the performance plots
+- That you get the file with the expected predictions
+- That you get the file with the model metrics
+
+### How to add tests
+You should add your tests to `tests/pages/test_4_Train_Models.py`.
+
+Generally, you will write 2 test functions: one to test your model with automatic hyperparameter search, and one to test it with manual hyperparameter tuning. Take the tests for SVM models. You will find 2 tests: `test_auto_svm` and `test_manual_svm`. You might call your tests: `test_auto_<model_name>` and `test_manual_<model_name>`.
+
+#### Testing AHPS
+This test simulates the user setting up the model to be trained with [`GridSearchCV`][GridSearchCV]. This test should take one parameter called `new_experiment` of type `str`.
+
+Below is `test_auto_svm` as an expample:
+
+```python
+def test_auto_svm(new_experiment: str):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_path(exp_dir)
+    k = 3
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # Set the number of k-folds
+    k_input = get_element_by_label(at, "number_input", "k")
+    k_input.set_value(k).run()
+    # Select SVM
+    svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
+    svm_toggle.set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    button = get_element_by_label(at, "button", "Run Training")
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
+```
+
+You should be able to create a copy of this example and rename it to `test_auto_<my_model>`. Then, replace the 2 lines underneath where it says "# Select SVM" with the following:
+```python
+my_model_toggle = get_element_by_label(at, "toggle", "My Model")
+my_model_toggle.set_value(True).run()
+```
+Subsitute "My Model" with the actual name of your model.
+
+#### Testing manual hyperparameter tuning
+This test simulates the user setting up the model to be trained without AHPS. This test should take 3 parameters called `new_experiment` of type `str`, `data_split_method` of type `DataSplitMethods` and `holdout_or_k` of type `int`.
+
+Below is `test_manual_svm` as an expample. The decorator above the function signature doesn't need to be altered; it causes the test to run the page with bootstrapping and cross-validation.
+
+```python
+@pytest.mark.parametrize(
+    "data_split_method,holdout_or_k",
+    [
+        (DataSplitMethods.Holdout.capitalize(), 3),
+        (DataSplitMethods.KFold.capitalize(), 3),
+    ],
+)
+def test_manual_svm(
+    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_path(exp_dir)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_experiment).run()
+    # Unselect AHPS, which is on by default
+    ahps_toggle = get_element_by_key(
+        at, "toggle", ExecutionStateKeys.UseHyperParamSearch
+    )
+    ahps_toggle.set_value(False).run()
+    # Select the data split method
+    data_split_selector = get_element_by_label(at, "selectbox", "Data split method")
+    data_split_selector.select(data_split_method).run()
+    # Set the number of bootstraps / k-folds
+    if holdout_input := get_element_by_label(
+        at, "number_input", "Number of bootstraps"
+    ):
+        holdout_input.set_value(holdout_or_k).run()
+    if k_input := get_element_by_label(at, "number_input", "k"):
+        k_input.set_value(holdout_or_k).run()
+    # Select SVM
+    svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
+    svm_toggle.set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    button = get_element_by_label(at, "button", "Run Training")
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
+```
+
+Similar to the automatic hyperparameter search test, you should only need to edit the lines underneath where it says "# Select SVM", replacing them with the following:
+```python
+my_model_toggle = get_element_by_label(at, "toggle", "My Model")
+my_model_toggle.set_value(True).run()
+```
+Subsitute "My Model" with the actual name of your model.
+
+### Running the tests
+The tests will run when you open a pull request to Helix. They will re-run everytime you push to that PR. You can also run them manually:
+
+```bash
+uv run pytests
+```
+
+Be patient, the tests can take several minutes. Your changes may affect other tests, so be aware.
 
 [BaseEstimator]: https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator
 [ClassifierMixin]: https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html

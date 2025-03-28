@@ -96,6 +96,13 @@ class OptimiserTypes(StrEnum):
     RMSprop = "rmsprop"
 
 
+class ActivationFunctions(StrEnum):
+    ReLU = "relu"
+    Sigmoid = "sigmoid"
+    Tanh = "tanh"
+    LeakyReLU = "leaky_relu"
+
+
 class ProblemTypes(StrEnum):
     Auto = "auto"
     Classification = "classification"

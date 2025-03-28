@@ -35,33 +35,15 @@ def display_normality_test_results(results_df: pd.DataFrame, title: str):
 
 
 @st.experimental_fragment
-def normaility_test_tabs(
+def normality_test_view(
     data: pd.DataFrame,
-    raw_data: pd.DataFrame | None = None,
+    table_title: str | None = None,
 ):
     st.write("### Data Normality Tests")
 
-    # Create tabs for raw and normalised data tests
-    raw_tab, norm_tab = st.tabs(["Raw Data", "Preprocessed Data"])
-
-    with raw_tab:
-        # Get normality test results for raw data
-        if raw_data is not None:
-            raw_results = create_normality_test_table(raw_data)
-            display_normality_test_results(raw_results, "Raw Data Normality Tests")
-        else:
-            raw_results = create_normality_test_table(data)
-            display_normality_test_results(raw_results, "Raw Data Normality Tests")
-
-    with norm_tab:
-        # Get normality test results for normalized data
-        if raw_data is not None:
-            norm_results = create_normality_test_table(data)
-            display_normality_test_results(
-                norm_results, "Preprocessed Data Normality Tests"
-            )
-        else:
-            st.info(
-                "Your data has not been preprocessed in Helix. "
-                "Please go to the **Data Preprocessing** page."
-            )
+    # Get normality test results for raw data
+    if data is not None:
+        results = create_normality_test_table(data)
+        display_normality_test_results(results, f"Normality Tests for {table_title}")
+    else:
+        st.info("No data available.")
