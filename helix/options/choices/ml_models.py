@@ -2,8 +2,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from xgboost import XGBClassifier, XGBRegressor
 
-from helix.machine_learning.models.BRNN_classifier import BRNNClassifier
-from helix.machine_learning.models.BRNN_regressor import BRNNRegressor
+from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
 from helix.machine_learning.models.svm import SVC, SVR
 from helix.options.enums import ModelNames
 
