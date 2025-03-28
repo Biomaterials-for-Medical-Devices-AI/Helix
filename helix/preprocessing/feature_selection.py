@@ -46,7 +46,9 @@ def remove_correlation(dataset: pd.DataFrame, threshold: float) -> pd.DataFrame:
                 colname = corr_matrix.columns[i]  # getting the name of column
                 col_corr.add(colname)
                 if colname in dataset.columns:
-                    dataset.drop(colname, axis=1, inplace=True)  # deleting the column from the dataset
+                    dataset.drop(
+                        colname, axis=1, inplace=True
+                    )  # deleting the column from the dataset
     return dataset
 
 

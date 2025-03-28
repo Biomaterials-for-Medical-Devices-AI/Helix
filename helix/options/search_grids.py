@@ -32,6 +32,7 @@ MLREM_GRID = {
     "weight_threshold": [1e-3],
     "max_iterations": [300],
     "tolerance": [0.01],
+}
 
 BRNN_GRID = {
     "hidden_units": [32, 64, 128],
