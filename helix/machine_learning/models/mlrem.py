@@ -48,8 +48,7 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
     def fit(self, X, y):
         """Fit the EM linear regression model with optimised beta.
 
-        Parameters
-        ----------
+        Args:
         X : array-like of shape (n_samples, n_features)
             Training data
         y : array-like of shape (n_samples,)
@@ -57,8 +56,7 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         feature_names : list of str, optional
             Names of features. If None, will use indices.
 
-        Returns
-        -------
+        Returns:
         self : object
             Fitted model for the best value of beta within the specified range.
         """
