@@ -144,13 +144,16 @@ class Learner:
                     params["params"]["class_weight"] = "balanced"
                 res[i][model_name] = {}
                 model_type = get_model_type(model_name, self._problem_type)
-                model = model_type(**params["params"])
+                model = get_model(model_type, params["params"])
                 self._logger.info(f"Fitting {model_name} for bootstrap sample {i+1}...")
+
+                # Standard model handling
                 model.fit(X_train, y_train)
                 y_pred_train = model.predict(X_train)
                 res[i][model_name]["y_pred_train"] = y_pred_train
                 y_pred_test = model.predict(X_test)
                 res[i][model_name]["y_pred_test"] = y_pred_test
+
                 if self._problem_type == ProblemTypes.Classification:
                     y_pred_probs_train = model.predict_proba(X_train)
                     res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
@@ -159,6 +162,7 @@ class Learner:
                 else:
                     y_pred_probs_train = None
                     y_pred_probs_test = None
+
                 if model_name not in metric_res:
                     metric_res[model_name] = []
                 metric_res[model_name].append(
@@ -175,6 +179,7 @@ class Learner:
                         self._problem_type,
                     )
                 )
+
                 trained_models[model_name].append(model)
 
         metric_res_stats = _compute_metrics_statistics(metric_res)
@@ -199,12 +204,15 @@ class Learner:
                 res[i][model_name] = {}
                 self._logger.info(f"Fitting {model_name} for test fold sample {i+1}...")
                 model_type = get_model_type(model_name, self._problem_type)
-                model = model_type(**params["params"])
+                model = get_model(model_type, params["params"])
+
+                # Standard model handling
                 model.fit(X_train, y_train)
                 y_pred_train = model.predict(X_train)
                 res[i][model_name]["y_pred_train"] = y_pred_train
                 y_pred_test = model.predict(X_test)
                 res[i][model_name]["y_pred_test"] = y_pred_test
+
                 if self._problem_type == ProblemTypes.Classification:
                     y_pred_probs_train = model.predict_proba(X_train)
                     res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
@@ -213,6 +221,7 @@ class Learner:
                 else:
                     y_pred_probs_train = None
                     y_pred_probs_test = None
+
                 if model_name not in metric_res:
                     metric_res[model_name] = []
                 metric_res[model_name].append(
@@ -229,6 +238,7 @@ class Learner:
                         self._problem_type,
                     )
                 )
+
                 trained_models[model_name].append(model)
 
         metric_res_stats = _compute_metrics_statistics(metric_res)

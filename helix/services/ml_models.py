@@ -139,12 +139,8 @@ def models_exist(path: Path) -> bool:
         return False
 
 
-def get_model(
-    model_type: type,
-    model_params: dict | None = None,
-) -> MlModel:
-    """Produce a machine learning model with the provided parameters, configured for the
-    given problem type.
+def get_model(model_type: type, model_params: dict = None) -> MlModel:
+    """Get a new instance of the requested machine learning model.
 
     If the model is to be used in a grid search, specify `model_params=None`.
 

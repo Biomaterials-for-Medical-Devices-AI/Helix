@@ -30,3 +30,20 @@ class BrnnOptions:
     prior_sigma: int = 1
     lambda_reg: float = 0.01
     classification_cutoff: float = 0.5
+
+
+# ----- Maximum Likelihood Regularised EM Parameters ----- >>>>>>>>
+
+
+@dataclass
+class MLREMOptions:
+    """
+    This class contains the parameters as options
+    for the Maximum Likelihood Regularised EM model.
+    """
+
+    alpha: float = 0.0  # Regularisation parameter
+    beta: float = 1.0  # Scaling parameter
+    weight_threshold: float = 1e-3  # Threshold for weight pruning
+    max_iterations: int = 300  # Maximum iterations for EM
+    tolerance: float = 0.01  # Convergence tolerance

@@ -142,6 +142,7 @@ class ModelNames(StrEnum):
     SVM = "svm"
     BRNNClassifier = "bayesianRegularised nn classifier"
     BRNNRegressor = "bayesianRegularised nn regressor"
+    MLREM = "multiple linear regression with expectation maximisation"
 
 
 class DataSplitMethods(StrEnum):
