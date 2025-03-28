@@ -1,4 +1,5 @@
 from helix.options.choices.ui import SVM_KERNELS
+from helix.options.enums import ActivationFunctions
 
 LINEAR_MODEL_GRID = {
     "fit_intercept": [True, False],
@@ -22,4 +23,18 @@ SVM_GRID = {
     "kernel": [k.lower() for k in SVM_KERNELS],
     "degree": [2, 3, 4],
     "C": [1.0, 10.0, 100],
+}
+
+BRNN_GRID = {
+    "hidden_units": [32, 64, 128],
+    "activation": [
+        ActivationFunctions.ReLU,
+        ActivationFunctions.Sigmoid,
+        ActivationFunctions.LeakyReLU,
+        ActivationFunctions.Tanh,
+    ],
+    "max_iter": [100, 200],
+    "tolerance": [1e-4, 1e-5],
+    "learning_rate": [0.01, 0.005, 0.001],
+    "num_hidden_layers": [1, 2, 3],
 }
