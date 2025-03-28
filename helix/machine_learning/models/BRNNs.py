@@ -105,9 +105,6 @@ class BRNNBase(nn.Module):
 
         return X_tensor, y_tensor
 
-    def fit(self):
-        raise NotImplementedError
-
     def _get_eigenvalues(self, X_tensor, y_tensor):
         """Computes eigenvalues using Fisher Information Matrix (FIM) instead of Hessian."""
         outputs = self.model_(X_tensor)
@@ -134,15 +131,6 @@ class BRNNBase(nn.Module):
             - 0.5 * np.sum(np.log(alpha + beta * eigenvalues))
             + 0.5 * (N * np.log(alpha) + self.n_samples_ * np.log(beta))
         )
-
-    def predict(self):
-        raise NotImplementedError
-
-    def predict_proba(self):
-        raise NotImplementedError
-
-    def score(self):
-        raise NotImplementedError
 
 
 class BRNNRegressor(BaseEstimator, RegressorMixin, BRNNBase):
