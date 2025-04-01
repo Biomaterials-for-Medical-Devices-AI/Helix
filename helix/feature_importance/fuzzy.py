@@ -55,21 +55,19 @@ class Fuzzy:
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._fuzzy_opt.fuzzy_feature_selection:
             # Select top features for fuzzy interpretation
-            try:
-                topfeatures = self._select_features(ensemble_results["Majority Vote"])
+            if majority_vote_features := ensemble_results.get("Majority Vote"):
+                topfeatures = self._select_features(majority_vote_features)
                 X_train = X_train[topfeatures]
                 X_test = X_test[topfeatures]
-            except Exception as e:
-                self._logger.error(f"Error in fuzzy feature selection: {e}")
-                try:
-                    # Use Mean ensemble results
-                    topfeatures = self._select_features(ensemble_results["Mean"])
-                    X_train = X_train[topfeatures]
-                    X_test = X_test[topfeatures]
-                except Exception as e:
-                    self._logger.error(f"Error in fuzzy feature selection: {e}")
-
-            # if error occurs, use Mean ensemble results
+            elif mean_features := ensemble_results.get("Mean"):
+                topfeatures = self._select_features(mean_features)
+                X_train = X_train[topfeatures]
+                X_test = X_test[topfeatures]
+            else:
+                self._logger.error(
+                    f"Error in fuzzy feature selection: No ensemble importance results provied"
+                )
+                return {}
 
         # Step 2: Assign granularity to features e.g. low, medium, high categories
         if self._fuzzy_opt.granular_features:
