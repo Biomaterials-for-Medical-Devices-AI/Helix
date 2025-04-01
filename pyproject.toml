@@ -50,3 +50,9 @@ dev = [
 [tool.isort]
 profile = "black"
 line_length = 88
+
+[tool.hatch.build]
+include = [
+    "static/**",
+    "helix"
+]
