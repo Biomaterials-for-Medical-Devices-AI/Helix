@@ -40,26 +40,21 @@ class Fuzzy:
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self.importance_type = "local"  # local feature importance
 
-    def interpret(self, models, ensemble_results, data):
-        """
-        Interpret the model results using the selected feature importance methods and ensemble methods.
-        Parameters:
-            models (dict): Dictionary of models.
-            data (object): Data object.
-        Returns:
-            dict: Dictionary of feature importance results.
-        """
+    def interpret(self, models, ensemble_results, data) -> dict:
+
         # create a copy of the data - select first fold of the data
         X_train, X_test = data.X_train[0], data.X_test[0]
         self._logger.info("-------- Start of fuzzy interpretation logging--------")
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._fuzzy_opt.fuzzy_feature_selection:
             # Select top features for fuzzy interpretation
-            if majority_vote_features := ensemble_results.get("Majority Vote"):
+            majority_vote_features = ensemble_results.get("Majority Vote")
+            mean_features = ensemble_results.get("Mean")
+            if majority_vote_features is not None:
                 topfeatures = self._select_features(majority_vote_features)
                 X_train = X_train[topfeatures]
                 X_test = X_test[topfeatures]
-            elif mean_features := ensemble_results.get("Mean"):
+            elif mean_features is not None:
                 topfeatures = self._select_features(mean_features)
                 X_train = X_train[topfeatures]
                 X_test = X_test[topfeatures]
