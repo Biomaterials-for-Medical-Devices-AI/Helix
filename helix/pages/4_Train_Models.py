@@ -208,8 +208,8 @@ choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
-    biofefi_base_dir = helix_experiments_base_dir()
-    experiment_dir = biofefi_base_dir / experiment_name
+    helix_base_dir = helix_experiments_base_dir()
+    experiment_dir = helix_base_dir / experiment_name
     display_options(experiment_dir)
     path_to_exec_opts = execution_options_path(experiment_dir)
     exec_opt = load_execution_options(path_to_exec_opts)
@@ -286,7 +286,7 @@ if experiment_name:
                 st.session_state.get(MachineLearningStateKeys.Predictions)
             )
         else:
-            predictions = ml_predictions_path(biofefi_base_dir / experiment_name)
+            predictions = ml_predictions_path(helix_base_dir / experiment_name)
             if predictions.exists():
                 preds = pd.read_csv(predictions)
                 display_predictions(preds)

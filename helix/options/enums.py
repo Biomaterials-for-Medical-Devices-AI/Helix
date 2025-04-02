@@ -140,8 +140,7 @@ class ModelNames(StrEnum):
     RandomForest = "random forest"
     XGBoost = "xgboost"
     SVM = "svm"
-    BRNNClassifier = "bayesianRegularised nn classifier"
-    BRNNRegressor = "bayesianRegularised nn regressor"
+    BRNN = "bayesian regularised neural network"
     MLREM = "multiple linear regression with expectation maximisation"
 
 
