@@ -65,11 +65,12 @@ class FeatureImportanceEstimator:
         X, y = data.X_train[0], data.y_train[0]
         self._logger.info("-------- Start of feature importance logging--------")
         global_importance_results = self._global_feature_importance(models, X, y)
+        global_importance_df = self._stack_importances(global_importance_results)
         local_importance_results = self._local_feature_importance(models, X)
         ensemble_results = self._ensemble_feature_importance(global_importance_results)
         self._logger.info("-------- End of feature importance logging--------")
 
-        return global_importance_results, local_importance_results, ensemble_results
+        return global_importance_df, local_importance_results, ensemble_results
 
     def _global_feature_importance(self, models: dict, X: pd.DataFrame, y: pd.Series):
         """
@@ -301,3 +302,53 @@ class FeatureImportanceEstimator:
             )
 
         return ensemble_results
+
+    def _stack_importances(self, importances: dict[str, dict[str, list[pd.DataFrame]]]) -> pd.DataFrame:
+        """Stack and normalise feature importance results from different methods.
+
+        This function processes feature importance results through these steps:
+            - For each model:
+           - For each importance type (e.g., SHAP, Permutation):
+              - Concatenate all fold results vertically into a single DataFrame
+              - Min-max normalise the importance scores to [0,1] range
+           - Concatenate all normalised importance types horizontally
+
+        Args:
+            importances: Nested dictionary structure:
+                - First level: Model name -> Dictionary of importance types
+                - Second level: Importance type -> List of DataFrames (one per fold)
+                Each DataFrame contains feature importance scores
+
+        Returns:
+            Dictionary mapping model names to their stacked importances.
+            Each DataFrame has features as rows and importance methods as columns,
+            with normalised importance scores as values.
+
+        Example:
+            Input structure:
+            {
+                'model1': {
+                    'SHAP': [fold1_df, fold2_df],
+                    'Permutation': [fold1_df, fold2_df]
+                }
+            }
+            
+            Output structure:
+            {
+                'model1': DataFrame(
+                    columns=['SHAP', 'Permutation'],
+                    index=[feature1, feature2, ...]
+                )
+            }
+        """
+        stack_importances = {}
+        for model_name, importance_dict in importances.items():
+            importance_type_df_list = []
+            for importances_dfs in importance_dict.values():
+                importance_df = pd.concat(importances_dfs, axis=0)
+                importance_df = (importance_df - importance_df.min()) / (importance_df.max() - importance_df.min())
+                importance_type_df_list.append(importance_df)
+            
+            stack_importances[model_name] = pd.concat(importance_type_df_list, axis=1)
+        
+        return stack_importances
