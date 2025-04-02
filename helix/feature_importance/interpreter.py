@@ -195,19 +195,7 @@ class FeatureImportanceEstimator:
                 feature_importance_results[model_type] = {}
 
                 # Get the index for the model closest to the mean performance
-                for model_name, stats in metrics_dict.items():
-                    # Extract the mean R² for the test set
-                    mean_r2_test = stats["test"][metric]["mean"]
-
-                    # Find the bootstrap index closest to the mean R²
-                    dif = float("inf")
-                    closest_index = -1
-                    for i, bootstrap in enumerate(metrics_dict[model_name]):
-                        metric_value = bootstrap[metric]["test"]["value"]
-                        current_dif = abs(metric_value - mean_r2_test)
-                        if current_dif < dif:
-                            dif = current_dif
-                            closest_index = i
+                closest_index = self.find_mean_model_index(metrics_dict, model_type)
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for (
@@ -219,7 +207,7 @@ class FeatureImportanceEstimator:
                         if feature_importance_type == "LIME":
                             # Run Permutation Importance
                             lime_importance_df = calculate_lime_values(
-                                model[0], X, self._exec_opt.problem_type, self._logger
+                                model[closest_index], X, self._exec_opt.problem_type, self._logger
                             )
                             fig = plot_lime_importance(
                                 df=lime_importance_df,

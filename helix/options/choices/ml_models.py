@@ -3,7 +3,7 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
-from helix.machine_learning.models.mlrem import EMLinearRegression
+
 from helix.machine_learning.models.svm import SVC, SVR
 from helix.options.enums import ModelNames
 
@@ -44,7 +44,7 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.RandomForest: RandomForestClassifier,
     ModelNames.XGBoost: XGBClassifier,
     ModelNames.SVM: SVC,
-    ModelNames.BRNNClassifier: BRNNClassifier,
+    ModelNames.BRNN: BRNNClassifier,
 }
 
 REGRESSORS: dict[ModelNames, type] = {
@@ -53,5 +53,5 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.XGBoost: XGBRegressor,
     ModelNames.SVM: SVR,
     ModelNames.MLREM: EMLinearRegression,
-    ModelNames.BRNNClassifier: BRNNRegressor,
+    ModelNames.BRNN: BRNNRegressor,
 }

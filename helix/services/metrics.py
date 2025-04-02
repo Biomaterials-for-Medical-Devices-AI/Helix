@@ -38,7 +38,7 @@ def get_metrics(problem_type: ProblemTypes, logger: object = None) -> dict:
     return metrics
 
 
-def find_mean_model_index(metrics_dict: dict, metric: Metrics) -> int:
+def find_mean_model_index(metrics_dict: dict, metric: str) -> int:
     """
     Find the index of the model with the mean of the metric.
     """
