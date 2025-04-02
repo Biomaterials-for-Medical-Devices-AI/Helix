@@ -1,5 +1,7 @@
 import os
 
+import pandas as pd
+
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import fi_plot_dir, helix_experiments_base_dir
@@ -60,20 +62,22 @@ class FeatureImportanceEstimator:
             Global, local and ensemble feature importance votes.
         """
         # Load just the first fold of the data and the first models for interpretation
+        X, y = data.X_train[0], data.y_train[0]
         self._logger.info("-------- Start of feature importance logging--------")
-        global_importance_results = self._global_feature_importance(models, data)
-        local_importance_results = self._local_feature_importance(models, data)
+        global_importance_results = self._global_feature_importance(models, X, y)
+        local_importance_results = self._local_feature_importance(models, X)
         ensemble_results = self._ensemble_feature_importance(global_importance_results)
         self._logger.info("-------- End of feature importance logging--------")
 
         return global_importance_results, local_importance_results, ensemble_results
 
-    def _global_feature_importance(self, models: dict, data: TabularData):
+    def _global_feature_importance(self, models: dict, X: pd.DataFrame, y: pd.Series):
         """
         Calculate global feature importance for a given model and dataset.
         Parameters:
             models (dict): Dictionary of models.
-            data (TabularData): The data to interpret.
+            X (pd.DataFrame): Features.
+            y (pd.Series): Target.
         Returns:
             dict: Dictionary of feature importance results.
         """
@@ -83,75 +87,74 @@ class FeatureImportanceEstimator:
         ):
             self._logger.info("No feature importance methods selected")
             self._logger.info("Skipping global feature importance methods")
-            return feature_importance_results
-
-        # Iterate through all data indices
-        for idx in range(len(data.X_train)):
-            X, y = data.X_train[idx], data.y_train[idx]
-            
-            # Iterate through all models
-            for model_type, model_list in models.items():
+        else:
+            for model_type, model in models.items():
                 self._logger.info(
-                    f"Global feature importance methods for {model_type} (fold {idx})..."
+                    f"Global feature importance methods for {model_type}..."
                 )
-                if model_type not in feature_importance_results:
-                    feature_importance_results[model_type] = {}
+                feature_importance_results[model_type] = {}
 
-                # Iterate through all feature importance methods
-                for feature_importance_type, value in self._feature_importance_methods.items():
-                    if not value["value"]:
-                        continue
+                # Run methods with TRUE values in the dictionary
+                # of feature importance methods
+                for (
+                    feature_importance_type,
+                    value,
+                ) in self._feature_importance_methods.items():
+                    if value["value"]:
+                        # Select the first model in the list - model[0]
+                        if feature_importance_type == "Permutation Importance":
+                            # Run Permutation Importance -
+                            permutation_importance_df = calculate_permutation_importance(
+                                model=model[0],
+                                X=X,
+                                y=y,
+                                permutation_importance_scoring=self._fi_opt.permutation_importance_scoring,
+                                permutation_importance_repeat=self._fi_opt.permutation_importance_repeat,
+                                random_state=self._exec_opt.random_state,
+                                logger=self._logger,
+                            )
+                            save_importance_results(
+                                feature_importance_df=permutation_importance_df,
+                                model_type=model_type,
+                                importance_type=value["type"],
+                                feature_importance_type=feature_importance_type,
+                                experiment_name=self._exec_opt.experiment_name,
+                                fi_opt=self._fi_opt,
+                                plot_opt=self._plot_opt,
+                                logger=self._logger,
+                            )
+                            feature_importance_results[model_type][
+                                feature_importance_type
+                            ] = permutation_importance_df
 
-                    if feature_importance_type not in feature_importance_results[model_type]:
-                        feature_importance_results[model_type][feature_importance_type] = []
-
-                    if feature_importance_type == "Permutation Importance":
-                        # Run Permutation Importance
-                        permutation_importance_df = calculate_permutation_importance(
-                            model=model_list[idx],
-                            X=X,
-                            y=y,
-                            permutation_importance_scoring=self._fi_opt.permutation_importance_scoring,
-                            permutation_importance_repeat=self._fi_opt.permutation_importance_repeat,
-                            random_state=self._exec_opt.random_state,
-                            logger=self._logger,
-                        )
-                        save_importance_results(
-                            feature_importance_df=permutation_importance_df,
-                            model_type=model_type,
-                            importance_type=value["type"],
-                            feature_importance_type=f"{feature_importance_type}_fold_{idx}",
-                            experiment_name=self._exec_opt.experiment_name,
-                            fi_opt=self._fi_opt,
-                            plot_opt=self._plot_opt,
-                            logger=self._logger,
-                        )
-                        feature_importance_results[model_type][feature_importance_type].append(permutation_importance_df)
-
-                    elif feature_importance_type == "SHAP":
-                        # Run SHAP
-                        shap_df, _ = calculate_global_shap_values(
-                            model=model_list[idx],
-                            X=X,
-                            shap_reduce_data=self._fi_opt.shap_reduce_data,
-                            logger=self._logger,
-                        )
-                        fig = plot_global_shap_importance(
-                            shap_values=shap_df,
-                            plot_opts=self._plot_opt,
-                            num_features_to_plot=self._fi_opt.num_features_to_plot,
-                            title=f"{feature_importance_type} - {value['type']} - {model_type} (fold {idx})",
-                        )
-                        save_dir = fi_plot_dir(
-                            helix_experiments_base_dir()
-                            / self._exec_opt.experiment_name
-                        )
-                        create_directory(save_dir)
-                        fig.savefig(
-                            save_dir
-                            / f"{feature_importance_type}-{value['type']}-{model_type}-fold_{idx}-bar.png"
-                        )
-                        feature_importance_results[model_type][feature_importance_type].append(shap_df)
+                        if feature_importance_type == "SHAP":
+                            # Run SHAP
+                            shap_df, _ = calculate_global_shap_values(
+                                model=model[0],
+                                X=X,
+                                shap_reduce_data=self._fi_opt.shap_reduce_data,
+                                logger=self._logger,
+                            )
+                            fig = plot_global_shap_importance(
+                                shap_values=shap_df,
+                                plot_opts=self._plot_opt,
+                                num_features_to_plot=self._fi_opt.num_features_to_plot,
+                                title=f"{feature_importance_type} - {value['type']} - {model_type}",
+                            )
+                            save_dir = fi_plot_dir(
+                                helix_experiments_base_dir()
+                                / self._exec_opt.experiment_name
+                            )
+                            create_directory(
+                                save_dir
+                            )  # will create the directory if it doesn't exist
+                            fig.savefig(
+                                save_dir
+                                / f"{feature_importance_type}-{value['type']}-{model_type}-bar.png"
+                            )
+                            feature_importance_results[model_type][
+                                feature_importance_type
+                            ] = shap_df
 
         return feature_importance_results
 
