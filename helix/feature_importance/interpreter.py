@@ -159,15 +159,18 @@ class FeatureImportanceEstimator:
 
         return feature_importance_results
 
-    def _local_feature_importance(self, models, data: TabularData):
+    def _local_feature_importance(self, models, data: pd.DataFrame):
         """
         Calculate local feature importance for a given model and dataset.
         Parameters:
             models (dict): Dictionary of models.
-            data (TabularData): The data to interpret.
+            data (pd.DataFrame): The data to interpret. 
+            For local interpretation, the entire data is used.
         Returns:
             dict: Dictionary of feature importance results.
         """
+        X, y = data.iloc[:, :-1], data.iloc[:, -1]
+
         feature_importance_results = {}
         if not any(
             sub_dict["value"] for sub_dict in self._local_importance_methods.values()
