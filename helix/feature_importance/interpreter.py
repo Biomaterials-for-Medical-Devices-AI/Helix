@@ -169,7 +169,17 @@ class FeatureImportanceEstimator:
         Returns:
             dict: Dictionary of feature importance results.
         """
-        X, y = data.iloc[:, :-1], data.iloc[:, -1]
+        # Get data features
+        X = data.iloc[:, :-1]
+
+        # Load the ml_metrics
+        path_to_metrics = ml_metrics_path(
+            helix_experiments_base_dir() / self._exec_opt.experiment_name
+        )
+        # Load the metrics from the file
+        with open(path_to_metrics, "r") as f:
+            metrics_dict = json.load(f)
+
 
         feature_importance_results = {}
         if not any(
@@ -183,6 +193,21 @@ class FeatureImportanceEstimator:
                     f"Local feature importance methods for {model_type}..."
                 )
                 feature_importance_results[model_type] = {}
+
+                # Get the index for the model closest to the mean performance
+                for model_name, stats in metrics_dict.items():
+                    # Extract the mean R² for the test set
+                    mean_r2_test = stats["test"][metric]["mean"]
+
+                    # Find the bootstrap index closest to the mean R²
+                    dif = float("inf")
+                    closest_index = -1
+                    for i, bootstrap in enumerate(metrics_dict[model_name]):
+                        metric_value = bootstrap[metric]["test"]["value"]
+                        current_dif = abs(metric_value - mean_r2_test)
+                        if current_dif < dif:
+                            dif = current_dif
+                            closest_index = i
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for (

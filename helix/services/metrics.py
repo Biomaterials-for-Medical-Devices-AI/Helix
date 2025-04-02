@@ -1,5 +1,5 @@
 from helix.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
-from helix.options.enums import ProblemTypes
+from helix.options.enums import ProblemTypes, Metrics
 
 
 def get_metrics(problem_type: ProblemTypes, logger: object = None) -> dict:
@@ -36,3 +36,25 @@ def get_metrics(problem_type: ProblemTypes, logger: object = None) -> dict:
 
     logger.info(f"Using metrics: {list(metrics.keys())}")
     return metrics
+
+
+def find_mean_model_index(metrics_dict: dict, metric: Metrics) -> int:
+    """
+    Find the index of the model with the mean of the metric.
+    """
+
+    for model_name, stats in metrics_dict.items():
+        # Extract the mean metric for the test set
+        mean_metric_test = stats["test"][metric]["mean"]
+
+        # Find the bootstrap index closest to the mean metric
+        dif = float("inf")
+        closest_index = -1
+        for i, bootstrap in enumerate(metrics_dict[model_name]):
+            metric_value = bootstrap[metric]["test"]["value"]
+            current_dif = abs(metric_value - mean_metric_test)
+            if current_dif < dif:
+                dif = current_dif
+                closest_index = i
+
+    return closest_index
