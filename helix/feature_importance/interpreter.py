@@ -64,16 +64,14 @@ class Interpreter:
         # Load just the first fold of the data and the first models for interpretation
         X, y = data.X_train[0], data.y_train[0]
         self._logger.info("-------- Start of feature importance logging--------")
-        global_importance_results = self._individual_feature_importance(models, X, y)
+        global_importance_results = self._global_feature_importance(models, X, y)
         local_importance_results = self._local_feature_importance(models, X)
         ensemble_results = self._ensemble_feature_importance(global_importance_results)
         self._logger.info("-------- End of feature importance logging--------")
 
         return global_importance_results, local_importance_results, ensemble_results
 
-    def _individual_feature_importance(
-        self, models: dict, X: pd.DataFrame, y: pd.Series
-    ):
+    def _global_feature_importance(self, models: dict, X: pd.DataFrame, y: pd.Series):
         """
         Calculate global feature importance for a given model and dataset.
         Parameters:
