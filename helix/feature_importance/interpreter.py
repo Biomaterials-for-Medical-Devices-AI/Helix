@@ -29,7 +29,7 @@ from helix.utils.logging_utils import Logger
 from helix.utils.utils import create_directory
 
 
-class Interpreter:
+class FeatureImportanceEstimator:
     """
     Interpreter class to interpret the model results.
 

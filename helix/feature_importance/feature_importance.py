@@ -1,7 +1,7 @@
 from typing import Any, Callable
 import pandas as pd
 from sklearn.base import BaseEstimator
-from helix.feature_importance.interpreter import Interpreter
+from helix.feature_importance.interpreter import FeatureImportanceEstimator
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.plotting import PlottingOptions
@@ -18,7 +18,7 @@ def run(
 ):
 
     # Interpret the model results
-    interpreter = Interpreter(
+    interpreter = FeatureImportanceEstimator(
         fi_opt=fi_opt, exec_opt=exec_opt, plot_opt=plot_opt, logger=logger
     )
     # TODO: Add indices to the dataframe results-> global + ensemble
