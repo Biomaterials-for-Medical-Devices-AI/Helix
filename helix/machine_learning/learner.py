@@ -95,20 +95,22 @@ class Learner:
         Returns:
             - res (Dict): Dictionary containing model predictions for
             each bootstrap sample.
-            - metric_res (Dict): Dictionary containing metric values for
+            - metrics_full (Dict): Dictionary containing metric values for
             each bootstrap sample.
-            - metric_res_stats (Dict): Dictionary containing average and
+            - metrics_mean_std (Dict): Dictionary containing average and
             standard deviation of metric values across bootstrap samples.
             - trained_models (Dict): Dictionary containing
             trained models for each model type.
         """
         if self._data_split.method.lower() == DataSplitMethods.Holdout:
-            res, metric_res, metric_res_stats, trained_models = self._fit_holdout(data)
-            return res, metric_res, metric_res_stats, trained_models
+            res, metrics_full, metrics_mean_std, trained_models = self._fit_holdout(
+                data
+            )
+            return res, metrics_full, metrics_mean_std, trained_models
 
         elif self._data_split.method.lower() == DataSplitMethods.KFold:
-            res, metric_res, metric_res_stats, trained_models = self._fit_kfold(data)
-            return res, metric_res, metric_res_stats, trained_models
+            res, metrics_full, metrics_mean_std, trained_models = self._fit_kfold(data)
+            return res, metrics_full, metrics_mean_std, trained_models
 
     def _fit_holdout(self, data: Tuple) -> None:
         """
@@ -121,16 +123,16 @@ class Learner:
         Returns:
             - res (Dict): Dictionary containing model predictions for
             each bootstrap sample.
-            - metric_res (Dict): Dictionary containing metric values for
+            - metrics_full (Dict): Dictionary containing metric values for
             each bootstrap sample.
-            - metric_res_stats (Dict): Dictionary containing average and
+            - metrics_mean_std (Dict): Dictionary containing average and
             standard deviation of metric values across bootstrap samples.
             - trained_models (Dict): Dictionary containing
             trained models for each model type.
         """
         self._logger.info("Fitting holdout with bootstrapped datasets...")
         res = {}
-        metric_res = {}
+        metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
         for i in range(self._data_split.n_bootstraps):
@@ -163,9 +165,9 @@ class Learner:
                     y_pred_probs_train = None
                     y_pred_probs_test = None
 
-                if model_name not in metric_res:
-                    metric_res[model_name] = []
-                metric_res[model_name].append(
+                if model_name not in metrics_full:
+                    metrics_full[model_name] = []
+                metrics_full[model_name].append(
                     _evaluate(
                         model_name,
                         self._metrics,
@@ -182,13 +184,13 @@ class Learner:
 
                 trained_models[model_name].append(model)
 
-        metric_res_stats = _compute_metrics_mean_std(metric_res)
-        return res, metric_res, metric_res_stats, trained_models
+        metrics_mean_std = _compute_metrics_mean_std(metrics_full)
+        return res, metrics_full, metrics_mean_std, trained_models
 
     def _fit_kfold(self, data: Tuple) -> None:
         self._logger.info("Fitting cross validation datasets...")
         res = {}
-        metric_res = {}
+        metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
         for i in range(self._data_split.k_folds):
@@ -222,9 +224,9 @@ class Learner:
                     y_pred_probs_train = None
                     y_pred_probs_test = None
 
-                if model_name not in metric_res:
-                    metric_res[model_name] = []
-                metric_res[model_name].append(
+                if model_name not in metrics_full:
+                    metrics_full[model_name] = []
+                metrics_full[model_name].append(
                     _evaluate(
                         model_name,
                         self._metrics,
@@ -241,8 +243,8 @@ class Learner:
 
                 trained_models[model_name].append(model)
 
-        metric_res_stats = _compute_metrics_mean_std(metric_res)
-        return res, metric_res, metric_res_stats, trained_models
+        metrics_mean_std = _compute_metrics_mean_std(metrics_full)
+        return res, metrics_full, metrics_mean_std, trained_models
 
 
 class GridSearchLearner:
@@ -269,9 +271,9 @@ class GridSearchLearner:
         Returns:
             res (dict): Dictionary containing model predictions for
             each bootstrap sample.
-            metric_res (dict): Dictionary containing metric values for
+            metrics_full (dict): Dictionary containing metric values for
             each bootstrap sample.
-            metric_res_stats (dict): Dictionary containing average and
+            metrics_mean_std (dict): Dictionary containing average and
             standard deviation of metric values across bootstrap samples.
             trained_models (dict): Dictionary containing
             trained models for each model type.
@@ -311,9 +313,9 @@ class GridSearchLearner:
 
         # Fit models
         res = {0: {}}
-        metric_res = {}
+        metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
-        metric_res_stats = {model_name: {} for model_name in self._model_types.keys()}
+        metrics_mean_std = {model_name: {} for model_name in self._model_types.keys()}
 
         for model_name, params in self._model_types.items():
             res[0][model_name] = {}
@@ -352,9 +354,9 @@ class GridSearchLearner:
             else:
                 y_pred_probs_train = None
                 y_pred_probs_test = None
-            if model_name not in metric_res:
-                metric_res[model_name] = []
-            metric_res[model_name].append(
+            if model_name not in metrics_full:
+                metrics_full[model_name] = []
+            metrics_full[model_name].append(
                 _evaluate(
                     model_name,
                     metrics,
@@ -370,11 +372,11 @@ class GridSearchLearner:
             )
             # append the best estimator
             trained_models[model_name].append(gs.best_estimator_)
-            metric_res_stats[model_name].update(
+            metrics_mean_std[model_name].update(
                 self._compute_metrics_statistics(gs.cv_results_, gs.best_index_)
             )
 
-        return res, metric_res, metric_res_stats, trained_models
+        return res, metrics_full, metrics_mean_std, trained_models
 
     def _compute_metrics_statistics(self, cv_results: dict, best_index: int) -> dict:
         """
@@ -536,14 +538,14 @@ def _calculate_classification_metrics(
     return metric
 
 
-def _compute_metrics_mean_std(metric_res: dict) -> dict:
+def _compute_metrics_mean_std(metrics_full: dict) -> dict:
     """
     Go through the metric values for each model and calculate the mean
     and standard deviation of the metrics scores across all
     bootstraps/folds.
 
     Args:
-        - metric_res (dict): Dictionary containing metric values
+        - metrics_full (dict): Dictionary containing metric values
         for each bootstrap sample.
 
     Returns:
@@ -552,7 +554,7 @@ def _compute_metrics_mean_std(metric_res: dict) -> dict:
     """
     statistics = {}
 
-    for model_name, metrics_list in metric_res.items():
+    for model_name, metrics_list in metrics_full.items():
         # Initialize dictionaries to store metric values for train and test sets
         train_metrics = {}
         test_metrics = {}

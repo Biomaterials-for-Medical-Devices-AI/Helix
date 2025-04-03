@@ -36,8 +36,8 @@ def run(
             data_split=data_opts.data_split,
             logger=logger,
         )
-    res, metric_res, metric_res_stats, trained_models = learner.fit(data)
-    logger.info(f"Performance Metric Statistics: {os.linesep}{metric_res_stats}")
+    res, metrics_full, metrics_mean_std, trained_models = learner.fit(data)
+    logger.info(f"Performance Metric Statistics: {os.linesep}{metrics_mean_std}")
     if ml_opts.save_actual_pred_plots:
         if data_opts.data_split.n_bootstraps is not None:
             n = data_opts.data_split.n_bootstraps
@@ -50,8 +50,8 @@ def run(
             data=data,
             ml_results=res,
             logger=logger,
-            ml_metric_results=metric_res,
-            ml_metric_results_stats=metric_res_stats,
+            ml_metric_results=metrics_full,
+            ml_metric_results_stats=metrics_mean_std,
             n_bootstraps=n,
             exec_opts=exec_opts,
             plot_opts=plot_opts,
@@ -59,4 +59,4 @@ def run(
             trained_models=trained_models,
         )
 
-    return trained_models, metric_res_stats
+    return trained_models, metrics_mean_std
