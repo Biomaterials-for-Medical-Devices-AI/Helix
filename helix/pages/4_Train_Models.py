@@ -120,7 +120,7 @@ def pipeline(
     logger = logger_instance.make_logger()
 
     # Machine learning
-    trained_models, metrics_stats = train.run(
+    trained_models, metrics_full, metrics_mean_std = train.run(
         ml_opts=ml_opts,
         data_opts=data_opts,
         plot_opts=plotting_opts,
@@ -171,7 +171,7 @@ def pipeline(
         predictions = predictions.rename(columns={"Bootstrap": "Fold"})
 
     save_models_metrics(
-        metrics_stats,
+        metrics_mean_std,
         ml_metrics_path(helix_experiments_base_dir() / experiment_name),
     )
     save_model_predictions(

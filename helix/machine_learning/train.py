@@ -59,4 +59,4 @@ def run(
             trained_models=trained_models,
         )
 
-    return trained_models, metrics_mean_std
+    return trained_models, metrics_full, metrics_mean_std
