@@ -18,7 +18,7 @@ from helix.options.file_paths import (
     fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
-    ml_metrics_path,
+    ml_metrics_mean_std_path,
     ml_plot_dir,
     ml_predictions_path,
 )
@@ -53,7 +53,7 @@ if experiment_name:
     display_options(experiment_path)
     data_analysis = data_analysis_plots_dir(experiment_path)
     plot_box(data_analysis, "Data Analysis Plots")
-    ml_metrics = ml_metrics_path(experiment_path)
+    ml_metrics = ml_metrics_mean_std_path(experiment_path)
     display_metrics_table(ml_metrics)
     ml_plots = ml_plot_dir(experiment_path)
     plot_box(ml_plots, "Machine learning plots")

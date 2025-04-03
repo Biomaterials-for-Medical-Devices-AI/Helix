@@ -24,7 +24,7 @@ from helix.options.file_paths import (
     execution_options_path,
     helix_experiments_base_dir,
     log_dir,
-    ml_metrics_path,
+    ml_metrics_mean_std_path,
     ml_model_dir,
     ml_options_path,
     ml_plot_dir,
@@ -172,7 +172,7 @@ def pipeline(
 
     save_models_metrics(
         metrics_mean_std,
-        ml_metrics_path(helix_experiments_base_dir() / experiment_name),
+        ml_metrics_mean_std_path(helix_experiments_base_dir() / experiment_name),
     )
     save_model_predictions(
         predictions,
@@ -278,7 +278,7 @@ if experiment_name:
         except NotADirectoryError:
             pass
 
-        metrics = ml_metrics_path(experiment_dir)
+        metrics = ml_metrics_mean_std_path(experiment_dir)
         display_metrics_table(metrics)
 
         if st.session_state.get(MachineLearningStateKeys.Predictions):
