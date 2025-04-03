@@ -182,7 +182,7 @@ class Learner:
 
                 trained_models[model_name].append(model)
 
-        metric_res_stats = _compute_metrics_statistics(metric_res)
+        metric_res_stats = _compute_metrics_mean_std(metric_res)
         return res, metric_res, metric_res_stats, trained_models
 
     def _fit_kfold(self, data: Tuple) -> None:
@@ -241,7 +241,7 @@ class Learner:
 
                 trained_models[model_name].append(model)
 
-        metric_res_stats = _compute_metrics_statistics(metric_res)
+        metric_res_stats = _compute_metrics_mean_std(metric_res)
         return res, metric_res, metric_res_stats, trained_models
 
 
@@ -536,9 +536,11 @@ def _calculate_classification_metrics(
     return metric
 
 
-def _compute_metrics_statistics(metric_res: dict) -> dict:
+def _compute_metrics_mean_std(metric_res: dict) -> dict:
     """
-    Compute metric statistics for each model.
+    Go through the metric values for each model and calculate the mean
+    and standard deviation of the metrics scores across all
+    bootstraps/folds.
 
     Args:
         - metric_res (dict): Dictionary containing metric values
