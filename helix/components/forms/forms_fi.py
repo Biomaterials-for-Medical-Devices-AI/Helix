@@ -1,14 +1,25 @@
-import numpy as np
+"""Feature importance form components for Helix.
+
+This module contains form components for configuring feature importance analysis:
+- Global feature importance methods (Permutation, SHAP)
+- Ensemble methods (Mean, Majority Vote)
+- Local feature importance methods (LIME, SHAP)
+- Fuzzy feature importance options
+"""
+
 import streamlit as st
-from sklearn.manifold import TSNE
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.options.enums import (
+    ExecutionStateKeys,
     FeatureImportanceStateKeys,
+    FuzzyStateKeys,
+    ProblemTypes,
 )
+
 
 @st.experimental_fragment
 def fi_options_form():
+    """Form for configuring feature importance options."""
     global_methods = {}
 
     st.write("### Global Feature Importance Methods")
@@ -169,7 +180,6 @@ def fi_options_form():
     )
 
     if fuzzy_feature_importance:
-
         st.number_input(
             "Number of features for fuzzy interpretation",
             min_value=1,

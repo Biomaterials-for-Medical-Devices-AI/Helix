@@ -1,15 +1,20 @@
+"""Train Models page for Helix.
+
+This page allows users to configure and train machine learning models on their data.
+"""
+
 from multiprocessing import Process
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
-from helix.components.forms import ml_options_form
+from helix.components.forms.forms_ml_opts import ml_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import display_metrics_table, display_predictions, plot_box
+from helix.components.plots import plot_box
+from helix.components.plots import display_metrics_table, display_predictions
 from helix.machine_learning import train
 from helix.options.data import DataOptions
 from helix.options.enums import (
@@ -235,6 +240,7 @@ if experiment_name:
         exec_opts = load_execution_options(
             execution_options_path(helix_experiments_base_dir() / experiment_name)
         )
+        st.write("### Configure Machine Learning Model")
         ml_options_form(problem_type=exec_opts.problem_type)
     else:
         st.info(
