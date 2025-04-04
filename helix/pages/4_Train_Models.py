@@ -24,6 +24,7 @@ from helix.options.file_paths import (
     execution_options_path,
     helix_experiments_base_dir,
     log_dir,
+    ml_metrics_full_path,
     ml_metrics_mean_std_path,
     ml_model_dir,
     ml_options_path,
@@ -170,6 +171,12 @@ def pipeline(
     elif data_opts.data_split.method == DataSplitMethods.KFold:
         predictions = predictions.rename(columns={"Bootstrap": "Fold"})
 
+    # Save full metrics
+    save_models_metrics(
+        metrics_full,
+        ml_metrics_full_path(helix_experiments_base_dir() / experiment_name),
+    )
+    # Save mean/std metrics
     save_models_metrics(
         metrics_mean_std,
         ml_metrics_mean_std_path(helix_experiments_base_dir() / experiment_name),

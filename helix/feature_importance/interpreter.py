@@ -1,10 +1,15 @@
+import json
 import os
 
 import pandas as pd
 
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
-from helix.options.file_paths import fi_plot_dir, helix_experiments_base_dir
+from helix.options.file_paths import (
+    fi_plot_dir,
+    helix_experiments_base_dir,
+    ml_metrics_mean_std_path,
+)
 from helix.options.plotting import PlottingOptions
 from helix.services.data import TabularData
 from helix.services.feature_importance.ensemble_methods import (
@@ -20,6 +25,7 @@ from helix.services.feature_importance.local_methods import (
     calculate_local_shap_values,
 )
 from helix.services.feature_importance.results import save_importance_results
+from helix.services.metrics import find_mean_model_index
 from helix.services.plotting import (
     plot_global_shap_importance,
     plot_lime_importance,
@@ -92,7 +98,7 @@ class FeatureImportanceEstimator:
         # Iterate through all data indices
         for idx in range(len(data.X_train)):
             X, y = data.X_train[idx], data.y_train[idx]
-            
+
             # Iterate through all models
             for model_type, model_list in models.items():
                 self._logger.info(
@@ -102,12 +108,20 @@ class FeatureImportanceEstimator:
                     feature_importance_results[model_type] = {}
 
                 # Iterate through all feature importance methods
-                for feature_importance_type, value in self._feature_importance_methods.items():
+                for (
+                    feature_importance_type,
+                    value,
+                ) in self._feature_importance_methods.items():
                     if not value["value"]:
                         continue
 
-                    if feature_importance_type not in feature_importance_results[model_type]:
-                        feature_importance_results[model_type][feature_importance_type] = []
+                    if (
+                        feature_importance_type
+                        not in feature_importance_results[model_type]
+                    ):
+                        feature_importance_results[model_type][
+                            feature_importance_type
+                        ] = []
 
                     if feature_importance_type == "Permutation Importance":
                         # Run Permutation Importance
@@ -130,7 +144,9 @@ class FeatureImportanceEstimator:
                             plot_opt=self._plot_opt,
                             logger=self._logger,
                         )
-                        feature_importance_results[model_type][feature_importance_type].append(permutation_importance_df)
+                        feature_importance_results[model_type][
+                            feature_importance_type
+                        ].append(permutation_importance_df)
 
                     elif feature_importance_type == "SHAP":
                         # Run SHAP
@@ -155,7 +171,9 @@ class FeatureImportanceEstimator:
                             save_dir
                             / f"{feature_importance_type}-{value['type']}-{model_type}-fold_{idx}-bar.png"
                         )
-                        feature_importance_results[model_type][feature_importance_type].append(shap_df)
+                        feature_importance_results[model_type][
+                            feature_importance_type
+                        ].append(shap_df)
 
         return feature_importance_results
 
@@ -164,7 +182,7 @@ class FeatureImportanceEstimator:
         Calculate local feature importance for a given model and dataset.
         Parameters:
             models (dict): Dictionary of models.
-            data (pd.DataFrame): The data to interpret. 
+            data (pd.DataFrame): The data to interpret.
             For local interpretation, the entire data is used.
         Returns:
             dict: Dictionary of feature importance results.
@@ -173,13 +191,12 @@ class FeatureImportanceEstimator:
         X = data.iloc[:, :-1]
 
         # Load the ml_metrics
-        path_to_metrics = ml_metrics_path(
+        path_to_metrics = ml_metrics_mean_std_path(
             helix_experiments_base_dir() / self._exec_opt.experiment_name
         )
         # Load the metrics from the file
         with open(path_to_metrics, "r") as f:
             metrics_dict = json.load(f)
-
 
         feature_importance_results = {}
         if not any(
@@ -195,7 +212,7 @@ class FeatureImportanceEstimator:
                 feature_importance_results[model_type] = {}
 
                 # Get the index for the model closest to the mean performance
-                closest_index = self.find_mean_model_index(metrics_dict, model_type)
+                closest_index = find_mean_model_index(metrics_dict, model_type)
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for (
@@ -207,7 +224,10 @@ class FeatureImportanceEstimator:
                         if feature_importance_type == "LIME":
                             # Run Permutation Importance
                             lime_importance_df = calculate_lime_values(
-                                model[closest_index], X, self._exec_opt.problem_type, self._logger
+                                model[closest_index],
+                                X,
+                                self._exec_opt.problem_type,
+                                self._logger,
                             )
                             fig = plot_lime_importance(
                                 df=lime_importance_df,
@@ -318,7 +338,9 @@ class FeatureImportanceEstimator:
 
         return ensemble_results
 
-    def _stack_importances(self, importances: dict[str, dict[str, list[pd.DataFrame]]]) -> pd.DataFrame:
+    def _stack_importances(
+        self, importances: dict[str, dict[str, list[pd.DataFrame]]]
+    ) -> pd.DataFrame:
         """Stack and normalise feature importance results from different methods.
 
         This function processes feature importance results through these steps:
@@ -347,7 +369,7 @@ class FeatureImportanceEstimator:
                     'Permutation': [fold1_df, fold2_df]
                 }
             }
-            
+
             Output structure:
             {
                 'model1': DataFrame(
@@ -361,9 +383,11 @@ class FeatureImportanceEstimator:
             importance_type_df_list = []
             for importances_dfs in importance_dict.values():
                 importance_df = pd.concat(importances_dfs, axis=0)
-                importance_df = (importance_df - importance_df.min()) / (importance_df.max() - importance_df.min())
+                importance_df = (importance_df - importance_df.min()) / (
+                    importance_df.max() - importance_df.min()
+                )
                 importance_type_df_list.append(importance_df)
-            
+
             stack_importances[model_name] = pd.concat(importance_type_df_list, axis=1)
-        
+
         return stack_importances
