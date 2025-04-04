@@ -201,6 +201,10 @@ def pipeline(
 
     fi_logger_instance = Logger(Path(fi_opts.fi_log_dir))
     fi_logger = fi_logger_instance.make_logger()
+
+    # Load data options to get path to data
+    path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
+    data_opts = load_data_options(path_to_data_opts)
     # Feature importance
     (
         gloabl_importance_results,
@@ -212,6 +216,7 @@ def pipeline(
         plot_opt=plot_opts,
         data=data,
         models=trained_models,
+        data_path=Path(data_opts.data_path),
         logger=fi_logger,
     )
     # Close the fi logger
