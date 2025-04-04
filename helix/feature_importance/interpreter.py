@@ -9,6 +9,7 @@ from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
     fi_plot_dir,
+    fi_result_dir,
     helix_experiments_base_dir,
     ml_metrics_full_path,
     ml_metrics_mean_std_path,
@@ -142,19 +143,28 @@ class FeatureImportanceEstimator:
                             random_state=self._exec_opt.random_state,
                             logger=self._logger,
                         )
+                        results_dir = fi_result_dir(
+                            helix_experiments_base_dir()
+                            / self._exec_opt.experiment_name
+                        )
+                        create_directory(results_dir)
+                        permutation_importance_df.to_csv(
+                            results_dir
+                            / f"global-{feature_importance_type}-fold-{idx + 1}.csv"
+                        )
                         fig = plot_permutation_importance(
                             permutation_importance_df,
                             self._plot_opt,
                             self._fi_opt.num_features_to_plot,
                             f"{feature_importance_type} - {model_type} (fold {idx + 1})",
                         )
-                        save_dir = fi_plot_dir(
+                        plot_dir = fi_plot_dir(
                             helix_experiments_base_dir()
                             / self._exec_opt.experiment_name
                         )
-                        create_directory(save_dir)
+                        create_directory(plot_dir)
                         fig.savefig(
-                            save_dir
+                            plot_dir
                             / f"{feature_importance_type}-{value['type']}-{model_type}-fold-{idx + 1}-bar.png"
                         )
                         feature_importance_results[model_type][
@@ -169,19 +179,28 @@ class FeatureImportanceEstimator:
                             shap_reduce_data=self._fi_opt.shap_reduce_data,
                             logger=self._logger,
                         )
+                        results_dir = fi_result_dir(
+                            helix_experiments_base_dir()
+                            / self._exec_opt.experiment_name
+                        )
+                        create_directory(results_dir)
+                        shap_df.to_csv(
+                            results_dir
+                            / f"global-{feature_importance_type}-fold-{idx + 1}.csv"
+                        )
                         fig = plot_global_shap_importance(
                             shap_values=shap_df,
                             plot_opts=self._plot_opt,
                             num_features_to_plot=self._fi_opt.num_features_to_plot,
                             title=f"{feature_importance_type} - {value['type']} - {model_type} (fold {idx + 1})",
                         )
-                        save_dir = fi_plot_dir(
+                        plot_dir = fi_plot_dir(
                             helix_experiments_base_dir()
                             / self._exec_opt.experiment_name
                         )
-                        create_directory(save_dir)
+                        create_directory(plot_dir)
                         fig.savefig(
-                            save_dir
+                            plot_dir
                             / f"{feature_importance_type}-{value['type']}-{model_type}-fold-{idx + 1}-bar.png"
                         )
                         feature_importance_results[model_type][
@@ -258,21 +277,29 @@ class FeatureImportanceEstimator:
                                 self._exec_opt.problem_type,
                                 self._logger,
                             )
+                            results_dir = fi_result_dir(
+                                helix_experiments_base_dir()
+                                / self._exec_opt.experiment_name
+                            )
+                            create_directory(results_dir)
+                            lime_importance_df.to_csv(
+                                results_dir / f"local-{feature_importance_type}.csv"
+                            )
                             fig = plot_lime_importance(
                                 df=lime_importance_df,
                                 plot_opts=self._plot_opt,
                                 num_features_to_plot=self._fi_opt.num_features_to_plot,
                                 title=f"{feature_importance_type} - {model_type}",
                             )
-                            save_dir = fi_plot_dir(
+                            plot_dir = fi_plot_dir(
                                 helix_experiments_base_dir()
                                 / self._exec_opt.experiment_name
                             )
                             create_directory(
-                                save_dir
+                                plot_dir
                             )  # will create the directory if it doesn't exist
                             fig.savefig(
-                                save_dir
+                                plot_dir
                                 / f"{feature_importance_type}-{model_type}-violin.png"
                             )
                             feature_importance_results[model_type][
@@ -287,21 +314,29 @@ class FeatureImportanceEstimator:
                                 shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
                             )
+                            results_dir = fi_result_dir(
+                                helix_experiments_base_dir()
+                                / self._exec_opt.experiment_name
+                            )
+                            create_directory(results_dir)
+                            shap_df.to_csv(
+                                results_dir / f"local-{feature_importance_type}.csv"
+                            )
                             fig = plot_local_shap_importance(
                                 shap_values=shap_values,
                                 plot_opts=self._plot_opt,
                                 num_features_to_plot=self._fi_opt.num_features_to_plot,
                                 title=f"{feature_importance_type} - {value['type']} - {model_type}",
                             )
-                            save_dir = fi_plot_dir(
+                            plot_dir = fi_plot_dir(
                                 helix_experiments_base_dir()
                                 / self._exec_opt.experiment_name
                             )
                             create_directory(
-                                save_dir
+                                plot_dir
                             )  # will create the directory if it doesn't exist
                             fig.savefig(
-                                save_dir
+                                plot_dir
                                 / f"{feature_importance_type}-{value['type']}-{model_type}-beeswarm.png"
                             )
                             feature_importance_results[model_type][
