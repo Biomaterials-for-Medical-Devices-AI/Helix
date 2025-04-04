@@ -35,9 +35,8 @@ def calculate_global_shap_values(
     shap_values = explainer(X)
 
     # Calculate Average Importance + set column names as index
-    shap_df = (
-        pd.DataFrame(shap_values.values, columns=X.columns).abs().mean().to_frame()
-    )
+    shap_df = pd.DataFrame(shap_values.values, columns=X.columns).abs().mean().to_frame()
+    shap_df.columns = ["SHAP Importance"]
 
     logger.info("SHAP Importance Analysis Completed..")
 
@@ -84,7 +83,7 @@ def calculate_permutation_importance(
     )
     # Create a DataFrame with the results
     permutation_importance_df = pd.DataFrame(
-        permutation_importance_results.importances_mean, index=X.columns
+        permutation_importance_results.importances_mean, index=X.columns, columns=["Permutation Importance"]
     )
 
     logger.info("Permutation Importance Analysis Completed..")
