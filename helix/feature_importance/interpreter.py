@@ -1,17 +1,20 @@
 import json
 import os
+from pathlib import Path
 
 import pandas as pd
 
+from helix.options.enums import Metrics, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
     fi_plot_dir,
     helix_experiments_base_dir,
+    ml_metrics_full_path,
     ml_metrics_mean_std_path,
 )
 from helix.options.plotting import PlottingOptions
-from helix.services.data import TabularData
+from helix.services.data import TabularData, read_data
 from helix.services.feature_importance.ensemble_methods import (
     calculate_ensemble_majorityvote,
     calculate_ensemble_mean,
@@ -46,6 +49,7 @@ class FeatureImportanceEstimator:
         fi_opt: FeatureImportanceOptions,
         exec_opt: ExecutionOptions,
         plot_opt: PlottingOptions,
+        data_path: Path,
         logger: Logger | None = None,
     ) -> None:
         self._fi_opt = fi_opt
@@ -55,6 +59,7 @@ class FeatureImportanceEstimator:
         self._feature_importance_methods = self._fi_opt.global_importance_methods
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self._feature_importance_ensemble = self._fi_opt.feature_importance_ensemble
+        self._data_path = data_path
 
     def interpret(self, models: dict, data: TabularData) -> tuple[dict, dict, dict]:
         """
@@ -68,11 +73,13 @@ class FeatureImportanceEstimator:
             Global, local and ensemble feature importance votes.
         """
         # Load just the first fold of the data and the first models for interpretation
-        X, y = data.X_train[0], data.y_train[0]
         self._logger.info("-------- Start of feature importance logging--------")
-        global_importance_results = self._global_feature_importance(models, X, y)
+        global_importance_results = self._global_feature_importance(models, data)
         global_importance_df = self._stack_importances(global_importance_results)
-        local_importance_results = self._local_feature_importance(models, X)
+
+        # Load the total dataset for the local importance
+        total_df = read_data(self._data_path, self._logger)
+        local_importance_results = self._local_feature_importance(models, total_df)
         ensemble_results = self._ensemble_feature_importance(global_importance_results)
         self._logger.info("-------- End of feature importance logging--------")
 
@@ -138,7 +145,7 @@ class FeatureImportanceEstimator:
                             feature_importance_df=permutation_importance_df,
                             model_type=model_type,
                             importance_type=value["type"],
-                            feature_importance_type=f"{feature_importance_type}_fold_{idx}",
+                            feature_importance_type=f"{feature_importance_type} fold {idx}",
                             experiment_name=self._exec_opt.experiment_name,
                             fi_opt=self._fi_opt,
                             plot_opt=self._plot_opt,
@@ -169,7 +176,7 @@ class FeatureImportanceEstimator:
                         create_directory(save_dir)
                         fig.savefig(
                             save_dir
-                            / f"{feature_importance_type}-{value['type']}-{model_type}-fold_{idx}-bar.png"
+                            / f"{feature_importance_type}-{value['type']}-{model_type}-fold-{idx}-bar.png"
                         )
                         feature_importance_results[model_type][
                             feature_importance_type
@@ -190,13 +197,27 @@ class FeatureImportanceEstimator:
         # Get data features
         X = data.iloc[:, :-1]
 
-        # Load the ml_metrics
+        # Determine which metric to use
+        if self._exec_opt.problem_type == ProblemTypes.Regression:
+            metric = Metrics.R2.value
+        elif self._exec_opt.problem_type == ProblemTypes.Classification:
+            metric = Metrics.ROC_AUC.value
+
+        # Load the full ml_metrics
+        path_to_metrics = ml_metrics_full_path(
+            helix_experiments_base_dir() / self._exec_opt.experiment_name
+        )
+        # Load the metrics mean and std from the file
+        with open(path_to_metrics, "r") as f:
+            metrics_full = json.load(f)
+
+        # Load the ml_metrics mean std
         path_to_metrics = ml_metrics_mean_std_path(
             helix_experiments_base_dir() / self._exec_opt.experiment_name
         )
-        # Load the metrics from the file
+        # Load the metrics mean and std from the file
         with open(path_to_metrics, "r") as f:
-            metrics_dict = json.load(f)
+            metrics_mean_std = json.load(f)
 
         feature_importance_results = {}
         if not any(
@@ -212,7 +233,9 @@ class FeatureImportanceEstimator:
                 feature_importance_results[model_type] = {}
 
                 # Get the index for the model closest to the mean performance
-                closest_index = find_mean_model_index(metrics_dict, model_type)
+                closest_index = find_mean_model_index(
+                    metrics_full, metrics_mean_std, metric
+                )
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for (
@@ -253,7 +276,7 @@ class FeatureImportanceEstimator:
                         if feature_importance_type == "SHAP":
                             # Run SHAP
                             shap_df, shap_values = calculate_local_shap_values(
-                                model=model[0],
+                                model=model[closest_index],
                                 X=X,
                                 shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
