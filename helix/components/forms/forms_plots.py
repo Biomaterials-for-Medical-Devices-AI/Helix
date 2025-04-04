@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import streamlit as st
 from sklearn.manifold import TSNE
@@ -26,53 +27,136 @@ def target_variable_dist_form(
 
     Uses plot-specific settings that are not saved between sessions.
     """
-    st.write("### Target Variable Distribution")
 
-    if not st.session_state.get(f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetDistPlot}", False):
-        if st.button(
-            "Edit Plot",
-            key=f"{key_prefix}_edit_target_dist",
-            help="Edit the appearance of the plot",
-        ):
-            st.session_state[
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetDistPlot}"
-            ] = True
-            st.rerun()
+    show_kde = st.toggle(
+        "Show Kernel Density Estimation in the Distribution Plot",
+        value=True,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.ShowKDE}",
+    )
+    n_bins = st.slider(
+        "Number of Bins",
+        min_value=5,
+        max_value=50,
+        value=10,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.NBins}",
+    )
 
-        fig, ax = plt.subplots(figsize=plot_opts.figsize)
-        sns.histplot(data=data, x=dep_var_name, ax=ax)
-        ax.set_title(
-            f"Distribution of {dep_var_name}",
-            fontsize=plot_opts.title_fontsize,
-            pad=20,
+    show_plot = st.checkbox(
+        "Create Target Variable Distribution Plot",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.TargetVarDistribution}",
+    )
+    if show_plot or st.session_state.get("redraw_target_dist", False):
+        if st.session_state.get(f"{key_prefix}_redraw_target_dist"):
+            st.session_state[f"{key_prefix}_redraw_target_dist"] = False
+            plt.close("all")  # Close any existing plots
+
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            f"{key_prefix}_plot_settings_target_distribution",
+            plot_opts,  # return the original plot_opts
         )
-        ax.set_xlabel(dep_var_name, fontsize=plot_opts.axis_label_fontsize)
-        ax.set_ylabel("Count", fontsize=plot_opts.axis_label_fontsize)
-        ax.tick_params(labelsize=plot_opts.tick_label_fontsize)
-        st.pyplot(fig)
+
+        plt.style.use(plot_settings.plot_colour_scheme)
+        plt.figure(
+            figsize=(
+                plot_settings.width,
+                plot_settings.height,
+            ),
+            dpi=plot_settings.dpi,
+        )
+        displot = sns.displot(
+            data=data,
+            x=data.columns[-1],
+            kde=show_kde,
+            bins=n_bins,
+            height=plot_settings.height,
+            aspect=plot_settings.width / plot_settings.height,
+        )
+
+        plt.title(
+            f"{dep_var_name} Distribution",
+            fontdict={
+                "fontsize": plot_settings.plot_title_font_size,
+                "family": plot_settings.plot_font_family,
+            },
+        )
+
+        plt.xlabel(
+            dep_var_name,
+            fontsize=plot_settings.plot_axis_font_size,
+            family=plot_settings.plot_font_family,
+        )
+
+        plt.ylabel(
+            "Frequency",
+            fontsize=plot_settings.plot_axis_font_size,
+            family=plot_settings.plot_font_family,
+        )
+
+        plt.xticks(
+            rotation=plot_settings.angle_rotate_xaxis_labels,
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
+        )
+        plt.yticks(
+            rotation=plot_settings.angle_rotate_yaxis_labels,
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
+        )
+
+        st.pyplot(displot)
+        plt.close()
 
         col1, col2 = st.columns(2)
         with col1:
             if st.button(
                 "Save Plot",
-                key=f"{key_prefix}_save_target_dist",
-                help="Save the plot to disk",
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
             ):
-                plt.savefig(
-                    data_analysis_plot_dir / "target_variable_distribution.png",
-                    dpi=plot_opts.dpi,
-                    bbox_inches="tight",
+                displot.savefig(
+                    data_analysis_plot_dir
+                    / f"{dep_var_name}_distribution_{key_prefix}.png"
                 )
-                st.success("Plot saved successfully!")
-        plt.close()
+                plt.clf()
+                st.success("Plot created and saved successfully.")
+        with col2:
+            if st.button(
+                "Edit Plot",
+                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
+            ):
+                st.session_state[
+                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
+                ] = True
 
-    else:
-        edit_plot_modal(
-            "Target Variable Distribution Plot",
-            plot_opts,
-            key_prefix=key_prefix,
-            state_key=DataAnalysisStateKeys.SaveTargetDistPlot,
-        )
+            if st.session_state.get(
+                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
+                False,
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "target_distribution")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "Apply Changes",
+                        key=f"{key_prefix}_apply_changes_target_distribution",
+                    ):
+                        # Store settings in session state
+                        st.session_state[
+                            f"{key_prefix}_plot_settings_target_distribution"
+                        ] = settings
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
+                        ] = False
+                        st.session_state[f"{key_prefix}_redraw_target_dist"] = True
+                        st.rerun()
+                with col2:
+                    if st.button(
+                        "Cancel", key=f"{key_prefix}_cancel_target_distribution"
+                    ):
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
+                        ] = False
+                        st.rerun()
 
 
 @st.experimental_fragment
@@ -84,65 +168,158 @@ def correlation_heatmap_form(
 
     Uses plot-specific settings that are not saved between sessions.
     """
-    st.write("### Correlation Heatmap")
 
-    if not st.session_state.get(f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmapPlot}", False):
-        if st.button(
-            "Edit Plot",
-            key=f"{key_prefix}_edit_heatmap",
-            help="Edit the appearance of the plot",
-        ):
-            st.session_state[
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmapPlot}"
-            ] = True
-            st.rerun()
+    if st.toggle(
+        "Select All Descriptors",
+        value=False,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}",
+    ):
+        default_corr = list(data.columns[:-1])
+    else:
+        default_corr = []
 
-        corr = data.corr()
+    corr_descriptors = st.multiselect(
+        "Select columns to include in the correlation heatmap",
+        data.columns[:-1],
+        default=default_corr,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}",
+    )
+
+    corr_data = data[corr_descriptors + [data.columns[-1]]]
+
+    if len(corr_descriptors) < 1:
+        st.warning(
+            "Please select at least one descriptor to create the correlation heatmap."
+        )
+
+    show_plot = st.checkbox(
+        "Create Correlation Heatmap Plot",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}",
+    )
+    if show_plot or st.session_state.get(f"{key_prefix}_redraw_heatmap", False):
+        if st.session_state.get(f"{key_prefix}_redraw_heatmap"):
+            st.session_state[f"{key_prefix}_redraw_heatmap"] = False
+            plt.close("all")  # Close any existing plots
+
+        corr = corr_data.corr()
+        # Generate a mask for the upper triangle
         mask = np.triu(np.ones_like(corr, dtype=bool))
 
-        fig, ax = plt.subplots(figsize=plot_opts.figsize)
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            f"{key_prefix}_plot_settings_heatmap",
+            plot_opts,
+        )
+
+        # Set up the matplotlib figure with the specified style
+        plt.style.use(plot_settings.plot_colour_scheme)
+        fig, ax = plt.subplots(
+            figsize=(plot_settings.width, plot_settings.height),
+            dpi=plot_settings.dpi,
+        )
+
+        # Draw the heatmap with enhanced styling
         sns.heatmap(
             corr,
             mask=mask,
+            cmap=plot_settings.plot_colour_map,
+            vmax=1.0,
+            vmin=-1.0,
+            center=0,
+            square=True,
+            linewidths=0.5,
             annot=True,
-            cmap=plot_opts.colormap,
+            fmt=".2f",
+            cbar_kws={
+                "shrink": 0.5,
+                "label": "Correlation Coefficient",
+                "format": "%.1f",
+                "aspect": 30,
+                "drawedges": True,
+            },
+            annot_kws={
+                "size": plot_settings.plot_axis_tick_size,
+                "family": plot_settings.plot_font_family,
+            },
+            xticklabels=True,  # Ensure x-axis labels are shown
+            yticklabels=True,  # Ensure y-axis labels are shown
             ax=ax,
-            annot_kws={"size": plot_opts.tick_label_fontsize},
         )
+
+        # Customize the plot appearance
         ax.set_title(
             "Correlation Heatmap",
-            fontsize=plot_opts.title_fontsize,
-            pad=20,
+            fontsize=plot_settings.plot_title_font_size,
+            family=plot_settings.plot_font_family,
+            pad=20,  # Add padding above title
         )
-        ax.tick_params(labelsize=plot_opts.tick_label_fontsize)
+
+        # Apply axis label rotations from plot settings
+        plt.xticks(
+            rotation=plot_settings.angle_rotate_xaxis_labels,
+            ha="right",
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
+        )
+        plt.yticks(
+            rotation=plot_settings.angle_rotate_yaxis_labels,
+            fontsize=plot_settings.plot_axis_tick_size,
+            family=plot_settings.plot_font_family,
+        )
+
+        # Adjust layout to prevent label cutoff
+        plt.tight_layout()
+
         st.pyplot(fig)
 
         col1, col2 = st.columns(2)
         with col1:
             if st.button(
-                "Save Plot",
-                key=f"{key_prefix}_save_heatmap",
-                help="Save the plot to disk",
+                "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}"
             ):
-                plt.savefig(
-                    data_analysis_plot_dir / "correlation_heatmap.png",
-                    dpi=plot_opts.dpi,
-                    bbox_inches="tight",
+                fig.savefig(
+                    data_analysis_plot_dir / f"correlation_heatmap_{key_prefix}.png"
                 )
-                st.success("Plot saved successfully!")
-        plt.close()
+                plt.clf()
+                st.success("Plot created and saved successfully.")
+        with col2:
+            if st.button(
+                "Edit Plot",
+                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveHeatmap}",
+            ):
+                st.session_state[
+                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+                ] = True
 
-    else:
-        edit_plot_modal(
-            "Correlation Heatmap",
-            plot_opts,
-            key_prefix=key_prefix,
-            state_key=DataAnalysisStateKeys.SaveHeatmapPlot,
-        )
+            if st.session_state.get(
+                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "heatmap")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "Apply Changes", key=f"{key_prefix}_apply_changes_heatmap"
+                    ):
+                        # Store settings in session state
+                        st.session_state[f"{key_prefix}_plot_settings_heatmap"] = (
+                            settings
+                        )
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+                        ] = False
+                        st.session_state[f"{key_prefix}_redraw_heatmap"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key=f"{key_prefix}_cancel_heatmap"):
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+                        ] = False
+                        st.rerun()
 
 
 @st.experimental_fragment
-def pairplot_form(
+def pairplot_form(  # noqa: C901
     data, data_analysis_plot_dir, plot_opts: PlottingOptions, key_prefix: str = ""
 ):
     """
@@ -150,53 +327,156 @@ def pairplot_form(
 
     Uses plot-specific settings that are not saved between sessions.
     """
-    st.write("### Pairplot")
 
-    if not st.session_state.get(f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}", False):
-        if st.button(
-            "Edit Plot",
-            key=f"{key_prefix}_edit_pairplot",
-            help="Edit the appearance of the plot",
-        ):
-            st.session_state[
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-            ] = True
-            st.rerun()
+    if st.toggle(
+        "Select All Descriptors",
+        value=False,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsPairPlot}",
+    ):
+        default_corr = list(data.columns[:-1])
+    else:
+        default_corr = None
 
-        fig = sns.pairplot(data=data)
-        plt.suptitle(
-            "Pairplot",
-            fontsize=plot_opts.title_fontsize,
-            y=1.02,
+    descriptors = st.multiselect(
+        "Select columns to include in the pairplot",
+        data.columns[:-1],
+        default=default_corr,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorPairPlot}",
+    )
+
+    pairplot_data = data[descriptors + [data.columns[-1]]]
+
+    if len(descriptors) < 1:
+        st.warning(
+            "Please select at least one descriptor to create the correlation plot."
         )
-        st.pyplot(fig)
+
+    show_plot = st.checkbox(
+        "Create Pairplot", key=f"{key_prefix}_{DataAnalysisStateKeys.PairPlot}"
+    )
+    if show_plot or st.session_state.get(f"{key_prefix}_redraw_pairplot", False):
+        if st.session_state.get(f"{key_prefix}_redraw_pairplot"):
+            st.session_state[f"{key_prefix}_redraw_pairplot"] = False
+            plt.close("all")  # Close any existing plots
+
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            f"{key_prefix}_plot_settings_pairplot",
+            plot_opts,
+        )
+
+        # Set the style and create the pairplot
+        plt.style.use(plot_settings.plot_colour_scheme)
+
+        # Create figure with proper DPI
+        with plt.rc_context({"figure.dpi": plot_settings.dpi}):
+            # Calculate the figure size based on number of variables
+            n_vars = len(pairplot_data.columns)
+            aspect_ratio = plot_settings.width / plot_settings.height
+            size_per_var = min(plot_settings.width, plot_settings.height) / n_vars
+
+            pairplot = sns.pairplot(
+                pairplot_data,
+                height=size_per_var,
+                aspect=aspect_ratio,
+                corner=True,
+                plot_kws={"s": 50, "alpha": 0.6},  # marker size  # transparency
+                diag_kws={"bins": 20, "alpha": 0.6},
+            )
+
+            # Add title to the pairplot
+            pairplot.figure.suptitle(
+                "Pairplot",
+                fontsize=plot_settings.plot_title_font_size,
+                family=plot_settings.plot_font_family,
+                y=1.02,  # Adjust title position to prevent overlap
+            )
+
+            # Apply axis label rotations and styling to all subplots
+            for ax in pairplot.axes.flat:
+                if ax is not None:  # Some axes might be None in corner=True mode
+                    # Set x-axis label rotations
+                    ax.set_xticklabels(
+                        ax.get_xticklabels(),
+                        rotation=plot_settings.angle_rotate_xaxis_labels,
+                        family=plot_settings.plot_font_family,
+                    )
+                    # Set y-axis label rotations
+                    ax.set_yticklabels(
+                        ax.get_yticklabels(),
+                        rotation=plot_settings.angle_rotate_yaxis_labels,
+                        family=plot_settings.plot_font_family,
+                    )
+
+            # Customize the appearance after creating the plot
+            for ax in pairplot.axes.flat:
+                if ax is not None:
+                    # Set font sizes
+                    ax.tick_params(labelsize=plot_opts.plot_axis_tick_size, rotation=45)
+                    if ax.get_xlabel():
+                        ax.set_xlabel(
+                            ax.get_xlabel(),
+                            fontsize=plot_opts.plot_axis_font_size,
+                            family=plot_opts.plot_font_family,
+                        )
+                    if ax.get_ylabel():
+                        ax.set_ylabel(
+                            ax.get_ylabel(),
+                            fontsize=plot_opts.plot_axis_font_size,
+                            family=plot_opts.plot_font_family,
+                        )
+
+            # Adjust layout to prevent label cutoff
+            plt.tight_layout()
+        st.pyplot(pairplot)
+        plt.close()
 
         col1, col2 = st.columns(2)
         with col1:
             if st.button(
-                "Save Plot",
-                key=f"{key_prefix}_save_pairplot",
-                help="Save the plot to disk",
+                "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SavePairPlot}"
             ):
-                plt.savefig(
-                    data_analysis_plot_dir / "pairplot.png",
-                    dpi=plot_opts.dpi,
-                    bbox_inches="tight",
-                )
-                st.success("Plot saved successfully!")
-        plt.close()
+                pairplot.savefig(data_analysis_plot_dir / f"pairplot_{key_prefix}.png")
+                plt.clf()
+                st.success("Plot created and saved successfully.")
+        with col2:
+            if st.button(
+                "Edit Plot",
+                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SavePairPlot}",
+            ):
+                st.session_state[
+                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+                ] = True
 
-    else:
-        edit_plot_modal(
-            "Pairplot",
-            plot_opts,
-            key_prefix=key_prefix,
-            state_key=DataAnalysisStateKeys.SavePairPlot,
-        )
+            if st.session_state.get(
+                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "pairplot")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "Apply Changes", key=f"{key_prefix}_apply_changes_pairplot"
+                    ):
+                        # Store settings in session state
+                        st.session_state[f"{key_prefix}_plot_settings_pairplot"] = (
+                            settings
+                        )
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+                        ] = False
+                        st.session_state[f"{key_prefix}_redraw_pairplot"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key=f"{key_prefix}_cancel_pairplot"):
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+                        ] = False
+                        st.rerun()
 
 
 @st.experimental_fragment
-def tSNE_plot_form(
+def tSNE_plot_form(  # noqa: C901
     data,
     random_state,
     data_analysis_plot_dir,
@@ -204,126 +484,191 @@ def tSNE_plot_form(
     scaler: Normalisations = None,
     key_prefix: str = "",
 ):
-    """Form to create and configure t-SNE plots."""
-    st.write("### t-SNE Plot")
-    st.write(
-        """
-        t-SNE (t-Distributed Stochastic Neighbor Embedding) is a technique for dimensionality reduction
-        that is particularly well suited for the visualization of high-dimensional datasets.
-        """
+
+    X = data.drop(columns=[data.columns[-1]])
+    y = data[data.columns[-1]]
+
+    if scaler == Normalisations.NoNormalisation:
+        scaler = st.selectbox(
+            "Select Normalisation for Comparison (this will not affect the normalisation for ML models)",
+            options=[Normalisations.Standardisation, Normalisations.MinMax],
+            key=f"{key_prefix}_{DataAnalysisStateKeys.SelectNormTsne}",
+        )
+
+    if scaler == Normalisations.MinMax:
+        X_scaled = MinMaxScaler().fit_transform(X)
+    elif scaler == Normalisations.Standardisation:
+        X_scaled = StandardScaler().fit_transform(X)
+
+    perplexity = st.slider(
+        "Perplexity",
+        min_value=5,
+        max_value=50,
+        value=30,
+        help="The perplexity parameter controls the balance between local and global aspects of the data.",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.Perplexity}",
     )
 
-    # Get parameters for t-SNE
-    col1, col2 = st.columns(2)
-    with col1:
-        perplexity = st.number_input(
-            "Perplexity",
-            min_value=5,
-            max_value=50,
-            value=30,
-            step=5,
-            help=(
-                "The perplexity is related to the number of nearest neighbors that "
-                "is used in other manifold learning algorithms. Larger datasets "
-                "usually require a larger perplexity. Consider selecting a value "
-                "between 5 and 50."
-            ),
-            key=f"{key_prefix}_perplexity",
+    show_plot = st.checkbox(
+        "Create t-SNE Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.TSNEPlot}"
+    )
+    if show_plot or st.session_state.get(f"{key_prefix}_redraw_tsne", False):
+        if st.session_state.get(f"{key_prefix}_redraw_tsne"):
+            st.session_state[f"{key_prefix}_redraw_tsne"] = False
+            plt.close("all")  # Close any existing plots
+
+        tsne_normalised = TSNE(
+            n_components=2, random_state=random_state, perplexity=perplexity
         )
-    with col2:
-        learning_rate = st.number_input(
-            "Learning Rate",
-            min_value=10,
-            max_value=1000,
-            value=200,
-            step=10,
-            help=(
-                "The learning rate for t-SNE is usually in the range "
-                "[10.0, 1000.0]. If the learning rate is too high, the data may "
-                "look like a 'ball' with any point approximately equidistant from "
-                "its neighbors. If the learning rate is too low, most points may "
-                "look compressed in a dense cloud with few outliers."
-            ),
-            key=f"{key_prefix}_learning_rate",
+        tsne_original = TSNE(
+            n_components=2, random_state=random_state, perplexity=perplexity
         )
 
-    # Scale the data if requested
-    X = data.iloc[:, :-1].values
-    if scaler == Normalisations.Standard:
-        X = StandardScaler().fit_transform(X)
-    elif scaler == Normalisations.MinMax:
-        X = MinMaxScaler().fit_transform(X)
+        X_embedded_normalised = tsne_normalised.fit_transform(X_scaled)
+        X_embedded = tsne_original.fit_transform(X)
 
-    # Compute t-SNE
-    redraw = False
-    if st.session_state.get(f"{key_prefix}_redraw_tsne", True):
-        X_embedded = TSNE(
-            n_components=2,
-            learning_rate=learning_rate,
-            perplexity=perplexity,
-            random_state=random_state,
-        ).fit_transform(X)
-        st.session_state[f"{key_prefix}_X_embedded"] = X_embedded
-        st.session_state[f"{key_prefix}_redraw_tsne"] = False
-        redraw = True
+        df_normalised = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
+        df_normalised["target"] = y
 
-    if not st.session_state.get(f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}", False):
-        if st.button(
-            "Edit Plot",
-            key=f"{key_prefix}_edit_tsne",
-            help="Edit the appearance of the plot",
-        ):
-            st.session_state[
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-            ] = True
-            st.rerun()
+        df = pd.DataFrame(X_embedded, columns=["x", "y"])
+        df["target"] = y
 
-        # Plot t-SNE results
-        fig, ax = plt.subplots(figsize=plot_opts.figsize)
-        scatter = ax.scatter(
-            st.session_state[f"{key_prefix}_X_embedded"][:, 0],
-            st.session_state[f"{key_prefix}_X_embedded"][:, 1],
-            c=data.iloc[:, -1],
-            cmap=plot_opts.colormap,
+        # Get plot-specific settings from session state or use loaded plot options
+        plot_settings = st.session_state.get(
+            f"{key_prefix}_plot_settings_tsne",
+            plot_opts,
         )
-        plt.colorbar(scatter)
-        ax.set_title(
-            "t-SNE Plot",
-            fontsize=plot_opts.title_fontsize,
-            pad=20,
-        )
-        ax.set_xlabel("First t-SNE component", fontsize=plot_opts.axis_label_fontsize)
-        ax.set_ylabel("Second t-SNE component", fontsize=plot_opts.axis_label_fontsize)
-        ax.tick_params(labelsize=plot_opts.tick_label_fontsize)
+
+        # Set style and create figure with proper DPI
+        plt.style.use(plot_settings.plot_colour_scheme)
+        with plt.rc_context({"figure.dpi": plot_settings.dpi}):
+            fig, axes = plt.subplots(
+                1, 2, figsize=(plot_settings.width, plot_settings.height)
+            )
+
+            # Plot 1: Normalised Data
+            sns.scatterplot(
+                data=df_normalised,
+                x="x",
+                y="y",
+                hue="target",
+                palette=plot_settings.plot_colour_map,
+                s=100,  # marker size
+                alpha=0.6,  # transparency
+                ax=axes[0],
+            )
+
+            # Customize first plot
+            axes[0].set_title(
+                "t-SNE Plot (Normalised Features)",
+                fontsize=plot_settings.plot_title_font_size,
+                family=plot_settings.plot_font_family,
+                pad=20,  # Add padding above title
+            )
+            axes[0].set_xlabel(
+                "t-SNE Component 1",
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
+            )
+            axes[0].set_ylabel(
+                "t-SNE Component 2",
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
+            )
+            # Apply axis label rotations and styling for first plot
+            axes[0].tick_params(
+                axis="both", which="major", labelsize=plot_settings.plot_axis_tick_size
+            )
+            for label in axes[0].get_xticklabels():
+                label.set_rotation(plot_settings.angle_rotate_xaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
+            for label in axes[0].get_yticklabels():
+                label.set_rotation(plot_settings.angle_rotate_yaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
+
+            # Plot 2: Original Data
+            sns.scatterplot(
+                data=df,
+                x="x",
+                y="y",
+                hue="target",
+                palette=plot_settings.plot_colour_map,
+                s=100,  # marker size
+                alpha=0.6,  # transparency
+                ax=axes[1],
+            )
+
+            # Customize second plot
+            axes[1].set_title(
+                "t-SNE Plot (Original Features)",
+                fontsize=plot_settings.plot_title_font_size,
+                family=plot_settings.plot_font_family,
+                pad=20,  # Add padding above title
+            )
+            axes[1].set_xlabel(
+                "t-SNE Component 1",
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
+            )
+            axes[1].set_ylabel(
+                "t-SNE Component 2",
+                fontsize=plot_settings.plot_axis_font_size,
+                family=plot_settings.plot_font_family,
+            )
+            # Apply axis label rotations and styling for second plot
+            axes[1].tick_params(
+                axis="both", which="major", labelsize=plot_settings.plot_axis_tick_size
+            )
+            for label in axes[1].get_xticklabels():
+                label.set_rotation(plot_settings.angle_rotate_xaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
+            for label in axes[1].get_yticklabels():
+                label.set_rotation(plot_settings.angle_rotate_yaxis_labels)
+                label.set_family(plot_settings.plot_font_family)
+
+            # Adjust layout to prevent label cutoff
+            plt.tight_layout()
+
         st.pyplot(fig)
-
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button(
-                "Save Plot",
-                key=f"{key_prefix}_save_tsne",
-                help="Save the plot to disk",
-            ):
-                plt.savefig(
-                    data_analysis_plot_dir / "tsne_plot.png",
-                    dpi=plot_opts.dpi,
-                    bbox_inches="tight",
-                )
-                st.success("Plot saved successfully!")
-        with col2:
-            if st.button(
-                "Recompute t-SNE",
-                key=f"{key_prefix}_recompute_tsne",
-                help="Generate a new t-SNE plot with current parameters",
-            ):
-                st.session_state[f"{key_prefix}_redraw_tsne"] = True
-                st.rerun()
         plt.close()
 
-    else:
-        edit_plot_modal(
-            "t-SNE Plot",
-            plot_opts,
-            key_prefix=key_prefix,
-            state_key=DataAnalysisStateKeys.SaveTSNEPlot,
-        )
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button(
+                "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTSNEPlot}"
+            ):
+                fig.savefig(data_analysis_plot_dir / f"tsne_plot_{key_prefix}.png")
+                plt.clf()
+                st.success("Plots created and saved successfully.")
+        with col2:
+            if st.button(
+                "Edit Plot",
+                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveTSNEPlot}",
+            ):
+                st.session_state[
+                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+                ] = True
+
+            if st.session_state.get(
+                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}", False
+            ):
+                # Get plot-specific settings
+                settings = edit_plot_modal(plot_opts, "tsne")
+                col1, col2 = st.columns(2)
+                with col1:
+                    if st.button(
+                        "Apply Changes", key=f"{key_prefix}_apply_changes_tsne"
+                    ):
+                        # Store settings in session state
+                        st.session_state[f"{key_prefix}_plot_settings_tsne"] = settings
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+                        ] = False
+                        st.session_state[f"{key_prefix}_redraw_tsne"] = True
+                        st.rerun()
+                with col2:
+                    if st.button("Cancel", key=f"{key_prefix}_cancel_tsne"):
+                        st.session_state[
+                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+                        ] = False
+                        st.rerun()
