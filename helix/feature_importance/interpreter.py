@@ -74,18 +74,18 @@ class FeatureImportanceEstimator:
             tuple[dict, dict, dict]:
             Global, local and ensemble feature importance votes.
         """
-        # Load just the first fold of the data and the first models for interpretation
         self._logger.info("-------- Start of feature importance logging--------")
         global_importance_results = self._global_feature_importance(models, data)
-        global_importance_df = self._stack_importances(global_importance_results)
+        global_importance_df_dict = self._stack_importances(global_importance_results)
 
         # Load the total dataset for the local importance
         total_df = read_data(self._data_path, self._logger)
         local_importance_results = self._local_feature_importance(models, total_df)
-        ensemble_results = self._ensemble_feature_importance(global_importance_results)
+        ensemble_results = self._ensemble_feature_importance(global_importance_df_dict)
+        # print(ensemble_results)
         self._logger.info("-------- End of feature importance logging--------")
 
-        return global_importance_df, local_importance_results, ensemble_results
+        return global_importance_df_dict, local_importance_results, ensemble_results
 
     def _global_feature_importance(self, models: dict, data: TabularData):
         """
@@ -404,7 +404,7 @@ class FeatureImportanceEstimator:
 
     def _stack_importances(
         self, importances: dict[str, dict[str, list[pd.DataFrame]]]
-    ) -> pd.DataFrame:
+    ) -> dict[str, pd.DataFrame]:
         """Stack and normalise feature importance results from different methods.
 
         This function processes feature importance results through these steps:
@@ -424,23 +424,6 @@ class FeatureImportanceEstimator:
             Dictionary mapping model names to their stacked importances.
             Each DataFrame has features as rows and importance methods as columns,
             with normalised importance scores as values.
-
-        Example:
-            Input structure:
-            {
-                'model1': {
-                    'SHAP': [fold1_df, fold2_df],
-                    'Permutation': [fold1_df, fold2_df]
-                }
-            }
-
-            Output structure:
-            {
-                'model1': DataFrame(
-                    columns=['SHAP', 'Permutation'],
-                    index=[feature1, feature2, ...]
-                )
-            }
         """
         stack_importances = {}
         for model_name, importance_dict in importances.items():
