@@ -349,3 +349,46 @@ def plot_scatter(
     ax.grid(visible=True, axis="both")
 
     return fig
+
+
+def plot_permutation_importance(
+    df: pd.DataFrame, plot_opts: PlottingOptions, n_features: int, title: str
+) -> Figure:
+    """Plot a bar chart of the top n features in the feature importance dataframe,
+    with the given title and styled with the given options.
+
+    Args:
+        df (pd.DataFrame): The dataframe containing the permutation importance.
+        plot_opts (PlottingOptions): The options for how to configure the plot.
+        n_features (int): The top number of features to plot.
+        title (str): The title of the plot.
+
+    Returns:
+        Figure: The bar chart of the top n features.
+    """
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
+
+    top_features = df.sort_values(by=0, ascending=False).head(n_features).T
+    sns.barplot(top_features, ax=ax)
+
+    ax.set_xticklabels(
+        ax.get_xticklabels(),
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        family=plot_opts.plot_font_family,
+    )
+    ax.set_yticklabels(
+        ax.get_yticklabels(),
+        rotation=plot_opts.angle_rotate_yaxis_labels,
+        family=plot_opts.plot_font_family,
+    )
+    ax.set_xlabel("Feature", family=plot_opts.plot_font_family)
+    ax.set_ylabel("Importance", family=plot_opts.plot_font_family)
+    ax.set_title(
+        title,
+        family=plot_opts.plot_font_family,
+        wrap=True,
+    )
+
+    return fig
