@@ -129,7 +129,7 @@ def plot_global_shap_importance(
         wrap=True,
     )
     plot_data = (
-        shap_values.sort_values(by=0, ascending=False).head(num_features_to_plot).T
+        shap_values.sort_values(by="SHAP Importance", ascending=False).head(num_features_to_plot).T
     )
     sns.barplot(data=plot_data, fill=True, ax=ax)
     ax.set_xlabel("Feature Name", family=plot_opts.plot_font_family)
@@ -370,7 +370,7 @@ def plot_permutation_importance(
     plt.style.use(plot_opts.plot_colour_scheme)
     fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
 
-    top_features = df.sort_values(by=0, ascending=False).head(n_features).T
+    top_features = df.sort_values(by="Permutation Importance", ascending=False).head(n_features).T
     sns.barplot(top_features, ax=ax)
 
     ax.set_xticklabels(
