@@ -5,41 +5,43 @@ import pandas as pd
 from helix.utils.logging_utils import Logger
 
 
-def calculate_ensemble_mean(feature_importance_results, logger: Logger):
-    """Calculate mean of feature importance results
+def calculate_ensemble_mean(feature_importance_dict: dict[str, pd.DataFrame], logger: Logger) -> pd.DataFrame:
+    """Calculate mean of feature importance results across models and methods.
+
     Args:
-        feature_importance_results: Dictionary containing feature importance results for each model
-        logger: Logger
+        feature_importance_dict: Dictionary where:
+            - Keys are model names
+            - Values are DataFrames where:
+                - Rows are features
+                - Columns are importance methods (SHAP, Permutation, etc.)
+                - Values are already normalized between 0 and 1
+        logger: Logger instance
+
     Returns:
-        ensemble_mean: Mean of feature importance results
+        pd.DataFrame: DataFrame with unique features as index and a single column
+            containing the overall mean importance across all models, methods, and repetitions.
     """
     logger.info("Calculating Mean ensemble importance...")
 
-    # create a dataframe to store the mean of feature importance results
-    # with the feature names as the index
-    ensemble_mean = pd.DataFrame()
+    # First calculate mean across methods for each model
+    model_means = {}
+    for model_name, importance_df in feature_importance_dict.items():
+        # Calculate mean across all methods for this model
+        model_means[model_name] = importance_df.mean(axis=1)
 
-    # Loop through each model and scale the feature importance values between 0 and 1
-    for _, feature_importance in feature_importance_results.items():
-        for f_, result in feature_importance.items():
-            # Scale the feature importance values between 0 and 1
-            result = (result - result.min()) / (result.max() - result.min())
-            # Add the scaled values to the ensemble_mean dataframe
-            ensemble_mean = pd.concat([ensemble_mean, result], axis=1)
-
-    # return early if no feature importances were empty
-    if ensemble_mean.empty:
-        return ensemble_mean
-
-    # Calculate the mean of the feature importance values across models
-    ensemble_mean = ensemble_mean.mean(axis=1).to_frame()
-
-    # Add the feature names as index to the ensemble_mean dataframe
-    ensemble_mean.index = result.index
-
+    # Combine all model means into a DataFrame
+    all_model_means = pd.DataFrame(model_means)
+    
+    # Calculate mean across all models
+    combined_mean = all_model_means.mean(axis=1).to_frame(name="Mean Importance")
+    
+    # Group by index (feature names) and calculate mean for repeated features
+    ensemble_mean = combined_mean.groupby(level=0).mean()
+    
+    # Sort by importance in descending order
+    ensemble_mean = ensemble_mean.sort_values("Mean Importance", ascending=False)
+    
     logger.info("Mean ensemble importance calculated...")
-
-    # Return the DataFrame
     return ensemble_mean
 
 
