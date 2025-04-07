@@ -31,6 +31,7 @@ from helix.services.feature_importance.local_methods import (
 from helix.services.feature_importance.results import save_importance_results
 from helix.services.metrics import find_mean_model_index
 from helix.services.plotting import (
+    plot_bar_chart,
     plot_global_shap_importance,
     plot_lime_importance,
     plot_local_shap_importance,
@@ -367,16 +368,31 @@ class FeatureImportanceEstimator:
                         mean_results = calculate_ensemble_mean(
                             feature_importance_results, self._logger
                         )
-                        save_importance_results(
-                            feature_importance_df=mean_results,
-                            model_type=f"Ensemble {ensemble_type}",
-                            importance_type=None,
-                            feature_importance_type=ensemble_type,
-                            experiment_name=self._exec_opt.experiment_name,
-                            fi_opt=self._fi_opt,
-                            plot_opt=self._plot_opt,
-                            logger=self._logger,
+                        results_dir = fi_result_dir(
+                            helix_experiments_base_dir()
+                            / self._exec_opt.experiment_name
                         )
+                        create_directory(results_dir)
+                        mean_results.to_csv(
+                            results_dir / f"ensemble-{ensemble_type}.csv"
+                        )
+                        fig = plot_bar_chart(
+                            df=mean_results,
+                            sort_key="Mean Importance",
+                            plot_opts=self._plot_opt,
+                            title=f"Ensemble {ensemble_type}",
+                            x_label="Feature",
+                            y_label="Importance",
+                            n_features=self._fi_opt.num_features_to_plot,
+                        )
+                        plot_dir = fi_plot_dir(
+                            helix_experiments_base_dir()
+                            / self._exec_opt.experiment_name
+                        )
+                        create_directory(
+                            plot_dir
+                        )  # will create the directory if it doesn't exist
+                        fig.savefig(plot_dir / f"ensemble-{ensemble_type}.png")
                         ensemble_results[ensemble_type] = mean_results
 
                     if ensemble_type == "Majority Vote":
@@ -384,16 +400,31 @@ class FeatureImportanceEstimator:
                         majority_vote_results = calculate_ensemble_majorityvote(
                             feature_importance_results, self._logger
                         )
-                        save_importance_results(
-                            feature_importance_df=majority_vote_results,
-                            model_type=f"Ensemble {ensemble_type}",
-                            importance_type=None,
-                            feature_importance_type=ensemble_type,
-                            experiment_name=self._exec_opt.experiment_name,
-                            fi_opt=self._fi_opt,
-                            plot_opt=self._plot_opt,
-                            logger=self._logger,
+                        results_dir = fi_result_dir(
+                            helix_experiments_base_dir()
+                            / self._exec_opt.experiment_name
                         )
+                        create_directory(results_dir)
+                        majority_vote_results.to_csv(
+                            results_dir / f"ensemble-{ensemble_type}.csv"
+                        )
+                        fig = plot_bar_chart(
+                            df=majority_vote_results,
+                            sort_key="Majority Vote Importance",
+                            plot_opts=self._plot_opt,
+                            title=f"Ensemble {ensemble_type}",
+                            x_label="Feature",
+                            y_label="Importance",
+                            n_features=self._fi_opt.num_features_to_plot,
+                        )
+                        plot_dir = fi_plot_dir(
+                            helix_experiments_base_dir()
+                            / self._exec_opt.experiment_name
+                        )
+                        create_directory(
+                            plot_dir
+                        )  # will create the directory if it doesn't exist
+                        fig.savefig(plot_dir / f"ensemble-{ensemble_type}.png")
                         ensemble_results[ensemble_type] = majority_vote_results
 
             self._logger.info(
