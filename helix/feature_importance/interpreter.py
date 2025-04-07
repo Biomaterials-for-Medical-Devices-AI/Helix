@@ -78,12 +78,13 @@ class FeatureImportanceEstimator:
         self._logger.info("-------- Start of feature importance logging--------")
         global_importance_results = self._global_feature_importance(models, data)
         global_importance_df_dict = self._stack_importances(global_importance_results)
+        # Compute average global importance across all folds for each model type
+        self._calculate_mean_global_importance_of_folds(global_importance_results)
 
         # Load the total dataset for the local importance
         total_df = read_data(self._data_path, self._logger)
         local_importance_results = self._local_feature_importance(models, total_df)
         ensemble_results = self._ensemble_feature_importance(global_importance_df_dict)
-        # print(ensemble_results)
         self._logger.info("-------- End of feature importance logging--------")
 
         return global_importance_df_dict, local_importance_results, ensemble_results
@@ -151,7 +152,7 @@ class FeatureImportanceEstimator:
                         create_directory(results_dir)
                         permutation_importance_df.to_csv(
                             results_dir
-                            / f"global-{feature_importance_type}-fold-{idx + 1}.csv"
+                            / f"global-{feature_importance_type}-{model_type}-fold-{idx + 1}.csv"
                         )
                         fig = plot_permutation_importance(
                             permutation_importance_df,
@@ -187,7 +188,7 @@ class FeatureImportanceEstimator:
                         create_directory(results_dir)
                         shap_df.to_csv(
                             results_dir
-                            / f"global-{feature_importance_type}-fold-{idx + 1}.csv"
+                            / f"global-{feature_importance_type}-{model_type}-fold-{idx + 1}.csv"
                         )
                         fig = plot_global_shap_importance(
                             shap_values=shap_df,
@@ -469,3 +470,43 @@ class FeatureImportanceEstimator:
             stack_importances[model_name] = pd.concat(importance_type_df_list, axis=1)
 
         return stack_importances
+
+    def _calculate_mean_global_importance_of_folds(
+        self, global_importances_dict: dict[str, dict[str, list[pd.DataFrame]]]
+    ):
+        """Calculate the mean global importance for all folds through which a model was trained.
+        The all-folds mean for each model and importance type is saved along with a plot.
+
+        Args:
+            global_importances_dict (dict[str, dict[str, list[pd.DataFrame]]]):
+                The global importance results containing the importance calculations for
+                each model type, importance type and folds.
+        """
+        for model_name, gfi_dict in global_importances_dict.items():
+            for fi_type, importance_dfs in gfi_dict.items():
+                fold_mean_df = pd.concat(importance_dfs).groupby(level=0).mean()
+                results_dir = fi_result_dir(
+                    helix_experiments_base_dir() / self._exec_opt.experiment_name
+                )
+                create_directory(results_dir)
+                fold_mean_df.to_csv(
+                    results_dir / f"global-{fi_type}-{model_name}-all-folds-mean.csv"
+                )
+                fig = plot_bar_chart(
+                    df=fold_mean_df,
+                    sort_key=fold_mean_df.columns[
+                        0
+                    ],  # there's one column which is the FI type
+                    plot_opts=self._plot_opt,
+                    title=f"{fi_type} - {model_name} - all folds mean",
+                    x_label="Feature",
+                    y_label="Importance",
+                    n_features=self._fi_opt.num_features_to_plot,
+                )
+                plot_dir = fi_plot_dir(
+                    helix_experiments_base_dir() / self._exec_opt.experiment_name
+                )
+                create_directory(
+                    plot_dir
+                )  # will create the directory if it doesn't exist
+                fig.savefig(plot_dir / f"{fi_type}-{model_name}-all-folds-mean.png")
