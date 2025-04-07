@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -129,7 +130,9 @@ def plot_global_shap_importance(
         wrap=True,
     )
     plot_data = (
-        shap_values.sort_values(by="SHAP Importance", ascending=False).head(num_features_to_plot).T
+        shap_values.sort_values(by="SHAP Importance", ascending=False)
+        .head(num_features_to_plot)
+        .T
     )
     sns.barplot(data=plot_data, fill=True, ax=ax)
     ax.set_xlabel("Feature Name", family=plot_opts.plot_font_family)
@@ -370,7 +373,9 @@ def plot_permutation_importance(
     plt.style.use(plot_opts.plot_colour_scheme)
     fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
 
-    top_features = df.sort_values(by="Permutation Importance", ascending=False).head(n_features).T
+    top_features = (
+        df.sort_values(by="Permutation Importance", ascending=False).head(n_features).T
+    )
     sns.barplot(top_features, ax=ax)
 
     ax.set_xticklabels(
@@ -385,6 +390,57 @@ def plot_permutation_importance(
     )
     ax.set_xlabel("Feature", family=plot_opts.plot_font_family)
     ax.set_ylabel("Importance", family=plot_opts.plot_font_family)
+    ax.set_title(
+        title,
+        family=plot_opts.plot_font_family,
+        wrap=True,
+    )
+
+    return fig
+
+
+def plot_bar_chart(
+    df: pd.DataFrame,
+    sort_key: Any,
+    plot_opts: PlottingOptions,
+    title: str,
+    x_label: str,
+    y_label: str,
+    n_features: int = 10,
+) -> Figure:
+    """Plot a bar chart of the top n features from the given dataframe.
+
+    Args:
+        df (pd.DataFrame): The data to be plotted.
+        plot_opts (PlottingOptions): The options for styling the plot.
+        sort_key (str): The key by which to sort the data. This can be the name of a column.
+        title (str): The title of the plot.
+        x_label (str): The label for the X axis.
+        y_label (str): The label for the Y axis.
+        n_features (int, optional): The top number of featurs to plot. Defaults to 10.
+
+    Returns:
+        Figure: The bar chart of the top n features.
+    """
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
+
+    top_features = df.sort_values(by=sort_key, ascending=False).head(n_features).T
+    sns.barplot(top_features, ax=ax)
+
+    ax.set_xticklabels(
+        ax.get_xticklabels(),
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        family=plot_opts.plot_font_family,
+    )
+    ax.set_yticklabels(
+        ax.get_yticklabels(),
+        rotation=plot_opts.angle_rotate_yaxis_labels,
+        family=plot_opts.plot_font_family,
+    )
+    ax.set_xlabel(x_label, family=plot_opts.plot_font_family)
+    ax.set_ylabel(y_label, family=plot_opts.plot_font_family)
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
