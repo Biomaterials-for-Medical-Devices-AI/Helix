@@ -7,10 +7,7 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.plot_editor import edit_plot_modal
-from helix.options.enums import (
-    DataAnalysisStateKeys,
-    Normalisations,
-)
+from helix.options.enums import DataAnalysisStateKeys, Normalisations
 from helix.options.plotting import PlottingOptions
 
 

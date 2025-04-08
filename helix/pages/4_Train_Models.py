@@ -6,6 +6,7 @@ This page allows users to configure and train machine learning models on their d
 from multiprocessing import Process
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from helix.components.configuration import display_options
@@ -13,8 +14,7 @@ from helix.components.experiments import experiment_selector
 from helix.components.forms.forms_ml_opts import ml_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import plot_box
-from helix.components.plots import display_metrics_table, display_predictions
+from helix.components.plots import display_metrics_table, display_predictions, plot_box
 from helix.machine_learning import train
 from helix.options.data import DataOptions
 from helix.options.enums import (

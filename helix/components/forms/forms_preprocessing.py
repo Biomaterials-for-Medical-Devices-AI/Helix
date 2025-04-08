@@ -2,10 +2,7 @@ import pandas as pd
 import streamlit as st
 
 from helix.options.choices.ui import NORMALISATIONS, TRANSFORMATIONS_Y
-from helix.options.enums import (
-    DataPreprocessingStateKeys,
-    TransformationsY,
-)
+from helix.options.enums import DataPreprocessingStateKeys, TransformationsY
 
 
 @st.experimental_fragment
