@@ -4,7 +4,7 @@ import streamlit as st
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
-from helix.components.forms import (
+from helix.components.forms.forms_plots import (
     correlation_heatmap_form,
     pairplot_form,
     target_variable_dist_form,

@@ -101,7 +101,7 @@ class ModelNames(StrEnum):
     XGBoost = "xgboost"
     SVM = "svm"
     ...
-    MyNewModel = "my new model
+    MyNewModel = "my new model"
 ```
 
 #### Making your model available to Helix
@@ -137,7 +137,7 @@ REGRESSORS: dict[ModelNames, type] = {
 
 #### Create the form component
 ```python
-# helix/components/forms.py
+# helix/components/forms/forms_ml_opts.py
 from helix.options.search_grids import MY_MODEL_GRID
 
 
@@ -145,6 +145,7 @@ from helix.options.search_grids import MY_MODEL_GRID
 def _my_model_opts(use_hyperparam_search: bool) -> dict:
     model_types = {}
     if not use_hyperparam_search:
+        st.write("Options")
         param1 = st.number_input(
             "param1",
             value=1,
@@ -167,6 +168,7 @@ def _my_model_opts(use_hyperparam_search: bool) -> dict:
             "param1": param1,
             "param2": param2
         }
+        st.divider()
     else:
         params = MY_MODEL_GRID
     
@@ -178,10 +180,10 @@ def _my_model_opts(use_hyperparam_search: bool) -> dict:
 ```
 
 #### Add the form component to the main form
-To make your model selectable by the user, edit `ml_options_form` in `helix/components/forms.py` as shown below.
+To make your model selectable by the user, edit `ml_options_form` in `helix/components/forms/forms_ml_opts.py` as shown below.
 
 ```python
-# helix/components/forms.py
+# helix/components/forms/forms_ml_opts.py
 
 def ml_options_form():
     ...

@@ -1,3 +1,12 @@
+"""Feature Importance page for Helix.
+
+This page provides options for analyzing feature importance using various methods:
+- Global methods (Permutation, SHAP)
+- Local methods (LIME, SHAP)
+- Ensemble methods
+- Fuzzy feature importance
+"""
+
 from multiprocessing import Process
 from pathlib import Path
 
@@ -5,7 +14,7 @@ import streamlit as st
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector, model_selector
-from helix.components.forms import fi_options_form
+from helix.components.forms.forms_fi import fi_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
 from helix.components.plots import plot_box
