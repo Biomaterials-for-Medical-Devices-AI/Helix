@@ -28,7 +28,6 @@ from helix.services.feature_importance.local_methods import (
     calculate_lime_values,
     calculate_local_shap_values,
 )
-from helix.services.feature_importance.results import save_importance_results
 from helix.services.metrics import find_mean_model_index
 from helix.services.plotting import (
     plot_bar_chart,

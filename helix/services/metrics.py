@@ -1,5 +1,5 @@
 from helix.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
-from helix.options.enums import Metrics, ProblemTypes
+from helix.options.enums import ProblemTypes
 
 
 def get_metrics(problem_type: ProblemTypes, logger: object = None) -> dict:
