@@ -1,8 +1,8 @@
 """Machine Learning model options forms for Helix.
 
-This module contains form functions for both selecting and configuring different 
-machine learning models through Streamlit UI elements. Each function handles the 
-parameter configuration for a specific model type, supporting both manual parameter 
+This module contains form functions for both selecting and configuring different
+machine learning models through Streamlit UI elements. Each function handles the
+parameter configuration for a specific model type, supporting both manual parameter
 setting and hyperparameter search options.
 
 Functions:
@@ -35,6 +35,8 @@ from helix.options.search_grids import (
     SVM_GRID,
     XGB_GRID,
 )
+
+
 ###########################################################################
 # Below are the options for which models will be used
 ###########################################################################
@@ -117,6 +119,7 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
         value=True,
         help="Save the plots to disk?",
     )
+
 
 ###########################################################################
 # Below are the individual model options functions
@@ -296,31 +299,41 @@ def _mlrem_opts(use_hyperparam_search: bool) -> dict:
     }
     return model_types
 
+
 def _brnn_opts(use_hyperparam_search: bool) -> dict:
     model_types = {}
     if not use_hyperparam_search:
         st.write("Options")
         # Basic parameters
-        hidden_units = st.number_input("Hidden Units", value=25, min_value=1, step=5)
+        num_hidden_layers = st.number_input(
+            "Number of Hidden Layers", value=2, min_value=1, step=1
+        )
+        hidden_layer_sizes = st.number_input(
+            "Hidden Units", value=25, min_value=1, step=5
+        )
         activation = st.selectbox(
-            "Activation Function", 
-            options=[af.value for af in ActivationFunctions],  
-            index=0
+            "Activation Function",
+            options=[af.value for af in ActivationFunctions],
+            index=0,
+        )
+        batch_size = st.number_input(
+            "Batch Size", value=32, min_value=1, step=1, help="Batch size for training"
+        )
+        learning_rate = st.number_input(
+            "Learning Rate", value=0.01, format="%.4f", step=1e-3
         )
         max_iter = st.number_input("Max Iterations", value=200, min_value=1, step=50)
         random_state = st.number_input("Random State", value=42, min_value=0, step=1)
-        tolerance = st.number_input("Tolerance", value=1e-4, format="%.4f", step=1e-5)
-        learning_rate = st.number_input("Learning Rate", value=0.01, format="%.4f", step=1e-3)
-        num_hidden_layers = st.number_input("Number of Hidden Layers", value=2, min_value=1, step=1)
 
         params = {
-            "hidden_units": hidden_units,
+            "hidden_layer_sizes": [
+                hidden_layer_sizes for _ in range(num_hidden_layers - 2)
+            ],
             "activation": activation,
+            "batch_size": batch_size,
+            "learning_rate_init": learning_rate,
             "max_iter": max_iter,
             "random_state": random_state,
-            "tolerance": tolerance,
-            "learning_rate": learning_rate,
-            "num_hidden_layers": num_hidden_layers,
         }
         st.divider()
     else:
@@ -331,5 +344,3 @@ def _brnn_opts(use_hyperparam_search: bool) -> dict:
         "params": params,
     }
     return model_types
-
-   
