@@ -3,7 +3,6 @@ from sklearn.linear_model import LinearRegression, LogisticRegression
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
-
 from helix.machine_learning.models.mlrem import EMLinearRegression
 from helix.machine_learning.models.svm import SVC, SVR
 from helix.options.enums import ModelNames

@@ -1,6 +1,7 @@
 import pytest
-from helix.services.metrics import find_mean_model_index
+
 from helix.options.enums import Metrics
+from helix.services.metrics import find_mean_model_index
 
 
 @pytest.fixture

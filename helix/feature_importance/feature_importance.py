@@ -1,21 +1,23 @@
 from pathlib import Path
 from typing import Any
+
 import pandas as pd
 from sklearn.base import BaseEstimator
+
 from helix.feature_importance.interpreter import FeatureImportanceEstimator
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.data import TabularData
-from helix.utils.logging_utils import Logger
 from helix.services.feature_importance.global_methods import (
     calculate_global_shap_values,
     calculate_permutation_importance,
 )
 from helix.services.feature_importance.local_methods import (
-    calculate_local_shap_values,
     calculate_lime_values,
+    calculate_local_shap_values,
 )
+from helix.utils.logging_utils import Logger
 
 
 def run(
