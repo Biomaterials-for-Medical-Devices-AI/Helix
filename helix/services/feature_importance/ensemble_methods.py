@@ -5,7 +5,9 @@ import pandas as pd
 from helix.utils.logging_utils import Logger
 
 
-def calculate_ensemble_mean(feature_importance_dict: dict[str, pd.DataFrame], logger: Logger) -> pd.DataFrame:
+def calculate_ensemble_mean(
+    feature_importance_dict: dict[str, pd.DataFrame], logger: Logger
+) -> pd.DataFrame:
     """Calculate mean of feature importance results across models and methods.
 
     Args:
@@ -31,16 +33,16 @@ def calculate_ensemble_mean(feature_importance_dict: dict[str, pd.DataFrame], lo
 
     # Combine all model means into a DataFrame
     all_model_means = pd.DataFrame(model_means)
-    
+
     # Calculate mean across all models
     combined_mean = all_model_means.mean(axis=1).to_frame(name="Mean Importance")
-    
+
     # Group by index (feature names) and calculate mean for repeated features
     ensemble_mean = combined_mean.groupby(level=0).mean()
-    
+
     # Sort by importance in descending order
     ensemble_mean = ensemble_mean.sort_values("Mean Importance", ascending=False)
-    
+
     logger.info("Mean ensemble importance calculated...")
     return ensemble_mean
 
