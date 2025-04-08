@@ -25,8 +25,6 @@ def run(
         logger=logger,
         data_path=data_path,
     )
-    # TODO: Add indices to the dataframe results-> global + ensemble
-    # TODO: Resolve majority vote issue
     gloabl_importance_results, local_importance_results, ensemble_results = (
         interpreter.interpret(models, data)
     )
