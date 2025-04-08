@@ -1,11 +1,12 @@
-import numpy as np
 import streamlit as st
-from sklearn.manifold import TSNE
-from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.options.enums import (
+    ExecutionStateKeys,
     FeatureImportanceStateKeys,
+    FuzzyStateKeys,
+    ProblemTypes,
 )
+
 
 @st.experimental_fragment
 def fi_options_form():
