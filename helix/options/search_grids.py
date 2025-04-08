@@ -35,15 +35,13 @@ MLREM_GRID = {
 }
 
 BRNN_GRID = {
-    "hidden_units": [32, 64, 128],
+    "hidden_layer_sizes": [32, 64, 128],
     "activation": [
-        ActivationFunctions.ReLU,
-        ActivationFunctions.Sigmoid,
-        ActivationFunctions.LeakyReLU,
+        ActivationFunctions.Logistic,
         ActivationFunctions.Tanh,
+        ActivationFunctions.ReLU,
     ],
-    "max_iter": [100, 200],
-    "tolerance": [1e-4, 1e-5],
-    "learning_rate": [0.01, 0.005, 0.001],
-    "num_hidden_layers": [1, 2, 3],
+    "batch_size": [64, 128],
+    "learning_rate_init": [0.01, 0.005, 0.001],
+    "max_iter": [200, 300],
 }

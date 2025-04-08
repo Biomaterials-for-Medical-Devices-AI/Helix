@@ -97,10 +97,10 @@ class OptimiserTypes(StrEnum):
 
 
 class ActivationFunctions(StrEnum):
-    ReLU = "relu"
-    Sigmoid = "sigmoid"
+    Identity = "identity"
+    Logistic = "logistic"
     Tanh = "tanh"
-    LeakyReLU = "leaky_relu"
+    ReLU = "relu"
 
 
 class ProblemTypes(StrEnum):
@@ -140,8 +140,7 @@ class ModelNames(StrEnum):
     RandomForest = "random forest"
     XGBoost = "xgboost"
     SVM = "svm"
-    BRNNClassifier = "bayesianRegularised nn classifier"
-    BRNNRegressor = "bayesianRegularised nn regressor"
+    BRNN = "bayesian regularised neural network"
     MLREM = "multiple linear regression with expectation maximisation"
 
 

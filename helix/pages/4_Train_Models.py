@@ -1,3 +1,8 @@
+"""Train Models page for Helix.
+
+This page allows users to configure and train machine learning models on their data.
+"""
+
 from multiprocessing import Process
 from pathlib import Path
 
@@ -6,7 +11,7 @@ import streamlit as st
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
-from helix.components.forms import ml_options_form
+from helix.components.forms.forms_ml_opts import ml_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
 from helix.components.plots import display_metrics_table, display_predictions, plot_box
@@ -215,8 +220,8 @@ choices = get_experiments()
 experiment_name = experiment_selector(choices)
 if experiment_name:
     st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
-    biofefi_base_dir = helix_experiments_base_dir()
-    experiment_dir = biofefi_base_dir / experiment_name
+    helix_base_dir = helix_experiments_base_dir()
+    experiment_dir = helix_base_dir / experiment_name
     display_options(experiment_dir)
     path_to_exec_opts = execution_options_path(experiment_dir)
     exec_opt = load_execution_options(path_to_exec_opts)
@@ -242,6 +247,7 @@ if experiment_name:
         exec_opts = load_execution_options(
             execution_options_path(helix_experiments_base_dir() / experiment_name)
         )
+        st.write("### Configure Machine Learning Model")
         ml_options_form(problem_type=exec_opts.problem_type)
     else:
         st.info(
@@ -293,7 +299,7 @@ if experiment_name:
                 st.session_state.get(MachineLearningStateKeys.Predictions)
             )
         else:
-            predictions = ml_predictions_path(biofefi_base_dir / experiment_name)
+            predictions = ml_predictions_path(helix_base_dir / experiment_name)
             if predictions.exists():
                 preds = pd.read_csv(predictions)
                 display_predictions(preds)
