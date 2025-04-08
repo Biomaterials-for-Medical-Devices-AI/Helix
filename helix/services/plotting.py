@@ -8,7 +8,6 @@ import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
-
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
 from helix.options.plotting import PlottingOptions
