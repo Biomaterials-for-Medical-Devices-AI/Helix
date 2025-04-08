@@ -302,7 +302,7 @@ class FeatureImportanceEstimator:
                             )  # will create the directory if it doesn't exist
                             fig.savefig(
                                 plot_dir
-                                / f"{feature_importance_type}-{model_type}-violin.png"
+                                / f"local-{feature_importance_type}-{model_type}-violin.png"
                             )
                             feature_importance_results[model_type][
                                 feature_importance_type
@@ -339,7 +339,7 @@ class FeatureImportanceEstimator:
                             )  # will create the directory if it doesn't exist
                             fig.savefig(
                                 plot_dir
-                                / f"{feature_importance_type}-{value['type']}-{model_type}-beeswarm.png"
+                                / f"local-{feature_importance_type}-{value['type']}-{model_type}-beeswarm.png"
                             )
                             feature_importance_results[model_type][
                                 feature_importance_type

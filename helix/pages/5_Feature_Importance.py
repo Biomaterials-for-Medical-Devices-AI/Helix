@@ -8,7 +8,7 @@ from helix.components.experiments import experiment_selector, model_selector
 from helix.components.forms import fi_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import plot_box
+from helix.components.plots import plot_box, plot_box_v2
 from helix.feature_importance import feature_importance, fuzzy_interpretation
 from helix.options.data import DataOptions
 from helix.options.enums import (
@@ -382,7 +382,14 @@ if experiment_name:
                 except NotADirectoryError:
                     pass
                 fi_plots = fi_plot_dir(base_dir / experiment_name)
-                plot_box(fi_plots, "Feature importance plots")
+                mean_plots = [
+                    p
+                    for p in fi_plots.iterdir()
+                    if p.name.endswith("-all-folds-mean.png")  # mean global FI
+                    or p.name.startswith("local-")  # local plots
+                    or p.name.startswith("ensemble-")  # ensemble plots
+                ]
+                plot_box_v2(mean_plots, "Feature importance plots")
                 fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
                 plot_box(fuzzy_plots, "Fuzzy plots")
 
