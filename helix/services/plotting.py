@@ -7,6 +7,8 @@ import seaborn as sns
 import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
+from matplotlib.ticker import FormatStrFormatter
+
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
 from helix.options.plotting import PlottingOptions
@@ -407,6 +409,7 @@ def plot_bar_chart(
     x_label: str,
     y_label: str,
     n_features: int = 10,
+    error_bars: pd.DataFrame | None = None,
 ) -> Figure:
     """Plot a bar chart of the top n features from the given dataframe.
 
@@ -426,25 +429,33 @@ def plot_bar_chart(
     plt.style.use(plot_opts.plot_colour_scheme)
     fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
 
-    top_features = df.sort_values(by=sort_key, ascending=False).head(n_features).T
-    sns.barplot(top_features, ax=ax)
+    # Get top features
+    top_df = df.sort_values(by=sort_key, ascending=False).head(n_features)
+    x = top_df.index.tolist()
+    y = top_df[sort_key].values
 
+    # If error bars provided, align them
+    yerr = None
+    if error_bars is not None and sort_key in error_bars.columns:
+        yerr = error_bars.loc[x, sort_key].values
+
+    # Plot with error bars
+    ax.bar(x, y, yerr=yerr, capsize=5)
+
+    # Label formatting
     ax.set_xticklabels(
-        ax.get_xticklabels(),
+        x,
         rotation=plot_opts.angle_rotate_xaxis_labels,
         family=plot_opts.plot_font_family,
     )
     ax.set_yticklabels(
-        ax.get_yticklabels(),
+        ax.get_yticks(),
         rotation=plot_opts.angle_rotate_yaxis_labels,
         family=plot_opts.plot_font_family,
     )
     ax.set_xlabel(x_label, family=plot_opts.plot_font_family)
     ax.set_ylabel(y_label, family=plot_opts.plot_font_family)
-    ax.set_title(
-        title,
-        family=plot_opts.plot_font_family,
-        wrap=True,
-    )
+    ax.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
+    ax.set_title(title, family=plot_opts.plot_font_family, wrap=True)
 
     return fig

@@ -7,7 +7,7 @@ from helix.utils.logging_utils import Logger
 
 def calculate_ensemble_mean(
     feature_importance_dict: dict[str, pd.DataFrame], logger: Logger
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Calculate mean of feature importance results across models and methods.
 
     Args:
@@ -38,18 +38,21 @@ def calculate_ensemble_mean(
     combined_mean = all_model_means.mean(axis=1).to_frame(name="Mean Importance")
 
     # Group by index (feature names) and calculate mean for repeated features
-    ensemble_mean = combined_mean.groupby(level=0).mean()
+    grouped = combined_mean.groupby(level=0)
+    ensemble_mean = grouped.mean()
+    ensemble_mean_std = grouped.std()
 
     # Sort by importance in descending order
     ensemble_mean = ensemble_mean.sort_values("Mean Importance", ascending=False)
+    ensemble_mean_std = ensemble_mean_std.reindex(ensemble_mean.index)
 
     logger.info("Mean ensemble importance calculated...")
-    return ensemble_mean
+    return ensemble_mean, ensemble_mean_std
 
 
 def calculate_ensemble_majorityvote(
     feature_importance_dict: dict[str, pd.DataFrame], logger: Logger
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Calculate majority vote of feature importance results.
     For majority vote, each vector in the feature importance matrix has their features ranked based on their importance.
     Subsequently, the final feature importance is the average of the most common rank order for each feature.
@@ -107,16 +110,20 @@ def calculate_ensemble_majorityvote(
     )
 
     # Group by index to handle repeated features
-    ensemble_majorityvote = ensemble_majorityvote.groupby(level=0).mean()
+    grouped = ensemble_majorityvote.groupby(level=0)
+    ensemble_majorityvote = grouped.mean()
+    ensemble_majorityvote_std = grouped.std()
 
     # Sort by importance in descending order
     ensemble_majorityvote = ensemble_majorityvote.sort_values(
         "Majority Vote Importance", ascending=False
     )
-    print(ensemble_majorityvote)
+    ensemble_majorityvote_std = ensemble_majorityvote_std.reindex(
+        ensemble_majorityvote.index
+    )
 
     logger.info("Majority Vote ensemble importance calculated...")
-    return ensemble_majorityvote
+    return ensemble_majorityvote, ensemble_majorityvote_std
 
 
 def calculate_ensemble_fuzzy(feature_importance_results, opt: argparse.Namespace):

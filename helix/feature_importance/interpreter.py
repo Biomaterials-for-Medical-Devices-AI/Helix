@@ -365,7 +365,7 @@ class FeatureImportanceEstimator:
                 if value:
                     if ensemble_type == "Mean":
                         # Calculate mean of feature importance results
-                        mean_results = calculate_ensemble_mean(
+                        mean_results, mean_results_std = calculate_ensemble_mean(
                             feature_importance_results, self._logger
                         )
                         results_dir = fi_result_dir(
@@ -384,6 +384,7 @@ class FeatureImportanceEstimator:
                             x_label="Feature",
                             y_label="Importance",
                             n_features=self._fi_opt.num_features_to_plot,
+                            error_bars=mean_results_std,
                         )
                         plot_dir = fi_plot_dir(
                             helix_experiments_base_dir()
@@ -397,8 +398,10 @@ class FeatureImportanceEstimator:
 
                     if ensemble_type == "Majority Vote":
                         # Calculate majority vote of feature importance results
-                        majority_vote_results = calculate_ensemble_majorityvote(
-                            feature_importance_results, self._logger
+                        majority_vote_results, majority_vote_results_std = (
+                            calculate_ensemble_majorityvote(
+                                feature_importance_results, self._logger
+                            )
                         )
                         results_dir = fi_result_dir(
                             helix_experiments_base_dir()
@@ -416,6 +419,7 @@ class FeatureImportanceEstimator:
                             x_label="Feature",
                             y_label="Importance",
                             n_features=self._fi_opt.num_features_to_plot,
+                            error_bars=majority_vote_results_std,
                         )
                         plot_dir = fi_plot_dir(
                             helix_experiments_base_dir()
@@ -484,6 +488,7 @@ class FeatureImportanceEstimator:
         for model_name, gfi_dict in global_importances_dict.items():
             for fi_type, importance_dfs in gfi_dict.items():
                 fold_mean_df = pd.concat(importance_dfs).groupby(level=0).mean()
+                fold_std_df = pd.concat(importance_dfs).groupby(level=0).std()
                 results_dir = fi_result_dir(
                     helix_experiments_base_dir() / self._exec_opt.experiment_name
                 )
@@ -501,6 +506,7 @@ class FeatureImportanceEstimator:
                     x_label="Feature",
                     y_label="Importance",
                     n_features=self._fi_opt.num_features_to_plot,
+                    error_bars=fold_std_df,
                 )
                 plot_dir = fi_plot_dir(
                     helix_experiments_base_dir() / self._exec_opt.experiment_name
