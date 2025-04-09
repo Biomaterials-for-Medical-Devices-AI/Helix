@@ -373,84 +373,85 @@ def plot_beta_coefficients(
         Figure: The coefficient plot
     """
     plt.style.use(plot_opts.plot_colour_scheme)
-    
+
     # Calculate figure height based on number of coefficients
     # Base height of 3 inches, plus 0.25 inches per coefficient
     n_coefs = min(len(coefficients), 20)  # We show max 20 coefficients
     fig_height = 3 + (0.16 * n_coefs)
-    
-    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi, figsize=(10, fig_height))
-    
+
+    fig, ax = plt.subplots(
+        layout="constrained", dpi=plot_opts.dpi, figsize=(10, fig_height)
+    )
+
     # Sort coefficients and keep track of indices
     coef_with_idx = list(enumerate(coefficients))
     coef_with_idx.sort(key=lambda x: abs(x[1]), reverse=True)
     sorted_indices = [x[0] for x in coef_with_idx]
     sorted_coefs = [x[1] for x in coef_with_idx]
-    
+
     # Get corresponding feature names and errors
     sorted_features = [feature_names[i] for i in sorted_indices]
     sorted_errors = None
     if standard_errors is not None:
         sorted_errors = [standard_errors[i] for i in sorted_indices]
-    
+
     # Take top 20 coefficients by magnitude if there are more
     if len(sorted_coefs) > 20:
         sorted_coefs = sorted_coefs[:20]
         sorted_features = sorted_features[:20]
         if sorted_errors:
             sorted_errors = sorted_errors[:20]
-    
+
     # Create horizontal bar plot
     y_pos = np.arange(len(sorted_coefs))
-    colors = ['blue' if c >= 0 else 'red' for c in sorted_coefs]
-    bars = ax.barh(y_pos, sorted_coefs, color=colors, alpha=0.6)
-    
+
     # Add error bars if available
     if sorted_errors:
         ax.errorbar(
-            sorted_coefs, y_pos,
+            sorted_coefs,
+            y_pos,
             xerr=1.96 * np.array(sorted_errors),  # 95% confidence interval
-            fmt='none',
-            color='black',
+            fmt="none",
+            color="black",
             capsize=3,
             capthick=1,
             elinewidth=1,
-            zorder=3
+            zorder=3,
         )
-    
+
     # Customize plot
     ax.set_yticks(y_pos)
     ax.set_yticklabels(
         sorted_features,
         family=plot_opts.plot_font_family,
-        fontsize=plot_opts.plot_axis_tick_size
+        fontsize=plot_opts.plot_axis_tick_size,
     )
     ax.set_xlabel(
         "Coefficient Value",
         family=plot_opts.plot_font_family,
-        fontsize=plot_opts.plot_axis_font_size
+        fontsize=plot_opts.plot_axis_font_size,
     )
-    
+
     # Create title with dependent variable if provided
-    model_name = ' '.join(word.capitalize() for word in model_name.split())
+    model_name = " ".join(word.capitalize() for word in model_name.split())
     title = f"Beta Coefficients - {model_name}"
     if dependent_variable:
         title += f"\nDependent Variable: {dependent_variable}"
-    
+
     ax.set_title(
         title,
         family=plot_opts.plot_font_family,
         fontsize=plot_opts.plot_title_font_size,
-        wrap=True
+        wrap=True,
     )
-    
+
     # Add gridlines
-    ax.grid(True, axis='x', linestyle='--', alpha=0.3, zorder=0)
-    
+    ax.grid(True, axis="x", linestyle="--", alpha=0.3, zorder=0)
+
     # Add zero line
-    ax.axvline(x=0, color='black', linestyle='-', linewidth=0.5, zorder=1)
-    
+    ax.axvline(x=0, color="black", linestyle="-", linewidth=0.5, zorder=1)
+
     # Adjust layout
     fig.tight_layout()
-    
+
     return fig

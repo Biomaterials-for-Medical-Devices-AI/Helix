@@ -22,14 +22,19 @@ def plot_box(plot_dir: Path, box_title: str):
             for p in plots:
                 if not p.name.endswith(".png"):
                     continue
-                    
+
                 # Extract model name and plot type from filename
                 parts = p.stem.split("-")
                 if len(parts) >= 2:
                     model_name = parts[0]
                     if model_name not in plot_groups:
-                        plot_groups[model_name] = {"Train": [], "Test": [], "Coefficients": [], "Other": []}
-                    
+                        plot_groups[model_name] = {
+                            "Train": [],
+                            "Test": [],
+                            "Coefficients": [],
+                            "Other": [],
+                        }
+
                     if "Train" in parts:
                         plot_groups[model_name]["Train"].append(p)
                     elif "Test" in parts:
@@ -38,13 +43,15 @@ def plot_box(plot_dir: Path, box_title: str):
                         plot_groups[model_name]["Coefficients"].append(p)
                     else:
                         plot_groups[model_name]["Other"].append(p)
-            
+
             # Display plots by group
             for model_name, group in plot_groups.items():
                 # Capitalise first letter of each word in model name
-                formatted_model_name = " ".join(word.capitalize() for word in model_name.split())
+                formatted_model_name = " ".join(
+                    word.capitalize() for word in model_name.split()
+                )
                 st.markdown(f"### {formatted_model_name}")
-                
+
                 # Show Train/Test plots side by side
                 if group["Train"] or group["Test"]:
                     cols = st.columns(2)
@@ -52,16 +59,16 @@ def plot_box(plot_dir: Path, box_title: str):
                         cols[0].image(str(train_plot))
                     for test_plot in group["Test"]:
                         cols[1].image(str(test_plot))
-                
+
                 # Show coefficient plots
                 for coef_plot in group["Coefficients"]:
                     st.markdown("#### Model Coefficients")
                     st.image(str(coef_plot))
-                
+
                 # Show other plots
                 for other_plot in group["Other"]:
                     st.image(str(other_plot))
-                
+
                 st.markdown("---")
 
 

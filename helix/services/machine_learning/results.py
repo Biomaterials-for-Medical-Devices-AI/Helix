@@ -1,8 +1,6 @@
 import os
-from pathlib import Path
-import pandas as pd
 import warnings
-warnings.filterwarnings('ignore', message='X has feature names')
+from pathlib import Path
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -13,8 +11,15 @@ from helix.options.execution import ExecutionOptions
 from helix.options.ml import MachineLearningOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.data import DataBuilder
-from helix.services.plotting import plot_auc_roc, plot_beta_coefficients, plot_confusion_matrix, plot_scatter
+from helix.services.plotting import (
+    plot_auc_roc,
+    plot_beta_coefficients,
+    plot_confusion_matrix,
+    plot_scatter,
+)
 from helix.utils.logging_utils import Logger
+
+warnings.filterwarnings("ignore", message="X has feature names")
 
 
 def save_actual_pred_plots(
@@ -113,7 +118,10 @@ def save_actual_pred_plots(
                     train_plot.savefig(directory / f"{model_name}-{i}-Train.png")
 
                     # Add beta coefficients plot for linear regression models
-                    if model_name in ["linear model", "multiple linear regression with expectation maximisation"]:
+                    if model_name in [
+                        "linear model",
+                        "multiple linear regression with expectation maximisation",
+                    ]:
                         model = trained_models[model_name][i]
                         if hasattr(model, "coef_"):
                             coef_plot = plot_beta_coefficients(
@@ -121,9 +129,11 @@ def save_actual_pred_plots(
                                 feature_names=data.X_train[i].columns.tolist(),
                                 plot_opts=plot_opts,
                                 model_name=model_name,
-                                dependent_variable=exec_opts.dependent_variable
+                                dependent_variable=exec_opts.dependent_variable,
                             )
-                            coef_plot.savefig(directory / f"{model_name}-{i}-Coefficients.png")
+                            coef_plot.savefig(
+                                directory / f"{model_name}-{i}-Coefficients.png"
+                            )
                             plt.close(coef_plot)
 
                     plt.close(test_plot)
