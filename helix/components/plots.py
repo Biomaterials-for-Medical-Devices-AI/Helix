@@ -41,7 +41,9 @@ def plot_box(plot_dir: Path, box_title: str):
             
             # Display plots by group
             for model_name, group in plot_groups.items():
-                st.markdown(f"### {model_name}")
+                # Capitalise first letter of each word in model name
+                formatted_model_name = " ".join(word.capitalize() for word in model_name.split())
+                st.markdown(f"### {formatted_model_name}")
                 
                 # Show Train/Test plots side by side
                 if group["Train"] or group["Test"]:

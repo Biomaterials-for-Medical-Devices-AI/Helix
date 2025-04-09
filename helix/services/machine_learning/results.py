@@ -1,5 +1,8 @@
 import os
 from pathlib import Path
+import pandas as pd
+import warnings
+warnings.filterwarnings('ignore', message='X has feature names')
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -110,6 +113,7 @@ def save_actual_pred_plots(
                     train_plot.savefig(directory / f"{model_name}-{i}-Train.png")
 
                     # Add beta coefficients plot for linear regression models
+                    print("Model name being used at the moment+++++++++++++:", model_name)
                     if model_name in ["Linear Regression", "Multiple Linear Regression with Expectation Maximisation"]:
                         model = trained_models[model_name][i]
                         if hasattr(model, "coef_"):
