@@ -373,7 +373,13 @@ def plot_beta_coefficients(
         Figure: The coefficient plot
     """
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi, figsize=(10, 8))
+    
+    # Calculate figure height based on number of coefficients
+    # Base height of 3 inches, plus 0.25 inches per coefficient
+    n_coefs = min(len(coefficients), 20)  # We show max 20 coefficients
+    fig_height = 3 + (0.16 * n_coefs)
+    
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi, figsize=(10, fig_height))
     
     # Sort coefficients and keep track of indices
     coef_with_idx = list(enumerate(coefficients))
