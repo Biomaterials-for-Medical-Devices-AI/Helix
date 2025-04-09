@@ -113,8 +113,7 @@ def save_actual_pred_plots(
                     train_plot.savefig(directory / f"{model_name}-{i}-Train.png")
 
                     # Add beta coefficients plot for linear regression models
-                    print("Model name being used at the moment+++++++++++++:", model_name)
-                    if model_name in ["Linear Regression", "Multiple Linear Regression with Expectation Maximisation"]:
+                    if model_name in ["linear model", "multiple linear regression with expectation maximisation"]:
                         model = trained_models[model_name][i]
                         if hasattr(model, "coef_"):
                             coef_plot = plot_beta_coefficients(
@@ -122,8 +121,9 @@ def save_actual_pred_plots(
                                 feature_names=data.X_train[i].columns.tolist(),
                                 plot_opts=plot_opts,
                                 model_name=model_name,
+                                dependent_variable=exec_opts.dependent_variable
                             )
-                            coef_plot.savefig(directory / f"{model_name}-{i}-coefficients.png")
+                            coef_plot.savefig(directory / f"{model_name}-{i}-Coefficients.png")
                             plt.close(coef_plot)
 
                     plt.close(test_plot)
