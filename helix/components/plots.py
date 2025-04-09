@@ -17,9 +17,50 @@ def plot_box(plot_dir: Path, box_title: str):
     if plot_dir.exists():
         plots = sorted(plot_dir.iterdir(), key=lambda x: x.stat().st_ctime)
         with st.expander(box_title, expanded=len(plots) > 0):
+            # Group plots by model and type
+            plot_groups = {}
             for p in plots:
-                if p.name.endswith(".png"):
-                    st.image(str(p))
+                if not p.name.endswith(".png"):
+                    continue
+                    
+                # Extract model name and plot type from filename
+                parts = p.stem.split("-")
+                if len(parts) >= 2:
+                    model_name = parts[0]
+                    if model_name not in plot_groups:
+                        plot_groups[model_name] = {"Train": [], "Test": [], "Coefficients": [], "Other": []}
+                    
+                    if "Train" in parts:
+                        plot_groups[model_name]["Train"].append(p)
+                    elif "Test" in parts:
+                        plot_groups[model_name]["Test"].append(p)
+                    elif "coefficients" in parts:
+                        plot_groups[model_name]["Coefficients"].append(p)
+                    else:
+                        plot_groups[model_name]["Other"].append(p)
+            
+            # Display plots by group
+            for model_name, group in plot_groups.items():
+                st.markdown(f"### {model_name}")
+                
+                # Show Train/Test plots side by side
+                if group["Train"] or group["Test"]:
+                    cols = st.columns(2)
+                    for train_plot in group["Train"]:
+                        cols[0].image(str(train_plot))
+                    for test_plot in group["Test"]:
+                        cols[1].image(str(test_plot))
+                
+                # Show coefficient plots
+                for coef_plot in group["Coefficients"]:
+                    st.markdown("#### Model Coefficients")
+                    st.image(str(coef_plot))
+                
+                # Show other plots
+                for other_plot in group["Other"]:
+                    st.image(str(other_plot))
+                
+                st.markdown("---")
 
 
 @st.experimental_fragment
