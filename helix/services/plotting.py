@@ -349,3 +349,85 @@ def plot_scatter(
     ax.grid(visible=True, axis="both")
 
     return fig
+
+
+def plot_beta_coefficients(
+    coefficients: np.ndarray,
+    feature_names: list,
+    plot_opts: PlottingOptions,
+    model_name: str,
+    dependent_variable: str | None = None,
+    standard_errors: np.ndarray | None = None,
+) -> Figure:
+    """Create a bar plot of model coefficients with different colors for positive/negative values.
+
+    Args:
+        coefficients (np.ndarray): The model coefficients
+        feature_names (list): Names of the features corresponding to coefficients
+        plot_opts (PlottingOptions): The plotting options
+        model_name (str): Name of the model for the plot title
+        dependent_variable (str | None, optional): Name of the dependent variable. Defaults to None.
+        standard_errors (np.ndarray | None, optional): Standard errors of coefficients. Defaults to None.
+
+    Returns:
+        Figure: The coefficient plot
+    """
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
+    
+    # Create bar plot
+    y_pos = np.arange(len(coefficients))
+    colors = [plt.cm.get_cmap(plot_opts.plot_colour_map)(0.8) if c >= 0 
+             else plt.cm.get_cmap(plot_opts.plot_colour_map)(0.2) for c in coefficients]
+    
+    bars = ax.bar(y_pos, coefficients, color=colors)
+    
+    # Add error bars if standard errors are provided
+    if standard_errors is not None:
+        ax.errorbar(
+            y_pos, coefficients, 
+            yerr=1.96 * standard_errors,  # 95% confidence interval
+            fmt='none', 
+            color='black',
+            capsize=5,
+            capthick=1,
+            elinewidth=1,
+            label='95% CI'
+        )
+        ax.legend(
+            prop={
+                "family": plot_opts.plot_font_family,
+                "size": plot_opts.plot_axis_tick_size,
+            }
+        )
+    
+    # Customize plot
+    ax.set_xticks(y_pos)
+    ax.set_xticklabels(
+        feature_names,
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        family=plot_opts.plot_font_family,
+        fontsize=plot_opts.plot_axis_tick_size
+    )
+    ax.set_ylabel(
+        "Coefficient Value",
+        family=plot_opts.plot_font_family,
+        fontsize=plot_opts.plot_axis_font_size
+    )
+    
+    # Create title with dependent variable if provided
+    title = f"Beta Coefficients - {model_name}"
+    if dependent_variable:
+        title += f"\nDependent Variable: {dependent_variable}"
+    
+    ax.set_title(
+        title,
+        family=plot_opts.plot_font_family,
+        fontsize=plot_opts.plot_title_font_size,
+        wrap=True
+    )
+    
+    # Add grid for better readability
+    ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+    
+    return fig

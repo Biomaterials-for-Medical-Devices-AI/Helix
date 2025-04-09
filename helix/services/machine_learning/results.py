@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 import numpy as np
+from matplotlib import pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
 
 from helix.options.enums import Metrics, ProblemTypes
@@ -9,7 +10,7 @@ from helix.options.execution import ExecutionOptions
 from helix.options.ml import MachineLearningOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.data import DataBuilder
-from helix.services.plotting import plot_auc_roc, plot_confusion_matrix, plot_scatter
+from helix.services.plotting import plot_auc_roc, plot_beta_coefficients, plot_confusion_matrix, plot_scatter
 from helix.utils.logging_utils import Logger
 
 
@@ -107,6 +108,22 @@ def save_actual_pred_plots(
                         plot_opts=plot_opts,
                     )
                     train_plot.savefig(directory / f"{model_name}-{i}-Train.png")
+
+                    # Add beta coefficients plot for linear regression models
+                    if model_name in ["Linear Regression", "Multiple Linear Regression with Expectation Maximisation"]:
+                        model = trained_models[model_name][i]
+                        if hasattr(model, "coef_"):
+                            coef_plot = plot_beta_coefficients(
+                                coefficients=model.coef_,
+                                feature_names=data.X_train[i].columns.tolist(),
+                                plot_opts=plot_opts,
+                                model_name=model_name,
+                            )
+                            coef_plot.savefig(directory / f"{model_name}-{i}-coefficients.png")
+                            plt.close(coef_plot)
+
+                    plt.close(test_plot)
+                    plt.close(train_plot)
 
                 else:
 
