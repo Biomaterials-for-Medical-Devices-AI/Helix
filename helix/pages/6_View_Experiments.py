@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
@@ -52,24 +54,36 @@ st.write(
 
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
-if experiment_name:
-    base_dir = helix_experiments_base_dir()
-    experiment_path = base_dir / experiment_name
-    display_options(experiment_path)
+
+
+def display_experiment_plots(experiment_path: Path) -> None:
+    """Display all available plots for the experiment.
+
+    Args:
+        experiment_path: Path to the experiment directory
+    """
+    # Data analysis plots
     data_analysis = data_analysis_plots_dir(experiment_path)
     if data_analysis.exists():
         plot_box(data_analysis, "Data Analysis Plots")
+
+    # ML metrics and plots
     ml_metrics = ml_metrics_mean_std_path(experiment_path)
     if ml_metrics.exists():
         display_metrics_table(ml_metrics)
+
     ml_plots = ml_plot_dir(experiment_path)
     if ml_plots.exists():
         plot_box(ml_plots, "Machine learning plots")
+
+    # Predictions
     predictions = ml_predictions_path(experiment_path)
     if predictions.exists():
         preds = pd.read_csv(predictions)
         display_predictions(preds)
-    fi_plots = fi_plot_dir(base_dir / experiment_name)
+
+    # Feature importance plots
+    fi_plots = fi_plot_dir(experiment_path)
     if fi_plots.exists():
         mean_plots = [
             p
@@ -79,31 +93,38 @@ if experiment_name:
             or p.name.startswith("ensemble-")  # ensemble plots
         ]
         plot_box_v2(mean_plots, "Feature importance plots")
+
+    # Fuzzy plots
     fuzzy_plots = fuzzy_plot_dir(experiment_path)
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")
-    try:
-        st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
-            log_dir(experiment_path) / "ml"
-        )
-        log_box(
-            box_title="Machine Learning Logs", key=MachineLearningStateKeys.MLLogBox
-        )
-    except NotADirectoryError:
-        pass
-    try:
-        st.session_state[FeatureImportanceStateKeys.FILogBox] = get_logs(
-            log_dir(experiment_path) / "fi"
-        )
-        log_box(
-            box_title="Feature Importance Logs", key=FeatureImportanceStateKeys.FILogBox
-        )
-    except NotADirectoryError:
-        pass
-    try:
-        st.session_state[FuzzyStateKeys.FuzzyLogBox] = get_logs(
-            log_dir(experiment_path) / "fuzzy"
-        )
-        log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
-    except NotADirectoryError:
-        pass
+
+
+def display_experiment_logs(experiment_path: Path) -> None:
+    """Display all available logs for the experiment.
+
+    Args:
+        experiment_path: Path to the experiment directory
+    """
+    log_configs = [
+        ("ml", MachineLearningStateKeys.MLLogBox, "Machine Learning Logs"),
+        ("fi", FeatureImportanceStateKeys.FILogBox, "Feature Importance Logs"),
+        ("fuzzy", FuzzyStateKeys.FuzzyLogBox, "Fuzzy FI Logs"),
+    ]
+
+    for log_dir_name, state_key, title in log_configs:
+        try:
+            st.session_state[state_key] = get_logs(
+                log_dir(experiment_path) / log_dir_name
+            )
+            log_box(box_title=title, key=state_key)
+        except NotADirectoryError:
+            pass
+
+
+if experiment_name:
+    base_dir = helix_experiments_base_dir()
+    experiment_path = base_dir / experiment_name
+    display_options(experiment_path)
+    display_experiment_plots(experiment_path)
+    display_experiment_logs(experiment_path)
