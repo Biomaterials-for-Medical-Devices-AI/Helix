@@ -66,8 +66,9 @@ def ml_model_dir(experiment_path: Path) -> Path:
     return experiment_path / "models"
 
 
-def ml_metrics_path(experiment_path: Path) -> Path:
-    """Create the full path to the directory to save ML models metrics results.
+def ml_metrics_mean_std_path(experiment_path: Path) -> Path:
+    """Create the full path to the file to save the ML models' metrics'cmean
+    and standard deviations.
 
     Args:
         experiment_path (Path): The path of the experiment.
@@ -75,7 +76,19 @@ def ml_metrics_path(experiment_path: Path) -> Path:
     Returns:
         Path: The full path for the ml models metrics file.
     """
-    return experiment_path / "results" / "ml_metrics" / "metrics.json"
+    return experiment_path / "results" / "ml_metrics" / "metrics_mean_std.json"
+
+
+def ml_metrics_full_path(experiment_path: Path) -> Path:
+    """Create the full path to the file to save the full ML models metrics results.
+
+    Args:
+        experiment_path (Path): The path of the experiment.
+
+    Returns:
+        Path: The full path for the ml models metrics file.
+    """
+    return experiment_path / "results" / "ml_metrics" / "metrics_full.json"
 
 
 def ml_predictions_path(experiment_path: Path) -> Path:

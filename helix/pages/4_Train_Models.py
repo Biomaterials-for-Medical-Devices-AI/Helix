@@ -29,7 +29,8 @@ from helix.options.file_paths import (
     execution_options_path,
     helix_experiments_base_dir,
     log_dir,
-    ml_metrics_path,
+    ml_metrics_full_path,
+    ml_metrics_mean_std_path,
     ml_model_dir,
     ml_options_path,
     ml_plot_dir,
@@ -125,7 +126,7 @@ def pipeline(
     logger = logger_instance.make_logger()
 
     # Machine learning
-    trained_models, metrics_stats = train.run(
+    trained_models, metrics_full, metrics_mean_std = train.run(
         ml_opts=ml_opts,
         data_opts=data_opts,
         plot_opts=plotting_opts,
@@ -175,9 +176,15 @@ def pipeline(
     elif data_opts.data_split.method == DataSplitMethods.KFold:
         predictions = predictions.rename(columns={"Bootstrap": "Fold"})
 
+    # Save full metrics
     save_models_metrics(
-        metrics_stats,
-        ml_metrics_path(helix_experiments_base_dir() / experiment_name),
+        metrics_full,
+        ml_metrics_full_path(helix_experiments_base_dir() / experiment_name),
+    )
+    # Save mean/std metrics
+    save_models_metrics(
+        metrics_mean_std,
+        ml_metrics_mean_std_path(helix_experiments_base_dir() / experiment_name),
     )
     save_model_predictions(
         predictions,
@@ -284,7 +291,7 @@ if experiment_name:
         except NotADirectoryError:
             pass
 
-        metrics = ml_metrics_path(experiment_dir)
+        metrics = ml_metrics_mean_std_path(experiment_dir)
         display_metrics_table(metrics)
 
         if st.session_state.get(MachineLearningStateKeys.Predictions):
