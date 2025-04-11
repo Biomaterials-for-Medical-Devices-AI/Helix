@@ -6,7 +6,7 @@ from sklearn.neural_network import MLPClassifier, MLPRegressor
 from sklearn.utils.extmath import safe_sparse_dot
 
 
-class BaseBRNNMixin:
+class BRNNMixin:
     """Mixin class containing shared methods for BRNNRegressor and BRNNClassifier."""
 
     def _compute_reg_term(self):
@@ -94,7 +94,7 @@ def log_loss(y_true, y_prob, sample_weight=None):
     return -np.average(xlogy(y_true, y_prob), weights=sample_weight, axis=0).sum()
 
 
-class BRNNRegressor(BaseBRNNMixin, MLPRegressor):
+class BRNNRegressor(BRNNMixin, MLPRegressor):
     """BRNN Regressor with RMSE + L2 loss."""
 
     def __init__(
@@ -131,7 +131,7 @@ class BRNNRegressor(BaseBRNNMixin, MLPRegressor):
         deltas[-1] = errors / (n_samples * rmse)
 
 
-class BRNNClassifier(BaseBRNNMixin, MLPClassifier):
+class BRNNClassifier(BRNNMixin, MLPClassifier):
     """BRNN Classifier with log loss + L2 loss."""
 
     def __init__(
