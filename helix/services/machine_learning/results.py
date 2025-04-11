@@ -2,6 +2,7 @@ import os
 import warnings
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
@@ -88,16 +89,21 @@ def _save_regression_plots(
         bootstrap_index (int): Index of the bootstrap
         plot_opts (PlottingOptions): Plot options
     """
-    plot = plot_scatter(
-        y_true,
-        y_pred,
-        metric_results["R2"][split_type.lower()],
-        split_type,
-        dependent_variable,
-        model_name,
-        plot_opts=plot_opts,
-    )
-    plot.savefig(directory / f"{model_name}-{bootstrap_index}-{split_type}.png")
+    try:
+        fig = plot_scatter(
+            y_true,
+            y_pred,
+            metric_results["R2"][split_type.lower()],
+            split_type,
+            dependent_variable,
+            model_name,
+            directory,
+            plot_opts=plot_opts,
+        )
+        plt.close(fig)
+    except Exception as e:
+        logger = Logger()
+        logger.error(f"Error creating scatter plot: {str(e)}")
 
 
 def _save_coefficient_plot(
@@ -108,6 +114,7 @@ def _save_coefficient_plot(
     dependent_variable: str,
     directory: Path,
     bootstrap_index: int,
+    problem_type: ProblemTypes,
 ) -> None:
     """Save coefficient plot for linear regression models.
 
@@ -119,18 +126,34 @@ def _save_coefficient_plot(
         dependent_variable (str): Name of dependent variable
         directory (Path): Directory to save plots
         bootstrap_index (int): Index of the bootstrap
+        problem_type (ProblemTypes): Type of problem (Classification or Regression)
     """
     if hasattr(model, "coef_"):
-        coef_plot = plot_beta_coefficients(
-            coefficients=model.coef_,
-            feature_names=feature_names,
-            plot_opts=plot_opts,
-            model_name=model_name,
-            dependent_variable=dependent_variable,
-        )
-        coef_plot.savefig(
-            directory / f"{model_name}-{bootstrap_index}-Coefficients.png"
-        )
+        try:
+            coefficients = model.coef_
+            if len(coefficients.shape) > 1 and coefficients.shape[0] == 1:
+                # Handle case where coefficients are in shape (1, n_features)
+                coefficients = coefficients.reshape(-1)
+
+            # Ensure feature_names matches coefficient length
+            if len(coefficients) != len(feature_names):
+                raise ValueError(
+                    f"Number of coefficients ({len(coefficients)}) does not match "
+                    f"number of feature names ({len(feature_names)})"
+                )
+
+            plot_beta_coefficients(
+                coefficients=coefficients,
+                feature_names=feature_names,
+                plot_opts=plot_opts,
+                model_name=model_name,
+                dependent_variable=dependent_variable,
+                directory=directory,
+                is_classification=(problem_type == ProblemTypes.Classification),
+            )
+        except Exception as e:
+            logger = Logger()
+            logger.error(f"Error creating coefficient plot: {str(e)}")
 
 
 def _save_classification_plots(
@@ -274,6 +297,7 @@ def save_actual_pred_plots(
                     exec_opts.dependent_variable,
                     directory,
                     closest_index,
+                    exec_opts.problem_type,
                 )
         else:
             # Save classification plots
@@ -315,4 +339,5 @@ def save_actual_pred_plots(
                     exec_opts.dependent_variable,
                     directory,
                     closest_index,
+                    exec_opts.problem_type,
                 )
