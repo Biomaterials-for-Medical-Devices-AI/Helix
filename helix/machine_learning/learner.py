@@ -147,7 +147,7 @@ class Learner:
                 res[i][model_name] = {}
                 model_type = get_model_type(model_name, self._problem_type)
                 model = get_model(model_type, params["params"])
-                self._logger.info(f"Fitting {model_name} for bootstrap number {i+1}...")
+                self._logger.info(f"Fitting {model_name} for bootstrap sample {i+1}...")
 
                 # Standard model handling
                 model.fit(X_train, y_train)
