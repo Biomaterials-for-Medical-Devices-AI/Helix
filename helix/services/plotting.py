@@ -223,9 +223,8 @@ def plot_auc_roc(
 
 
 def plot_confusion_matrix(
-    estimator,
-    X,
-    y,
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
     set_name: str,
     model_name: str,
     directory: Path,
@@ -235,9 +234,8 @@ def plot_confusion_matrix(
     Plot the confusion matrix for a multi-class or binary classification model.
 
     Args:
-        estimator: The trained model.
-        X: The features (not used when using from_predictions).
-        y: The true labels.
+        y_true (np.ndarray): The true labels.
+        y_pred (np.ndarray): The predicted labels.
         set_name: The name of the set (train or test).
         model_name: The name of the model.
         directory: The directory path to save the plot.
@@ -249,11 +247,9 @@ def plot_confusion_matrix(
 
     plt.style.use(plot_opts.plot_colour_scheme)
 
-    # Get predictions from estimator
-    y_pred = estimator.predict(X)
-
+    # Create confusion matrix display
     disp = ConfusionMatrixDisplay.from_predictions(
-        y_true=y,
+        y_true=y_true,
         y_pred=y_pred,
         normalize=None,
         colorbar=False,

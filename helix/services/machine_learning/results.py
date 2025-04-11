@@ -142,6 +142,7 @@ def _save_classification_plots(
     directory: Path,
     plot_opts: PlottingOptions,
     logger: Logger,
+    feature_names: list | None = None,  # Add feature_names parameter
 ) -> None:
     """Save classification plots for a specific split.
 
@@ -154,6 +155,7 @@ def _save_classification_plots(
         directory (Path): Directory to save plots
         plot_opts (PlottingOptions): Plot options
         logger (Logger): The logger instance
+        feature_names (list | None, optional): List of feature names. Defaults to None.
     """
     try:
         encoder = OneHotEncoder()
@@ -173,16 +175,14 @@ def _save_classification_plots(
 
     try:
         # Get predictions for confusion matrix
-        y_pred = np.argmax(y_pred_proba, axis=1) if y_pred_proba.ndim > 1 else y_pred_proba
-        
-        # Create a dummy feature matrix with correct shape
-        X = np.zeros((len(y_true), len(model.feature_names_in_)))
-        
+        y_pred = (
+            np.argmax(y_pred_proba, axis=1) if y_pred_proba.ndim > 1 else y_pred_proba
+        )
+
         # Plot confusion matrix
         plot_confusion_matrix(
-            estimator=model,
-            X=X,  # Model needs this for feature names
-            y=y_true,  # True labels
+            y_true=y_true,  # True labels
+            y_pred=y_pred,  # Predicted labels
             set_name=split_type,
             model_name=model_name,
             directory=directory,
@@ -304,7 +304,9 @@ def save_actual_pred_plots(
                 logger,
             )
             # Save coefficient plots for linear classification models
-            if model_name == "linear model" and hasattr(trained_models[model_name][closest_index], "coef_"):
+            if model_name == "linear model" and hasattr(
+                trained_models[model_name][closest_index], "coef_"
+            ):
                 _save_coefficient_plot(
                     trained_models[model_name][closest_index],
                     data.X_train[closest_index].columns.tolist(),

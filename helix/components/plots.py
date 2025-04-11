@@ -66,18 +66,50 @@ def plot_box(plot_dir: Path, box_title: str):
                 )
                 st.markdown(f"### {formatted_model_name}")
 
-                # Show Train/Test plots side by side
-                if group["Train"] or group["Test"]:
-                    cols = st.columns(2)
-                    for train_plot in group["Train"]:
-                        cols[0].image(str(train_plot))
-                    for test_plot in group["Test"]:
-                        cols[1].image(str(test_plot))
+                # Determine if this is a classification model by checking for ROC curves
+                is_classification = any(
+                    "ROC" in p.stem for p in group["Train"] + group["Test"]
+                )
+
+                if is_classification:
+                    # Show ROC curves side by side
+                    if any("ROC" in p.stem for p in group["Train"] + group["Test"]):
+                        st.markdown("#### ROC Curves")
+                        cols = st.columns(2)
+                        for train_plot in [
+                            p for p in group["Train"] if "ROC" in p.stem
+                        ]:
+                            cols[0].image(str(train_plot))
+                        for test_plot in [p for p in group["Test"] if "ROC" in p.stem]:
+                            cols[1].image(str(test_plot))
+
+                    # Show confusion matrices side by side
+                    if any(
+                        "Confusion" in p.stem for p in group["Train"] + group["Test"]
+                    ):
+                        st.markdown("#### Confusion Matrices")
+                        cols = st.columns(2)
+                        for train_plot in [
+                            p for p in group["Train"] if "Confusion" in p.stem
+                        ]:
+                            cols[0].image(str(train_plot))
+                        for test_plot in [
+                            p for p in group["Test"] if "Confusion" in p.stem
+                        ]:
+                            cols[1].image(str(test_plot))
+                else:
+                    # Show regression plots side by side
+                    if group["Train"] or group["Test"]:
+                        cols = st.columns(2)
+                        for train_plot in group["Train"]:
+                            cols[0].image(str(train_plot))
+                        for test_plot in group["Test"]:
+                            cols[1].image(str(test_plot))
 
                 # Show coefficient plots
-                for coef_plot in group["Coefficients"]:
+                if group["Coefficients"]:
                     st.markdown("#### Model Coefficients")
-                    st.image(str(coef_plot))
+                    st.image(str(group["Coefficients"][0]))
 
                 # Show other plots
                 for other_plot in group["Other"]:
