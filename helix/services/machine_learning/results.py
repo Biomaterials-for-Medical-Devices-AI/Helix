@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
-from helix.options.enums import Metrics, ProblemTypes
+from helix.options.enums import Metrics, ModelNames, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.ml import MachineLearningOptions
 from helix.options.plotting import PlottingOptions
@@ -73,8 +73,8 @@ def _save_regression_plots(
     dependent_variable: str,
     model_name: str,
     directory: Path,
-    bootstrap_index: int,
     plot_opts: PlottingOptions,
+    logger: Logger,
 ) -> None:
     """Save regression plots for a specific split.
 
@@ -102,7 +102,6 @@ def _save_regression_plots(
         )
         plt.close(fig)
     except Exception as e:
-        logger = Logger()
         logger.error(f"Error creating scatter plot: {str(e)}")
 
 
@@ -113,8 +112,8 @@ def _save_coefficient_plot(
     model_name: str,
     dependent_variable: str,
     directory: Path,
-    bootstrap_index: int,
     problem_type: ProblemTypes,
+    logger: Logger,
 ) -> None:
     """Save coefficient plot for linear regression models.
 
@@ -152,20 +151,17 @@ def _save_coefficient_plot(
                 is_classification=(problem_type == ProblemTypes.Classification),
             )
         except Exception as e:
-            logger = Logger()
             logger.error(f"Error creating coefficient plot: {str(e)}")
 
 
 def _save_classification_plots(
     y_true: np.ndarray,
     y_pred_proba: np.ndarray,
-    model: object,
     split_type: str,
     model_name: str,
     directory: Path,
     plot_opts: PlottingOptions,
     logger: Logger,
-    feature_names: list | None = None,  # Add feature_names parameter
 ) -> None:
     """Save classification plots for a specific split.
 
@@ -221,7 +217,6 @@ def save_actual_pred_plots(
     logger: Logger,
     ml_metric_results: dict,
     ml_metric_results_stats: dict,
-    n_bootstraps: int,
     exec_opts: ExecutionOptions,
     plot_opts: PlottingOptions | None = None,
     ml_opts: MachineLearningOptions | None = None,
@@ -263,41 +258,41 @@ def save_actual_pred_plots(
         if exec_opts.problem_type == ProblemTypes.Regression:
             # Save regression plots
             _save_regression_plots(
-                y_test[closest_index],
-                y_pred_test,
-                ml_metric_results[model_name][closest_index],
-                "Test",
-                exec_opts.dependent_variable,
-                model_name,
-                directory,
-                closest_index,
-                plot_opts,
+                y_true=y_test[closest_index],
+                y_pred=y_pred_test,
+                metric_results=ml_metric_results[model_name][closest_index],
+                split_type="Test",
+                dependent_variable=exec_opts.dependent_variable,
+                model_name=model_name,
+                directory=directory,
+                plot_opts=plot_opts,
+                logger=logger,
             )
             _save_regression_plots(
-                y_train[closest_index],
-                y_pred_train,
-                ml_metric_results[model_name][closest_index],
-                "Train",
-                exec_opts.dependent_variable,
-                model_name,
-                directory,
-                closest_index,
-                plot_opts,
+                y_true=y_train[closest_index],
+                y_pred=y_pred_train,
+                metric_results=ml_metric_results[model_name][closest_index],
+                split_type="Train",
+                dependent_variable=exec_opts.dependent_variable,
+                model_name=model_name,
+                directory=directory,
+                plot_opts=plot_opts,
+                logger=logger,
             )
             # Save coefficient plots for linear models
             if model_name in [
-                "linear model",
-                "multiple linear regression with expectation maximisation",
+                ModelNames.LinearModel.value,
+                ModelNames.MLREM.value,
             ]:
                 _save_coefficient_plot(
-                    trained_models[model_name][closest_index],
-                    data.X_train[closest_index].columns.tolist(),
-                    plot_opts,
-                    model_name,
-                    exec_opts.dependent_variable,
-                    directory,
-                    closest_index,
-                    exec_opts.problem_type,
+                    model=trained_models[model_name][closest_index],
+                    feature_names=data.X_train[closest_index].columns.tolist(),
+                    plot_opts=plot_opts,
+                    model_name=model_name,
+                    dependent_variable=exec_opts.dependent_variable,
+                    directory=directory,
+                    problem_type=exec_opts.problem_type,
+                    logger=logger,
                 )
         else:
             # Save classification plots
@@ -308,24 +303,24 @@ def save_actual_pred_plots(
                 "y_pred_train_proba"
             ]
             _save_classification_plots(
-                y_test[closest_index],
-                y_pred_test_proba,
-                trained_models[model_name][closest_index],
-                "Test",
-                model_name,
-                directory,
-                plot_opts,
-                logger,
+                y_true=y_test[closest_index],
+                y_pred_proba=y_pred_test_proba,
+                model=trained_models[model_name][closest_index],
+                split_type="Test",
+                model_name=model_name,
+                directory=directory,
+                plot_opts=plot_opts,
+                logger=logger,
             )
             _save_classification_plots(
-                y_train[closest_index],
-                y_pred_train_proba,
-                trained_models[model_name][closest_index],
-                "Train",
-                model_name,
-                directory,
-                plot_opts,
-                logger,
+                y_true=y_train[closest_index],
+                y_pred_proba=y_pred_train_proba,
+                model=trained_models[model_name][closest_index],
+                split_type="Train",
+                model_name=model_name,
+                directory=directory,
+                plot_opts=plot_opts,
+                logger=logger,
             )
             # Save coefficient plots for linear classification models
             if model_name == "linear model" and hasattr(
@@ -340,4 +335,5 @@ def save_actual_pred_plots(
                     directory,
                     closest_index,
                     exec_opts.problem_type,
+                    logger=logger,
                 )
