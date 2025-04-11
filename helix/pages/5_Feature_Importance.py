@@ -245,6 +245,35 @@ def pipeline(
         close_logger(fuzzy_logger_instance, fuzzy_logger)
 
 
+def display_feature_importance_plots(experiment_dir: Path) -> None:
+    """Display feature importance plots from the given experiment directory.
+
+    Args:
+        experiment_dir: Path to the experiment directory
+    """
+    fi_plots = fi_plot_dir(experiment_dir)
+    if fi_plots.exists():
+        mean_plots = [
+            p
+            for p in fi_plots.iterdir()
+            if p.name.endswith("-all-folds-mean.png")  # mean global FI
+            or p.name.startswith("local-")  # local plots
+            or p.name.startswith("ensemble-")  # ensemble plots
+        ]
+        plot_box_v2(mean_plots, "Feature importance plots")
+
+
+def display_fuzzy_plots(experiment_dir: Path) -> None:
+    """Display fuzzy plots from the given experiment directory.
+
+    Args:
+        experiment_dir: Path to the experiment directory
+    """
+    fuzzy_plots = fuzzy_plot_dir(experiment_dir)
+    if fuzzy_plots.exists():
+        plot_box(fuzzy_plots, "Fuzzy plots")
+
+
 # Set page contents
 st.set_page_config(
     page_title="Feature Importance",
@@ -387,19 +416,9 @@ if experiment_name:
                     log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
                 except NotADirectoryError:
                     pass
-                fi_plots = fi_plot_dir(base_dir / experiment_name)
-                if fi_plots.exists():
-                    mean_plots = [
-                        p
-                        for p in fi_plots.iterdir()
-                        if p.name.endswith("-all-folds-mean.png")  # mean global FI
-                        or p.name.startswith("local-")  # local plots
-                        or p.name.startswith("ensemble-")  # ensemble plots
-                    ]
-                    plot_box_v2(mean_plots, "Feature importance plots")
-                fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
-                if fuzzy_plots.exists():
-                    plot_box(fuzzy_plots, "Fuzzy plots")
+                # Display plots
+                display_feature_importance_plots(base_dir / experiment_name)
+                display_fuzzy_plots(base_dir / experiment_name)
 
     else:
         st.success(
