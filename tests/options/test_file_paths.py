@@ -99,13 +99,28 @@ def test_ml_model_dir():
     assert actual_output == expected_output
 
 
-def test_ml_metrics_path():
+def test_ml_metrics_mean_std_path():
     # Arrange
     experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
-    expected_output = experiment_path / "results" / "ml_metrics" / "metrics.json"
+    expected_output = (
+        experiment_path / "results" / "ml_metrics" / "metrics_mean_std.json"
+    )
 
     # Act
-    actual_output = fp.ml_metrics_path(experiment_path)
+    actual_output = fp.ml_metrics_mean_std_path(experiment_path)
+
+    # Assert
+    assert isinstance(actual_output, Path)
+    assert actual_output == expected_output
+
+
+def test_ml_metrics_full_path():
+    # Arrange
+    experiment_path = fp.helix_experiments_base_dir() / "TestExperiment"
+    expected_output = experiment_path / "results" / "ml_metrics" / "metrics_full.json"
+
+    # Act
+    actual_output = fp.ml_metrics_full_path(experiment_path)
 
     # Assert
     assert isinstance(actual_output, Path)

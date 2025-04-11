@@ -36,3 +36,27 @@ def get_metrics(problem_type: ProblemTypes, logger: object = None) -> dict:
 
     logger.info(f"Using metrics: {list(metrics.keys())}")
     return metrics
+
+
+def find_mean_model_index(
+    full_metrics: dict, aggregated_metrics: dict, metric_name: str
+) -> int:
+    """
+    Find the index of the model with the mean of the metric.
+    """
+
+    for model_name, stats in aggregated_metrics.items():
+        # Extract the mean metric for the test set
+        mean_metric_test = stats["test"][metric_name]["mean"]
+
+        # Find the bootstrap index closest to the mean metric
+        dif = float("inf")
+        closest_index = -1
+        for i, bootstrap in enumerate(full_metrics[model_name]):
+            metric_value = bootstrap[metric_name]["test"]["value"]
+            current_dif = abs(metric_value - mean_metric_test)
+            if current_dif < dif:
+                dif = current_dif
+                closest_index = i
+
+    return closest_index
