@@ -404,6 +404,8 @@ def plot_beta_coefficients(
 
     # Create horizontal bar plot
     y_pos = np.arange(len(sorted_coefs))
+    colors = ["blue" if c >= 0 else "red" for c in sorted_coefs]
+    ax.barh(y_pos, sorted_coefs, color=colors, alpha=0.6)
 
     # Add error bars if available
     if sorted_errors:

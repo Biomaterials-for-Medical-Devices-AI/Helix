@@ -6,6 +6,44 @@ import streamlit as st
 from st_aggrid import AgGrid, GridOptionsBuilder
 
 
+def group_plots_by_model_and_type(plots):
+    """Group plots by model name and type.
+
+    Args:
+        plots (list): List of Path objects representing plot files.
+
+    Returns:
+        dict: Dictionary with model names as keys and plot groups (Train/Test/Coefficients/Other) as values.
+    """
+    plot_groups = {}
+    for p in plots:
+        if not p.name.endswith(".png"):
+            continue
+
+        # Extract model name and plot type from filename
+        parts = p.stem.split("-")
+        if len(parts) >= 2:
+            model_name = parts[0]
+            if model_name not in plot_groups:
+                plot_groups[model_name] = {
+                    "Train": [],
+                    "Test": [],
+                    "Coefficients": [],
+                    "Other": [],
+                }
+
+            if "Train" in parts:
+                plot_groups[model_name]["Train"].append(p)
+            elif "Test" in parts:
+                plot_groups[model_name]["Test"].append(p)
+            elif "coefficients" in parts:
+                plot_groups[model_name]["Coefficients"].append(p)
+            else:
+                plot_groups[model_name]["Other"].append(p)
+
+    return plot_groups
+
+
 @st.experimental_fragment
 def plot_box(plot_dir: Path, box_title: str):
     """Display the plots in the given directory in the UI.
@@ -18,31 +56,7 @@ def plot_box(plot_dir: Path, box_title: str):
         plots = sorted(plot_dir.iterdir(), key=lambda x: x.stat().st_ctime)
         with st.expander(box_title, expanded=len(plots) > 0):
             # Group plots by model and type
-            plot_groups = {}
-            for p in plots:
-                if not p.name.endswith(".png"):
-                    continue
-
-                # Extract model name and plot type from filename
-                parts = p.stem.split("-")
-                if len(parts) >= 2:
-                    model_name = parts[0]
-                    if model_name not in plot_groups:
-                        plot_groups[model_name] = {
-                            "Train": [],
-                            "Test": [],
-                            "Coefficients": [],
-                            "Other": [],
-                        }
-
-                    if "Train" in parts:
-                        plot_groups[model_name]["Train"].append(p)
-                    elif "Test" in parts:
-                        plot_groups[model_name]["Test"].append(p)
-                    elif "coefficients" in parts:
-                        plot_groups[model_name]["Coefficients"].append(p)
-                    else:
-                        plot_groups[model_name]["Other"].append(p)
+            plot_groups = group_plots_by_model_and_type(plots)
 
             # Display plots by group
             for model_name, group in plot_groups.items():
