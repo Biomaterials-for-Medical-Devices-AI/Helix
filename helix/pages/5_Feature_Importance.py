@@ -388,16 +388,18 @@ if experiment_name:
                 except NotADirectoryError:
                     pass
                 fi_plots = fi_plot_dir(base_dir / experiment_name)
-                mean_plots = [
-                    p
-                    for p in fi_plots.iterdir()
-                    if p.name.endswith("-all-folds-mean.png")  # mean global FI
-                    or p.name.startswith("local-")  # local plots
-                    or p.name.startswith("ensemble-")  # ensemble plots
-                ]
-                plot_box_v2(mean_plots, "Feature importance plots")
+                if fi_plots.exists():
+                    mean_plots = [
+                        p
+                        for p in fi_plots.iterdir()
+                        if p.name.endswith("-all-folds-mean.png")  # mean global FI
+                        or p.name.startswith("local-")  # local plots
+                        or p.name.startswith("ensemble-")  # ensemble plots
+                    ]
+                    plot_box_v2(mean_plots, "Feature importance plots")
                 fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
-                plot_box(fuzzy_plots, "Fuzzy plots")
+                if fuzzy_plots.exists():
+                    plot_box(fuzzy_plots, "Fuzzy plots")
 
     else:
         st.success(
