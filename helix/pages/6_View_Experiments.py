@@ -5,7 +5,12 @@ from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import display_metrics_table, display_predictions, plot_box
+from helix.components.plots import (
+    display_metrics_table,
+    display_predictions,
+    plot_box,
+    plot_box_v2,
+)
 from helix.options.enums import (
     FeatureImportanceStateKeys,
     FuzzyStateKeys,
@@ -18,7 +23,7 @@ from helix.options.file_paths import (
     fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
-    ml_metrics_path,
+    ml_metrics_mean_std_path,
     ml_plot_dir,
     ml_predictions_path,
 )
@@ -53,7 +58,7 @@ if experiment_name:
     display_options(experiment_path)
     data_analysis = data_analysis_plots_dir(experiment_path)
     plot_box(data_analysis, "Data Analysis Plots")
-    ml_metrics = ml_metrics_path(experiment_path)
+    ml_metrics = ml_metrics_mean_std_path(experiment_path)
     display_metrics_table(ml_metrics)
     ml_plots = ml_plot_dir(experiment_path)
     plot_box(ml_plots, "Machine learning plots")
@@ -61,8 +66,15 @@ if experiment_name:
     if predictions.exists():
         preds = pd.read_csv(predictions)
         display_predictions(preds)
-    fi_plots = fi_plot_dir(experiment_path)
-    plot_box(fi_plots, "Feature importance plots")
+    fi_plots = fi_plot_dir(base_dir / experiment_name)
+    mean_plots = [
+        p
+        for p in fi_plots.iterdir()
+        if p.name.endswith("-all-folds-mean.png")  # mean global FI
+        or p.name.startswith("local-")  # local plots
+        or p.name.startswith("ensemble-")  # ensemble plots
+    ]
+    plot_box_v2(mean_plots, "Feature importance plots")
     fuzzy_plots = fuzzy_plot_dir(experiment_path)
     plot_box(fuzzy_plots, "Fuzzy plots")
     try:
