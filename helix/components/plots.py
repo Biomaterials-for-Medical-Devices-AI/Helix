@@ -119,6 +119,19 @@ def plot_box(plot_dir: Path, box_title: str):
 
 
 @st.experimental_fragment
+def plot_box_v2(plot_paths: list[Path], box_title: str):
+    """Display the plots given in the list of plot files.
+
+    Args:
+        plot_paths (list[Path]): The paths to the plots to display.
+        box_title (str): The title of the box.
+    """
+    with st.expander(box_title, expanded=len(plot_paths) > 0):
+        for plot in sorted(plot_paths, key=lambda x: x.stat().st_ctime):
+            st.image(str(plot))
+
+
+@st.experimental_fragment
 def display_metrics_table(metrics_path: Path):
     """
     Display a metrics summary table in a Streamlit app.
