@@ -471,8 +471,13 @@ def plot_beta_coefficients(
     # Create figure with calculated dimensions
     fig, ax = plt.subplots(figsize=(10, fig_height), dpi=plot_opts.dpi)
 
+    # Get colors from the palette
+    palette = sns.color_palette(plot_opts.plot_colour_map)
+    negative_color = palette[0]  # First color for negative values
+    positive_color = palette[-1]  # Last color for positive values
+
     # Create color list based on coefficient signs
-    colors = ["red" if c < 0 else "blue" for c in coefficients]
+    colors = [negative_color if c < 0 else positive_color for c in coefficients]
 
     # Plot horizontal bars
     y_pos = np.arange(len(coefficients))
