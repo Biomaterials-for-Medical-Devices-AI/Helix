@@ -140,9 +140,6 @@ def build_configuration() -> tuple[
         permutation_importance_repeat=st.session_state[
             FeatureImportanceStateKeys.NumberOfRepetitions
         ],
-        shap_reduce_data=st.session_state[
-            FeatureImportanceStateKeys.ShapDataPercentage
-        ],
         save_feature_importance_plots=plotting_options.save_plots,
         fi_log_dir=str(
             log_dir(

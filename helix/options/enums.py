@@ -17,7 +17,6 @@ class FeatureImportanceStateKeys(StrEnum):
     NumberOfImportantFeatures = "num_important_features"
     ScoringFunction = "scoring_function"
     NumberOfRepetitions = "num_repetitions"
-    ShapDataPercentage = "shap_data_percentage"
     SaveFeatureImportanceOptions = "save_feature_importance_options"
     SaveFeatureImportanceResults = "save_feature_importance_results"
     LocalImportanceFeatures = "local_importance_methods"

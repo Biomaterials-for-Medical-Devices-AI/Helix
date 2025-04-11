@@ -51,10 +51,6 @@ These methods are used to interpret feature importance on a *per prediction* bas
 
   The number of times to permute the features using permutative importance.
 
-- Percentage of data to consider for SHAP
-
-  The proportion of the data that will be used to perform SHAP analyses.
-
 ![Additional feature importance configuration](../_static/additional-fi-config.png)
 
 ## Fuzzy feature importance
