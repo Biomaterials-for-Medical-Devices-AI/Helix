@@ -157,11 +157,6 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         )
         return predictions.ravel()
 
-    @property
-    def coef_(self):
-        """Get the coefficients. This property exists for scikit-learn compatibility."""
-        return self.coefficients_
-
     def score(self, X, y, sample_weight=None):
         r2 = super().score(X, y, sample_weight)
         n_samples = X.shape[0]
