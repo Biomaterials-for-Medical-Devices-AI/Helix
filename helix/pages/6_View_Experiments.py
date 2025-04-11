@@ -57,26 +57,31 @@ if experiment_name:
     experiment_path = base_dir / experiment_name
     display_options(experiment_path)
     data_analysis = data_analysis_plots_dir(experiment_path)
-    plot_box(data_analysis, "Data Analysis Plots")
+    if data_analysis.exists():
+        plot_box(data_analysis, "Data Analysis Plots")
     ml_metrics = ml_metrics_mean_std_path(experiment_path)
-    display_metrics_table(ml_metrics)
+    if ml_metrics.exists():
+        display_metrics_table(ml_metrics)
     ml_plots = ml_plot_dir(experiment_path)
-    plot_box(ml_plots, "Machine learning plots")
+    if ml_plots.exists():
+        plot_box(ml_plots, "Machine learning plots")
     predictions = ml_predictions_path(experiment_path)
     if predictions.exists():
         preds = pd.read_csv(predictions)
         display_predictions(preds)
     fi_plots = fi_plot_dir(base_dir / experiment_name)
-    mean_plots = [
-        p
-        for p in fi_plots.iterdir()
-        if p.name.endswith("-all-folds-mean.png")  # mean global FI
-        or p.name.startswith("local-")  # local plots
-        or p.name.startswith("ensemble-")  # ensemble plots
-    ]
-    plot_box_v2(mean_plots, "Feature importance plots")
+    if fi_plots.exists():
+        mean_plots = [
+            p
+            for p in fi_plots.iterdir()
+            if p.name.endswith("-all-folds-mean.png")  # mean global FI
+            or p.name.startswith("local-")  # local plots
+            or p.name.startswith("ensemble-")  # ensemble plots
+        ]
+        plot_box_v2(mean_plots, "Feature importance plots")
     fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    plot_box(fuzzy_plots, "Fuzzy plots")
+    if fuzzy_plots.exists():
+        plot_box(fuzzy_plots, "Fuzzy plots")
     try:
         st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"
