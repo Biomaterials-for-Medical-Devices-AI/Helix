@@ -177,7 +177,6 @@ class FeatureImportanceEstimator:
                         shap_df, _ = calculate_global_shap_values(
                             model=model_list[idx],
                             X=X,
-                            shap_reduce_data=self._fi_opt.shap_reduce_data,
                             logger=self._logger,
                         )
                         results_dir = fi_result_dir(
@@ -312,7 +311,6 @@ class FeatureImportanceEstimator:
                             shap_df, shap_values = calculate_local_shap_values(
                                 model=model[closest_index],
                                 X=X,
-                                shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
                             )
                             results_dir = fi_result_dir(
