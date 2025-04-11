@@ -236,7 +236,7 @@ def plot_confusion_matrix(
 
     Args:
         estimator: The trained model.
-        X: The features.
+        X: The features (not used when using from_predictions).
         y: The true labels.
         set_name: The name of the set (train or test).
         model_name: The name of the model.
@@ -249,10 +249,12 @@ def plot_confusion_matrix(
 
     plt.style.use(plot_opts.plot_colour_scheme)
 
-    disp = ConfusionMatrixDisplay.from_estimator(
-        estimator=estimator,
-        X=X,
-        y=y,
+    # Get predictions from estimator
+    y_pred = estimator.predict(X)
+
+    disp = ConfusionMatrixDisplay.from_predictions(
+        y_true=y,
+        y_pred=y_pred,
         normalize=None,
         colorbar=False,
         cmap=plot_opts.plot_colour_map,
@@ -362,7 +364,7 @@ def plot_beta_coefficients(
     """Create a bar plot of model coefficients with different colors for positive/negative values.
 
     Args:
-        coefficients (np.ndarray): The model coefficients
+        coefficients (np.ndarray): The model coefficients. For logistic regression, uses first class coefficients
         feature_names (list): Names of the features corresponding to coefficients
         plot_opts (PlottingOptions): The plotting options
         model_name (str): Name of the model for the plot title
@@ -373,6 +375,10 @@ def plot_beta_coefficients(
         Figure: The coefficient plot
     """
     plt.style.use(plot_opts.plot_colour_scheme)
+
+    # For logistic regression, use coefficients for first class
+    if len(coefficients.shape) > 1:
+        coefficients = coefficients[0]  # Take first class coefficients
 
     # Calculate figure height based on number of coefficients
     # Base height of 3 inches, plus 0.25 inches per coefficient

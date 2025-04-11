@@ -141,6 +141,7 @@ def _save_classification_plots(
     model_name: str,
     directory: Path,
     plot_opts: PlottingOptions,
+    logger: Logger,
 ) -> None:
     """Save classification plots for a specific split.
 
@@ -152,29 +153,43 @@ def _save_classification_plots(
         model_name (str): Name of the model
         directory (Path): Directory to save plots
         plot_opts (PlottingOptions): Plot options
+        logger (Logger): The logger instance
     """
-    encoder = OneHotEncoder()
-    encoder.fit(y_true.reshape(-1, 1))
-    y_true_labels = encoder.transform(y_true.reshape(-1, 1)).toarray()
+    try:
+        encoder = OneHotEncoder()
+        encoder.fit(y_true.reshape(-1, 1))
+        y_true_labels = encoder.transform(y_true.reshape(-1, 1)).toarray()
 
-    plot_auc_roc(
-        y_classes_labels=y_true_labels,
-        y_score_probs=y_pred_proba,
-        set_name=split_type,
-        model_name=model_name,
-        directory=directory,
-        plot_opts=plot_opts,
-    )
+        plot_auc_roc(
+            y_classes_labels=y_true_labels,
+            y_score_probs=y_pred_proba,
+            set_name=split_type,
+            model_name=model_name,
+            directory=directory,
+            plot_opts=plot_opts,
+        )
+    except Exception as e:
+        logger.error(f"Error plotting ROC curve: {str(e)}")
 
-    plot_confusion_matrix(
-        estimator=model,
-        X=y_true,
-        y=y_true,
-        set_name=split_type,
-        model_name=model_name,
-        directory=directory,
-        plot_opts=plot_opts,
-    )
+    try:
+        # Get predictions for confusion matrix
+        y_pred = np.argmax(y_pred_proba, axis=1) if y_pred_proba.ndim > 1 else y_pred_proba
+        
+        # Create a dummy feature matrix with correct shape
+        X = np.zeros((len(y_true), len(model.feature_names_in_)))
+        
+        # Plot confusion matrix
+        plot_confusion_matrix(
+            estimator=model,
+            X=X,  # Model needs this for feature names
+            y=y_true,  # True labels
+            set_name=split_type,
+            model_name=model_name,
+            directory=directory,
+            plot_opts=plot_opts,
+        )
+    except Exception as e:
+        logger.error(f"Error plotting confusion matrix: {str(e)}")
 
 
 def save_actual_pred_plots(
@@ -276,6 +291,7 @@ def save_actual_pred_plots(
                 model_name,
                 directory,
                 plot_opts,
+                logger,
             )
             _save_classification_plots(
                 y_train[closest_index],
@@ -285,4 +301,16 @@ def save_actual_pred_plots(
                 model_name,
                 directory,
                 plot_opts,
+                logger,
             )
+            # Save coefficient plots for linear classification models
+            if model_name == "linear model" and hasattr(trained_models[model_name][closest_index], "coef_"):
+                _save_coefficient_plot(
+                    trained_models[model_name][closest_index],
+                    data.X_train[closest_index].columns.tolist(),
+                    plot_opts,
+                    model_name,
+                    exec_opts.dependent_variable,
+                    directory,
+                    closest_index,
+                )
