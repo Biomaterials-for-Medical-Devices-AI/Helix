@@ -226,7 +226,6 @@ def display_metrics_table(metrics_path: Path):
     gb.configure_default_column(
         editable=False, resizable=True, flex=2, cellStyle=global_style, wrapText=False
     )
-    gb.configure_grid_options(domLayout="autoHeight")
     gb.configure_first_column_as_index()
     gb.configure_auto_height()
     grid_options = gb.build()
@@ -238,6 +237,7 @@ def display_metrics_table(metrics_path: Path):
         fit_columns_on_grid_load=True,
         highlight_odd_rows=True,
         key="metrics_table",
+        height=150,  # Required to make sure there's not a massive gap below
     )
 
 
