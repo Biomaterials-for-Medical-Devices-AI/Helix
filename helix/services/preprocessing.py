@@ -156,6 +156,12 @@ def run_feature_selection(
         lasso = Lasso(alpha=preprocessing_opts.lasso_regularisation_term)
         lasso.fit(X, y)
         selected_features = X.columns[lasso.coef_ != 0]
+        if selected_features.empty:
+            raise ValueError(
+                "No indepdendent variables remain after applying "
+                "LASSO regularisation term "
+                f"**{preprocessing_opts.lasso_regularisation_term}**."
+            )
         X = X[selected_features]
 
     processed_data = pd.concat([X, y], axis=1)

@@ -177,7 +177,11 @@ if experiment_name:
                 st.success("Data Preprocessing Complete")
                 st.header(f"Preprocessed Data ({processed_data.shape[1]} columns)")
                 preprocessed_view(processed_data)
+        except ValueError as e:
+            # If something goes wrong with the thresholds
+            st.error(str(e), icon="🔥")
         except Exception:
-            st.error("Unable to read data.", icon="🔥")
+            # Catch all exception
+            st.error("Something went wrong.", icon="🔥")
         finally:
             close_logger(logger_instance, logger)
