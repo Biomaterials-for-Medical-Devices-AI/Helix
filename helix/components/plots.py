@@ -228,6 +228,7 @@ def display_metrics_table(metrics_path: Path):
     )
     gb.configure_grid_options(domLayout="autoHeight")
     gb.configure_first_column_as_index()
+    gb.configure_auto_height()
     grid_options = gb.build()
 
     # Display Full-Width Ag-Grid Table with Styling
