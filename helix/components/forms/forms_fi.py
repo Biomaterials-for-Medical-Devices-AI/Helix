@@ -146,16 +146,6 @@ def fi_options_form():
         key=FeatureImportanceStateKeys.NumberOfRepetitions,
     )
 
-    # Percentage of data to consider for SHAP
-    st.slider(
-        "Percentage of data to consider for SHAP",
-        0,
-        100,
-        100,
-        help="Set the percentage of data used to calculate SHAP values.",
-        key=FeatureImportanceStateKeys.ShapDataPercentage,
-    )
-
     # Fuzzy Options
     st.write("### Fuzzy Feature Importance Options")
     st.write(

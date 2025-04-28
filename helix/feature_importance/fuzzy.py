@@ -524,7 +524,6 @@ class Fuzzy:
                             shap_df, shap_values = calculate_local_shap_values(
                                 model=model[0],
                                 X=X,
-                                shap_reduce_data=self._fi_opt.shap_reduce_data,
                                 logger=self._logger,
                             )
                             # Normalise SHAP values between 0 and 1 (0 being the lowest impact and 1 being the highest impact)

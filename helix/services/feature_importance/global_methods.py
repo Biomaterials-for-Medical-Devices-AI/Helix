@@ -10,7 +10,6 @@ from helix.utils.logging_utils import Logger
 def calculate_global_shap_values(
     model,
     X: pd.DataFrame,
-    shap_reduce_data: int,
     logger: Logger,
 ) -> tuple[pd.DataFrame, Any]:
     """Calculate SHAP values for a given model and dataset.
@@ -18,7 +17,6 @@ def calculate_global_shap_values(
     Args:
         model: Model object.
         X (pd.DataFrame): The dataset.
-        shap_reduce_data (int): The percentage of data to use for SHAP calculation.
         logger (Logger): The logger.
 
     Returns:
@@ -26,11 +24,7 @@ def calculate_global_shap_values(
     """
     logger.info(f"Calculating SHAP Importance for {model.__class__.__name__} model..")
 
-    if shap_reduce_data == 100:
-        explainer = shap.Explainer(model.predict, X)
-    else:
-        X_reduced = shap.utils.sample(X, int(X.shape[0] * shap_reduce_data / 100))
-        explainer = shap.Explainer(model.predict, X_reduced)
+    explainer = shap.Explainer(model.predict, X)
 
     shap_values = explainer(X)
 

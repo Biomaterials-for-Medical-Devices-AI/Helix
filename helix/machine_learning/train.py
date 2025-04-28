@@ -39,20 +39,12 @@ def run(
     res, metrics_full, metrics_mean_std, trained_models = learner.fit(data)
     logger.info(f"Performance Metric Statistics: {os.linesep}{metrics_mean_std}")
     if ml_opts.save_actual_pred_plots:
-        if data_opts.data_split.n_bootstraps is not None:
-            n = data_opts.data_split.n_bootstraps
-        elif data_opts.data_split.k_folds is not None:
-            n = data_opts.data_split.k_folds
-        else:
-            n = 1
-
         save_actual_pred_plots(
             data=data,
             ml_results=res,
             logger=logger,
             ml_metric_results=metrics_full,
             ml_metric_results_stats=metrics_mean_std,
-            n_bootstraps=n,
             exec_opts=exec_opts,
             plot_opts=plot_opts,
             ml_opts=ml_opts,
