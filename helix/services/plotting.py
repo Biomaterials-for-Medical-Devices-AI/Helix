@@ -555,9 +555,6 @@ def plot_permutation_importance(
     plot_opts: PlottingOptions,
     n_features: int,
     title: str,
-    directory: Path,
-    model_name: str,
-    set_name: str,
 ) -> Figure:
     """Plot a bar chart of the top n features in the feature importance dataframe,
     with the given title and styled with the given options.
@@ -601,13 +598,6 @@ def plot_permutation_importance(
         wrap=True,
     )
 
-    # Save plot with standardized filename
-    fig.savefig(
-        directory / f"{model_name}-{set_name.lower()}-permutation.png",
-        dpi=plot_opts.dpi,
-    )
-    plt.close()
-    plt.clf()
     return fig
 
 
