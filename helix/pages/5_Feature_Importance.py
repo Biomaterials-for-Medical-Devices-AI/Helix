@@ -256,7 +256,7 @@ st.header("Feature Importance")
 #     This page provides options for exploring and customising feature importance and
 #     interpretability methods in the trained machine learning models.
 #     You can configure global and local feature importance techniques,
-#     select ensemble approaches, and apply fuzzy feature selection.
+#     select ensemble approaches, and apply fuzzy feature importance.
 #     Options include tuning scoring functions, setting data percentages
 #     for SHAP analysis, and configuring rules for fuzzy synergy analysis
 #     to gain deeper insights into model behaviour.
