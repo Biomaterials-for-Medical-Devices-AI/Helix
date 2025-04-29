@@ -294,7 +294,6 @@ def plot_scatter(
     set_name: str,
     dependent_variable: str,
     model_name: str,
-    directory: Path,
     plot_opts: PlottingOptions,
 ) -> Figure:
     """Create a scatter plot comparing predicted vs actual values.
@@ -306,7 +305,6 @@ def plot_scatter(
         set_name (str): "Train" or "Test".
         dependent_variable (str): The name of the dependent variable.
         model_name (str): Name of the model.
-        directory (Path): The directory to save the plot.
         plot_opts (PlottingOptions): Options for styling the plot.
 
     Returns:
@@ -367,11 +365,6 @@ def plot_scatter(
 
     # Adjust layout
     plt.tight_layout()
-
-    # Save plot with standardized filename
-    if directory:
-        save_path = directory / f"{model_name}-{set_name.lower()}-scatter.png"
-        fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
 
     return fig
 

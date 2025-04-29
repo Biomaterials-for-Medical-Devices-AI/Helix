@@ -98,10 +98,11 @@ def _save_regression_plots(
             split_type,
             dependent_variable,
             model_name,
-            directory,
             plot_opts=plot_opts,
         )
-        plt.close(fig)
+        save_path = directory / f"{model_name}-{split_type.lower()}-scatter.png"
+        fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
+        close_figure(fig)
     except Exception as e:
         logger.error(f"Error creating scatter plot: {str(e)}")
 
