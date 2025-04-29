@@ -13,14 +13,12 @@ from helix.components.plots import (
 )
 from helix.options.enums import (
     FeatureImportanceStateKeys,
-    FuzzyStateKeys,
     MachineLearningStateKeys,
     ViewExperimentKeys,
 )
 from helix.options.file_paths import (
     data_analysis_plots_dir,
     fi_plot_dir,
-    fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_metrics_mean_std_path,
