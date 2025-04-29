@@ -383,7 +383,6 @@ def plot_beta_coefficients(
     model_name: str,
     dependent_variable: str | None = None,
     standard_errors: np.ndarray | None = None,
-    directory: Path | None = None,
     is_classification: bool = False,
 ) -> Figure:
     """Create a bar plot of model coefficients with different colors for positive/negative values.
@@ -395,7 +394,6 @@ def plot_beta_coefficients(
         model_name (str): Name of the model for the plot title
         dependent_variable (str | None, optional): Name of the dependent variable. Defaults to None.
         standard_errors (np.ndarray | None, optional): Standard errors of coefficients. Defaults to None.
-        directory (Path | None, optional): The directory to save the plot. Defaults to None.
         is_classification (bool, optional): Whether this is a classification model. Defaults to False.
 
     Returns:
@@ -504,11 +502,6 @@ def plot_beta_coefficients(
 
     # Adjust layout
     plt.tight_layout()
-
-    # Save plot if directory is provided
-    if directory:
-        save_path = directory / f"{model_name}-coefficients.png"
-        fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
 
     return fig
 

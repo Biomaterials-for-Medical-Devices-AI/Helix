@@ -18,6 +18,7 @@ from helix.services.plotting import (
     plot_scatter,
 )
 from helix.utils.logging_utils import Logger
+from helix.utils.plotting import close_figure
 
 warnings.filterwarnings("ignore", message="X has feature names")
 
@@ -141,15 +142,17 @@ def _save_coefficient_plot(
                     f"number of feature names ({len(feature_names)})"
                 )
 
-            plot_beta_coefficients(
+            fig = plot_beta_coefficients(
                 coefficients=coefficients,
                 feature_names=feature_names,
                 plot_opts=plot_opts,
                 model_name=model_name,
                 dependent_variable=dependent_variable,
-                directory=directory,
                 is_classification=(problem_type == ProblemTypes.Classification),
             )
+            save_path = directory / f"{model_name}-coefficients.png"
+            fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
+            close_figure(fig)
         except Exception as e:
             logger.error(f"Error creating coefficient plot: {str(e)}")
 
