@@ -18,9 +18,6 @@ def plot_lime_importance(
     plot_opts: PlottingOptions,
     num_features_to_plot: int,
     title: str,
-    directory: Path,
-    model_name: str,
-    set_name: str,
 ) -> Figure:
     """Plot LIME importance.
 
@@ -29,9 +26,6 @@ def plot_lime_importance(
         plot_opts (PlottingOptions): The plotting options.
         num_features_to_plot (int): The top number of features to plot.
         title (str): The title of the plot.
-        directory (Path): The directory to save the plot.
-        model_name (str): The name of the model.
-        set_name (str): The name of the set (train or test).
 
     Returns:
         Figure: The LIME plot.
@@ -64,12 +58,6 @@ def plot_lime_importance(
     ax.set_ylabel("Importance", family=plot_opts.plot_font_family)
     ax.set_title(title, family=plot_opts.plot_font_family, wrap=True)
 
-    # Save plot with standardized filename
-    fig.savefig(
-        directory / f"{model_name}-{set_name.lower()}-lime.png", dpi=plot_opts.dpi
-    )
-    plt.close()
-    plt.clf()
     return fig
 
 
@@ -78,9 +66,6 @@ def plot_local_shap_importance(
     plot_opts: PlottingOptions,
     num_features_to_plot: int,
     title: str,
-    directory: Path,
-    model_name: str,
-    set_name: str,
 ) -> Figure:
     """Plot a beeswarm plot of the local SHAP values.
 
@@ -89,9 +74,6 @@ def plot_local_shap_importance(
         plot_opts (PlottingOptions): The plotting options.
         num_features_to_plot (int): The number of top features to plot.
         title (str): The plot title.
-        directory (Path): The directory to save the plot.
-        model_name (str): The name of the model.
-        set_name (str): The name of the set (train or test).
 
     Returns:
         Figure: The beeswarm plot of local SHAP values.
@@ -121,12 +103,6 @@ def plot_local_shap_importance(
         family=plot_opts.plot_font_family,
     )
 
-    # Save plot with standardized filename
-    fig.savefig(
-        directory / f"{model_name}-{set_name.lower()}-shap.png", dpi=plot_opts.dpi
-    )
-    plt.close()
-    plt.clf()
     return fig
 
 
@@ -135,9 +111,6 @@ def plot_global_shap_importance(
     plot_opts: PlottingOptions,
     num_features_to_plot: int,
     title: str,
-    directory: Path,
-    model_name: str,
-    set_name: str,
 ) -> Figure:
     """Produce a bar chart of global SHAP values.
 
@@ -146,9 +119,6 @@ def plot_global_shap_importance(
         plot_opts (PlottingOptions): The plotting options.
         num_features_to_plot (int): The number of top features to plot.
         title (str): The plot title.
-        directory (Path): The directory to save the plot.
-        model_name (str): The name of the model.
-        set_name (str): The name of the set (train or test).
 
     Returns:
         Figure: The bar chart of global SHAP values.
@@ -180,13 +150,6 @@ def plot_global_shap_importance(
         family=plot_opts.plot_font_family,
     )
 
-    # Save plot with standardized filename
-    fig.savefig(
-        directory / f"{model_name}-{set_name.lower()}-shap-global.png",
-        dpi=plot_opts.dpi,
-    )
-    plt.close()
-    plt.clf()
     return fig
 
 
@@ -555,9 +518,6 @@ def plot_permutation_importance(
     plot_opts: PlottingOptions,
     n_features: int,
     title: str,
-    directory: Path,
-    model_name: str,
-    set_name: str,
 ) -> Figure:
     """Plot a bar chart of the top n features in the feature importance dataframe,
     with the given title and styled with the given options.
@@ -567,9 +527,6 @@ def plot_permutation_importance(
         plot_opts (PlottingOptions): The options for how to configure the plot.
         n_features (int): The top number of features to plot.
         title (str): The title of the plot.
-        directory (Path): The directory to save the plot.
-        model_name (str): The name of the model.
-        set_name (str): The name of the set (train or test).
 
     Returns:
         Figure: The bar chart of the top n features.
@@ -601,13 +558,6 @@ def plot_permutation_importance(
         wrap=True,
     )
 
-    # Save plot with standardized filename
-    fig.savefig(
-        directory / f"{model_name}-{set_name.lower()}-permutation.png",
-        dpi=plot_opts.dpi,
-    )
-    plt.close()
-    plt.clf()
     return fig
 
 
@@ -620,9 +570,6 @@ def plot_bar_chart(
     y_label: str,
     n_features: int = 10,
     error_bars: pd.DataFrame | None = None,
-    directory: Path | None = None,
-    model_name: str | None = None,
-    set_name: str | None = None,
 ) -> Figure:
     """Plot a bar chart of the top n features from the given dataframe.
 
@@ -675,11 +622,4 @@ def plot_bar_chart(
     ax.yaxis.set_major_formatter(FormatStrFormatter("%.1f"))
     ax.set_title(title, family=plot_opts.plot_font_family, wrap=True)
 
-    # Save plot with standardized filename
-    if directory and model_name and set_name:
-        fig.savefig(
-            directory / f"{model_name}-{set_name.lower()}-bar.png", dpi=plot_opts.dpi
-        )
-    plt.close()
-    plt.clf()
     return fig
