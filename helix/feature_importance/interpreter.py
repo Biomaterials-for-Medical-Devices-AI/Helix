@@ -37,6 +37,7 @@ from helix.services.plotting import (
     plot_permutation_importance,
 )
 from helix.utils.logging_utils import Logger
+from helix.utils.plotting import close_figure
 from helix.utils.utils import create_directory
 
 
@@ -168,6 +169,7 @@ class FeatureImportanceEstimator:
                             plot_dir
                             / f"{feature_importance_type}-{value['type']}-{model_type}-fold-{idx + 1}-bar.png"
                         )
+                        close_figure(fig)
                         feature_importance_results[model_type][
                             feature_importance_type
                         ].append(permutation_importance_df)
@@ -203,6 +205,7 @@ class FeatureImportanceEstimator:
                             plot_dir
                             / f"{feature_importance_type}-{value['type']}-{model_type}-fold-{idx + 1}-bar.png"
                         )
+                        close_figure(fig)
                         feature_importance_results[model_type][
                             feature_importance_type
                         ].append(shap_df)
@@ -302,6 +305,7 @@ class FeatureImportanceEstimator:
                                 plot_dir
                                 / f"local-{feature_importance_type}-{model_type}-violin.png"
                             )
+                            close_figure(fig)
                             feature_importance_results[model_type][
                                 feature_importance_type
                             ] = lime_importance_df
@@ -338,6 +342,7 @@ class FeatureImportanceEstimator:
                                 plot_dir
                                 / f"local-{feature_importance_type}-{value['type']}-{model_type}-beeswarm.png"
                             )
+                            close_figure(fig)
                             feature_importance_results[model_type][
                                 feature_importance_type
                             ] = shap_df
@@ -392,6 +397,7 @@ class FeatureImportanceEstimator:
                             plot_dir
                         )  # will create the directory if it doesn't exist
                         fig.savefig(plot_dir / f"ensemble-{ensemble_type}.png")
+                        close_figure(fig)
                         ensemble_results[ensemble_type] = mean_results
 
                     if ensemble_type == "Majority Vote":
@@ -427,6 +433,7 @@ class FeatureImportanceEstimator:
                             plot_dir
                         )  # will create the directory if it doesn't exist
                         fig.savefig(plot_dir / f"ensemble-{ensemble_type}.png")
+                        close_figure(fig)
                         ensemble_results[ensemble_type] = majority_vote_results
 
             self._logger.info(
