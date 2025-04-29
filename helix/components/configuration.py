@@ -249,7 +249,7 @@ def display_options(experiment_path: Path) -> None:
         ),
         "Machine Learning Options": load_ml_options(ml_options_path(experiment_path)),
         "Feature Importance Options": load_fi_options(fi_options_path(experiment_path)),
-        "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
+        # "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
     }
 
     with st.expander("Show Experiment Options", expanded=False):
