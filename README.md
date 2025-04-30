@@ -1,3 +1,4 @@
+<!-- # Helix: Python Toolkit for Machine Learning, Feature Importance, and Fuzzy Interpretation -->
 # Helix: Python Toolkit for Machine Learning, Feature Importance, and Fuzzy Interpretation
 
 ![License][license-badge]
@@ -18,7 +19,8 @@
 
 ## Overview
 
-Helix is an open-source, extensible tool for reproducible Machine Learning Modelling and results interpretation. It was originally designed for QSAR/QSPR modelling in biomaterials discovery, but can be applied to any tabular data classification or regression tasks. Version 1.0.0 contains tools for data visualisation and basic pre-processing, it has a collection of machine learning models and interpretation approaches, including fuzzy fusion. The theoretical work underpinning the development of the tool can be found in:
+<!-- Helix is an open-source, extensible tool for reproducible Machine Learning Modelling and results interpretation. It was originally designed for QSAR/QSPR modelling in biomaterials discovery, but can be applied to any tabular data classification or regression tasks. Version 1.0.0 contains tools for data visualisation and basic pre-processing, it has a collection of machine learning models and interpretation approaches, including fuzzy fusion. The theoretical work underpinning the development of the tool can be found in: -->
+Helix is an open-source, extensible tool for reproducible Machine Learning Modelling and results interpretation. It was originally designed for QSAR/QSPR modelling in biomaterials discovery, but can be applied to any tabular data classification or regression tasks. Version 1.0.0 contains tools for data visualisation and basic pre-processing, it has a collection of machine learning models and interpretation approaches. The theoretical work underpinning the development of the tool can be found in:
 
 D. Rengasamy, Jimiama M. Mase, Aayush Kumar, Benjamin Rothwell, Mercedes Torres Torres, Morgan R. Alexander, David A. Winkler, Grazziela P. Figueredo,
 Feature importance in machine learning models: A fuzzy information fusion approach,

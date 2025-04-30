@@ -15,14 +15,12 @@ from helix.components.plots import (
 )
 from helix.options.enums import (
     FeatureImportanceStateKeys,
-    FuzzyStateKeys,
     MachineLearningStateKeys,
     ViewExperimentKeys,
 )
 from helix.options.file_paths import (
     data_analysis_plots_dir,
     fi_plot_dir,
-    fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_metrics_mean_std_path,
@@ -94,10 +92,10 @@ def display_experiment_plots(experiment_path: Path) -> None:
         ]
         plot_box_v2(mean_plots, "Feature importance plots")
 
-    # Fuzzy plots
-    fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    if fuzzy_plots.exists():
-        plot_box(fuzzy_plots, "Fuzzy plots")
+    # # Fuzzy plots
+    # fuzzy_plots = fuzzy_plot_dir(experiment_path)
+    # if fuzzy_plots.exists():
+    #     plot_box(fuzzy_plots, "Fuzzy plots")
 
 
 def display_experiment_logs(experiment_path: Path) -> None:
@@ -109,7 +107,7 @@ def display_experiment_logs(experiment_path: Path) -> None:
     log_configs = [
         ("ml", MachineLearningStateKeys.MLLogBox, "Machine Learning Logs"),
         ("fi", FeatureImportanceStateKeys.FILogBox, "Feature Importance Logs"),
-        ("fuzzy", FuzzyStateKeys.FuzzyLogBox, "Fuzzy FI Logs"),
+        # ("fuzzy", FuzzyStateKeys.FuzzyLogBox, "Fuzzy FI Logs"),
     ]
 
     for log_dir_name, state_key, title in log_configs:
@@ -128,3 +126,39 @@ if experiment_name:
     display_options(experiment_path)
     display_experiment_plots(experiment_path)
     display_experiment_logs(experiment_path)
+    fi_plots = fi_plot_dir(base_dir / experiment_name)
+    mean_plots = [
+        p
+        for p in fi_plots.iterdir()
+        if p.name.endswith("-all-folds-mean.png")  # mean global FI
+        or p.name.startswith("local-")  # local plots
+        or p.name.startswith("ensemble-")  # ensemble plots
+    ]
+    plot_box_v2(mean_plots, "Feature importance plots")
+    # fuzzy_plots = fuzzy_plot_dir(experiment_path)
+    # plot_box(fuzzy_plots, "Fuzzy plots")
+    try:
+        st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
+            log_dir(experiment_path) / "ml"
+        )
+        log_box(
+            box_title="Machine Learning Logs", key=MachineLearningStateKeys.MLLogBox
+        )
+    except NotADirectoryError:
+        pass
+    try:
+        st.session_state[FeatureImportanceStateKeys.FILogBox] = get_logs(
+            log_dir(experiment_path) / "fi"
+        )
+        log_box(
+            box_title="Feature Importance Logs", key=FeatureImportanceStateKeys.FILogBox
+        )
+    except NotADirectoryError:
+        pass
+    # try:
+    #     st.session_state[FuzzyStateKeys.FuzzyLogBox] = get_logs(
+    #         log_dir(experiment_path) / "fuzzy"
+    #     )
+    #     log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
+    # except NotADirectoryError:
+    #     pass
