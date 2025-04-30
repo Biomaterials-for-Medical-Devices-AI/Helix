@@ -30,25 +30,28 @@ from .fixtures import (
     data_opts,
     dummy_data,
     execution_opts,
-    new_experiment,
+    new_classification_experiment,
     plotting_opts,
 )
 
 
 @pytest.fixture
 def models_to_evaluate(
-    new_experiment: str,
+    new_classification_experiment: str,
     dummy_data: np.ndarray,
     execution_opts: ExecutionOptions,
     data_opts: DataOptions,
 ):
-    save_dir = ml_model_dir(helix_experiments_base_dir() / new_experiment)
+    save_dir = ml_model_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     data_opts.data_split = DataSplitOptions(
         n_bootstraps=3, method=DataSplitMethods.Holdout.capitalize()
     )
     # update the data options
     save_options(
-        data_options_path(helix_experiments_base_dir() / new_experiment), data_opts
+        data_options_path(helix_experiments_base_dir() / new_classification_experiment),
+        data_opts,
     )
     X, y = dummy_data[:, :-1], dummy_data[:, -1]
     for i in range(data_opts.data_split.n_bootstraps):
@@ -75,7 +78,7 @@ def test_page_loads_without_exception():
     assert not at.error
 
 
-def test_page_can_find_experiment(new_experiment: str):
+def test_page_can_find_experiment(new_classification_experiment: str):
     # Arrange
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
@@ -84,7 +87,7 @@ def test_page_can_find_experiment(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
 
     # Assert
     assert not at.exception
@@ -95,27 +98,8 @@ def test_page_can_find_experiment(new_experiment: str):
         at.selectbox[0].select("non-existent").run()
 
 
-def test_page_can_find_models(new_experiment: str, models_to_evaluate: None):
-    # Arrange
-    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
-    at.run()
-
-    # Act
-    # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_experiment).run()
-
-    # Assert
-    assert not at.exception
-    assert not at.error
-    assert not at.info  # the info box saying there's no models shouldn't appear
-
-
-# TODO: rename once global and ensemble nomenclature sorted
-def test_ensemble_methods_disabled_without_global(
-    new_experiment: str, models_to_evaluate: None
+def test_page_can_find_models(
+    new_classification_experiment: str, models_to_evaluate: None
 ):
     # Arrange
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
@@ -126,7 +110,28 @@ def test_ensemble_methods_disabled_without_global(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert not at.info  # the info box saying there's no models shouldn't appear
+
+
+# TODO: rename once global and ensemble nomenclature sorted
+def test_ensemble_methods_disabled_without_global(
+    new_classification_experiment: str, models_to_evaluate: None
+):
+    # Arrange
+    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
+    at.run()
+
+    # Act
+    # Select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -145,7 +150,7 @@ def test_ensemble_methods_disabled_without_global(
 
 # TODO: rename once global and ensemble nomenclature sorted
 def test_fuzzy_unavailable_without_ensemble_and_local_methods(
-    new_experiment: str, models_to_evaluate: None
+    new_classification_experiment: str, models_to_evaluate: None
 ):
     # Arrange
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
@@ -156,7 +161,7 @@ def test_fuzzy_unavailable_without_ensemble_and_local_methods(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -177,10 +182,14 @@ def test_fuzzy_unavailable_without_ensemble_and_local_methods(
     assert fuzzy_checkbox.disabled
 
 
-def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
+def test_permutation_importance(
+    new_classification_experiment: str, models_to_evaluate: None
+):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
 
@@ -189,7 +198,7 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -216,9 +225,9 @@ def test_permutation_importance(new_experiment: str, models_to_evaluate: None):
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_global_shap(new_experiment: str, models_to_evaluate: None):
+def test_global_shap(new_classification_experiment: str, models_to_evaluate: None):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
     # fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
@@ -228,7 +237,7 @@ def test_global_shap(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -256,10 +265,12 @@ def test_global_shap(new_experiment: str, models_to_evaluate: None):
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_ensemble_mean(new_experiment: str, models_to_evaluate: None):
+def test_ensemble_mean(new_classification_experiment: str, models_to_evaluate: None):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
 
@@ -268,7 +279,7 @@ def test_ensemble_mean(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -298,10 +309,14 @@ def test_ensemble_mean(new_experiment: str, models_to_evaluate: None):
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_ensemble_majority_vote(new_experiment: str, models_to_evaluate: None):
+def test_ensemble_majority_vote(
+    new_classification_experiment: str, models_to_evaluate: None
+):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
 
@@ -310,7 +325,7 @@ def test_ensemble_majority_vote(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -340,10 +355,12 @@ def test_ensemble_majority_vote(new_experiment: str, models_to_evaluate: None):
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_local_lime(new_experiment: str, models_to_evaluate: None):
+def test_local_lime(new_classification_experiment: str, models_to_evaluate: None):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
 
@@ -352,7 +369,7 @@ def test_local_lime(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -382,10 +399,12 @@ def test_local_lime(new_experiment: str, models_to_evaluate: None):
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_local_shap(new_experiment: str, models_to_evaluate: None):
+def test_local_shap(new_classification_experiment: str, models_to_evaluate: None):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
 
@@ -394,7 +413,7 @@ def test_local_shap(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -424,13 +443,21 @@ def test_local_shap(new_experiment: str, models_to_evaluate: None):
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_fuzzy_analysis(new_experiment: str, models_to_evaluate: None):
+def test_fuzzy_analysis(new_classification_experiment: str, models_to_evaluate: None):
     # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
-    fuzzy_plots = fuzzy_plot_dir(helix_experiments_base_dir() / new_experiment)
-    fuzzy_results = fuzzy_result_dir(helix_experiments_base_dir() / new_experiment)
-    fuzzy_options = fuzzy_options_path(helix_experiments_base_dir() / new_experiment)
+    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
+    fuzzy_plots = fuzzy_plot_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
+    fuzzy_results = fuzzy_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
+    fuzzy_options = fuzzy_options_path(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=180.0)
     at.run()
 
@@ -439,7 +466,7 @@ def test_fuzzy_analysis(new_experiment: str, models_to_evaluate: None):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
@@ -484,9 +511,11 @@ def test_fuzzy_analysis(new_experiment: str, models_to_evaluate: None):
     assert (fuzzy_results / "top contextual rules.csv").exists()
 
 
-def test_page_makes_one_log_per_run(new_experiment: str, models_to_evaluate: None):
+def test_page_makes_one_log_per_run(
+    new_classification_experiment: str, models_to_evaluate: None
+):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_fi_log_dir = log_dir(exp_dir) / "fi"
     expected_fuzzy_log_dir = log_dir(exp_dir) / "fi"
     expected_n_log_files = 1
@@ -498,7 +527,7 @@ def test_page_makes_one_log_per_run(new_experiment: str, models_to_evaluate: Non
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Select explain all models
     all_model_toggle = get_element_by_key(
         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
