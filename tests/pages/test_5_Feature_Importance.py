@@ -27,9 +27,9 @@ from helix.services.ml_models import save_model
 from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
-    data_opts,
-    dummy_classification_data,
     classification_execution_opts,
+    classification_data_opts,
+    dummy_classification_data,
     new_classification_experiment,
     plotting_opts,
 )
@@ -40,25 +40,25 @@ def models_to_evaluate(
     new_classification_experiment: str,
     dummy_classification_data: np.ndarray,
     classification_execution_opts: ExecutionOptions,
-    data_opts: DataOptions,
+    classification_data_opts: DataOptions,
 ):
     save_dir = ml_model_dir(
         helix_experiments_base_dir() / new_classification_experiment
     )
-    data_opts.data_split = DataSplitOptions(
+    classification_data_opts.data_split = DataSplitOptions(
         n_bootstraps=3, method=DataSplitMethods.Holdout.capitalize()
     )
     # update the data options
     save_options(
         data_options_path(helix_experiments_base_dir() / new_classification_experiment),
-        data_opts,
+        classification_data_opts,
     )
     X, y = dummy_classification_data[:, :-1], dummy_classification_data[:, -1]
-    for i in range(data_opts.data_split.n_bootstraps):
+    for i in range(classification_data_opts.data_split.n_bootstraps):
         X_train, _, y_train, _ = train_test_split(
             X,
             y,
-            test_size=data_opts.data_split.test_size,
+            test_size=classification_data_opts.data_split.test_size,
             random_state=classification_execution_opts.random_state + i,
         )
         model = LogisticRegression()

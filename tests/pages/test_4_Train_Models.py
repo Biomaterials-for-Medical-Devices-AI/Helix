@@ -13,11 +13,15 @@ from helix.options.file_paths import (
 from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
-    data_opts,
-    dummy_classification_data,
     classification_execution_opts,
+    classification_data_opts,
+    dummy_classification_data,
+    dummy_regression_data,
     new_classification_experiment,
+    new_regression_experiment,
     plotting_opts,
+    regression_data_opts,
+    regression_execution_opts,
 )
 
 
@@ -548,3 +552,121 @@ def test_page_makes_one_log_per_run(new_classification_experiment: str):
     assert expected_log_dir.exists()
     assert log_dir_contents  # directory is not empty
     assert len(log_dir_contents) == expected_n_log_files
+
+
+@pytest.mark.parametrize(
+    "data_split_method,holdout_or_k",
+    [
+        (DataSplitMethods.Holdout.capitalize(), 3),
+        (DataSplitMethods.KFold.capitalize(), 3),
+    ],
+)
+def test_manual_mlrem(
+    new_regression_experiment: str,
+    data_split_method: DataSplitMethods,
+    holdout_or_k: int,
+):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_regression_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_mean_std_path(exp_dir)
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_regression_experiment).run()
+    # Unselect AHPS, which is on by default
+    ahps_toggle = get_element_by_key(
+        at, "toggle", ExecutionStateKeys.UseHyperParamSearch
+    )
+    ahps_toggle.set_value(False).run()
+    # Select the data split method
+    data_split_selector = get_element_by_label(at, "selectbox", "Data split method")
+    data_split_selector.select(data_split_method).run()
+    # Set the number of bootstraps / k-folds
+    if holdout_input := get_element_by_label(
+        at, "number_input", "Number of bootstraps"
+    ):
+        holdout_input.set_value(holdout_or_k).run()
+    if k_input := get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    ):
+        k_input.set_value(holdout_or_k).run()
+    # Select Logistic Regression
+    lm_toggle = get_element_by_label(
+        at, "toggle", "Multiple Linear Regression with Expectation Maximisation"
+    )
+    lm_toggle.set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    button = get_element_by_label(at, "button", "Run Training")
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
+
+
+def test_auto_mlrem(new_regression_experiment: str):
+    # Arrange
+    exp_dir = helix_experiments_base_dir() / new_regression_experiment
+    expected_model_dir = ml_model_dir(exp_dir)
+    expected_plot_dir = ml_plot_dir(exp_dir)
+    expected_preds_file = ml_predictions_path(exp_dir)
+    expected_metrics_file = ml_metrics_mean_std_path(exp_dir)
+    k = 3
+    at = AppTest.from_file("helix/pages/4_Train_Models.py", default_timeout=120)
+    at.run()
+
+    # Act
+    # Select the experiment
+    exp_selector = get_element_by_key(
+        at, "selectbox", ViewExperimentKeys.ExperimentName
+    )
+    exp_selector.select(new_regression_experiment).run()
+    # Set the number of k-folds
+    k_input = get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    )
+    k_input.set_value(k).run()
+    # Select Logistic Regression
+    lm_toggle = get_element_by_label(
+        at, "toggle", "Multiple Linear Regression with Expectation Maximisation"
+    )
+    lm_toggle.set_value(True).run()
+    # Leave hyperparameters on their default values
+    # Leave save models and plots as true to get the outputs
+    # Click run
+    button = get_element_by_label(at, "button", "Run Training")
+    button.click().run()
+
+    # Assert
+    assert not at.exception
+    assert not at.error
+    assert expected_model_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".pkl"), map(str, expected_model_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_plot_dir.exists()
+    assert list(
+        filter(lambda x: x.endswith(".png"), map(str, expected_plot_dir.iterdir()))
+    )  # directory is not empty
+    assert expected_preds_file.exists()
+    assert expected_metrics_file.exists()
