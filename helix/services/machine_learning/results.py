@@ -305,7 +305,6 @@ def save_actual_pred_plots(
             _save_classification_plots(
                 y_true=y_test[closest_index],
                 y_pred_proba=y_pred_test_proba,
-                model=trained_models[model_name][closest_index],
                 split_type="Test",
                 model_name=model_name,
                 directory=directory,
@@ -315,7 +314,6 @@ def save_actual_pred_plots(
             _save_classification_plots(
                 y_true=y_train[closest_index],
                 y_pred_proba=y_pred_train_proba,
-                model=trained_models[model_name][closest_index],
                 split_type="Train",
                 model_name=model_name,
                 directory=directory,
@@ -333,7 +331,6 @@ def save_actual_pred_plots(
                     model_name,
                     exec_opts.dependent_variable,
                     directory,
-                    closest_index,
                     exec_opts.problem_type,
                     logger=logger,
                 )

@@ -16,7 +16,7 @@ from .fixtures import (
     data_opts,
     dummy_data,
     execution_opts,
-    new_experiment,
+    new_classification_experiment,
     plotting_opts,
 )
 
@@ -33,7 +33,7 @@ def test_page_loads_without_exception():
     assert not at.error
 
 
-def test_page_can_find_experiment(new_experiment: str):
+def test_page_can_find_experiment(new_classification_experiment: str):
     # Arrange
     at = AppTest.from_file("helix/pages/4_Train_Models.py")
     at.run(timeout=10.0)
@@ -42,7 +42,7 @@ def test_page_can_find_experiment(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
 
     # Assert
     assert not at.exception
@@ -60,10 +60,12 @@ def test_page_can_find_experiment(new_experiment: str):
     ],
 )
 def test_manual_linear_model(
-    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+    new_classification_experiment: str,
+    data_split_method: DataSplitMethods,
+    holdout_or_k: int,
 ):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -76,7 +78,7 @@ def test_manual_linear_model(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -92,8 +94,8 @@ def test_manual_linear_model(
         holdout_input.set_value(holdout_or_k).run()
     if k_input := get_element_by_label(at, "number_input", "k"):
         k_input.set_value(holdout_or_k).run()
-    # Select Linear Model
-    lm_toggle = get_element_by_label(at, "toggle", "Linear Model")
+    # Select Logistic Regression
+    lm_toggle = get_element_by_label(at, "toggle", "Logistic Regression")
     lm_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
@@ -116,9 +118,9 @@ def test_manual_linear_model(
     assert expected_metrics_file.exists()
 
 
-def test_auto_linear_model(new_experiment: str):
+def test_auto_linear_model(new_classification_experiment: str):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -132,12 +134,12 @@ def test_auto_linear_model(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
-    # Select Linear Model
-    lm_toggle = get_element_by_label(at, "toggle", "Linear Model")
+    # Select Logistic Regression
+    lm_toggle = get_element_by_label(at, "toggle", "Logistic Regression")
     lm_toggle.set_value(True).run()
     # Leave hyperparameters on their default values
     # Leave save models and plots as true to get the outputs
@@ -168,10 +170,12 @@ def test_auto_linear_model(new_experiment: str):
     ],
 )
 def test_manual_random_forest(
-    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+    new_classification_experiment: str,
+    data_split_method: DataSplitMethods,
+    holdout_or_k: int,
 ):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -184,7 +188,7 @@ def test_manual_random_forest(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -224,9 +228,9 @@ def test_manual_random_forest(
     assert expected_metrics_file.exists()
 
 
-def test_auto_random_forest(new_experiment: str):
+def test_auto_random_forest(new_classification_experiment: str):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -240,7 +244,7 @@ def test_auto_random_forest(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
@@ -276,10 +280,12 @@ def test_auto_random_forest(new_experiment: str):
     ],
 )
 def test_manual_xgboost(
-    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+    new_classification_experiment: str,
+    data_split_method: DataSplitMethods,
+    holdout_or_k: int,
 ):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -292,7 +298,7 @@ def test_manual_xgboost(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -332,9 +338,9 @@ def test_manual_xgboost(
     assert expected_metrics_file.exists()
 
 
-def test_auto_xgboost(new_experiment: str):
+def test_auto_xgboost(new_classification_experiment: str):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -348,7 +354,7 @@ def test_auto_xgboost(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
@@ -384,10 +390,12 @@ def test_auto_xgboost(new_experiment: str):
     ],
 )
 def test_manual_svm(
-    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+    new_classification_experiment: str,
+    data_split_method: DataSplitMethods,
+    holdout_or_k: int,
 ):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -400,7 +408,7 @@ def test_manual_svm(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -440,9 +448,9 @@ def test_manual_svm(
     assert expected_metrics_file.exists()
 
 
-def test_auto_svm(new_experiment: str):
+def test_auto_svm(new_classification_experiment: str):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -456,7 +464,7 @@ def test_auto_svm(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
@@ -484,9 +492,9 @@ def test_auto_svm(new_experiment: str):
     assert expected_metrics_file.exists()
 
 
-def test_page_makes_one_log_per_run(new_experiment: str):
+def test_page_makes_one_log_per_run(new_classification_experiment: str):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_log_dir = log_dir(exp_dir) / "ml"
     expected_n_log_files = 1
     k = 3
@@ -498,7 +506,7 @@ def test_page_makes_one_log_per_run(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
