@@ -232,14 +232,14 @@ You should add your tests to `tests/pages/test_4_Train_Models.py`.
 Generally, you will write 2 test functions: one to test your model with automatic hyperparameter search, and one to test it with manual hyperparameter tuning. Take the tests for SVM models. You will find 2 tests: `test_auto_svm` and `test_manual_svm`. You might call your tests: `test_auto_<model_name>` and `test_manual_<model_name>`.
 
 #### Testing AHPS
-This test simulates the user setting up the model to be trained with [`GridSearchCV`][GridSearchCV]. This test should take one parameter called `new_experiment` of type `str`.
+This test simulates the user setting up the model to be trained with [`GridSearchCV`][GridSearchCV]. This test should take one parameter called `new_regression_experiment` (or `new_classification_experiment` if training a classifier) of type `str`.
 
 Below is `test_auto_svm` as an expample:
 
 ```python
-def test_auto_svm(new_experiment: str):
+def test_auto_svm(new_regression_experiment: str):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_regression_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -253,7 +253,7 @@ def test_auto_svm(new_experiment: str):
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_regression_experiment).run()
     # Set the number of k-folds
     k_input = get_element_by_label(at, "number_input", "k")
     k_input.set_value(k).run()
@@ -289,7 +289,7 @@ my_model_toggle.set_value(True).run()
 Subsitute "My Model" with the actual name of your model.
 
 #### Testing manual hyperparameter tuning
-This test simulates the user setting up the model to be trained without AHPS. This test should take 3 parameters called `new_experiment` of type `str`, `data_split_method` of type `DataSplitMethods` and `holdout_or_k` of type `int`.
+This test simulates the user setting up the model to be trained without AHPS. This test should take 3 parameters called `new_regression_experiment` (or `new_classification_experiment` if testing a classifier) of type `str`, `data_split_method` of type `DataSplitMethods` and `holdout_or_k` of type `int`.
 
 Below is `test_manual_svm` as an expample. The decorator above the function signature doesn't need to be altered; it causes the test to run the page with bootstrapping and cross-validation.
 
@@ -302,10 +302,10 @@ Below is `test_manual_svm` as an expample. The decorator above the function sign
     ],
 )
 def test_manual_svm(
-    new_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
+    new_regression_experiment: str, data_split_method: DataSplitMethods, holdout_or_k: int
 ):
     # Arrange
-    exp_dir = helix_experiments_base_dir() / new_experiment
+    exp_dir = helix_experiments_base_dir() / new_regression_experiment
     expected_model_dir = ml_model_dir(exp_dir)
     expected_plot_dir = ml_plot_dir(exp_dir)
     expected_preds_file = ml_predictions_path(exp_dir)
@@ -318,7 +318,7 @@ def test_manual_svm(
     exp_selector = get_element_by_key(
         at, "selectbox", ViewExperimentKeys.ExperimentName
     )
-    exp_selector.select(new_experiment).run()
+    exp_selector.select(new_regression_experiment).run()
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
