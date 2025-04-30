@@ -148,7 +148,7 @@ def edit_plot_modal(plot_opts: PlottingOptions, plot_type: str) -> PlottingOptio
         "DPI (Resolution)",
         min_value=72,
         max_value=300,
-        value=plot_opts.dpi,
+        value=plot_opts.dpi if 72 < plot_opts.dpi <= 300 else 300,
         key=PlotOptionKeys.DPI,
         help="Set the dots per inch (resolution) of the plot",
     )

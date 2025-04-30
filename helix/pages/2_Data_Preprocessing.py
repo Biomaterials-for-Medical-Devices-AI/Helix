@@ -82,102 +82,140 @@ choices = get_experiments()
 experiment_name = experiment_selector(choices)
 biofefi_base_dir = helix_experiments_base_dir()
 
+
+def validate_data(data, logger) -> tuple[list, bool]:
+    """Validate data for preprocessing.
+
+    Args:
+        data: The input data to validate
+        logger: Logger instance
+
+    Returns:
+        tuple containing list of non-numeric columns and whether y has non-numeric values
+    """
+    non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
+
+    if non_numeric:
+        st.warning(
+            f"The following columns contain non-numeric values: {', '.join(non_numeric)}. These will be eliminated."
+        )
+    else:
+        st.success("All the independent variable columns are numeric.")
+
+    non_numeric_y = find_non_numeric_columns(data.iloc[:, -1])
+    if non_numeric_y:
+        st.warning(
+            "The dependent variable contains non-numeric values. This will be transformed to allow for training."
+        )
+
+    return non_numeric, bool(non_numeric_y)
+
+
+def run_preprocessing_pipeline(
+    data,
+    config,
+    experiment_dir: Path,
+    data_opts,
+    path_to_data_opts,
+    path_to_preproc_opts,
+    logger,
+) -> None:
+    """Run the preprocessing pipeline and save results.
+
+    Args:
+        data: Input data to preprocess
+        config: Preprocessing configuration
+        experiment_dir: Path to experiment directory
+        data_opts: Data options
+        path_to_data_opts: Path to data options file
+        path_to_preproc_opts: Path to preprocessing options file
+        logger: Logger instance
+    """
+    processed_data = run_preprocessing(
+        data,
+        experiment_dir,
+        config,
+    )
+
+    path_to_preprocessed_data = preprocessed_data_path(
+        Path(data_opts.data_path).name,
+        experiment_dir,
+    )
+
+    save_data(path_to_preprocessed_data, processed_data, logger)
+
+    # Update data opts to point to the pre-processed data
+    data_opts.data_path = str(path_to_preprocessed_data)
+    save_options(path_to_data_opts, data_opts)
+
+    # Update config to show preprocessing is complete
+    config.data_is_preprocessed = True
+    save_options(path_to_preproc_opts, config)
+
+    st.success("Data Preprocessing Complete")
+    st.header(f"Preprocessed Data ({processed_data.shape[1]} columns)")
+    preprocessed_view(processed_data)
+
+
 if experiment_name:
     logger_instance = Logger()
     logger = logger_instance.make_logger()
 
-    st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+    try:
+        st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
+        display_options(biofefi_base_dir / experiment_name)
 
-    display_options(biofefi_base_dir / experiment_name)
+        path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
+        path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
+        data_opts = load_data_options(path_to_data_opts)
 
-    path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
+        path_to_preproc_opts = data_preprocessing_options_path(
+            biofefi_base_dir / experiment_name
+        )
 
-    path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
-    data_opts = load_data_options(path_to_data_opts)
+        # Check preprocessing status
+        data_is_preprocessed = False
+        if path_to_preproc_opts.exists():
+            preproc_opts = load_data_preprocessing_options(path_to_preproc_opts)
+            data_is_preprocessed = preproc_opts.data_is_preprocessed
 
-    path_to_preproc_opts = data_preprocessing_options_path(
-        biofefi_base_dir / experiment_name
-    )
+        if data_is_preprocessed:
+            st.warning(
+                "Your data are already preprocessed. Would you like to start again?"
+            )
+            preproc_again = st.checkbox("Redo preprocessing", value=False)
+        else:
+            preproc_again = True
 
-    data_is_preprocessed = False
-    if path_to_preproc_opts.exists():
-        preproc_opts = load_data_preprocessing_options(path_to_preproc_opts)
-        data_is_preprocessed = preproc_opts.data_is_preprocessed
-
-    # Check if the user has already preprocessed their data
-    if data_is_preprocessed:
-        st.warning("Your data are already preprocessed. Would you like to start again?")
-        preproc_again = st.checkbox("Redo preprocessing", value=False)
-    else:
-        # allow the user to perform preprocessing if the data are unprocessed
-        preproc_again = True
-
-    if not preproc_again:
-        try:
+        if not preproc_again:
             data = read_data(Path(data_opts.data_path), logger)
             preprocessed_view(data)
-        except Exception:
-            st.error("Unable to read data.", icon="🔥")
-        finally:
-            close_logger(logger_instance, logger)
-
-    else:
-        # remove preprocessed suffix to point to original data file
-        data_opts.data_path = data_opts.data_path.replace("_preprocessed", "")
-
-        try:
+        else:
+            # remove preprocessed suffix to point to original data file
+            data_opts.data_path = data_opts.data_path.replace("_preprocessed", "")
             data = read_data(Path(data_opts.data_path), logger)
-            non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
 
-            if non_numeric:
-                st.warning(
-                    f"The following columns contain non-numeric values: {', '.join(non_numeric)}. These will be eliminated."
-                )
-            else:
-                st.success("All the independent variable columns are numeric.")
-
-            non_numeric_y = find_non_numeric_columns(data.iloc[:, -1])
-
-            if non_numeric_y:
-                st.warning(
-                    "The dependent variable contains non-numeric values. This will be transformed to allow for training."
-                )
-
+            # Validate data
+            validate_data(data, logger)
             plot_opt = load_plot_options(path_to_plot_opts)
-
             original_view(data)
-
             preprocessing_opts_form(data)
 
             if st.button("Run Data Preprocessing", type="primary"):
-
                 config = build_config()
-
-                processed_data = run_preprocessing(
+                run_preprocessing_pipeline(
                     data,
-                    biofefi_base_dir / experiment_name,
                     config,
-                )
-
-                path_to_preprocessed_data = preprocessed_data_path(
-                    Path(data_opts.data_path).name,
                     biofefi_base_dir / experiment_name,
+                    data_opts,
+                    path_to_data_opts,
+                    path_to_preproc_opts,
+                    logger,
                 )
 
-                save_data(path_to_preprocessed_data, processed_data, logger)
-
-                # Update data opts to point to the pre-processed data
-                data_opts.data_path = str(path_to_preprocessed_data)
-                save_options(path_to_data_opts, data_opts)
-
-                # Update config to show preprocessing is complete
-                config.data_is_preprocessed = True
-                save_options(path_to_preproc_opts, config)
-
-                st.success("Data Preprocessing Complete")
-                st.header(f"Preprocessed Data ({processed_data.shape[1]} columns)")
-                preprocessed_view(processed_data)
-        except Exception:
-            st.error("Unable to read data.", icon="🔥")
-        finally:
-            close_logger(logger_instance, logger)
+    except ValueError as e:
+        st.error(str(e), icon="🔥")
+    except Exception:
+        st.error("Something went wrong.", icon="🔥")
+    finally:
+        close_logger(logger_instance, logger)

@@ -2,7 +2,6 @@ import os
 import warnings
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
@@ -18,6 +17,7 @@ from helix.services.plotting import (
     plot_scatter,
 )
 from helix.utils.logging_utils import Logger
+from helix.utils.plotting import close_figure
 
 warnings.filterwarnings("ignore", message="X has feature names")
 
@@ -97,10 +97,11 @@ def _save_regression_plots(
             split_type,
             dependent_variable,
             model_name,
-            directory,
             plot_opts=plot_opts,
         )
-        plt.close(fig)
+        save_path = directory / f"{model_name}-{split_type.lower()}-scatter.png"
+        fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
+        close_figure(fig)
     except Exception as e:
         logger.error(f"Error creating scatter plot: {str(e)}")
 
@@ -141,15 +142,17 @@ def _save_coefficient_plot(
                     f"number of feature names ({len(feature_names)})"
                 )
 
-            plot_beta_coefficients(
+            fig = plot_beta_coefficients(
                 coefficients=coefficients,
                 feature_names=feature_names,
                 plot_opts=plot_opts,
                 model_name=model_name,
                 dependent_variable=dependent_variable,
-                directory=directory,
                 is_classification=(problem_type == ProblemTypes.Classification),
             )
+            save_path = directory / f"{model_name}-coefficients.png"
+            fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
+            close_figure(fig)
         except Exception as e:
             logger.error(f"Error creating coefficient plot: {str(e)}")
 
@@ -305,7 +308,6 @@ def save_actual_pred_plots(
             _save_classification_plots(
                 y_true=y_test[closest_index],
                 y_pred_proba=y_pred_test_proba,
-                model=trained_models[model_name][closest_index],
                 split_type="Test",
                 model_name=model_name,
                 directory=directory,
@@ -315,7 +317,6 @@ def save_actual_pred_plots(
             _save_classification_plots(
                 y_true=y_train[closest_index],
                 y_pred_proba=y_pred_train_proba,
-                model=trained_models[model_name][closest_index],
                 split_type="Train",
                 model_name=model_name,
                 directory=directory,
@@ -327,13 +328,12 @@ def save_actual_pred_plots(
                 trained_models[model_name][closest_index], "coef_"
             ):
                 _save_coefficient_plot(
-                    trained_models[model_name][closest_index],
-                    data.X_train[closest_index].columns.tolist(),
-                    plot_opts,
-                    model_name,
-                    exec_opts.dependent_variable,
-                    directory,
-                    closest_index,
-                    exec_opts.problem_type,
+                    model=trained_models[model_name][closest_index],
+                    feature_names=data.X_train[closest_index].columns.tolist(),
+                    plot_opts=plot_opts,
+                    model_name=model_name,
+                    dependent_variable=exec_opts.dependent_variable,
+                    directory=directory,
+                    problem_type=exec_opts.problem_type,
                     logger=logger,
                 )
