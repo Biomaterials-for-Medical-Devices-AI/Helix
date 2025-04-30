@@ -27,8 +27,8 @@ from helix.services.ml_models import save_model
 from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
-    classification_execution_opts,
     classification_data_opts,
+    classification_execution_opts,
     dummy_classification_data,
     new_classification_experiment,
     plotting_opts,
