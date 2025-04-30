@@ -110,15 +110,15 @@ st.set_page_config(
 st.header("New Experiment")
 st.write(
     """
-    Here you can start a new experiment. Once you create one, you will be able
-    to select it on the Machine Learning & Feature Importance pages.
+    Here you can create a new experiment. Once created, you will be able
+    to select it on the Data Preprocessing, Data Visualisation and Train Models pages.
     """
 )
 st.write(
     """
     ### Create a new experiment ⚗️
 
-    Give your experiment a name, upload your data, and click **Create**.
+    Give your experiment a name, upload your data, and click **Create** located at the bottom of the page.
     If an experiment with the same name already exists, or you don't provide a file,
     you will not be able to create it.
     """
@@ -140,25 +140,48 @@ else:
 
 st.write(
     """
-    Upload your data file as a CSV and then define how the data will be normalised and
-    split between training and test data.
+    Upload your data as a CSV or Excel (.xslx) file.
     """
 )
 
 st.write(
     """
-    **Please notice that last column of the uploaded file should be the dependent variable.**
+    **Please note that the last column of the uploaded file should be the dependent variable.**
     """
 )
 
-st.file_uploader(
+uploaded_file = st.file_uploader(
     "Choose a file",
     type=["csv", "xlsx"],
     key=ExecutionStateKeys.UploadedFileName,
     help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
+
+# Automatically set dependent variable textbox to last column name after upload
+import pandas as pd
+
+def get_last_column_name(file):
+    if file is None:
+        return None
+    try:
+        if file.name.endswith(".csv"):
+            df = pd.read_csv(file, nrows=0)  # Only read header
+        elif file.name.endswith(".xlsx"):
+            df = pd.read_excel(file, nrows=0)
+        else:
+            return None
+        return df.columns[-1] if len(df.columns) > 0 else None
+    except Exception:
+        return None
+
+if uploaded_file is not None:
+    last_col = get_last_column_name(uploaded_file)
+    # Only set if not already set by user
+    if last_col and not st.session_state.get(ExecutionStateKeys.DependentVariableName):
+        st.session_state[ExecutionStateKeys.DependentVariableName] = last_col
+
 st.text_input(
-    "Name of the dependent variable. **This will be used for the plots.**",
+    "Name of the dependent variable. **This will be used for the plots. As default, the name of the last column of the uploaded file will be used**",
     key=ExecutionStateKeys.DependentVariableName,
 )
 
