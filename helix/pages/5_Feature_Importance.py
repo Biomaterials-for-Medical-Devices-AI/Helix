@@ -17,7 +17,7 @@ from helix.components.experiments import experiment_selector, model_selector
 from helix.components.forms.forms_fi import fi_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import plot_box_v2
+from helix.components.plots import plot_box, plot_box_v2
 from helix.feature_importance import feature_importance
 from helix.options.data import DataOptions
 from helix.options.enums import (
@@ -33,6 +33,7 @@ from helix.options.file_paths import (
     execution_options_path,
     fi_options_path,
     fi_plot_dir,
+    fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_model_dir,
