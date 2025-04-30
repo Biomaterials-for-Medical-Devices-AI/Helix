@@ -280,11 +280,11 @@ class GridSearchLearner:
         """
         self._logger.info("Fitting models using Grid Search...")
 
-        # Extract the data
-        X_train = data.X_train[0]
-        X_test = data.X_test[0]
-        y_train = data.y_train[0]
-        y_test = data.y_test[0]
+        # Extract the data and convert to numpy arrays
+        X_train = data.X_train[0].to_numpy()
+        X_test = data.X_test[0].to_numpy()
+        y_train = data.y_train[0].to_numpy()
+        y_test = data.y_test[0].to_numpy()
 
         # Make grid search compatible scorers
         metrics = (
