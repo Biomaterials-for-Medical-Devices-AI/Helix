@@ -14,8 +14,8 @@ from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
     data_opts,
-    dummy_data,
-    execution_opts,
+    dummy_classification_data,
+    classification_execution_opts,
     new_classification_experiment,
     plotting_opts,
 )

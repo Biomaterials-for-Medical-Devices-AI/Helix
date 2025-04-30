@@ -28,8 +28,8 @@ from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
     data_opts,
-    dummy_data,
-    execution_opts,
+    dummy_classification_data,
+    classification_execution_opts,
     new_classification_experiment,
     plotting_opts,
 )
@@ -38,8 +38,8 @@ from .fixtures import (
 @pytest.fixture
 def models_to_evaluate(
     new_classification_experiment: str,
-    dummy_data: np.ndarray,
-    execution_opts: ExecutionOptions,
+    dummy_classification_data: np.ndarray,
+    classification_execution_opts: ExecutionOptions,
     data_opts: DataOptions,
 ):
     save_dir = ml_model_dir(
@@ -53,13 +53,13 @@ def models_to_evaluate(
         data_options_path(helix_experiments_base_dir() / new_classification_experiment),
         data_opts,
     )
-    X, y = dummy_data[:, :-1], dummy_data[:, -1]
+    X, y = dummy_classification_data[:, :-1], dummy_classification_data[:, -1]
     for i in range(data_opts.data_split.n_bootstraps):
         X_train, _, y_train, _ = train_test_split(
             X,
             y,
             test_size=data_opts.data_split.test_size,
-            random_state=execution_opts.random_state + i,
+            random_state=classification_execution_opts.random_state + i,
         )
         model = LogisticRegression()
         model.fit(X_train, y_train)
