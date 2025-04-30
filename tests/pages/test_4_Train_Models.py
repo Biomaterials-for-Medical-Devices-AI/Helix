@@ -92,7 +92,9 @@ def test_manual_linear_model(
         at, "number_input", "Number of bootstraps"
     ):
         holdout_input.set_value(holdout_or_k).run()
-    if k_input := get_element_by_label(at, "number_input", "k"):
+    if k_input := get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    ):
         k_input.set_value(holdout_or_k).run()
     # Select Logistic Regression
     lm_toggle = get_element_by_label(at, "toggle", "Logistic Regression")
@@ -136,7 +138,9 @@ def test_auto_linear_model(new_classification_experiment: str):
     )
     exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
-    k_input = get_element_by_label(at, "number_input", "k")
+    k_input = get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    )
     k_input.set_value(k).run()
     # Select Logistic Regression
     lm_toggle = get_element_by_label(at, "toggle", "Logistic Regression")
@@ -202,7 +206,9 @@ def test_manual_random_forest(
         at, "number_input", "Number of bootstraps"
     ):
         holdout_input.set_value(holdout_or_k).run()
-    if k_input := get_element_by_label(at, "number_input", "k"):
+    if k_input := get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    ):
         k_input.set_value(holdout_or_k).run()
     # Select Random Forest
     rm_toggle = get_element_by_label(at, "toggle", "Random Forest")
@@ -246,7 +252,9 @@ def test_auto_random_forest(new_classification_experiment: str):
     )
     exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
-    k_input = get_element_by_label(at, "number_input", "k")
+    k_input = get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    )
     k_input.set_value(k).run()
     # Select Random Forest
     rf_toggle = get_element_by_label(at, "toggle", "Random Forest")
@@ -312,7 +320,9 @@ def test_manual_xgboost(
         at, "number_input", "Number of bootstraps"
     ):
         holdout_input.set_value(holdout_or_k).run()
-    if k_input := get_element_by_label(at, "number_input", "k"):
+    if k_input := get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    ):
         k_input.set_value(holdout_or_k).run()
     # Select XGBoost
     xgb_toggle = get_element_by_label(at, "toggle", "XGBoost")
@@ -356,7 +366,9 @@ def test_auto_xgboost(new_classification_experiment: str):
     )
     exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
-    k_input = get_element_by_label(at, "number_input", "k")
+    k_input = get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    )
     k_input.set_value(k).run()
     # Select XGBoost
     xgb_toggle = get_element_by_label(at, "toggle", "XGBoost")
@@ -422,7 +434,9 @@ def test_manual_svm(
         at, "number_input", "Number of bootstraps"
     ):
         holdout_input.set_value(holdout_or_k).run()
-    if k_input := get_element_by_label(at, "number_input", "k"):
+    if k_input := get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    ):
         k_input.set_value(holdout_or_k).run()
     # Select SVM
     svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
@@ -466,7 +480,9 @@ def test_auto_svm(new_classification_experiment: str):
     )
     exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
-    k_input = get_element_by_label(at, "number_input", "k")
+    k_input = get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    )
     k_input.set_value(k).run()
     # Select SVM
     svm_toggle = get_element_by_label(at, "toggle", "Support Vector Machine")
@@ -508,7 +524,9 @@ def test_page_makes_one_log_per_run(new_classification_experiment: str):
     )
     exp_selector.select(new_classification_experiment).run()
     # Set the number of k-folds
-    k_input = get_element_by_label(at, "number_input", "k")
+    k_input = get_element_by_label(
+        at, "number_input", "Number of folds in Cross-Validation k"
+    )
     k_input.set_value(k).run()
     # Select Random Forest
     rf_toggle = get_element_by_label(at, "toggle", "Random Forest")
