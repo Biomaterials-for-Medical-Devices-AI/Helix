@@ -9,4 +9,4 @@ To view an experiment, select one from the dropdown menu. Any outputs generated,
 
 ![Feature importance plots](../_static/fi-plots.png)
 
-![Fuzzy plots](../_static/fuzzy-plots.png)
+<!-- ![Fuzzy plots](../_static/fuzzy-plots.png) -->

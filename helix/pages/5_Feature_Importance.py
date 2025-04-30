@@ -17,8 +17,8 @@ from helix.components.experiments import experiment_selector, model_selector
 from helix.components.forms.forms_fi import fi_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import plot_box, plot_box_v2
-from helix.feature_importance import feature_importance, fuzzy_interpretation
+from helix.components.plots import plot_box_v2
+from helix.feature_importance import feature_importance
 from helix.options.data import DataOptions
 from helix.options.enums import (
     ExecutionStateKeys,
@@ -33,8 +33,6 @@ from helix.options.file_paths import (
     execution_options_path,
     fi_options_path,
     fi_plot_dir,
-    fuzzy_options_path,
-    fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_model_dir,
@@ -105,29 +103,29 @@ def build_configuration() -> tuple[
 
     # Set up fuzzy options
     fuzzy_opt = None
-    if st.session_state.get(FuzzyStateKeys.FuzzyFeatureSelection, False):
-        fuzzy_opt = FuzzyOptions(
-            fuzzy_feature_selection=st.session_state[
-                FuzzyStateKeys.FuzzyFeatureSelection
-            ],
-            number_fuzzy_features=st.session_state[
-                FuzzyStateKeys.NumberOfFuzzyFeatures
-            ],
-            granular_features=st.session_state[FuzzyStateKeys.GranularFeatures],
-            number_clusters=st.session_state[FuzzyStateKeys.NumberOfClusters],
-            cluster_names=st.session_state.get(FuzzyStateKeys.ClusterNames, "").split(
-                ", "
-            ),
-            number_rules=st.session_state[FuzzyStateKeys.NumberOfTopRules],
-            save_fuzzy_set_plots=plotting_options.save_plots,
-            fuzzy_log_dir=str(
-                log_dir(
-                    biofefi_base_dir
-                    / st.session_state[ViewExperimentKeys.ExperimentName]
-                )
-                / "fuzzy"
-            ),
-        )
+    # if st.session_state.get(FuzzyStateKeys.FuzzyFeatureSelection, False):
+    #     fuzzy_opt = FuzzyOptions(
+    #         fuzzy_feature_selection=st.session_state[
+    #             FuzzyStateKeys.FuzzyFeatureSelection
+    #         ],
+    #         number_fuzzy_features=st.session_state[
+    #             FuzzyStateKeys.NumberOfFuzzyFeatures
+    #         ],
+    #         granular_features=st.session_state[FuzzyStateKeys.GranularFeatures],
+    #         number_clusters=st.session_state[FuzzyStateKeys.NumberOfClusters],
+    #         cluster_names=st.session_state.get(FuzzyStateKeys.ClusterNames, "").split(
+    #             ", "
+    #         ),
+    #         number_rules=st.session_state[FuzzyStateKeys.NumberOfTopRules],
+    #         save_fuzzy_set_plots=plotting_options.save_plots,
+    #         fuzzy_log_dir=str(
+    #             log_dir(
+    #                 biofefi_base_dir
+    #                 / st.session_state[ViewExperimentKeys.ExperimentName]
+    #             )
+    #             / "fuzzy"
+    #         ),
+    #     )
 
     # Set up feature importance options
     fi_opt = FeatureImportanceOptions(
@@ -229,20 +227,20 @@ def pipeline(
     close_logger(fi_logger_instance, fi_logger)
 
     # Fuzzy interpretation
-    if fuzzy_opts is not None and fuzzy_opts.fuzzy_feature_selection:
-        fuzzy_logger_instance = Logger(Path(fuzzy_opts.fuzzy_log_dir))
-        fuzzy_logger = fuzzy_logger_instance.make_logger()
-        fuzzy_interpretation.run(
-            fuzzy_opt=fuzzy_opts,
-            fi_opt=fi_opts,
-            exec_opt=exec_opts,
-            plot_opt=plot_opts,
-            data=data,
-            models=trained_models,
-            ensemble_results=ensemble_results,
-            logger=fuzzy_logger,
-        )
-        close_logger(fuzzy_logger_instance, fuzzy_logger)
+    # if fuzzy_opts is not None and fuzzy_opts.fuzzy_feature_selection:
+    #     fuzzy_logger_instance = Logger(Path(fuzzy_opts.fuzzy_log_dir))
+    #     fuzzy_logger = fuzzy_logger_instance.make_logger()
+    #     fuzzy_interpretation.run(
+    #         fuzzy_opt=fuzzy_opts,
+    #         fi_opt=fi_opts,
+    #         exec_opt=exec_opts,
+    #         plot_opt=plot_opts,
+    #         data=data,
+    #         models=trained_models,
+    #         ensemble_results=ensemble_results,
+    #         logger=fuzzy_logger,
+    #     )
+    #     close_logger(fuzzy_logger_instance, fuzzy_logger)
 
 
 # Set page contents
@@ -253,15 +251,23 @@ st.set_page_config(
 
 
 st.header("Feature Importance")
+# st.write(
+#     """
+#     This page provides options for exploring and customising feature importance and
+#     interpretability methods in the trained machine learning models.
+#     You can configure global and local feature importance techniques,
+#     select ensemble approaches, and apply fuzzy feature importance.
+#     Options include tuning scoring functions, setting data percentages
+#     for SHAP analysis, and configuring rules for fuzzy synergy analysis
+#     to gain deeper insights into model behaviour.
+#     """
+# )
 st.write(
     """
     This page provides options for exploring and customising feature importance and
     interpretability methods in the trained machine learning models.
-    You can configure global and local feature importance techniques,
-    select ensemble approaches, and apply fuzzy feature selection.
-    Options include tuning scoring functions, setting data percentages
-    for SHAP analysis, and configuring rules for fuzzy synergy analysis
-    to gain deeper insights into model behaviour.
+    You can configure global, local feature importance techniques and
+    select ensemble approaches.
     """
 )
 
@@ -346,9 +352,9 @@ if experiment_name:
                 fi_options_file = fi_options_path(base_dir / experiment_name)
                 save_options(fi_options_file, fi_opts)
                 # save Fuzzy options if configured
-                if fuzzy_opts is not None:
-                    fuzzy_options_file = fuzzy_options_path(base_dir / experiment_name)
-                    save_options(fuzzy_options_file, fuzzy_opts)
+                # if fuzzy_opts is not None:
+                #     fuzzy_options_file = fuzzy_options_path(base_dir / experiment_name)
+                #     save_options(fuzzy_options_file, fuzzy_opts)
 
                 process = Process(
                     target=pipeline,
@@ -384,7 +390,7 @@ if experiment_name:
                         box_title="Feature Importance Logs",
                         key=FeatureImportanceStateKeys.FILogBox,
                     )
-                    log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
+                    # log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
                 except NotADirectoryError:
                     pass
                 fi_plots = fi_plot_dir(base_dir / experiment_name)
@@ -396,8 +402,8 @@ if experiment_name:
                     or p.name.startswith("ensemble-")  # ensemble plots
                 ]
                 plot_box_v2(mean_plots, "Feature importance plots")
-                fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
-                plot_box(fuzzy_plots, "Fuzzy plots")
+                # fuzzy_plots = fuzzy_plot_dir(base_dir / experiment_name)
+                # plot_box(fuzzy_plots, "Fuzzy plots")
 
     else:
         st.success(

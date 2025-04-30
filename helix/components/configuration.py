@@ -15,7 +15,6 @@ from helix.options.file_paths import (
     data_preprocessing_options_path,
     execution_options_path,
     fi_options_path,
-    fuzzy_options_path,
     ml_options_path,
     plot_options_path,
 )
@@ -25,7 +24,6 @@ from helix.services.configuration import (
     load_data_preprocessing_options,
     load_execution_options,
     load_fi_options,
-    load_fuzzy_options,
     load_ml_options,
     load_plot_options,
 )
@@ -249,7 +247,7 @@ def display_options(experiment_path: Path) -> None:
         ),
         "Machine Learning Options": load_ml_options(ml_options_path(experiment_path)),
         "Feature Importance Options": load_fi_options(fi_options_path(experiment_path)),
-        "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
+        # "Fuzzy Options": load_fuzzy_options(fuzzy_options_path(experiment_path)),
     }
 
     with st.expander("Show Experiment Options", expanded=False):

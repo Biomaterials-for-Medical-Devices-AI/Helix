@@ -101,9 +101,9 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
         svm_model_type = _svm_opts(use_hyperparam_search)
         model_types.update(svm_model_type)
 
-    if st.toggle("Bayesian Regularised Neural Network", value=False):
-        brnn_model_type = _brnn_opts(use_hyperparam_search)
-        model_types.update(brnn_model_type)
+    # if st.toggle("Bayesian Regularised Neural Network", value=False):
+    #     brnn_model_type = _brnn_opts(use_hyperparam_search)
+    #     model_types.update(brnn_model_type)
 
     st.session_state[MachineLearningStateKeys.ModelTypes] = model_types
     st.subheader("Select outputs to save")

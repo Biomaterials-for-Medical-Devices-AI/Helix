@@ -13,14 +13,12 @@ from helix.components.plots import (
 )
 from helix.options.enums import (
     FeatureImportanceStateKeys,
-    FuzzyStateKeys,
     MachineLearningStateKeys,
     ViewExperimentKeys,
 )
 from helix.options.file_paths import (
     data_analysis_plots_dir,
     fi_plot_dir,
-    fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_metrics_mean_std_path,
@@ -75,8 +73,8 @@ if experiment_name:
         or p.name.startswith("ensemble-")  # ensemble plots
     ]
     plot_box_v2(mean_plots, "Feature importance plots")
-    fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    plot_box(fuzzy_plots, "Fuzzy plots")
+    # fuzzy_plots = fuzzy_plot_dir(experiment_path)
+    # plot_box(fuzzy_plots, "Fuzzy plots")
     try:
         st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"
@@ -95,10 +93,10 @@ if experiment_name:
         )
     except NotADirectoryError:
         pass
-    try:
-        st.session_state[FuzzyStateKeys.FuzzyLogBox] = get_logs(
-            log_dir(experiment_path) / "fuzzy"
-        )
-        log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
-    except NotADirectoryError:
-        pass
+    # try:
+    #     st.session_state[FuzzyStateKeys.FuzzyLogBox] = get_logs(
+    #         log_dir(experiment_path) / "fuzzy"
+    #     )
+    #     log_box(box_title="Fuzzy FI Logs", key=FuzzyStateKeys.FuzzyLogBox)
+    # except NotADirectoryError:
+    #     pass
