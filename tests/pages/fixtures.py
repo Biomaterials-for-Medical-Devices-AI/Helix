@@ -69,7 +69,7 @@ def dummy_data(execution_opts: ExecutionOptions):
 
 
 @pytest.fixture
-def new_experiment(
+def new_classification_experiment(
     execution_opts: ExecutionOptions,
     plotting_opts: PlottingOptions,
     data_opts: DataOptions,
