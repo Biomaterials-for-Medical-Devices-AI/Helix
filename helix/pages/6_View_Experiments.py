@@ -126,17 +126,6 @@ if experiment_name:
     display_options(experiment_path)
     display_experiment_plots(experiment_path)
     display_experiment_logs(experiment_path)
-    fi_plots = fi_plot_dir(base_dir / experiment_name)
-    mean_plots = [
-        p
-        for p in fi_plots.iterdir()
-        if p.name.endswith("-all-folds-mean.png")  # mean global FI
-        or p.name.startswith("local-")  # local plots
-        or p.name.startswith("ensemble-")  # ensemble plots
-    ]
-    plot_box_v2(mean_plots, "Feature importance plots")
-    # fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    # plot_box(fuzzy_plots, "Fuzzy plots")
     try:
         st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
             log_dir(experiment_path) / "ml"
