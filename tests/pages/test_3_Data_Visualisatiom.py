@@ -23,6 +23,7 @@ from helix.options.file_paths import (
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
 from helix.utils.utils import create_directory, delete_directory
+from tests.pages.utils import select_experiment
 from tests.utils import get_element_by_key
 
 
@@ -122,10 +123,7 @@ def test_page_can_find_experiment(new_experiment: str):
     at.run()
 
     # Act
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_experiment).run()
+    select_experiment(at, new_experiment)
 
     # Assert
     assert not at.exception
@@ -150,10 +148,7 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_experiment).run()
+    select_experiment(at, new_experiment)
     # select KDE plot
     kde_toggle = get_element_by_key(
         at, "toggle", f"raw_{DataAnalysisStateKeys.ShowKDE}"
@@ -189,10 +184,7 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_experiment).run()
+    select_experiment(at, new_experiment)
     # select all feature
     correlation_toggle = get_element_by_key(
         at, "toggle", f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}"
@@ -229,10 +221,7 @@ def test_page_produces_pairplot(new_experiment: str):
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_experiment).run()
+    select_experiment(at, new_experiment)
     # select all feature
     pairplot_toggle = get_element_by_key(
         at, "toggle", f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsPairPlot}"
@@ -269,10 +258,7 @@ def test_page_produces_tsne_plot(new_experiment: str):
 
     # Act
     # select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_experiment).run()
+    select_experiment(at, new_experiment)
     # select tsne normalisation
     normalisation_selector = get_element_by_key(
         at, "selectbox", f"raw_{DataAnalysisStateKeys.SelectNormTsne}"
