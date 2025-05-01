@@ -119,7 +119,7 @@ st.write(
     """
     ### Create a new experiment ⚗️
 
-    Give your experiment a name, upload your data, and click **Create** located at the bottom of the page.
+    Give your experiment a name, upload your data, and click **Create**, located at the bottom of the page.
     If an experiment with the same name already exists, or you don't provide a file,
     you will not be able to create it.
     """
