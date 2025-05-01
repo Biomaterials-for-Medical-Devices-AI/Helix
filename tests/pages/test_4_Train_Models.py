@@ -10,6 +10,7 @@ from helix.options.file_paths import (
     ml_plot_dir,
     ml_predictions_path,
 )
+from tests.pages.utils import select_experiment
 from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
@@ -43,10 +44,7 @@ def test_page_can_find_experiment(new_classification_experiment: str):
     at.run(timeout=10.0)
 
     # Act
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
 
     # Assert
     assert not at.exception
@@ -79,10 +77,7 @@ def test_manual_linear_model(
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -137,10 +132,7 @@ def test_auto_linear_model(new_classification_experiment: str):
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Set the number of k-folds
     k_input = get_element_by_label(
         at, "number_input", "Number of folds in Cross-Validation k"
@@ -193,10 +185,7 @@ def test_manual_random_forest(
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -251,10 +240,7 @@ def test_auto_random_forest(new_classification_experiment: str):
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Set the number of k-folds
     k_input = get_element_by_label(
         at, "number_input", "Number of folds in Cross-Validation k"
@@ -307,10 +293,7 @@ def test_manual_xgboost(
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -365,10 +348,7 @@ def test_auto_xgboost(new_classification_experiment: str):
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Set the number of k-folds
     k_input = get_element_by_label(
         at, "number_input", "Number of folds in Cross-Validation k"
@@ -421,10 +401,7 @@ def test_manual_svm(
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -479,10 +456,7 @@ def test_auto_svm(new_classification_experiment: str):
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Set the number of k-folds
     k_input = get_element_by_label(
         at, "number_input", "Number of folds in Cross-Validation k"
@@ -523,10 +497,7 @@ def test_page_makes_one_log_per_run(new_classification_experiment: str):
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
+    select_experiment(at, new_classification_experiment)
     # Set the number of k-folds
     k_input = get_element_by_label(
         at, "number_input", "Number of folds in Cross-Validation k"
@@ -577,10 +548,7 @@ def test_manual_mlrem(
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_regression_experiment).run()
+    select_experiment(at, new_regression_experiment)
     # Unselect AHPS, which is on by default
     ahps_toggle = get_element_by_key(
         at, "toggle", ExecutionStateKeys.UseHyperParamSearch
@@ -637,10 +605,7 @@ def test_auto_mlrem(new_regression_experiment: str):
 
     # Act
     # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_regression_experiment).run()
+    select_experiment(at, new_regression_experiment)
     # Set the number of k-folds
     k_input = get_element_by_label(
         at, "number_input", "Number of folds in Cross-Validation k"
