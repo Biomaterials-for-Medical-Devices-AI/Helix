@@ -160,6 +160,7 @@ uploaded_file = st.file_uploader(
 # Automatically set dependent variable textbox to last column name after upload
 import pandas as pd
 
+
 def get_last_column_name(file):
     if file is None:
         return None
@@ -173,6 +174,7 @@ def get_last_column_name(file):
         return df.columns[-1] if len(df.columns) > 0 else None
     except Exception:
         return None
+
 
 if uploaded_file is not None:
     last_col = get_last_column_name(uploaded_file)

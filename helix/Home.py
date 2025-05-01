@@ -1,7 +1,5 @@
 import streamlit as st
 
-
-
 from helix.components.images.logos import header_logo, sidebar_logo
 
 st.set_page_config(
@@ -41,4 +39,7 @@ st.write(
 )
 
 # RED ITALIC NOTE: Coming soon functionality
-st.markdown('<span style="color:red; font-size:0.9em;"><i>Coming up in the next version: Use trained models to predict on new data..</i></span>', unsafe_allow_html=True)
+st.markdown(
+    '<span style="color:red; font-size:0.9em;"><i>Coming up in the next version: Use trained models to predict on new data..</i></span>',
+    unsafe_allow_html=True,
+)
