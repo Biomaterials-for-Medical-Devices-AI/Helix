@@ -183,7 +183,7 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / "correlation_heatmap.png"
+    expected_file = plot_dir / "correlation_heatmap_raw.png"
 
     # Act
     # select the experiment
@@ -193,17 +193,19 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
     exp_selector.select(new_experiment).run()
     # select all feature
     correlation_toggle = get_element_by_key(
-        at, "toggle", DataAnalysisStateKeys.SelectAllDescriptorsCorrelation
+        at, "toggle", f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}"
     )
     correlation_toggle.set_value(True).run()
     # check the box to create the plot
     create_plot_checkbox = get_element_by_key(
-        at, "checkbox", DataAnalysisStateKeys.CorrelationHeatmap
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.CorrelationHeatmap}"
     )
     create_plot_checkbox.check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
-    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SaveHeatmap)
+    button = get_element_by_key(
+        at, "button", f"raw_{DataAnalysisStateKeys.SaveHeatmap}"
+    )
     button.click().run()
 
     # Assert
