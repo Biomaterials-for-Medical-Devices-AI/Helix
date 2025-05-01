@@ -144,7 +144,9 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / f"{execution_opts.dependent_variable}_distribution.png"
+    expected_file = (
+        plot_dir / f"{execution_opts.dependent_variable}_distribution_raw.png"
+    )
 
     # Act
     # select the experiment
@@ -153,16 +155,18 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
     )
     exp_selector.select(new_experiment).run()
     # select KDE plot
-    kde_toggle = get_element_by_key(at, "toggle", DataAnalysisStateKeys.ShowKDE)
+    kde_toggle = get_element_by_key(
+        at, "toggle", f"raw_{DataAnalysisStateKeys.ShowKDE}"
+    )
     kde_toggle.set_value(True).run()
     # check the box to create the plot
     create_plot_checkbox = get_element_by_key(
-        at, "checkbox", DataAnalysisStateKeys.TargetVarDistribution
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.TargetVarDistribution}"
     )
     create_plot_checkbox.check().run()
     # save the plot
     button = get_element_by_key(
-        at, "button", DataAnalysisStateKeys.SaveTargetVarDistribution
+        at, "button", f"raw_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
     )
     button.click().run()
 
