@@ -23,7 +23,7 @@ from helix.options.file_paths import (
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
 from helix.utils.utils import create_directory, delete_directory
-from tests.utils import get_element_by_key, get_element_by_label
+from tests.utils import get_element_by_key
 
 
 @pytest.fixture
@@ -144,9 +144,7 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = (
-        plot_dir / f"{execution_opts.dependent_variable}_distribution_raw.png"
-    )
+    expected_file = plot_dir / f"{execution_opts.dependent_variable}_distribution.png"
 
     # Act
     # select the experiment
@@ -155,17 +153,17 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
     )
     exp_selector.select(new_experiment).run()
     # select KDE plot
-    kde_toggle = get_element_by_label(
-        at, "toggle", "Show Kernel Density Estimation in the Distribution Plot"
-    )
+    kde_toggle = get_element_by_key(at, "toggle", DataAnalysisStateKeys.ShowKDE)
     kde_toggle.set_value(True).run()
     # check the box to create the plot
-    create_plot_checkbox = get_element_by_label(
-        at, "checkbox", "Create Target Variable Distribution Plot"
+    create_plot_checkbox = get_element_by_key(
+        at, "checkbox", DataAnalysisStateKeys.TargetVarDistribution
     )
     create_plot_checkbox.check().run()
     # save the plot
-    button = get_element_by_label(at, "button", "Save Plot")
+    button = get_element_by_key(
+        at, "button", DataAnalysisStateKeys.SaveTargetVarDistribution
+    )
     button.click().run()
 
     # Assert
