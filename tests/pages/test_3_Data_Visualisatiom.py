@@ -225,7 +225,7 @@ def test_page_produces_pairplot(new_experiment: str):
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / "pairplot.png"
+    expected_file = plot_dir / "pairplot_raw.png"
 
     # Act
     # select the experiment
@@ -235,17 +235,19 @@ def test_page_produces_pairplot(new_experiment: str):
     exp_selector.select(new_experiment).run()
     # select all feature
     pairplot_toggle = get_element_by_key(
-        at, "toggle", DataAnalysisStateKeys.SelectAllDescriptorsPairPlot
+        at, "toggle", f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsPairPlot}"
     )
     pairplot_toggle.set_value(True).run()
     # check the box to create the plot
     create_plot_checkbox = get_element_by_key(
-        at, "checkbox", DataAnalysisStateKeys.PairPlot
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.PairPlot}"
     )
     create_plot_checkbox.check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
-    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SavePairPlot)
+    button = get_element_by_key(
+        at, "button", f"raw_{DataAnalysisStateKeys.SavePairPlot}"
+    )
     button.click().run()
 
     # Assert
