@@ -42,7 +42,7 @@ def plot_lime_importance(
     plt.style.use(plot_opts.plot_colour_scheme)
     fig, ax = plt.subplots(layout="constrained", dpi=plot_opts.dpi)
 
-    sns.violinplot(data=df.loc[:, most_importance_features], fill=True, ax=ax)
+    sns.violinplot(data=df.loc[:, most_importance_features], fill=True, ax=ax, palette=plot_opts.plot_colour_map)
 
     ax.set_xticklabels(
         ax.get_xticklabels(),
