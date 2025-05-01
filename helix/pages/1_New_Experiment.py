@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from helix.components.configuration import plot_options_box
@@ -156,9 +157,6 @@ uploaded_file = st.file_uploader(
     key=ExecutionStateKeys.UploadedFileName,
     help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
-
-# Automatically set dependent variable textbox to last column name after upload
-import pandas as pd
 
 
 def get_last_column_name(file):

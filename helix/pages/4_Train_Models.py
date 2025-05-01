@@ -205,16 +205,16 @@ st.write(
     """
     In this page you can train new machine learning models. For that:
 
-    > 1. Select an experiment.  
-    >  
-    > 2. Choose whether or not you want Helix to perform hyperparameter search.  
-    >  
-    > 3. Specify how you wish the data to be split into training and test data.  
-    >  
-    > 4. Select the models you wish to train (you may choose more than one).  
-    >  
-    > 5. Choose which outputs to save and hit **"Run Training"**.  
-    >  
+    > 1. Select an experiment.
+    >
+    > 2. Choose whether or not you want Helix to perform hyperparameter search.
+    >
+    > 3. Specify how you wish the data to be split into training and test data.
+    >
+    > 4. Select the models you wish to train (you may choose more than one).
+    >
+    > 5. Choose which outputs to save and hit **"Run Training"**.
+    >
     > 6. Wait for the pipeline to finish. This might take a little while.
     """
 )

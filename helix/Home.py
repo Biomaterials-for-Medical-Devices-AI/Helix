@@ -33,11 +33,8 @@ st.write(
     To run a feature importance analysis 📊, go to the sidebar on the **left** and click **"Feature Importance"**.
 
     To view your previous experiments 📈, go to the sidebar on the **left** and click **"View Experiments"**.
-    
- 
-    """
+"""
 )
-
 # RED ITALIC NOTE: Coming soon functionality
 st.markdown(
     '<span style="color:red; font-size:0.9em;"><i>Coming up in the next version: Use trained models to predict on new data..</i></span>',
