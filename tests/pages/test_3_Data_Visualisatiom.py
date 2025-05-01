@@ -265,7 +265,7 @@ def test_page_produces_tsne_plot(new_experiment: str):
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / "tsne_plot.png"
+    expected_file = plot_dir / "tsne_plot_raw.png"
 
     # Act
     # select the experiment
@@ -275,17 +275,19 @@ def test_page_produces_tsne_plot(new_experiment: str):
     exp_selector.select(new_experiment).run()
     # select tsne normalisation
     normalisation_selector = get_element_by_key(
-        at, "selectbox", DataAnalysisStateKeys.SelectNormTsne
+        at, "selectbox", f"raw_{DataAnalysisStateKeys.SelectNormTsne}"
     )
     normalisation_selector.select(Normalisations.Standardisation).run()
     # check the box to create the plot
     create_plot_checkbox = get_element_by_key(
-        at, "checkbox", DataAnalysisStateKeys.TSNEPlot
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.TSNEPlot}"
     )
     create_plot_checkbox.check().run()
     # save the plot
     # since we only choose one visualisation, only one button is visible,
-    button = get_element_by_key(at, "button", DataAnalysisStateKeys.SaveTSNEPlot)
+    button = get_element_by_key(
+        at, "button", f"raw_{DataAnalysisStateKeys.SaveTSNEPlot}"
+    )
     button.click().run()
 
     # Assert
