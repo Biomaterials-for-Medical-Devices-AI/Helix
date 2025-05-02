@@ -220,7 +220,6 @@ if experiment_name:
     except ValueError as e:
         st.error(str(e), icon="🔥")
     except Exception as e:
-        # st.error("Something went wrong.", icon="🔥")
-        st.error(e, icon="🔥")
+        st.error("Something went wrong.", icon="🔥")
     finally:
         close_logger(logger_instance, logger)
