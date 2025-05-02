@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 import streamlit as st
@@ -157,9 +158,6 @@ uploaded_file = st.file_uploader(
     key=ExecutionStateKeys.UploadedFileName,
     help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
-
-
-from typing import Optional
 
 
 def get_last_column_name(file) -> Optional[str]:
