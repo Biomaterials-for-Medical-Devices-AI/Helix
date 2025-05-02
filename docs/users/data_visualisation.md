@@ -41,14 +41,7 @@ Visualise high-dimensional data in two dimensions using t-SNE.
 ![t-SNE Plot](../_static/tsne-plot.png)
 
 ## Saving Visualisations
-You can save generated plots to disk for reporting or further analysis. The save options are located below each plot tool.
-
-## Data Description
-Below the visualisation tools, the page displays:
-- The loaded dataset.
-- A summary of the dataset, including mean, standard deviation, and other statistics.
-
-![Data Description](../_static/data-description.png)
+You can save generated plots to disk for reporting or further analysis. To save a plot, click the **"Save Plot"** button beneath each plot. You can also edit each plot individually by clicking the **"Edit Plot"** button beneath each plot and changing the settings in the panel.
 
 ## How to Start
 1. Select an experiment.
