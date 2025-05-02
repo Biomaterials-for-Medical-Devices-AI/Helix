@@ -39,7 +39,6 @@ def normality_test_view(
     data: pd.DataFrame,
     table_title: str | None = None,
 ):
-    st.write("### Data Normality Tests")
 
     # Get normality test results for raw data
     if data is not None:

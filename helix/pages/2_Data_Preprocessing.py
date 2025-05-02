@@ -74,7 +74,7 @@ sidebar_logo()
 st.header("Data Preprocessing")
 st.write(
     """
-    Here you can make changes to your data before running machine learning models. This includes feature selection and scalling of variables.
+    Here you can preprocess your data before running machine learning models. This includes feature selection and scalling of variables.
     """
 )
 
