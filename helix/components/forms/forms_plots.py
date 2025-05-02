@@ -26,12 +26,12 @@ def target_variable_dist_form(
     """
 
     show_kde = st.toggle(
-        "Show Kernel Density Estimation in the Distribution Plot",
+        "Show kernel density estimation in the distribution plot",
         value=True,
         key=f"{key_prefix}_{DataAnalysisStateKeys.ShowKDE}",
     )
     n_bins = st.slider(
-        "Number of Bins",
+        "Number of bins",
         min_value=5,
         max_value=50,
         value=10,
@@ -39,7 +39,7 @@ def target_variable_dist_form(
     )
 
     show_plot = st.checkbox(
-        "Create Target Variable Distribution Plot",
+        "Create target variable distribution plot",
         key=f"{key_prefix}_{DataAnalysisStateKeys.TargetVarDistribution}",
     )
     if show_plot or st.session_state.get("redraw_target_dist", False):
@@ -167,7 +167,7 @@ def correlation_heatmap_form(
     """
 
     if st.toggle(
-        "Select All Descriptors",
+        "Select all independent variables",
         value=False,
         key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}",
     ):
@@ -176,7 +176,7 @@ def correlation_heatmap_form(
         default_corr = []
 
     corr_descriptors = st.multiselect(
-        "Select columns to include in the correlation heatmap",
+        "Select independent variables to include in the correlation heatmap",
         data.columns[:-1],
         default=default_corr,
         key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}",
@@ -186,7 +186,7 @@ def correlation_heatmap_form(
 
     if len(corr_descriptors) < 1:
         st.warning(
-            "Please select at least one descriptor to create the correlation heatmap."
+            "Please select at least one independent variable to create the correlation heatmap."
         )
 
     show_plot = st.checkbox(
@@ -326,7 +326,7 @@ def pairplot_form(  # noqa: C901
     """
 
     if st.toggle(
-        "Select All Descriptors",
+        "Select all independent variables",
         value=False,
         key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsPairPlot}",
     ):
@@ -335,7 +335,7 @@ def pairplot_form(  # noqa: C901
         default_corr = None
 
     descriptors = st.multiselect(
-        "Select columns to include in the pairplot",
+        "Select independent variables to include in the pairplot",
         data.columns[:-1],
         default=default_corr,
         key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorPairPlot}",
@@ -345,7 +345,7 @@ def pairplot_form(  # noqa: C901
 
     if len(descriptors) < 1:
         st.warning(
-            "Please select at least one descriptor to create the correlation plot."
+            "Please select at least one independent variable to create the correlation plot."
         )
 
     show_plot = st.checkbox(
@@ -487,7 +487,7 @@ def tSNE_plot_form(  # noqa: C901
 
     if scaler == Normalisations.NoNormalisation:
         scaler = st.selectbox(
-            "Select Normalisation for Comparison (this will not affect the normalisation for ML models)",
+            "Select normalisation for comparison (this will not affect the normalisation for ML models)",
             options=[Normalisations.Standardisation, Normalisations.MinMax],
             key=f"{key_prefix}_{DataAnalysisStateKeys.SelectNormTsne}",
         )

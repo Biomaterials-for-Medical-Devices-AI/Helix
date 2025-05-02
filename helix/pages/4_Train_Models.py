@@ -203,16 +203,19 @@ sidebar_logo()
 st.header("Train Models")
 st.write(
     """
-    This page is where you can train new machine learning models.
-    First, you select an experiment to add your data.
-    Then, you can give a name to your dependent variable. This will appear on your
-    plots.
-    Next, you choose a CSV containing your data and specify how you wish it
-    to be standardised and spit into training and test data.
-    After that, you select the type of problem you are trying to solve,
-    followed by the models you wish to train - you may choose more than one.
-    Finally, you choose which outputs to save and hit **"Run Training"**,
-    and wait for the pipeline to finish.
+    In this page you can train new machine learning models. For that:
+
+    > 1. Select an experiment.
+    >
+    > 2. Choose whether or not you want Helix to perform hyperparameter search.
+    >
+    > 3. Specify how you wish the data to be split into training and test data.
+    >
+    > 4. Select the models you wish to train (you may choose more than one).
+    >
+    > 5. Choose which outputs to save and hit **"Run Training"**.
+    >
+    > 6. Wait for the pipeline to finish. This might take a little while.
     """
 )
 

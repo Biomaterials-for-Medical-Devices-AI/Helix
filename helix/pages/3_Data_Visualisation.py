@@ -42,8 +42,8 @@ sidebar_logo()
 st.header("Data Visualisation")
 st.write(
     """
-    Here you can visualise your data. This is useful for understanding the distribution of your data,
-    as well as the correlation between different features.
+    Here you can visualise your data. This is useful for understanding the distribution of your data, normality tests,
+    as well as the correlation between different variables.
     """
 )
 
@@ -170,7 +170,6 @@ if experiment_name:
                 st.write("#### Data Statistics")
                 st.write(raw_data.describe())
 
-                st.write("### Normality Tests")
                 normality_test_view(raw_data, "Raw Data")
                 # Data visualisation
                 visualisation_view(raw_data, data_tsne, prefix="raw")
@@ -186,7 +185,6 @@ if experiment_name:
                 st.write("#### Data Statistics")
                 st.write(preprocessed_data.describe())
 
-                st.write("### Normality Tests")
                 normality_test_view(preprocessed_data, "Preprocessed Data")
                 # Data visualisation
                 visualisation_view(preprocessed_data, data_tsne, prefix="preprocessed")
@@ -203,7 +201,6 @@ if experiment_name:
                     st.write("#### Data Statistics")
                     st.write(raw_data.describe())
 
-                st.write("### Normality Tests")
                 normality_test_view(raw_data, "Raw Data")
                 visualisation_view(raw_data, data_tsne, prefix="raw")
             else:
