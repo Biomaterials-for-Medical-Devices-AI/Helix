@@ -6,12 +6,7 @@ from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
 
 from helix.options.data import DataOptions
-from helix.options.enums import (
-    DataAnalysisStateKeys,
-    Normalisations,
-    ProblemTypes,
-    ViewExperimentKeys,
-)
+from helix.options.enums import DataAnalysisStateKeys, Normalisations, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import (
     data_analysis_plots_dir,
