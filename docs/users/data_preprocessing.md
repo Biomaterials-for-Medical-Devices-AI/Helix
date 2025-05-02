@@ -3,7 +3,7 @@ Helix allows you preprocess your data before training any models. This includes 
 
 ![Data preprocessing page](../_static/data-preprocessing-page.png)
 
-## Normalisation
+## Data Preprocessing Options
 - Normalisation Method for Independent Variables
 
     If you select **"Standardization"**, your independent variables will be normalised by subtracting the mean and dividing by the standard deviation for each feature. The resulting transformation has a mean of 0 and values are between -1 and 1.
@@ -21,6 +21,10 @@ Helix allows you preprocess your data before training any models. This includes 
     If you select **"Minmax"**, your dependent variable will be scaled based on the minimum and maximum value of each feature. The resulting transformation will have values between 0 and 1.
 
     If you select **"Standardization"**, your dependent variable will be normalised by subtracting the mean and dividing by the standard deviation for each feature. The resulting transformation has a mean of 0 and values are between -1 and 1.
+
+    If you select **"None"**, the data will not be normalised.
+
+    **The dependent variable cannot be normalised if your expermiment's probelm type is classification.**
 
 ## Feature selection
 - Remove low variance features
