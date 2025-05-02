@@ -85,12 +85,11 @@ experiment_name = experiment_selector(choices)
 helix_base_dir = helix_experiments_base_dir()
 
 
-def validate_data(data, logger) -> tuple[list, bool]:
+def validate_data(data) -> tuple[list, bool]:
     """Validate data for preprocessing.
 
     Args:
         data: The input data to validate
-        logger: Logger instance
 
     Returns:
         tuple containing list of non-numeric columns and whether y has non-numeric values
