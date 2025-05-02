@@ -200,7 +200,7 @@ if experiment_name:
             data = read_data(Path(data_opts.data_path), logger)
 
             # Validate data
-            validate_data(data, logger)
+            validate_data(data)
             plot_opt = load_plot_options(path_to_plot_opts)
             original_view(data)
             preprocessing_opts_form(data, exec_opts.problem_type)
@@ -219,7 +219,8 @@ if experiment_name:
 
     except ValueError as e:
         st.error(str(e), icon="🔥")
-    except Exception:
-        st.error("Something went wrong.", icon="🔥")
+    except Exception as e:
+        # st.error("Something went wrong.", icon="🔥")
+        st.error(e, icon="🔥")
     finally:
         close_logger(logger_instance, logger)
