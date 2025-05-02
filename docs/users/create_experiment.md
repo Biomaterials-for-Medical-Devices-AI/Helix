@@ -15,39 +15,22 @@ In Helix, you must create an experiment before you can train models and perform 
 
 ![Configure experiment](../_static/config-exp.png)
 
-## Configure data options
 - Select your problem type.
 
     If your dependent variable is categorical (e.g. cat 🐱 or dog 🐶), choose **"Classification"**.
 
     If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
 
-- Select your data split method
-
-    **Data split methods are not available if using automatic hyper-parameter search.**
-
-    **"Holdout"** will create a train-test split with a portion of the data randomly held out to test the model, which will be trained on the remaining portion of the data.
-
-    **"K-fold"** stands for *K-fold cross validation*. The test data is split from the training data, then the training data is split into *k*-folds. The folds are used to find the model parameters and the test set is used to evaluate the models.
-
-- Specify a test split size. This is a number between 0 and 1. The default is 0.20, i.e. 20% of the data will be used is the test data and 80% for training.
-
-  **Test split is replaced by n splits when using K-fold as the Data split method.**
-
-- Specify *n* splits. This is the number of folds for K-fold cross validation.
-
-  **This is not available when using Holdout with manual hyper-parameter search.**
-
-- Specify the number of bootstraps. This will train a model *n* times, where *n* is the number of bootstraps. The data will be randomly split *n* times into new bataches of training and testing sets. Defaults to 10.
-
-  **When using automatic hyper-parameter search, bootstrapping is not available.**
-
 - Specify the random seed. Data splitting is pseudo-random and this setting helps make an experiment repeatable, while reducing bias in the training and testing sets.
 
-![Configure data](../_static/config-data.png)
-
 ## Configure experiment plots
-- Save all plots. Defaults to `True`. Sometimes you may not want the plots, but you can produce them for publications, presentations, reports, etc.
+- Save all plots. **On by default**. Sometimes you may not want the plots, but you can produce them for publications, presentations, reports, etc.
+
+- Width. Sets the width of your plots.
+
+- Height. Sets the height of your plots.
+
+- Image Resolution (DPI). Sets the resolution of your plots in dots-per-inch (DPI).
 
 - Angle to rotate X-axis labels. Rotate X-axis labels for better legibility. Defaults to 10 degrees.
 
