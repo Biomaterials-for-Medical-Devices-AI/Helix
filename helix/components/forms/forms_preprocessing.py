@@ -2,11 +2,15 @@ import pandas as pd
 import streamlit as st
 
 from helix.options.choices.ui import NORMALISATIONS, TRANSFORMATIONS_Y
-from helix.options.enums import DataPreprocessingStateKeys, TransformationsY
+from helix.options.enums import (
+    DataPreprocessingStateKeys,
+    ProblemTypes,
+    TransformationsY,
+)
 
 
 @st.experimental_fragment
-def preprocessing_opts_form(data: pd.DataFrame):
+def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
     st.write("## Data Preprocessing Options")
 
     st.write("### Data Normalisation")
@@ -35,16 +39,24 @@ def preprocessing_opts_form(data: pd.DataFrame):
 
     st.write("#### Transformation Method for Dependent Variable")
 
-    transformationy = st.selectbox(
+    # disable dependent variable transformation for classifications
+    no_transformation_y = problem_type.lower() == ProblemTypes.Classification
+    if no_transformation_y:
+        st.warning(
+            "Transformation of dependent variables is disabled for **classification** experiments.",
+            icon="⚠️",
+        )
+    transformation_y = st.selectbox(
         "Transformations",
         TRANSFORMATIONS_Y,
         key=DataPreprocessingStateKeys.DependentNormalisation,
-        index=len(TRANSFORMATIONS_Y) - 1,  # default to no transformation
+        index=len(TRANSFORMATIONS_Y) - 1,  # default to no transformation,
+        disabled=no_transformation_y,
     )
 
     if (
-        transformationy.lower() == TransformationsY.Log
-        or transformationy.lower() == TransformationsY.Sqrt
+        transformation_y.lower() == TransformationsY.Log
+        or transformation_y.lower() == TransformationsY.Sqrt
     ):
         if (
             data.iloc[:, -1].min() <= 0
