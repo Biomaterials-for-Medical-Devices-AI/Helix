@@ -159,7 +159,19 @@ uploaded_file = st.file_uploader(
 )
 
 
-def get_last_column_name(file):
+from typing import Optional
+
+
+def get_last_column_name(file) -> Optional[str]:
+    """
+    Returns the name of the last column in the uploaded file.
+
+    Args:
+        file: A Streamlit UploadedFile object or None.
+
+    Returns:
+        The name of the last column as a string, or None if unavailable.
+    """
     if file is None:
         return None
     try:

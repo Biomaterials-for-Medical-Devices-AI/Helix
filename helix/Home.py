@@ -26,7 +26,7 @@ st.write(
 
     To preprocess your data, go to the sidebar on the **left** and click **"Data Preprocessing"**.
 
-    To visualise your data as part of data analysis, go to the sidebar on the **left** and click **"Data Visualisation"**.
+    To visualise your data as part of your exploratory data analysis, go to the sidebar on the **left** and click **"Data Visualisation"**.
 
     To train new machine learning models 🏋️, go to the sidebar on the **left** and click **"Train Models"**.
 
