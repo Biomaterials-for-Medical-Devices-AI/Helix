@@ -45,7 +45,7 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
 
         If you select **"Minmax"**, your dependent variable will be scaled based on the minimum and maximum value of each feature. The resulting transformation will have values between 0 and 1.
 
-        If you select **"Standardization"**, your dependent variable will be normalised by subtracting the mean and dividing by the standard deviation for each feature. The resulting transformation has a mean of 0 and values are between -1 and 1.
+        If you select **"Standardisation"**, your dependent variable will be normalised by subtracting the mean and dividing by the standard deviation for each feature. The resulting transformation has a mean of 0 and values are between -1 and 1.
 
         If you select **"None"**, the data will not be normalised.
         """
