@@ -11,6 +11,7 @@ from helix.options.enums import DataPreprocessingStateKeys, ExecutionStateKeys
 from helix.options.file_paths import (
     data_options_path,
     data_preprocessing_options_path,
+    execution_options_path,
     helix_experiments_base_dir,
     plot_options_path,
     preprocessed_data_path,
@@ -19,6 +20,7 @@ from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import (
     load_data_options,
     load_data_preprocessing_options,
+    load_execution_options,
     load_plot_options,
     save_options,
 )
@@ -80,7 +82,7 @@ st.write(
 
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
-biofefi_base_dir = helix_experiments_base_dir()
+helix_base_dir = helix_experiments_base_dir()
 
 
 def validate_data(data, logger) -> tuple[list, bool]:
@@ -163,15 +165,18 @@ if experiment_name:
 
     try:
         st.session_state[ExecutionStateKeys.ExperimentName] = experiment_name
-        display_options(biofefi_base_dir / experiment_name)
+        display_options(helix_base_dir / experiment_name)
 
-        path_to_plot_opts = plot_options_path(biofefi_base_dir / experiment_name)
-        path_to_data_opts = data_options_path(biofefi_base_dir / experiment_name)
+        path_to_plot_opts = plot_options_path(helix_base_dir / experiment_name)
+        path_to_data_opts = data_options_path(helix_base_dir / experiment_name)
         data_opts = load_data_options(path_to_data_opts)
 
         path_to_preproc_opts = data_preprocessing_options_path(
-            biofefi_base_dir / experiment_name
+            helix_base_dir / experiment_name
         )
+
+        exec_opts_path = execution_options_path(helix_base_dir / experiment_name)
+        exec_opts = load_execution_options(exec_opts_path)
 
         # Check preprocessing status
         data_is_preprocessed = False
@@ -199,14 +204,14 @@ if experiment_name:
             validate_data(data, logger)
             plot_opt = load_plot_options(path_to_plot_opts)
             original_view(data)
-            preprocessing_opts_form(data)
+            preprocessing_opts_form(data, exec_opts.problem_type)
 
             if st.button("Run Data Preprocessing", type="primary"):
                 config = build_config()
                 run_preprocessing_pipeline(
                     data,
                     config,
-                    biofefi_base_dir / experiment_name,
+                    helix_base_dir / experiment_name,
                     data_opts,
                     path_to_data_opts,
                     path_to_preproc_opts,
