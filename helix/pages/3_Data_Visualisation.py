@@ -83,8 +83,8 @@ def visualisation_view(data, data_tsne, prefix: str | None = None):
     """Display visualisation of data."""
 
     if data is not None:
-        st.write("### Graphical Description")
-        st.write("#### Target Variable Distribution")
+        st.write("### Graphical description")
+        st.write("#### Target variable distribution")
         target_variable_dist_form(
             data,
             exec_opt.dependent_variable,
@@ -93,7 +93,7 @@ def visualisation_view(data, data_tsne, prefix: str | None = None):
             key_prefix=prefix,
         )
 
-        st.write("#### Correlation Heatmap")
+        st.write("#### Correlation heatmap")
         correlation_heatmap_form(
             data, data_analysis_plot_dir, plot_opt, key_prefix=prefix
         )
@@ -101,7 +101,7 @@ def visualisation_view(data, data_tsne, prefix: str | None = None):
         st.write("#### Pairplot")
         pairplot_form(data, data_analysis_plot_dir, plot_opt, key_prefix=prefix)
 
-        st.write("#### t-SNE Plot")
+        st.write("#### t-SNE plot")
         tSNE_plot_form(
             data_tsne,
             exec_opt.random_state,
@@ -154,7 +154,7 @@ if experiment_name:
             path_to_raw_data, path_to_preproc_data, logger
         )
 
-        st.write("### Dataset Overview")
+        st.write("### Dataset overview")
 
         # Create tabs based on available data
         if preprocessed_data is not None:
@@ -167,7 +167,7 @@ if experiment_name:
                 st.info("This is your original data **before** preprocessing.")
                 st.dataframe(raw_data)
 
-                st.write("#### Data Statistics")
+                st.write("#### Data statistics")
                 st.write(raw_data.describe())
 
                 normality_test_view(raw_data, "Raw Data")
@@ -182,7 +182,7 @@ if experiment_name:
                 st.info("This is your original data **after** preprocessing.")
                 st.dataframe(preprocessed_data)
 
-                st.write("#### Data Statistics")
+                st.write("#### Data statistics")
                 st.write(preprocessed_data.describe())
 
                 normality_test_view(preprocessed_data, "Preprocessed Data")
