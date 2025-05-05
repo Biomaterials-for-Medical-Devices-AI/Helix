@@ -250,7 +250,7 @@ if experiment_name:
         exec_opts = load_execution_options(
             execution_options_path(helix_experiments_base_dir() / experiment_name)
         )
-        st.write("### Configure Machine Learning Model")
+        st.write("### Configure Machine Learning Models")
         ml_options_form(problem_type=exec_opts.problem_type)
     else:
         st.info(

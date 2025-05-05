@@ -5,22 +5,27 @@ You can train new models in Helix by clicking on **"Train Models"** on the left 
 
 To begin, select your experiment from the dropdown menu where it says **"Select an experiment"**.
 
+## Configure Machine Learning Models
+First, you can select whether you wish to use hyper-parameter search or not. If you use hyper-parameter search, Helix will search a pre-defined selection of hyper-parameters for each model to determine which produce the best performance. This will be based on **accuracy** for classification problems, and **R squared (R^2)** for regression problems. Hyper-parameter search is **active** by default. If you would like to manually set the hyper-parameters for your models, click the toggle to disable it. The hyperparameters will then appear when you select a model to train.
+
 ## Selecting models to train
 To select which models you wish to train, click the toggles next to the model type you wish to train. When you click a toggle, that model's configurable hyper-parameters will appear underneath that toggle. You may train more than one model at a time.
-
-![select model](../_static/select-model-to-train.png)
 
 Depending on whether your problem type, which was configured on the [New Experiment page](../users/create_experiment.md), the models will either be a **classifier** or a **regressor**.
 
 ### Options
 **When using automatic hyper-parameter search, you will not be able to set any of these options. They will be determined automatically.**
 
-![Autmatic hyper-parameter search enabled](../_static/ahps-enabled.png)
+- **Linear Regression**
 
-- **Linear Model**
+  Train a [Linear Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html) model. **This is only available for regression problems**.
 
-  If the problem type is "Classification", train a [Logistic Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LogisticRegression.html) model. If the problem type is "Regression", train a [Linear Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html) model.
+  - Fit intercept: if true, the model will calculate the y-intercept to use in the predictions. If not, the data must be centered.
 
+- **Logistic Regression**
+
+  Train a [Logistic Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LogisticRegression.html) model. **This is only available for classification problems**.
+  
   - Fit intercept: if true, the model will calculate the y-intercept to use in the predictions. If not, the data must be centered.
 
 - **Random Forest**
