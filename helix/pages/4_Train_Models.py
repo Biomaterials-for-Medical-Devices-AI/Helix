@@ -250,7 +250,7 @@ if experiment_name:
         exec_opts = load_execution_options(
             execution_options_path(helix_experiments_base_dir() / experiment_name)
         )
-        st.write("### Configure Machine Learning Models")
+        st.write("### Configure machine learning models")
         ml_options_form(problem_type=exec_opts.problem_type)
     else:
         st.info(
@@ -263,8 +263,10 @@ if experiment_name:
 
         if experiment_dir.exists():
             delete_directory(ml_model_dir(experiment_dir))
-        if experiment_dir.exists():
             delete_directory(ml_plot_dir(experiment_dir))
+            delete_directory(ml_metrics_mean_std_path(experiment_dir))
+            delete_directory(ml_metrics_full_path(experiment_dir))
+            delete_directory(ml_predictions_path(experiment_dir))
 
         ml_opts, exec_opts, plot_opts, data_opts, exp_name = build_configuration()
         # Create the logger
@@ -295,6 +297,7 @@ if experiment_name:
             pass
 
         metrics = ml_metrics_mean_std_path(experiment_dir)
+        print(metrics)
         display_metrics_table(metrics)
 
         if st.session_state.get(MachineLearningStateKeys.Predictions):
