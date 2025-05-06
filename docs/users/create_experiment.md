@@ -21,7 +21,7 @@ In Helix, you must create an experiment before you can train models and perform 
 
     If your dependent variable is continuous (e.g. stock prices 📈), choose **"Regression"**.
 
-- Specify the random seed. Data splitting is pseudo-random and this setting helps make an experiment repeatable, while reducing bias in the training and testing sets.
+- Specify the random seed. This setting helps make an experiment repeatable.
 
 ## Configure experiment plots
 - Save all plots. **On by default**. Sometimes you may not want the plots, but you can produce them for publications, presentations, reports, etc.
