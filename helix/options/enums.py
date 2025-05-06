@@ -177,3 +177,11 @@ class PlotOptionKeys(StrEnum):
 
 class ViewExperimentKeys(StrEnum):
     ExperimentName = "view_experiment_name"
+
+
+class FeatureImportanceTypes(StrEnum):
+    LIME = "LIME"
+    MajorityVote = "Majority Vote"
+    Mean = "Mean"
+    PermutationImportance = "Permutation importance"
+    SHAP = "SHAP"

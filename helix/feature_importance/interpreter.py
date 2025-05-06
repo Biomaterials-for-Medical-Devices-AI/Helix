@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from helix.options.enums import Metrics, ProblemTypes
+from helix.options.enums import FeatureImportanceTypes, Metrics, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
@@ -134,7 +134,10 @@ class FeatureImportanceEstimator:
                             feature_importance_type
                         ] = []
 
-                    if feature_importance_type == "Permutation Importance":
+                    if (
+                        feature_importance_type
+                        == FeatureImportanceTypes.PermutationImportance
+                    ):
                         # Run Permutation Importance
                         permutation_importance_df = calculate_permutation_importance(
                             model=model_list[idx],
@@ -174,7 +177,7 @@ class FeatureImportanceEstimator:
                             feature_importance_type
                         ].append(permutation_importance_df)
 
-                    elif feature_importance_type == "SHAP":
+                    elif feature_importance_type == FeatureImportanceTypes.SHAP:
                         # Run SHAP
                         shap_df, _ = calculate_global_shap_values(
                             model=model_list[idx],
@@ -272,7 +275,7 @@ class FeatureImportanceEstimator:
                 ) in self._local_importance_methods.items():
                     if value["value"]:
                         # Select the first model in the list - model[0]
-                        if feature_importance_type == "LIME":
+                        if feature_importance_type == FeatureImportanceTypes.LIME:
                             # Run Permutation Importance
                             lime_importance_df = calculate_lime_values(
                                 model[closest_index],
@@ -310,7 +313,7 @@ class FeatureImportanceEstimator:
                                 feature_importance_type
                             ] = lime_importance_df
 
-                        if feature_importance_type == "SHAP":
+                        if feature_importance_type == FeatureImportanceTypes.SHAP:
                             # Run SHAP
                             shap_df, shap_values = calculate_local_shap_values(
                                 model=model[closest_index],
@@ -366,7 +369,7 @@ class FeatureImportanceEstimator:
             self._logger.info("Ensemble feature importance methods...")
             for ensemble_type, value in self._feature_importance_ensemble.items():
                 if value:
-                    if ensemble_type == "Mean":
+                    if ensemble_type == FeatureImportanceTypes.Mean:
                         # Calculate mean of feature importance results
                         mean_results, mean_results_std = calculate_ensemble_mean(
                             feature_importance_results, self._logger
@@ -400,7 +403,7 @@ class FeatureImportanceEstimator:
                         close_figure(fig)
                         ensemble_results[ensemble_type] = mean_results
 
-                    if ensemble_type == "Majority Vote":
+                    if ensemble_type == FeatureImportanceTypes.MajorityVote:
                         # Calculate majority vote of feature importance results
                         majority_vote_results, majority_vote_results_std = (
                             calculate_ensemble_majorityvote(
