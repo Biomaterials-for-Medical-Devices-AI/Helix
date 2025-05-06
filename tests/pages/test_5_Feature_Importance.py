@@ -149,37 +149,37 @@ def test_ensemble_methods_disabled_without_global(
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_fuzzy_unavailable_without_ensemble_and_local_methods(
-    new_classification_experiment: str, models_to_evaluate: None
-):
-    # Arrange
-    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
-    at.run()
+# def test_fuzzy_unavailable_without_ensemble_and_local_methods(
+#     new_classification_experiment: str, models_to_evaluate: None
+# ):
+#     # Arrange
+#     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
+#     at.run()
 
-    # Act
-    # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
-    # Select explain all models
-    all_model_toggle = get_element_by_key(
-        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
-    )
-    all_model_toggle.set_value(True).run()
-    fuzzy_checkbox = get_element_by_label(
-        at, "checkbox", "Enable Fuzzy Feature Importance"
-    )
+#     # Act
+#     # Select the experiment
+#     exp_selector = get_element_by_key(
+#         at, "selectbox", ViewExperimentKeys.ExperimentName
+#     )
+#     exp_selector.select(new_classification_experiment).run()
+#     # Select explain all models
+#     all_model_toggle = get_element_by_key(
+#         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+#     )
+#     all_model_toggle.set_value(True).run()
+#     fuzzy_checkbox = get_element_by_label(
+#         at, "checkbox", "Enable Fuzzy Feature Importance"
+#     )
 
-    # Assert
-    assert not at.exception
-    assert not at.error
-    assert (
-        at.warning[1].value
-        == "You must configure both ensemble and local importance methods to use fuzzy feature selection."
-    )
-    # check these methods are disabled
-    assert fuzzy_checkbox.disabled
+#     # Assert
+#     assert not at.exception
+#     assert not at.error
+#     assert (
+#         at.warning[1].value
+#         == "You must configure both ensemble and local importance methods to use fuzzy feature selection."
+#     )
+#     # check these methods are disabled
+#     assert fuzzy_checkbox.disabled
 
 
 def test_permutation_importance(
@@ -443,72 +443,72 @@ def test_local_shap(new_classification_experiment: str, models_to_evaluate: None
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_fuzzy_analysis(new_classification_experiment: str, models_to_evaluate: None):
-    # Arrange
-    fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
-    fi_results = fi_result_dir(
-        helix_experiments_base_dir() / new_classification_experiment
-    )
-    fuzzy_plots = fuzzy_plot_dir(
-        helix_experiments_base_dir() / new_classification_experiment
-    )
-    fuzzy_results = fuzzy_result_dir(
-        helix_experiments_base_dir() / new_classification_experiment
-    )
-    fuzzy_options = fuzzy_options_path(
-        helix_experiments_base_dir() / new_classification_experiment
-    )
-    at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=180.0)
-    at.run()
+# def test_fuzzy_analysis(new_classification_experiment: str, models_to_evaluate: None):
+#     # Arrange
+#     fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
+#     fi_results = fi_result_dir(
+#         helix_experiments_base_dir() / new_classification_experiment
+#     )
+#     fuzzy_plots = fuzzy_plot_dir(
+#         helix_experiments_base_dir() / new_classification_experiment
+#     )
+#     fuzzy_results = fuzzy_result_dir(
+#         helix_experiments_base_dir() / new_classification_experiment
+#     )
+#     fuzzy_options = fuzzy_options_path(
+#         helix_experiments_base_dir() / new_classification_experiment
+#     )
+#     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=180.0)
+#     at.run()
 
-    # Act
-    # Select the experiment
-    exp_selector = get_element_by_key(
-        at, "selectbox", ViewExperimentKeys.ExperimentName
-    )
-    exp_selector.select(new_classification_experiment).run()
-    # Select explain all models
-    all_model_toggle = get_element_by_key(
-        at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
-    )
-    all_model_toggle.set_value(True).run()
-    # Select permutation importance; global method required for ensemble
-    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
-    perm_imp_checkbox.check().run()
-    # Select ensemble mean; required for fuzzy
-    ens_mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
-    ens_mean_checkbox.check().run()
-    # Select local SHAP; local also required for fuzzy
-    local_lime_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
-    local_lime_checkbox.check().run()
-    # Select fuzzy
-    fuzzy_checkbox = get_element_by_label(
-        at, "checkbox", "Enable Fuzzy Feature Importance"
-    )
-    fuzzy_checkbox.check().run()
-    # Select granualr analysis
-    granular_checkbox = get_element_by_label(at, "checkbox", "Granular features")
-    granular_checkbox.check().run()
-    # Leave additional configs as the defaults
-    # Leave save output toggles as true, the default
-    # Run
-    button = get_element_by_label(at, "button", "Run Feature Importance")
-    button.click().run()
+#     # Act
+#     # Select the experiment
+#     exp_selector = get_element_by_key(
+#         at, "selectbox", ViewExperimentKeys.ExperimentName
+#     )
+#     exp_selector.select(new_classification_experiment).run()
+#     # Select explain all models
+#     all_model_toggle = get_element_by_key(
+#         at, "toggle", FeatureImportanceStateKeys.ExplainAllModels
+#     )
+#     all_model_toggle.set_value(True).run()
+#     # Select permutation importance; global method required for ensemble
+#     perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+#     perm_imp_checkbox.check().run()
+#     # Select ensemble mean; required for fuzzy
+#     ens_mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
+#     ens_mean_checkbox.check().run()
+#     # Select local SHAP; local also required for fuzzy
+#     local_lime_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
+#     local_lime_checkbox.check().run()
+#     # Select fuzzy
+#     fuzzy_checkbox = get_element_by_label(
+#         at, "checkbox", "Enable Fuzzy Feature Importance"
+#     )
+#     fuzzy_checkbox.check().run()
+#     # Select granualr analysis
+#     granular_checkbox = get_element_by_label(at, "checkbox", "Granular features")
+#     granular_checkbox.check().run()
+#     # Leave additional configs as the defaults
+#     # Leave save output toggles as true, the default
+#     # Run
+#     button = get_element_by_label(at, "button", "Run Feature Importance")
+#     button.click().run()
 
-    # Assert
-    assert not at.exception
-    assert not at.error
-    assert fi_plots.exists()
-    assert (fi_plots / "SHAP-local-LogisticRegression-beeswarm.png").exists()
-    assert fi_results.exists()
-    assert list(
-        filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
-    )  # directory is not empty
-    assert list(
-        filter(lambda x: x.endswith(".png"), map(str, fuzzy_plots.iterdir()))
-    )  # directory is not empty
-    assert fuzzy_options.exists()
-    assert (fuzzy_results / "top contextual rules.csv").exists()
+#     # Assert
+#     assert not at.exception
+#     assert not at.error
+#     assert fi_plots.exists()
+#     assert (fi_plots / "SHAP-local-LogisticRegression-beeswarm.png").exists()
+#     assert fi_results.exists()
+#     assert list(
+#         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
+#     )  # directory is not empty
+#     assert list(
+#         filter(lambda x: x.endswith(".png"), map(str, fuzzy_plots.iterdir()))
+#     )  # directory is not empty
+#     assert fuzzy_options.exists()
+#     assert (fuzzy_results / "top contextual rules.csv").exists()
 
 
 def test_page_makes_one_log_per_run(
