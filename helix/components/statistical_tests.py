@@ -43,6 +43,6 @@ def normality_test_view(
     # Get normality test results for raw data
     if data is not None:
         results = create_normality_test_table(data)
-        display_normality_test_results(results, f"Normality Tests for {table_title}")
+        display_normality_test_results(results, f"Normality tests for {table_title}")
     else:
         st.info("No data available.")

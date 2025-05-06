@@ -63,7 +63,7 @@ def display_experiment_plots(experiment_path: Path) -> None:
     # Data analysis plots
     data_analysis = data_analysis_plots_dir(experiment_path)
     if data_analysis.exists():
-        plot_box(data_analysis, "Data Analysis Plots")
+        plot_box(data_analysis, "Data analysis plots")
 
     # ML metrics and plots
     ml_metrics = ml_metrics_mean_std_path(experiment_path)
@@ -105,8 +105,8 @@ def display_experiment_logs(experiment_path: Path) -> None:
         experiment_path: Path to the experiment directory
     """
     log_configs = [
-        ("ml", MachineLearningStateKeys.MLLogBox, "Machine Learning Logs"),
-        ("fi", FeatureImportanceStateKeys.FILogBox, "Feature Importance Logs"),
+        ("ml", MachineLearningStateKeys.MLLogBox, "Machine learning logs"),
+        ("fi", FeatureImportanceStateKeys.FILogBox, "Feature importance logs"),
         # ("fuzzy", FuzzyStateKeys.FuzzyLogBox, "Fuzzy FI Logs"),
     ]
 

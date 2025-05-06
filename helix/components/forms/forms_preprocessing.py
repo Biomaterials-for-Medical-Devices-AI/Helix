@@ -11,9 +11,9 @@ from helix.options.enums import (
 
 @st.experimental_fragment
 def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
-    st.write("## Data Preprocessing Options")
+    st.write("## Data preprocessing options")
 
-    st.write("#### Normalisation Method for Independent Variables")
+    st.write("### Data normalisation")
 
     st.write(
         """
@@ -28,6 +28,8 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
         """
     )
 
+    st.write("#### Normalisation method for independent variables")
+
     st.selectbox(
         "Normalisation",
         NORMALISATIONS,
@@ -35,7 +37,7 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
         index=len(NORMALISATIONS) - 1,  # default to no normalisation
     )
 
-    st.write("#### Transformation Method for Dependent Variable")
+    st.write("#### Transformation method for dependent variable")
 
     st.write(
         """
@@ -84,9 +86,9 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
             else:
                 st.stop()
 
-    st.write("### Feature Selection")
+    st.write("### Feature selection")
 
-    st.write("Check the feature selection algorithms to use.")
+    st.write("#### Check the feature selection algorithms to use")
 
     variance_disabled = True
     if st.checkbox(
