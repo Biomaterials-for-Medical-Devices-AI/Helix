@@ -12,6 +12,7 @@ import streamlit as st
 from helix.options.enums import (
     ExecutionStateKeys,
     FeatureImportanceStateKeys,
+    FeatureImportanceTypes,
     ProblemTypes,
 )
 
@@ -32,7 +33,7 @@ def fi_options_form():
         help="Evaluate feature importance by permuting feature values.",
     )
 
-    global_methods["Permutation importance"] = {
+    global_methods[FeatureImportanceTypes.PermutationImportance.value] = {
         "type": "global",
         "value": use_permutation,
     }
@@ -41,7 +42,10 @@ def fi_options_form():
         "SHAP",
         help="Apply SHAP (SHapley Additive exPlanations) for global interpretability.",
     )
-    global_methods["SHAP"] = {"type": "global", "value": use_shap}
+    global_methods[FeatureImportanceTypes.SHAP.value] = {
+        "type": "global",
+        "value": use_shap,
+    }
 
     st.session_state[FeatureImportanceStateKeys.GlobalFeatureImportanceMethods] = (
         global_methods
@@ -66,13 +70,13 @@ def fi_options_form():
         help="Calculate the mean importance score across methods.",
         disabled=ensemble_is_disabled,
     )
-    ensemble_methods["Mean"] = use_mean
+    ensemble_methods[FeatureImportanceTypes.Mean.value] = use_mean
     use_majority = st.checkbox(
         "Majority vote",
         help="Use majority voting to identify important features.",
         disabled=ensemble_is_disabled,
     )
-    ensemble_methods["Majority Vote"] = use_majority
+    ensemble_methods[FeatureImportanceTypes.MajorityVote.value] = use_majority
 
     st.session_state[FeatureImportanceStateKeys.EnsembleMethods] = ensemble_methods
 
@@ -87,12 +91,15 @@ def fi_options_form():
         "LIME",
         help="Use LIME (Local Interpretable Model-Agnostic Explanations) for local interpretability.",
     )
-    local_importance_methods["LIME"] = {"type": "local", "value": use_lime}
+    local_importance_methods[FeatureImportanceTypes.LIME.value] = {
+        "type": "local",
+        "value": use_lime,
+    }
     use_local_shap = st.checkbox(
         "Local SHAP",
         help="Use SHAP for local feature importance at the instance level.",
     )
-    local_importance_methods["SHAP"] = {
+    local_importance_methods[FeatureImportanceTypes.SHAP.value] = {
         "type": "local",
         "value": use_local_shap,
     }
