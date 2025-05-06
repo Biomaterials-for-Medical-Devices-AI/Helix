@@ -13,7 +13,7 @@ from helix.options.enums import (
 def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
     st.write("## Data Preprocessing Options")
 
-    st.write("### Data Normalisation")
+    st.write("#### Normalisation Method for Independent Variables")
 
     st.write(
         """
@@ -28,8 +28,6 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
         """
     )
 
-    st.write("#### Normalisation Method for Independent Variables")
-
     st.selectbox(
         "Normalisation",
         NORMALISATIONS,
@@ -38,6 +36,20 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
     )
 
     st.write("#### Transformation Method for Dependent Variable")
+
+    st.write(
+        """
+        If you select **Log**, the dependent variable will transformed with the natural logarithm (`ln` / `log e`). If the minimum of your dependent variable is less than or equal to 0, it is first transformed by `(y - min(y)) + 1` to make all values positive, followed by the natural logarithm.
+
+        If you select **Square-root**, the dependent variable is transformed by taking the sqare root of each value. If the minimum of your dependent variable is less than 0, it is first transformed by `y - min(y)` to make all values at least 0, followed by the square root.
+
+        If you select **"Minmax"**, your dependent variable will be scaled based on the minimum and maximum value of each feature. The resulting transformation will have values between 0 and 1.
+
+        If you select **"Standardisation"**, your dependent variable will be normalised by subtracting the mean and dividing by the standard deviation for each feature. The resulting transformation has a mean of 0 and values are between -1 and 1.
+
+        If you select **"None"**, the data will not be normalised.
+        """
+    )
 
     # disable dependent variable transformation for classifications
     no_transformation_y = problem_type.lower() == ProblemTypes.Classification
@@ -74,7 +86,7 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
 
     st.write("### Feature Selection")
 
-    st.write("#### Check the Feature Selection Algorithms to Use")
+    st.write("Check the feature selection algorithms to use.")
 
     variance_disabled = True
     if st.checkbox(
