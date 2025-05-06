@@ -81,7 +81,7 @@ Helix will open in your internet browser when you run it. The main screen will a
 [publish-docs-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/publish-docs.yml?style=for-the-badge&label=Publish%20docs
 [code-quality-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/format-code.yml?style=for-the-badge&label=Code%20quality
 [license-badge]: https://img.shields.io/github/license/Biomaterials-for-Medical-Devices-AI/Helix?style=for-the-badge&label=License
-[downloads-badge]: https://img.shields.io/pypi/dm/Helix?style=for-the-badge
+[downloads-badge]: https://img.shields.io/pypi/dm/helix-ai?style=for-the-badge  
 [tests-badge]: https://img.shields.io/github/actions/workflow/status/Biomaterials-for-Medical-Devices-AI/Helix/run-unit-tests.yml?style=for-the-badge&label=Tests
 
 
