@@ -35,14 +35,14 @@ On Windows, this doesn't seem to be a problem. You should be able to proceed wit
 # Create a virtual environment with venv
 python -m venv <path/to/env>
 source <path/to/env>/bin/activate
-pip install helix
+pip install helix-ai
 
 # -- OR --
 
 # Create a virtual environment with conda
 conda create -n <env_name> python=3.11  # or 3.12
 conda activate <env_name>
-pip install helix
+pip install helix-ai
 ```
 
 You may need to try `python3` and `pip3` if `python` and `pip` do not work.
@@ -52,14 +52,14 @@ You may need to try `python3` and `pip3` if `python` and `pip` do not work.
 # Create a virtual environment with venv
 python -m venv <path\to\env>
 <path/to/env>\Scripts\activate
-pip install helix
+pip install helix-ai
 
 # -- OR --
 
 # Create a virtual environment with conda
 conda create -n <env_name> python=3.11 # or 3.12
 conda activate <env_name>
-pip install helix
+pip install helix-ai
 ```
 
 ## Running Helix
