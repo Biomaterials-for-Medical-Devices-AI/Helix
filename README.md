@@ -30,7 +30,7 @@ D. Rengasamy, B. C. Rothwell; G. P. Figueredo, Towards a More Reliable Interpret
 
 To cite Helix, please use the following DOI:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14721954.svg)](https://doi.org/10.5281/zenodo.14721954)
+[![DOI](https://zenodo.org/badge/934252090.svg)](https://doi.org/10.5281/zenodo.15351700)
 
 
 ## Install and run Helix
