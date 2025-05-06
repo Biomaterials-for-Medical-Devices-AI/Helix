@@ -148,7 +148,8 @@ def target_variable_dist_form(
                         st.rerun()
                 with col2:
                     if st.button(
-                        "Cancel", key=f"{key_prefix}_cancel_target_distribution"
+                        "Cancel",
+                        key=f"{key_prefix}_cancel_target_distribution",
                     ):
                         st.session_state[
                             f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
@@ -280,39 +281,40 @@ def correlation_heatmap_form(
                 plt.clf()
                 st.success("Plot created and saved successfully.")
         with col2:
-            if st.button(
-                "Edit Plot",
-                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveHeatmap}",
-            ):
-                st.session_state[
-                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
-                ] = True
+            pass  # Placeholder for commented out edit functionality
+            # if st.button(
+            #     "Edit Plot",
+            #     key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveCorrelationHeatmap}",
+            # ):
+            #     st.session_state[
+            #         f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveCorrelationHeatmap}"
+            #     ] = True
 
-            if st.session_state.get(
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}", False
-            ):
-                # Get plot-specific settings
-                settings = edit_plot_modal(plot_opts, "heatmap")
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button(
-                        "Apply Changes", key=f"{key_prefix}_apply_changes_heatmap"
-                    ):
-                        # Store settings in session state
-                        st.session_state[f"{key_prefix}_plot_settings_heatmap"] = (
-                            settings
-                        )
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
-                        ] = False
-                        st.session_state[f"{key_prefix}_redraw_heatmap"] = True
-                        st.rerun()
-                with col2:
-                    if st.button("Cancel", key=f"{key_prefix}_cancel_heatmap"):
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
-                        ] = False
-                        st.rerun()
+            # if st.session_state.get(
+            #     f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}", False
+            # ):
+            #     # Get plot-specific settings
+            #     settings = edit_plot_modal(plot_opts, "heatmap")
+            #     col1, col2 = st.columns(2)
+            #     with col1:
+            #         if st.button(
+            #             "Apply Changes", key=f"{key_prefix}_apply_changes_heatmap"
+            #         ):
+            #             # Store settings in session state
+            #             st.session_state[f"{key_prefix}_plot_settings_heatmap"] = (
+            #                 settings
+            #             )
+            #             st.session_state[
+            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+            #             ] = False
+            #             st.session_state[f"{key_prefix}_redraw_heatmap"] = True
+            #             st.rerun()
+            #     with col2:
+            #         if st.button("Cancel", key=f"{key_prefix}_cancel_heatmap"):
+            #             st.session_state[
+            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
+            #             ] = False
+            #             st.rerun()
 
 
 @st.experimental_fragment
@@ -437,39 +439,40 @@ def pairplot_form(  # noqa: C901
                 plt.clf()
                 st.success("Plot created and saved successfully.")
         with col2:
-            if st.button(
-                "Edit Plot",
-                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SavePairPlot}",
-            ):
-                st.session_state[
-                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-                ] = True
+            pass  # Placeholder for commented out edit functionality
+            # if st.button(
+            #     "Edit Plot", key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SavePairPlot}"
+            # ):
+            #     st.session_state[
+            #         f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+            #     ] = True
 
-            if st.session_state.get(
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}", False
-            ):
-                # Get plot-specific settings
-                settings = edit_plot_modal(plot_opts, "pairplot")
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button(
-                        "Apply Changes", key=f"{key_prefix}_apply_changes_pairplot"
-                    ):
-                        # Store settings in session state
-                        st.session_state[f"{key_prefix}_plot_settings_pairplot"] = (
-                            settings
-                        )
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-                        ] = False
-                        st.session_state[f"{key_prefix}_redraw_pairplot"] = True
-                        st.rerun()
-                with col2:
-                    if st.button("Cancel", key=f"{key_prefix}_cancel_pairplot"):
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-                        ] = False
-                        st.rerun()
+            # if st.session_state.get(
+            #     f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}",
+            #     False,
+            # ):
+            #     # Get plot-specific settings
+            #     settings = edit_plot_modal(plot_opts, "pairplot")
+            #     col1, col2 = st.columns(2)
+            #     with col1:
+            #         if st.button(
+            #             "Apply Changes", key=f"{key_prefix}_apply_changes_pairplot"
+            #         ):
+            #             # Store settings in session state
+            #             st.session_state[f"{key_prefix}_plot_settings_pairplot"] = (
+            #                 settings
+            #             )
+            #             st.session_state[
+            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+            #             ] = False
+            #             st.session_state[f"{key_prefix}_redraw_pairplot"] = True
+            #             st.rerun()
+            #     with col2:
+            #         if st.button("Cancel", key=f"{key_prefix}_cancel_pairplot"):
+            #             st.session_state[
+            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
+            #             ] = False
+            #             st.rerun()
 
 
 @st.experimental_fragment
@@ -638,34 +641,35 @@ def tSNE_plot_form(  # noqa: C901
                 plt.clf()
                 st.success("Plots created and saved successfully.")
         with col2:
-            if st.button(
-                "Edit Plot",
-                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveTSNEPlot}",
-            ):
-                st.session_state[
-                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-                ] = True
+            pass  # Placeholder for commented out edit functionality
+            # if st.button(
+            #     "Edit Plot", key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveTSNEPlot}"
+            # ):
+            #     st.session_state[
+            #         f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+            #     ] = True
 
-            if st.session_state.get(
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}", False
-            ):
-                # Get plot-specific settings
-                settings = edit_plot_modal(plot_opts, "tsne")
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button(
-                        "Apply Changes", key=f"{key_prefix}_apply_changes_tsne"
-                    ):
-                        # Store settings in session state
-                        st.session_state[f"{key_prefix}_plot_settings_tsne"] = settings
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-                        ] = False
-                        st.session_state[f"{key_prefix}_redraw_tsne"] = True
-                        st.rerun()
-                with col2:
-                    if st.button("Cancel", key=f"{key_prefix}_cancel_tsne"):
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-                        ] = False
-                        st.rerun()
+            # if st.session_state.get(
+            #     f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}",
+            #     False,
+            # ):
+            #     # Get plot-specific settings
+            #     settings = edit_plot_modal(plot_opts, "tsne")
+            #     col1, col2 = st.columns(2)
+            #     with col1:
+            #         if st.button(
+            #             "Apply Changes", key=f"{key_prefix}_apply_changes_tsne"
+            #         ):
+            #             # Store settings in session state
+            #             st.session_state[f"{key_prefix}_plot_settings_tsne"] = settings
+            #             st.session_state[
+            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+            #             ] = False
+            #             st.session_state[f"{key_prefix}_redraw_tsne"] = True
+            #             st.rerun()
+            #     with col2:
+            #         if st.button("Cancel", key=f"{key_prefix}_cancel_tsne"):
+            #             st.session_state[
+            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
+            #             ] = False
+            #             st.rerun()
