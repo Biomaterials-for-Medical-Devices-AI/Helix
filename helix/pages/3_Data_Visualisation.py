@@ -158,11 +158,11 @@ if experiment_name:
 
         # Create tabs based on available data
         if preprocessed_data is not None:
-            raw_tab, preprocessed_tab = st.tabs(["Raw Data", "Preprocessed Data"])
+            raw_tab, preprocessed_tab = st.tabs(["Raw data", "Preprocessed data"])
             # I need to use tabs in the interface to show both data
             with raw_tab:
                 st.write(
-                    f"#### Raw Data [{len(raw_data.columns)-1} independent variables]"
+                    f"#### Raw data [{len(raw_data.columns)-1} independent variables]"
                 )
                 st.info("This is your original data **before** preprocessing.")
                 st.dataframe(raw_data)
@@ -170,14 +170,14 @@ if experiment_name:
                 st.write("#### Data statistics")
                 st.write(raw_data.describe())
 
-                normality_test_view(raw_data, "Raw Data")
+                normality_test_view(raw_data, "Raw data")
                 # Data visualisation
                 visualisation_view(raw_data, data_tsne, prefix="raw")
 
             # I need to use tabs in the interface to show both data
             with preprocessed_tab:
                 st.write(
-                    f"#### Preprocessed Data [{len(preprocessed_data.columns)-1} independent variables]"
+                    f"#### Preprocessed data [{len(preprocessed_data.columns)-1} independent variables]"
                 )
                 st.info("This is your original data **after** preprocessing.")
                 st.dataframe(preprocessed_data)
@@ -185,23 +185,23 @@ if experiment_name:
                 st.write("#### Data statistics")
                 st.write(preprocessed_data.describe())
 
-                normality_test_view(preprocessed_data, "Preprocessed Data")
+                normality_test_view(preprocessed_data, "Preprocessed data")
                 # Data visualisation
                 visualisation_view(preprocessed_data, data_tsne, prefix="preprocessed")
 
         else:  # raw data only available, so no need for tabs
             if raw_data is not None:
                 st.write(
-                    f"#### Raw Data [{len(raw_data.columns)-1} independent variables]"
+                    f"#### Raw data [{len(raw_data.columns)-1} independent variables]"
                 )
                 st.info("This is your original data **before** preprocessing.")
                 st.dataframe(raw_data)
 
                 if preprocessed_data is None:
-                    st.write("#### Data Statistics")
+                    st.write("#### Data statistics")
                     st.write(raw_data.describe())
 
-                normality_test_view(raw_data, "Raw Data")
+                normality_test_view(raw_data, "Raw data")
                 visualisation_view(raw_data, data_tsne, prefix="raw")
             else:
                 st.info("No raw data available.")

@@ -204,7 +204,7 @@ def display_metrics_table(metrics_path: Path):
     table.sort_values(["Model", "Set"], ascending=[True, True], inplace=True)
 
     # Display the table in Streamlit
-    st.write("### Metrics Summary")
+    st.write("### Metrics summary")
     st.write(
         "Metrics are the mean (± standard deviation) of all bootstraps (if using the Holdout"
         " data split) or cross-validation folds (if using K-fold data split or"
