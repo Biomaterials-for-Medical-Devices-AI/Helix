@@ -16,6 +16,20 @@ Depending on whether your problem type, which was configured on the [New Experim
 ### Options
 **When using automatic hyper-parameter search, you will not be able to set any of these options. They will be determined automatically.**
 
+- **Mulitple Linear Regression with Expectation Maximisation**
+
+  Train a Multiple Linear Regression model which uses Expectation Maximisation. **This is only available for regression problems**.
+
+  - Alpha (relgularisation): the regularisation parameter.
+
+  - Maximum Beta: Will test beta values between 0.1 and this value.
+
+  - Weight Threshold: Features with weights below this value will be discarded.
+
+  - Max Iterations: the maximum number of expectation maximisation cycles to be performed during training.
+
+  - Tolerance: When the change predictions between model predictions and true target values falls below this value, training stops.
+
 - **Linear Regression**
 
   Train a [Linear Regression](https://scikit-learn.org/1.5/modules/generated/sklearn.linear_model.LinearRegression.html) model. **This is only available for regression problems**.
