@@ -15,7 +15,6 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
 
     st.write("### Data normalisation")
 
-
     st.write(
         """
         If you select **"Standardisation"**, your data will be normalised by subtracting the
