@@ -8,6 +8,7 @@ from helix.options.data import DataOptions, DataSplitOptions
 from helix.options.enums import (
     DataSplitMethods,
     FeatureImportanceStateKeys,
+    FeatureImportanceTypes,
     ViewExperimentKeys,
 )
 from helix.options.execution import ExecutionOptions
@@ -217,9 +218,19 @@ def test_permutation_importance(
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert list(filter(lambda x: x.endswith("-bar.png"), map(str, fi_plots.iterdir())))
     assert list(
-        filter(lambda x: x.endswith("all-folds-mean.png"), map(str, fi_plots.iterdir()))
+        filter(
+            lambda x: x.endswith("-bar.png")
+            and x.startswith(FeatureImportanceTypes.PermutationImportance.value),
+            map(str, fi_plots.iterdir()),
+        )
+    )
+    assert list(
+        filter(
+            lambda x: x.endswith("all-folds-mean.png")
+            and x.startswith(FeatureImportanceTypes.PermutationImportance.value),
+            map(str, fi_plots.iterdir()),
+        )
     )
     assert fi_results.exists()
     assert list(
