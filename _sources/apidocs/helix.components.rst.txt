@@ -1,0 +1,78 @@
+helix.components package
+========================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   helix.components.forms
+   helix.components.images
+
+Submodules
+----------
+
+helix.components.configuration module
+-------------------------------------
+
+.. automodule:: helix.components.configuration
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.experiments module
+-----------------------------------
+
+.. automodule:: helix.components.experiments
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.logs module
+----------------------------
+
+.. automodule:: helix.components.logs
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.plot\_editor module
+------------------------------------
+
+.. automodule:: helix.components.plot_editor
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.plots module
+-----------------------------
+
+.. automodule:: helix.components.plots
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.preprocessing module
+-------------------------------------
+
+.. automodule:: helix.components.preprocessing
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.statistical\_tests module
+------------------------------------------
+
+.. automodule:: helix.components.statistical_tests
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.components
+   :members:
+   :show-inheritance:
+   :undoc-members:

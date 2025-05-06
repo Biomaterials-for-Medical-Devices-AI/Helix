@@ -1,0 +1,37 @@
+helix.options.choices package
+=============================
+
+Submodules
+----------
+
+helix.options.choices.metrics module
+------------------------------------
+
+.. automodule:: helix.options.choices.metrics
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.choices.ml\_models module
+---------------------------------------
+
+.. automodule:: helix.options.choices.ml_models
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.choices.ui module
+-------------------------------
+
+.. automodule:: helix.options.choices.ui
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.options.choices
+   :members:
+   :show-inheritance:
+   :undoc-members:

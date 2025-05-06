@@ -1,0 +1,21 @@
+helix.services.machine\_learning package
+========================================
+
+Submodules
+----------
+
+helix.services.machine\_learning.results module
+-----------------------------------------------
+
+.. automodule:: helix.services.machine_learning.results
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.services.machine_learning
+   :members:
+   :show-inheritance:
+   :undoc-members:

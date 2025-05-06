@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to the Helix developer documentation &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Using your models" href="../users/using_models.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="welcome-to-the-helix-developer-documentation">
+<h1>Welcome to the Helix developer documentation<a class="headerlink" href="#welcome-to-the-helix-developer-documentation" title="Link to this heading">¶</a></h1>
+<section id="contributing-to-helix">
+<h2>Contributing to Helix<a class="headerlink" href="#contributing-to-helix" title="Link to this heading">¶</a></h2>
+<p>Helix is free and open-source and we welcome contributions from the community.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="new_models.html"><span class="std std-doc">Adding a new model</span></a></p></li>
+</ul>
+</section>
+<section id="code-tour">
+<h2>Code tour<a class="headerlink" href="#code-tour" title="Link to this heading">¶</a></h2>
+<p>The contents of the Helix source code look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── .github
+├── .gitignore
+├── README.md
+├── helix
+├── docs
+├── uv.lock
+├── pyproject.toml
+└── static
+</pre></div>
+</div>
+<section id="github">
+<h3><code class="docutils literal notranslate"><span class="pre">.github</span></code><a class="headerlink" href="#github" title="Link to this heading">¶</a></h3>
+<p>This directory is files relating to Github Actions and templates for issues and pull requests.</p>
+</section>
+<section id="gitignore">
+<h3><code class="docutils literal notranslate"><span class="pre">.gitignore</span></code><a class="headerlink" href="#gitignore" title="Link to this heading">¶</a></h3>
+<p>This file tells <code class="docutils literal notranslate"><span class="pre">git</span></code> to not track files and directories listed within.</p>
+</section>
+<section id="readme-md">
+<h3><code class="docutils literal notranslate"><span class="pre">README.md</span></code><a class="headerlink" href="#readme-md" title="Link to this heading">¶</a></h3>
+<p>This file gives a quick overview of Helix and is displayed on the main page of the repository.</p>
+</section>
+<section id="helix">
+<h3><code class="docutils literal notranslate"><span class="pre">helix</span></code><a class="headerlink" href="#helix" title="Link to this heading">¶</a></h3>
+<p>This is where the application code lives.</p>
+</section>
+<section id="docs">
+<h3><code class="docutils literal notranslate"><span class="pre">docs</span></code><a class="headerlink" href="#docs" title="Link to this heading">¶</a></h3>
+<p>This is the source directory of the documentation site.</p>
+</section>
+<section id="uv-lock">
+<h3><code class="docutils literal notranslate"><span class="pre">uv.lock</span></code><a class="headerlink" href="#uv-lock" title="Link to this heading">¶</a></h3>
+<p>This file tells <code class="docutils literal notranslate"><span class="pre">uv</span></code> all the dependencies and their version numbers that need to be installed. When you run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code>, <code class="docutils literal notranslate"><span class="pre">uv</span></code> will check this file and download those versions of dependencies.</p>
+</section>
+<section id="pyproject-toml">
+<h3><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code><a class="headerlink" href="#pyproject-toml" title="Link to this heading">¶</a></h3>
+<p>This file specifies the metadata for the project, such as authors, version number and which packages to include. It is also where dependencies are specified. These include the app dependencies as well as the developer dependencies.</p>
+</section>
+<section id="static">
+<h3><code class="docutils literal notranslate"><span class="pre">static</span></code><a class="headerlink" href="#static" title="Link to this heading">¶</a></h3>
+<p>This directory is for static assets, like images, to be used in the application.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to the Helix developer documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-to-helix">Contributing to Helix</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-tour">Code tour</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">helix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../users/using_models.html" title="previous chapter">Using your models</a></li>
+      <li>Next: <a href="installation.html" title="next chapter">Installation</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/devs/index.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

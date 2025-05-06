@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>helix.pages package &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="helix.services package" href="helix.services.html" />
+    <link rel="prev" title="helix.options.choices package" href="helix.options.choices.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="helix-pages-package">
+<h1>helix.pages package<a class="headerlink" href="#helix-pages-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-helix.pages.1_New_Experiment">
+<span id="helix-pages-1-new-experiment-module"></span><h2>helix.pages.1_New_Experiment module<a class="headerlink" href="#module-helix.pages.1_New_Experiment" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.1_New_Experiment.get_last_column_name">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.1_New_Experiment.</span></span><span class="sig-name descname"><span class="pre">get_last_column_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.1_New_Experiment.get_last_column_name" title="Link to this definition">¶</a></dt>
+<dd><p>Returns the name of the last column in the uploaded file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>file</strong> – A Streamlit UploadedFile object or None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The name of the last column as a string, or None if unavailable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.pages.2_Data_Preprocessing">
+<span id="helix-pages-2-data-preprocessing-module"></span><h2>helix.pages.2_Data_Preprocessing module<a class="headerlink" href="#module-helix.pages.2_Data_Preprocessing" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.2_Data_Preprocessing.build_config">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.2_Data_Preprocessing.</span></span><span class="sig-name descname"><span class="pre">build_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.preprocessing.PreprocessingOptions" title="helix.options.preprocessing.PreprocessingOptions"><span class="pre">PreprocessingOptions</span></a></span></span><a class="headerlink" href="#helix.pages.2_Data_Preprocessing.build_config" title="Link to this definition">¶</a></dt>
+<dd><p>Build the configuration object for preprocessing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.2_Data_Preprocessing.run_preprocessing_pipeline">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.2_Data_Preprocessing.</span></span><span class="sig-name descname"><span class="pre">run_preprocessing_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_opts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_to_data_opts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_to_preproc_opts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.2_Data_Preprocessing.run_preprocessing_pipeline" title="Link to this definition">¶</a></dt>
+<dd><p>Run the preprocessing pipeline and save results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Input data to preprocess</p></li>
+<li><p><strong>config</strong> – Preprocessing configuration</p></li>
+<li><p><strong>experiment_dir</strong> – Path to experiment directory</p></li>
+<li><p><strong>data_opts</strong> – Data options</p></li>
+<li><p><strong>path_to_data_opts</strong> – Path to data options file</p></li>
+<li><p><strong>path_to_preproc_opts</strong> – Path to preprocessing options file</p></li>
+<li><p><strong>logger</strong> – Logger instance</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.2_Data_Preprocessing.validate_data">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.2_Data_Preprocessing.</span></span><span class="sig-name descname"><span class="pre">validate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.pages.2_Data_Preprocessing.validate_data" title="Link to this definition">¶</a></dt>
+<dd><p>Validate data for preprocessing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – The input data to validate</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing list of non-numeric columns and whether y has non-numeric values</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.pages.3_Data_Visualisation">
+<span id="helix-pages-3-data-visualisation-module"></span><h2>helix.pages.3_Data_Visualisation module<a class="headerlink" href="#module-helix.pages.3_Data_Visualisation" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.3_Data_Visualisation.load_dataset">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.3_Data_Visualisation.</span></span><span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_to_raw_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_to_preproc_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#helix.pages.3_Data_Visualisation.load_dataset" title="Link to this definition">¶</a></dt>
+<dd><p>Load raw and preprocessed data if available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path_to_raw_data</strong> – Path to raw data file</p></li>
+<li><p><strong>path_to_preproc_data</strong> – <p>Path to preprocessed data file</p>
+<p>logger: Logger instance</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(raw_data, preprocessed_data, data_for_tsne)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.3_Data_Visualisation.visualisation_view">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.3_Data_Visualisation.</span></span><span class="sig-name descname"><span class="pre">visualisation_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_tsne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.pages.3_Data_Visualisation.visualisation_view" title="Link to this definition">¶</a></dt>
+<dd><p>Display visualisation of data.</p>
+</dd></dl>
+
+</section>
+<section id="module-helix.pages.4_Train_Models">
+<span id="helix-pages-4-train-models-module"></span><h2>helix.pages.4_Train_Models module<a class="headerlink" href="#module-helix.pages.4_Train_Models" title="Link to this heading">¶</a></h2>
+<p>Train Models page for Helix.</p>
+<p>This page allows users to configure and train machine learning models on their data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.4_Train_Models.build_configuration">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.4_Train_Models.</span></span><span class="sig-name descname"><span class="pre">build_configuration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="helix.options.html#helix.options.ml.MachineLearningOptions" title="helix.options.ml.MachineLearningOptions"><span class="pre">MachineLearningOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><span class="pre">DataOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.pages.4_Train_Models.build_configuration" title="Link to this definition">¶</a></dt>
+<dd><p>Build the configuration options to run the Machine Learning pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The machine learning options, general execution options, plotting options,
+data options, experiment name.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[<a class="reference internal" href="helix.options.html#helix.options.ml.MachineLearningOptions" title="helix.options.ml.MachineLearningOptions">MachineLearningOptions</a>, <a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions">ExecutionOptions</a>, <a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions">PlottingOptions</a>, <a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions">DataOptions</a>, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.4_Train_Models.pipeline">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.4_Train_Models.</span></span><span class="sig-name descname"><span class="pre">pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ml_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.ml.MachineLearningOptions" title="helix.options.ml.MachineLearningOptions"><span class="pre">MachineLearningOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotting_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><span class="pre">DataOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.services.html#helix.services.data.TabularData" title="helix.services.data.TabularData"><span class="pre">TabularData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.pages.4_Train_Models.pipeline" title="Link to this definition">¶</a></dt>
+<dd><p>This function actually performs the steps of the pipeline. It can be wrapped
+in a process it doesn’t block the UI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ml_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.ml.MachineLearningOptions" title="helix.options.ml.MachineLearningOptions"><em>MachineLearningOptions</em></a>) – Options for machine learning.</p></li>
+<li><p><strong>exec_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><em>ExecutionOptions</em></a>) – General execution options.</p></li>
+<li><p><strong>plotting_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – Options for plotting.</p></li>
+<li><p><strong>experiment_name</strong> (<em>str</em>) – The name of the experiment.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="helix.services.html#helix.services.data.TabularData" title="helix.services.data.TabularData"><em>TabularData</em></a>) – The data that will be used in the pipeline.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.pages.5_Feature_Importance">
+<span id="helix-pages-5-feature-importance-module"></span><h2>helix.pages.5_Feature_Importance module<a class="headerlink" href="#module-helix.pages.5_Feature_Importance" title="Link to this heading">¶</a></h2>
+<p>Feature Importance page for Helix.</p>
+<p>This page provides options for analyzing feature importance using various methods:
+- Global methods (Permutation, SHAP)
+- Local methods (LIME, SHAP)
+- Ensemble methods
+- Fuzzy feature importance</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.5_Feature_Importance.build_configuration">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.5_Feature_Importance.</span></span><span class="sig-name descname"><span class="pre">build_configuration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="helix.options.html#helix.options.fuzzy.FuzzyOptions" title="helix.options.fuzzy.FuzzyOptions"><span class="pre">FuzzyOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions"><span class="pre">FeatureImportanceOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><span class="pre">DataOptions</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.pages.5_Feature_Importance.build_configuration" title="Link to this definition">¶</a></dt>
+<dd><p>Build the configuration objects for the pipeline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[
+FuzzyOptions | None,
+FeatureImportanceOptions,
+ExecutionOptions,
+PlottingOptions,
+DataOptions,
+str,
+list]:
+- The options for fuzzy,
+- The options for feature importance
+- The options for pipeline execution
+- The plotting options
+- The data options
+- The experiment name
+- The list of models to explain.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.5_Feature_Importance.display_feature_importance_plots">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.5_Feature_Importance.</span></span><span class="sig-name descname"><span class="pre">display_feature_importance_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.5_Feature_Importance.display_feature_importance_plots" title="Link to this definition">¶</a></dt>
+<dd><p>Display feature importance plots from the given experiment directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_dir</strong> – Path to the experiment directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.5_Feature_Importance.display_fuzzy_plots">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.5_Feature_Importance.</span></span><span class="sig-name descname"><span class="pre">display_fuzzy_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.5_Feature_Importance.display_fuzzy_plots" title="Link to this definition">¶</a></dt>
+<dd><p>Display fuzzy plots from the given experiment directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_dir</strong> – Path to the experiment directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.5_Feature_Importance.pipeline">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.5_Feature_Importance.</span></span><span class="sig-name descname"><span class="pre">pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fuzzy_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.fuzzy.FuzzyOptions" title="helix.options.fuzzy.FuzzyOptions"><span class="pre">FuzzyOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fi_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions"><span class="pre">FeatureImportanceOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explain_models</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.services.html#helix.services.data.TabularData" title="helix.services.data.TabularData"><span class="pre">TabularData</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.pages.5_Feature_Importance.pipeline" title="Link to this definition">¶</a></dt>
+<dd><p>This function actually performs the steps of the pipeline. It can be wrapped
+in a process it doesn’t block the UI.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fuzzy_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.fuzzy.FuzzyOptions" title="helix.options.fuzzy.FuzzyOptions"><em>FuzzyOptions</em></a>) – Options for fuzzy feature importance.</p></li>
+<li><p><strong>fi_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions"><em>FeatureImportanceOptions</em></a>) – Options for feature importance.</p></li>
+<li><p><strong>exec_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><em>ExecutionOptions</em></a>) – Options for pipeline execution.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – Options for plotting.</p></li>
+<li><p><strong>experiment_name</strong> (<em>str</em>) – The experiment name.</p></li>
+<li><p><strong>explain_models</strong> (<em>list</em>) – The models to analyse.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="helix.services.html#helix.services.data.TabularData" title="helix.services.data.TabularData"><em>TabularData</em></a>) – The data that will be used in the pipeline.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.pages.6_View_Experiments">
+<span id="helix-pages-6-view-experiments-module"></span><h2>helix.pages.6_View_Experiments module<a class="headerlink" href="#module-helix.pages.6_View_Experiments" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.6_View_Experiments.display_experiment_logs">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.6_View_Experiments.</span></span><span class="sig-name descname"><span class="pre">display_experiment_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.6_View_Experiments.display_experiment_logs" title="Link to this definition">¶</a></dt>
+<dd><p>Display all available logs for the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_path</strong> – Path to the experiment directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.6_View_Experiments.display_experiment_plots">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.6_View_Experiments.</span></span><span class="sig-name descname"><span class="pre">display_experiment_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.6_View_Experiments.display_experiment_plots" title="Link to this definition">¶</a></dt>
+<dd><p>Display all available plots for the experiment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_path</strong> – Path to the experiment directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.pages">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-helix.pages" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../devs/index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">helix</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="helix.html">helix package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">helix</a><ul>
+  <li><a href="helix.html">helix package</a><ul>
+      <li>Previous: <a href="helix.options.choices.html" title="previous chapter">helix.options.choices package</a></li>
+      <li>Next: <a href="helix.services.html" title="next chapter">helix.services package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/apidocs/helix.pages.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

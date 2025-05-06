@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>helix.services package &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="helix.services.feature_importance package" href="helix.services.feature_importance.html" />
+    <link rel="prev" title="helix.pages package" href="helix.pages.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="helix-services-package">
+<h1>helix.services package<a class="headerlink" href="#helix-services-package" title="Link to this heading">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="helix.services.feature_importance.html">helix.services.feature_importance package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.feature_importance.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.feature_importance.html#module-helix.services.feature_importance.ensemble_methods">helix.services.feature_importance.ensemble_methods module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.ensemble_methods.calculate_ensemble_fuzzy"><code class="docutils literal notranslate"><span class="pre">calculate_ensemble_fuzzy()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.ensemble_methods.calculate_ensemble_majorityvote"><code class="docutils literal notranslate"><span class="pre">calculate_ensemble_majorityvote()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.ensemble_methods.calculate_ensemble_mean"><code class="docutils literal notranslate"><span class="pre">calculate_ensemble_mean()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.feature_importance.html#module-helix.services.feature_importance.global_methods">helix.services.feature_importance.global_methods module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.global_methods.calculate_global_shap_values"><code class="docutils literal notranslate"><span class="pre">calculate_global_shap_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.global_methods.calculate_permutation_importance"><code class="docutils literal notranslate"><span class="pre">calculate_permutation_importance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.feature_importance.html#module-helix.services.feature_importance.local_methods">helix.services.feature_importance.local_methods module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.local_methods.calculate_lime_values"><code class="docutils literal notranslate"><span class="pre">calculate_lime_values()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.local_methods.calculate_local_shap_values"><code class="docutils literal notranslate"><span class="pre">calculate_local_shap_values()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.feature_importance.html#module-helix.services.feature_importance.results">helix.services.feature_importance.results module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.results.save_fuzzy_sets_plots"><code class="docutils literal notranslate"><span class="pre">save_fuzzy_sets_plots()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.results.save_importance_results"><code class="docutils literal notranslate"><span class="pre">save_importance_results()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.feature_importance.html#helix.services.feature_importance.results.save_target_clusters_plots"><code class="docutils literal notranslate"><span class="pre">save_target_clusters_plots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.feature_importance.html#module-helix.services.feature_importance">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="helix.services.machine_learning.html">helix.services.machine_learning package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.machine_learning.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.machine_learning.html#module-helix.services.machine_learning.results">helix.services.machine_learning.results module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.machine_learning.html#helix.services.machine_learning.results.save_actual_pred_plots"><code class="docutils literal notranslate"><span class="pre">save_actual_pred_plots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="helix.services.machine_learning.html#module-helix.services.machine_learning">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-helix.services.configuration">
+<span id="helix-services-configuration-module"></span><h2>helix.services.configuration module<a class="headerlink" href="#module-helix.services.configuration" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_data_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_data_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><span class="pre">DataOptions</span></a></span></span><a class="headerlink" href="#helix.services.configuration.load_data_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load the data options from the JSON file given in <cite>path</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to the JSON file containing the data options.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The data options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions">DataOptions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_data_preprocessing_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_data_preprocessing_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.preprocessing.PreprocessingOptions" title="helix.options.preprocessing.PreprocessingOptions"><span class="pre">PreprocessingOptions</span></a></span></span><a class="headerlink" href="#helix.services.configuration.load_data_preprocessing_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load data preprocessing options from the given path.
+The path will be to a <cite>json</cite> file containing the options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path the <cite>json</cite> file containing the options.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The data preprocessing options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.preprocessing.PreprocessingOptions" title="helix.options.preprocessing.PreprocessingOptions">PreprocessingOptions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_execution_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_execution_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></span><a class="headerlink" href="#helix.services.configuration.load_execution_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load experiment execution options from the given path.
+The path will be to a <cite>json</cite> file containing the options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path the <cite>json</cite> file containing the options.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The execution options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions">ExecutionOptions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_fi_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_fi_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions"><span class="pre">FeatureImportanceOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.configuration.load_fi_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load feature importance options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to the feature importance options file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The feature importance options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions">FeatureImportanceOptions</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_fuzzy_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_fuzzy_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.fuzzy.FuzzyOptions" title="helix.options.fuzzy.FuzzyOptions"><span class="pre">FuzzyOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.configuration.load_fuzzy_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load fuzzy options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to the fuzzy options file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fuzzy options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.fuzzy.FuzzyOptions" title="helix.options.fuzzy.FuzzyOptions">FuzzyOptions</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_ml_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_ml_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.ml.MachineLearningOptions" title="helix.options.ml.MachineLearningOptions"><span class="pre">MachineLearningOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.configuration.load_ml_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load machine learning options from the given path.
+The path will be to a <cite>json</cite> file containing the options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path the <cite>json</cite> file containing the options.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The machine learning options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.ml.MachineLearningOptions" title="helix.options.ml.MachineLearningOptions">MachineLearningOptions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.load_plot_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">load_plot_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></span><a class="headerlink" href="#helix.services.configuration.load_plot_options" title="Link to this definition">¶</a></dt>
+<dd><p>Load plotting options from the given path.
+The path will be to a <cite>json</cite> file containing the plot options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path the <cite>json</cite> file containing the options.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The plotting options.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions">PlottingOptions</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.configuration.save_options">
+<span class="sig-prename descclassname"><span class="pre">helix.services.configuration.</span></span><span class="sig-name descname"><span class="pre">save_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Options</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.configuration.save_options" title="Link to this definition">¶</a></dt>
+<dd><p>Save options to a <cite>json</cite> file at the specified path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Path</em>) – The path to the <cite>json</cite> file.</p></li>
+<li><p><strong>options</strong> (<em>Options</em>) – The options to save.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.data">
+<span id="helix-services-data-module"></span><h2>helix.services.data module<a class="headerlink" href="#module-helix.services.data" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="helix.services.data.DataBuilder">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helix.services.data.</span></span><span class="sig-name descname"><span class="pre">DataBuilder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalisation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.data.DataSplitOptions" title="helix.options.data.DataSplitOptions"><span class="pre">DataSplitOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.data.DataBuilder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Data builder class</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="helix.services.data.DataBuilder.ingest">
+<span class="sig-name descname"><span class="pre">ingest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.data.DataBuilder.ingest" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="helix.services.data.TabularData">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helix.services.data.</span></span><span class="sig-name descname"><span class="pre">TabularData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.data.TabularData" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.services.data.TabularData.X_test">
+<span class="sig-name descname"><span class="pre">X_test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#helix.services.data.TabularData.X_test" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.services.data.TabularData.X_train">
+<span class="sig-name descname"><span class="pre">X_train</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#helix.services.data.TabularData.X_train" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.services.data.TabularData.y_test">
+<span class="sig-name descname"><span class="pre">y_test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#helix.services.data.TabularData.y_test" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.services.data.TabularData.y_train">
+<span class="sig-name descname"><span class="pre">y_train</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#helix.services.data.TabularData.y_train" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.data.ingest_data">
+<span class="sig-prename descclassname"><span class="pre">helix.services.data.</span></span><span class="sig-name descname"><span class="pre">ingest_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exec_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><span class="pre">DataOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">_logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#helix.services.data.TabularData" title="helix.services.data.TabularData"><span class="pre">TabularData</span></a></span></span><a class="headerlink" href="#helix.services.data.ingest_data" title="Link to this definition">¶</a></dt>
+<dd><p>Load data from disk if the data is not in the streamlit cache,
+else return the stored value. This behaviour is controlled by the
+decorator on the function signature (<cite>&#64;st.cache_data</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>exec_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><em>ExecutionOptions</em></a>) – The execution options.</p></li>
+<li><p><strong>data_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><em>DataOptions</em></a>) – The data options.</p></li>
+<li><p><strong>_logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ingested data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#helix.services.data.TabularData" title="helix.services.data.TabularData">TabularData</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.data.read_data">
+<span class="sig-prename descclassname"><span class="pre">helix.services.data.</span></span><span class="sig-name descname"><span class="pre">read_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#helix.services.data.read_data" title="Link to this definition">¶</a></dt>
+<dd><p>Read a data file into memory from a ‘.csv’ or ‘.xlsx’ file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>Path</em>) – The path to the file to be read.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – The data file wasn’t a ‘.csv’ or ‘.xlsx’ file.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The data read from the file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.data.save_data">
+<span class="sig-prename descclassname"><span class="pre">helix.services.data.</span></span><span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.data.save_data" title="Link to this definition">¶</a></dt>
+<dd><p>Save data to either a ‘.csv’ or ‘.xlsx’ file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_path</strong> (<em>Path</em>) – The path to save the data to.</p></li>
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The data to save.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – The data file wasn’t a ‘.csv’ or ‘.xlsx’ file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.experiments">
+<span id="helix-services-experiments-module"></span><h2>helix.services.experiments module<a class="headerlink" href="#module-helix.services.experiments" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.experiments.create_experiment">
+<span class="sig-prename descclassname"><span class="pre">helix.services.experiments.</span></span><span class="sig-name descname"><span class="pre">create_experiment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plotting_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">execution_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><span class="pre">DataOptions</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.experiments.create_experiment" title="Link to this definition">¶</a></dt>
+<dd><p>Create an experiment on disk with it’s global plotting options,
+execution options and data options saved as <cite>json</cite> files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_dir</strong> (<em>Path</em>) – The path to where the experiment will be created.</p></li>
+<li><p><strong>plotting_options</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options to save.</p></li>
+<li><p><strong>execution_options</strong> (<a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><em>ExecutionOptions</em></a>) – The execution options to save.</p></li>
+<li><p><strong>data_options</strong> (<a class="reference internal" href="helix.options.html#helix.options.data.DataOptions" title="helix.options.data.DataOptions"><em>DataOptions</em></a>) – The data options to save.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.experiments.delete_previous_fi_results">
+<span class="sig-prename descclassname"><span class="pre">helix.services.experiments.</span></span><span class="sig-name descname"><span class="pre">delete_previous_fi_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.experiments.delete_previous_fi_results" title="Link to this definition">¶</a></dt>
+<dd><p>Delete previous feature importance results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_path</strong> (<em>Path</em>) – The path to the experiment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.experiments.find_previous_fi_results">
+<span class="sig-prename descclassname"><span class="pre">helix.services.experiments.</span></span><span class="sig-name descname"><span class="pre">find_previous_fi_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#helix.services.experiments.find_previous_fi_results" title="Link to this definition">¶</a></dt>
+<dd><p>Find previous feature importance results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_path</strong> (<em>Path</em>) – The path to the experiment.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>whether previous experiments exist or not.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.experiments.get_experiments">
+<span class="sig-prename descclassname"><span class="pre">helix.services.experiments.</span></span><span class="sig-name descname"><span class="pre">get_experiments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.experiments.get_experiments" title="Link to this definition">¶</a></dt>
+<dd><p>Get the list of experiments in the Helix experiment directory.</p>
+<p>If <cite>base_dir</cite> is not specified, the default from <cite>helix_experiments_base_dir</cite>
+is used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>base_dir</strong> (<em>Path</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Specify a base directory for experiments.</p></li>
+<li><p><strong>None.</strong> (<em>Defaults to</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of experiments.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.logs">
+<span id="helix-services-logs-module"></span><h2>helix.services.logs module<a class="headerlink" href="#module-helix.services.logs" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.logs.get_logs">
+<span class="sig-prename descclassname"><span class="pre">helix.services.logs.</span></span><span class="sig-name descname"><span class="pre">get_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">log_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#helix.services.logs.get_logs" title="Link to this definition">¶</a></dt>
+<dd><p>Get the latest log file for the latest run to display.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>log_dir</strong> (<em>Path</em>) – The directory to search for the latest logs.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotADirectoryError</strong> – <cite>log_dir</cite> does not point to a directory.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The text of the latest log file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.metrics">
+<span id="helix-services-metrics-module"></span><h2>helix.services.metrics module<a class="headerlink" href="#module-helix.services.metrics" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.metrics.find_mean_model_index">
+<span class="sig-prename descclassname"><span class="pre">helix.services.metrics.</span></span><span class="sig-name descname"><span class="pre">find_mean_model_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aggregated_metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#helix.services.metrics.find_mean_model_index" title="Link to this definition">¶</a></dt>
+<dd><p>Find the index of the model with the mean of the metric.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.metrics.get_metrics">
+<span class="sig-prename descclassname"><span class="pre">helix.services.metrics.</span></span><span class="sig-name descname"><span class="pre">get_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">problem_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><span class="pre">ProblemTypes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#helix.services.metrics.get_metrics" title="Link to this definition">¶</a></dt>
+<dd><p>Get the metrics functions for a given problem type.</p>
+<p>For classification:
+- Accuracy
+- F1
+- Precision
+- Recall
+- ROC AUC</p>
+<p>For Regression
+- R2
+- MAE
+- RMSE</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem_type</strong> (<a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><em>ProblemTypes</em></a>) – Where the problem is classification or regression.</p></li>
+<li><p><strong>logger</strong> (<em>object</em><em>, </em><em>optional</em>) – The logger. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – When you give an incorrect problem type.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <cite>dict</cite> of score names and functions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.ml_models">
+<span id="helix-services-ml-models-module"></span><h2>helix.services.ml_models module<a class="headerlink" href="#module-helix.services.ml_models" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.get_model">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">MlModel</span></span></span><a class="headerlink" href="#helix.services.ml_models.get_model" title="Link to this definition">¶</a></dt>
+<dd><p>Get a new instance of the requested machine learning model.</p>
+<p>If the model is to be used in a grid search, specify <cite>model_params=None</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_type</strong> (<em>type</em>) – The Python type (constructor) of the model to instantiate.</p></li>
+<li><p><strong>model_params</strong> (<em>dict</em><em>, </em><em>optional</em>) – The parameters to pass to the model constructor. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new instance of the requested machine learning model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>MlModel</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.get_model_type">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">get_model_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><span class="pre">ProblemTypes</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">type</span></span></span><a class="headerlink" href="#helix.services.ml_models.get_model_type" title="Link to this definition">¶</a></dt>
+<dd><p>Fetch the appropriate type for a given model name based on the problem type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_type</strong> (<em>dict</em>) – The kind of model.</p></li>
+<li><p><strong>problem_type</strong> (<a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><em>ProblemTypes</em></a>) – Type of problem (classification or regression).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If a model type is not recognised or unsupported.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The constructor for a machine learning model class.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.load_models">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">load_models</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.ml_models.load_models" title="Link to this definition">¶</a></dt>
+<dd><p>Load pre-trained machine learning models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – The path to the directory where the models are saved.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pre-trained models.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.load_models_to_explain">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">load_models_to_explain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.ml_models.load_models_to_explain" title="Link to this definition">¶</a></dt>
+<dd><p>Load pre-trained machine learning models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>Path</em>) – The path to the directory where the models are saved.</p></li>
+<li><p><strong>model_names</strong> (<em>str</em>) – The name of the models to explain.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pre-trained models.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, list]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.models_exist">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">models_exist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#helix.services.ml_models.models_exist" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.save_model">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.ml_models.save_model" title="Link to this definition">¶</a></dt>
+<dd><p>Save a machine learning model to the given file path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>_type_</em>) – The model to save. Must be picklable.</p></li>
+<li><p><strong>path</strong> (<em>Path</em>) – The file path to save the model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.save_model_predictions">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">save_model_predictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.ml_models.save_model_predictions" title="Link to this definition">¶</a></dt>
+<dd><p>Save the predictions of the models to the given file path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>predictions</strong> (<em>DataFrame</em>) – The predictions to save.</p></li>
+<li><p><strong>path</strong> (<em>Path</em>) – The file path to save the predictions.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.ml_models.save_models_metrics">
+<span class="sig-prename descclassname"><span class="pre">helix.services.ml_models.</span></span><span class="sig-name descname"><span class="pre">save_models_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.ml_models.save_models_metrics" title="Link to this definition">¶</a></dt>
+<dd><p>Save the statistical metrics of the models to the given file path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metrics</strong> (<em>dict</em>) – The metrics to save.</p></li>
+<li><p><strong>path</strong> (<em>Path</em>) – The file path to save the metrics.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.plotting">
+<span id="helix-services-plotting-module"></span><h2>helix.services.plotting module<a class="headerlink" href="#module-helix.services.plotting" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_auc_roc">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_auc_roc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_classes_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_score_probs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_auc_roc" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the ROC curve for a multi-class classification model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_classes_labels</strong> (<em>numpy.ndarray</em>) – The true labels of the classes.</p></li>
+<li><p><strong>y_score_probs</strong> (<em>numpy.ndarray</em>) – The predicted probabilities of the classes.</p></li>
+<li><p><strong>model_name</strong> (<em>string</em>) – The name of the model.</p></li>
+<li><p><strong>set_name</strong> (<em>string</em>) – The name of the set (train or test).</p></li>
+<li><p><strong>directory</strong> (<em>Path</em>) – The directory path to save the plot.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_bar_chart">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_bar_chart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_bars</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_bar_chart" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a bar chart of the top n features from the given dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – The data to be plotted.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The options for styling the plot.</p></li>
+<li><p><strong>sort_key</strong> (<em>str</em>) – The key by which to sort the data. This can be the name of a column.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+<li><p><strong>x_label</strong> (<em>str</em>) – The label for the X axis.</p></li>
+<li><p><strong>y_label</strong> (<em>str</em>) – The label for the Y axis.</p></li>
+<li><p><strong>n_features</strong> (<em>int</em><em>, </em><em>optional</em>) – The top number of featurs to plot. Defaults to 10.</p></li>
+<li><p><strong>error_bars</strong> (<em>pd.DataFrame</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Error bars for the plot. Defaults to None.</p></li>
+<li><p><strong>directory</strong> (<em>Path</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The directory to save the plot. Defaults to None.</p></li>
+<li><p><strong>model_name</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The name of the model. Defaults to None.</p></li>
+<li><p><strong>set_name</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The name of the set (train or test). Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The bar chart of the top n features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_beta_coefficients">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_beta_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefficients</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependent_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard_errors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_classification</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_beta_coefficients" title="Link to this definition">¶</a></dt>
+<dd><p>Create a bar plot of model coefficients with different colors for positive/negative values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>coefficients</strong> (<em>np.ndarray</em>) – The model coefficients. For logistic regression, uses first class coefficients</p></li>
+<li><p><strong>feature_names</strong> (<em>list</em>) – Names of the features</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – Plot styling options</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – Name of the model for the plot title</p></li>
+<li><p><strong>dependent_variable</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Name of the dependent variable. Defaults to None.</p></li>
+<li><p><strong>standard_errors</strong> (<em>np.ndarray</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Standard errors of coefficients. Defaults to None.</p></li>
+<li><p><strong>is_classification</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether this is a classification model. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The coefficient plot</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_confusion_matrix">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_confusion_matrix" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the confusion matrix for a multi-class or binary classification model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<em>np.ndarray</em>) – The true labels.</p></li>
+<li><p><strong>y_pred</strong> (<em>np.ndarray</em>) – The predicted labels.</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – The name of the model.</p></li>
+<li><p><strong>set_name</strong> (<em>str</em>) – The name of the set (train or test).</p></li>
+<li><p><strong>directory</strong> (<em>Path</em>) – The directory path to save the plot.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_global_shap_importance">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_global_shap_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shap_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features_to_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_global_shap_importance" title="Link to this definition">¶</a></dt>
+<dd><p>Produce a bar chart of global SHAP values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shap_values</strong> (<em>pd.DataFrame</em>) – The <cite>DataFrame</cite> containing the global SHAP values.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+<li><p><strong>num_features_to_plot</strong> (<em>int</em>) – The number of top features to plot.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The plot title.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The bar chart of global SHAP values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_lime_importance">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_lime_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features_to_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_lime_importance" title="Link to this definition">¶</a></dt>
+<dd><p>Plot LIME importance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – The LIME data to plot</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+<li><p><strong>num_features_to_plot</strong> (<em>int</em>) – The top number of features to plot.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The LIME plot.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_local_shap_importance">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_local_shap_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shap_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Explainer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_features_to_plot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_local_shap_importance" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a beeswarm plot of the local SHAP values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shap_values</strong> (<em>shap.Explainer</em>) – The SHAP explainer to produce the plot from.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+<li><p><strong>num_features_to_plot</strong> (<em>int</em>) – The number of top features to plot.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The plot title.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The beeswarm plot of local SHAP values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_permutation_importance">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_permutation_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_permutation_importance" title="Link to this definition">¶</a></dt>
+<dd><p>Plot a bar chart of the top n features in the feature importance dataframe,
+with the given title and styled with the given options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – The dataframe containing the permutation importance.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The options for how to configure the plot.</p></li>
+<li><p><strong>n_features</strong> (<em>int</em>) – The top number of features to plot.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – The title of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The bar chart of the top n features.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_scatter">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_scatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dependent_variable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_scatter" title="Link to this definition">¶</a></dt>
+<dd><p>Create a scatter plot comparing predicted vs actual values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y</strong> (<em>_type_</em>) – True y values.</p></li>
+<li><p><strong>yp</strong> (<em>_type_</em>) – Predicted y values.</p></li>
+<li><p><strong>r2</strong> (<em>float</em>) – R-squared between <cite>y`and `yp</cite>.</p></li>
+<li><p><strong>set_name</strong> (<em>str</em>) – “Train” or “Test”.</p></li>
+<li><p><strong>dependent_variable</strong> (<em>str</em>) – The name of the dependent variable.</p></li>
+<li><p><strong>model_name</strong> (<em>str</em>) – Name of the model.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – Options for styling the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The scatter plot figure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.preprocessing">
+<span id="helix-services-preprocessing-module"></span><h2>helix.services.preprocessing module<a class="headerlink" href="#module-helix.services.preprocessing" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.preprocessing.convert_nominal_to_numeric">
+<span class="sig-prename descclassname"><span class="pre">helix.services.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_nominal_to_numeric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#helix.services.preprocessing.convert_nominal_to_numeric" title="Link to this definition">¶</a></dt>
+<dd><p>Convert all nominal (categorical) columns in a DataFrame to numeric values.
+This function identifies all object or category type columns in the input DataFrame
+and converts them to numeric representations using pandas’ factorize method.
+Each unique category is assigned a unique integer value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pd.DataFrame</em>) – The input DataFrame containing columns to be converted.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DataFrame with all categorical columns converted to numeric values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.preprocessing.find_non_numeric_columns">
+<span class="sig-prename descclassname"><span class="pre">helix.services.preprocessing.</span></span><span class="sig-name descname"><span class="pre">find_non_numeric_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.preprocessing.find_non_numeric_columns" title="Link to this definition">¶</a></dt>
+<dd><p>Find non-numeric columns in a DataFrame or check if a Series contains non-numeric values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>Union</em><em>[</em><em>pd.DataFrame</em><em>, </em><em>pd.Series</em><em>]</em>) – The DataFrame or Series to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>If <cite>data</cite> is a DataFrame, returns a list of non-numeric column names.</dt><dd><p>If <cite>data</cite> is a Series, returns [“Series”] if it contains non-numeric values, else an empty list.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.preprocessing.normalise_independent_variables">
+<span class="sig-prename descclassname"><span class="pre">helix.services.preprocessing.</span></span><span class="sig-name descname"><span class="pre">normalise_independent_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">normalisation_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.preprocessing.normalise_independent_variables" title="Link to this definition">¶</a></dt>
+<dd><p>Normalise the independent variables based on the selected method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>normalisation_method</strong> (<em>str</em>) – The normalisation method to use.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – The independent variables to normalise.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The normalised independent variables.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.preprocessing.run_feature_selection">
+<span class="sig-prename descclassname"><span class="pre">helix.services.preprocessing.</span></span><span class="sig-name descname"><span class="pre">run_feature_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preprocessing_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.preprocessing.PreprocessingOptions" title="helix.options.preprocessing.PreprocessingOptions"><span class="pre">PreprocessingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#helix.services.preprocessing.run_feature_selection" title="Link to this definition">¶</a></dt>
+<dd><p>Run feature selection on the data based on the selected methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_selection_methods</strong> (<em>dict</em>) – A dictionary of the feature selection methods to use.</p></li>
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The data to perform feature selection on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The processed data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.preprocessing.run_preprocessing">
+<span class="sig-prename descclassname"><span class="pre">helix.services.preprocessing.</span></span><span class="sig-name descname"><span class="pre">run_preprocessing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.preprocessing.PreprocessingOptions" title="helix.options.preprocessing.PreprocessingOptions"><span class="pre">PreprocessingOptions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#helix.services.preprocessing.run_preprocessing" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.preprocessing.transform_dependent_variable">
+<span class="sig-prename descclassname"><span class="pre">helix.services.preprocessing.</span></span><span class="sig-name descname"><span class="pre">transform_dependent_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation_y_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.preprocessing.transform_dependent_variable" title="Link to this definition">¶</a></dt>
+<dd><p>Transform the dependent variable based on the selected method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>transformation_y_method</strong> (<em>str</em>) – The transformation method to use.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – The dependent variable to transform.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The transformed dependent variable.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.statistical_tests">
+<span id="helix-services-statistical-tests-module"></span><h2>helix.services.statistical_tests module<a class="headerlink" href="#module-helix.services.statistical_tests" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.statistical_tests.create_normality_test_table">
+<span class="sig-prename descclassname"><span class="pre">helix.services.statistical_tests.</span></span><span class="sig-name descname"><span class="pre">create_normality_test_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.statistical_tests.create_normality_test_table" title="Link to this definition">¶</a></dt>
+<dd><p>Create a dataframe with normality test results for numerical columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Input DataFrame containing the data to test</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame containing normality test results for each numerical column,
+or None if no valid columns are found</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.statistical_tests.kolmogorov_smirnov_test">
+<span class="sig-prename descclassname"><span class="pre">helix.services.statistical_tests.</span></span><span class="sig-name descname"><span class="pre">kolmogorov_smirnov_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'norm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.statistical_tests.kolmogorov_smirnov_test" title="Link to this definition">¶</a></dt>
+<dd><p>Perform Kolmogorov-Smirnov test to determine if a sample comes from a reference distribution.
+By default, tests against a normal distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – Input array of observations to test.
+Can be a numpy array or a list.</p></li>
+<li><p><strong>reference_dist</strong> – String specifying the reference distribution.
+Default is ‘norm’ for normal distribution.
+Other options include: ‘uniform’, ‘expon’, etc.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>statistic: The test statistic</p></li>
+<li><p>p_value: The p-value for the hypothesis test</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Null hypothesis: the data comes from the specified distribution</p></li>
+<li><p>If p-value &lt; alpha (typically 0.05), reject the null hypothesis
+(data does not come from the specified distribution)</p></li>
+<li><p>If p-value &gt;= alpha, fail to reject the null hypothesis
+(data may come from the specified distribution)</p></li>
+</ul>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.statistical_tests.shapiro_wilk_test">
+<span class="sig-prename descclassname"><span class="pre">helix.services.statistical_tests.</span></span><span class="sig-name descname"><span class="pre">shapiro_wilk_test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.statistical_tests.shapiro_wilk_test" title="Link to this definition">¶</a></dt>
+<dd><p>Perform Shapiro-Wilk test for normality on the input data.</p>
+<p>The Shapiro-Wilk test tests the null hypothesis that the data was drawn from a
+normal distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – Input array of observations to test for normality.
+Can be a numpy array or a list.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>statistic: The test statistic</p></li>
+<li><p>p_value: The p-value for the hypothesis test</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Null hypothesis: the data is normally distributed</p></li>
+<li><p>If p-value &lt; alpha (typically 0.05), reject the null hypothesis
+(data is not normally distributed)</p></li>
+<li><p>If p-value &gt;= alpha, fail to reject the null hypothesis
+(data may be normally distributed)</p></li>
+</ul>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.weights_init">
+<span id="helix-services-weights-init-module"></span><h2>helix.services.weights_init module<a class="headerlink" href="#module-helix.services.weights_init" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.weights_init.kaiming_init">
+<span class="sig-prename descclassname"><span class="pre">helix.services.weights_init.</span></span><span class="sig-name descname"><span class="pre">kaiming_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonlinearity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'relu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.weights_init.kaiming_init" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the weights of Linear layers using Kaiming initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>torch.nn.Module</em>) – The module to initialize.</p></li>
+<li><p><strong>nonlinearity</strong> (<em>str</em>) – The nonlinearity used in the network</p></li>
+<li><p><strong>(</strong><strong>e.g.</strong></p></li>
+<li><p><strong>'relu'</strong></p></li>
+<li><p><strong>&quot;relu&quot;.</strong> (<em>'leaky_relu'</em><em>)</em><em>. Defaults to</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.weights_init.normal_init">
+<span class="sig-prename descclassname"><span class="pre">helix.services.weights_init.</span></span><span class="sig-name descname"><span class="pre">normal_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.weights_init.normal_init" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the weights of Linear layers using a normal distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>m</strong> (<em>torch.nn.Module</em>) – The module to initialize.</p></li>
+<li><p><strong>mean</strong> (<em>float</em>) – The mean of the normal distribution. Defaults to 0.0.</p></li>
+<li><p><strong>std</strong> (<em>float</em>) – The standard deviation of the normal distribution.</p></li>
+<li><p><strong>0.02.</strong> (<em>Defaults to</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.weights_init.xavier_init">
+<span class="sig-prename descclassname"><span class="pre">helix.services.weights_init.</span></span><span class="sig-name descname"><span class="pre">xavier_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.weights_init.xavier_init" title="Link to this definition">¶</a></dt>
+<dd><p>Initializes the weights of Linear layers using
+Xavier initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>m</strong> (<em>torch.nn.Module</em>) – The module to initialize.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-helix.services" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../devs/index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">helix</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="helix.html">helix package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">helix</a><ul>
+  <li><a href="helix.html">helix package</a><ul>
+      <li>Previous: <a href="helix.pages.html" title="previous chapter">helix.pages package</a></li>
+      <li>Next: <a href="helix.services.feature_importance.html" title="next chapter">helix.services.feature_importance package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/apidocs/helix.services.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

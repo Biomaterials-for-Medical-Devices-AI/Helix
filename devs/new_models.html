@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Adding a model to Helix &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="helix" href="../apidocs/modules.html" />
+    <link rel="prev" title="Code quality" href="code_quality.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="adding-a-model-to-helix">
+<h1>Adding a model to Helix<a class="headerlink" href="#adding-a-model-to-helix" title="Link to this heading">¶</a></h1>
+<p>This page concerns what is required for a new model to be included into Helix. We will <strong>not</strong> accept models that do not meet this specification.</p>
+<section id="model-specifications">
+<h2>Model specifications<a class="headerlink" href="#model-specifications" title="Link to this heading">¶</a></h2>
+<p>Any model you add to Helix <strong>must</strong> conform to <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code>’s API.
+This is to ensure that all models in Helix behave consistently without requiring checks on the capabilities of each individual model. This in turn keeps the complexity of the code base down.</p>
+<p>Please see the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> docs to for details about their <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html">API</a>.</p>
+<p>Currently we only support supervised machine learning algorithms in the form of classifiers or regressors. <strong>Classifiers</strong> must implement the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.ClassifierMixin.html"><code class="docutils literal notranslate"><span class="pre">ClassifierMixin</span></code></a> and <strong>regressors</strong> must implement the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.RegressorMixin.html"><code class="docutils literal notranslate"><span class="pre">RegressorMixin</span></code></a>. <strong>Both</strong> must implement the <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator"><code class="docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClassifier</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyRegressor</span><span class="p">(</span><span class="n">RegressorMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>You <strong>must</strong> then override the <code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">predict</span></code> methods with the logic needed to fit your model and make predictions on data, respectively.
+For classifiers, you <strong>must</strong> also override the <code class="docutils literal notranslate"><span class="pre">predict_proba</span></code> method, which returns the probabilities for each class for each prediction. This is not a requirement of <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> but of Helix.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyClassifier</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># perform fitting logic</span>
+        <span class="o">...</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="c1"># perform prediction logic</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="k">return</span> <span class="n">preds</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="c1"># perform prediction logic and estimate class probabilities</span>
+        <span class="n">probs</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="k">return</span> <span class="n">probs</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MyRegressor</span><span class="p">(</span><span class="n">RegressorMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># perform fitting logic</span>
+        <span class="o">...</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="c1"># perform prediction logic</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="k">return</span> <span class="n">preds</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="https://scikit-learn.org/stable/developers/develop.html#rolling-your-own-estimator">here</a> for more information.</p>
+<p>Your model <strong>must</strong> be saveable as a pickle file (<code class="docutils literal notranslate"><span class="pre">.pkl</span></code>). This is how Helix persists the models it trains.</p>
+</section>
+<section id="hyperparameter-tuning">
+<h2>Hyperparameter tuning<a class="headerlink" href="#hyperparameter-tuning" title="Link to this heading">¶</a></h2>
+<p>Your models <strong>must</strong> be designed with <em>manual</em> and <em>automatic</em> hyperparameter tuning in mind. Make sure your model’s hyperparameters are set in the constructor of your class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">MyNewModel</span><span class="p">(</span><span class="n">ClassifierMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">param2</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param1</span> <span class="o">=</span> <span class="n">param1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param2</span> <span class="o">=</span> <span class="n">param2</span>
+</pre></div>
+</div>
+<p>As per the notes in <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.base.BaseEstimator.html#sklearn.base.BaseEstimator"><code class="docutils literal notranslate"><span class="pre">BaseEstimator</span></code></a>, do not include <code class="docutils literal notranslate"><span class="pre">*args</span></code>, and <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the constructor signature. The hyperparameters must be exhaustively set.</p>
+<section id="automatic-hyperparameter-search-ahps">
+<h3>Automatic hyperparameter search (AHPS)<a class="headerlink" href="#automatic-hyperparameter-search-ahps" title="Link to this heading">¶</a></h3>
+<p>For your model to work with AHPS, your model needs to have tunable hyperparameters. If there aren’t any, it will <strong>not</strong> work with <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV"><code class="docutils literal notranslate"><span class="pre">GridSearchCV</span></code></a>, which is how we perform AHPS.</p>
+<p>You will need to create a search grid of your hyperparameters. AHPS uses this to find the best combination of hyperparameters for a model trained on a given dataset.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">MY_MODEL_GRID</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;param1&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+    <span class="s2">&quot;param2&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Add your grid to <code class="docutils literal notranslate"><span class="pre">helix/options/search_grids.py</span></code>.</p>
+<p>You can make your grid as large or small as you like. It is not necessary to include all hyperparameters in the grid, either. The more hyperparameters you include, and the more values you add, the training process take longer to complete, so place consider the user experience when deciding how many parameters to train, and how many values to test.</p>
+</section>
+<section id="manual-hyperparameter-search">
+<h3>Manual hyperparameter search<a class="headerlink" href="#manual-hyperparameter-search" title="Link to this heading">¶</a></h3>
+<p>You will need to create a form for users to input the values they wish to use for the hyperparameters of your model.</p>
+<p>For each field, it would be helpful to include a help message explaining what the hyperparameter is and what it does.</p>
+</section>
+<section id="how-to-integrate-your-model-into-helix">
+<h3>How to integrate your model into Helix<a class="headerlink" href="#how-to-integrate-your-model-into-helix" title="Link to this heading">¶</a></h3>
+<p>The following examples will show you how you can integrate your new model into Helix and make it available for users.</p>
+<section id="register-your-model-name">
+<h4>Register your model name<a class="headerlink" href="#register-your-model-name" title="Link to this heading">¶</a></h4>
+<p>In <code class="docutils literal notranslate"><span class="pre">helix/options/enums.py</span></code>, edit the <code class="docutils literal notranslate"><span class="pre">ModelNames</span></code> enum by adding your model name.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModelNames</span><span class="p">(</span><span class="n">StrEnum</span><span class="p">):</span>
+    <span class="n">LinearModel</span> <span class="o">=</span> <span class="s2">&quot;linear model&quot;</span>
+    <span class="n">RandomForest</span> <span class="o">=</span> <span class="s2">&quot;random forest&quot;</span>
+    <span class="n">XGBoost</span> <span class="o">=</span> <span class="s2">&quot;xgboost&quot;</span>
+    <span class="n">SVM</span> <span class="o">=</span> <span class="s2">&quot;svm&quot;</span>
+    <span class="o">...</span>
+    <span class="n">MyNewModel</span> <span class="o">=</span> <span class="s2">&quot;my new model&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="making-your-model-available-to-helix">
+<h4>Making your model available to Helix<a class="headerlink" href="#making-your-model-available-to-helix" title="Link to this heading">¶</a></h4>
+<p>If your model is a classifier, edit <code class="docutils literal notranslate"><span class="pre">CLASSIFIERS</span></code> in <code class="docutils literal notranslate"><span class="pre">helix/options/choices/ml_models.py</span></code> by adding your model like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import your model</span>
+
+<span class="n">CLASSIFIERS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ModelNames</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">LinearModel</span><span class="p">:</span> <span class="n">LogisticRegression</span><span class="p">,</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">RandomForest</span><span class="p">:</span> <span class="n">RandomForestClassifier</span><span class="p">,</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">XGBoost</span><span class="p">:</span> <span class="n">XGBClassifier</span><span class="p">,</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">SVM</span><span class="p">:</span> <span class="n">SVC</span><span class="p">,</span>
+    <span class="o">...</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">MyNewModel</span><span class="p">:</span> <span class="n">MyModel</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If your model is a regressor, edit <code class="docutils literal notranslate"><span class="pre">REGRESSORS</span></code> in <code class="docutils literal notranslate"><span class="pre">helix/options/choices/ml_models.py</span></code> by adding your model like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import your model</span>
+
+<span class="n">REGRESSORS</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ModelNames</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">LinearModel</span><span class="p">:</span> <span class="n">LinearRegression</span><span class="p">,</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">RandomForest</span><span class="p">:</span> <span class="n">RandomForestRegressor</span><span class="p">,</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">XGBoost</span><span class="p">:</span> <span class="n">XGBRegressor</span><span class="p">,</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">SVM</span><span class="p">:</span> <span class="n">SVR</span><span class="p">,</span>
+    <span class="o">...</span>
+    <span class="n">ModelNames</span><span class="o">.</span><span class="n">MyNewModel</span><span class="p">:</span> <span class="n">MyModel</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="create-the-form-component">
+<h4>Create the form component<a class="headerlink" href="#create-the-form-component" title="Link to this heading">¶</a></h4>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># helix/components/forms/forms_ml_opts.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">helix.options.search_grids</span><span class="w"> </span><span class="kn">import</span> <span class="n">MY_MODEL_GRID</span>
+
+
+<span class="c1"># Create the form component for MyModel</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_my_model_opts</span><span class="p">(</span><span class="n">use_hyperparam_search</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">model_types</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">use_hyperparam_search</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Options&quot;</span><span class="p">)</span>
+        <span class="n">param1</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span>
+            <span class="s2">&quot;param1&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            The first hyperparameter to my model.</span>
+<span class="s2">            The bigger it is, ther more accuarate the model.</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">param2</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">number_input</span><span class="p">(</span>
+            <span class="s2">&quot;param2&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">min_value</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            The second hyperparameter to my model.</span>
+<span class="s2">            The closer the value to 1.0, the smarter it is.</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;param1&quot;</span><span class="p">:</span> <span class="n">param1</span><span class="p">,</span>
+            <span class="s2">&quot;param2&quot;</span><span class="p">:</span> <span class="n">param2</span>
+        <span class="p">}</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">divider</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">MY_MODEL_GRID</span>
+    
+    <span class="n">model_types</span><span class="p">[</span><span class="s2">&quot;MY_MODEL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">model_types</span>
+</pre></div>
+</div>
+</section>
+<section id="add-the-form-component-to-the-main-form">
+<h4>Add the form component to the main form<a class="headerlink" href="#add-the-form-component-to-the-main-form" title="Link to this heading">¶</a></h4>
+<p>To make your model selectable by the user, edit <code class="docutils literal notranslate"><span class="pre">ml_options_form</span></code> in <code class="docutils literal notranslate"><span class="pre">helix/components/forms/forms_ml_opts.py</span></code> as shown below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># helix/components/forms/forms_ml_opts.py</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">ml_options_form</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="c1"># Look for this to find where the models are made available</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Select and cofigure which models to train&quot;</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="c1"># Add this underneath to make your model available</span>
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">toggle</span><span class="p">(</span><span class="s2">&quot;My Model&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">my_model_type</span> <span class="o">=</span> <span class="n">_my_model_opts</span><span class="p">(</span><span class="n">use_hyperparam_search</span><span class="p">)</span>
+        <span class="n">model_types</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mymodel_type</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>Please add your new model to the user documentation. To do this, edit the the <strong>“Options”</strong> subsection of <strong>“Selecting models to train”</strong> in<code class="docutils literal notranslate"><span class="pre">docs/users/train_models.md</span></code>. This is a Markdown file, please see this <a class="reference external" href="https://www.markdownguide.org/getting-started/">Markdown guide</a> for information on how to write using Markdown.</p>
+<p><strong>If you do not document your model, your model will not be added to Helix.</strong></p>
+<p>Your explanation <strong>must</strong> include the hyperparameters and explanations of what they do to your model. It should also include a brief explanation of the theory of the model and link to any relevant papers or documentation concerning the model.</p>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>My New Model</strong></p></li>
+</ul>
+<blockquote>
+<div><p>My model uses a super cool algorithm that optimises 2 parameters <code class="docutils literal notranslate"><span class="pre">param1</span></code> and <code class="docutils literal notranslate"><span class="pre">param2</span></code> to asymptotically approach Artificial General Intelligence (AGI).</p>
+</div></blockquote>
+<blockquote>
+<div><p>The paper can be found at [link here].</p>
+<ul class="simple">
+<li><p>param1: The first hyperparameter to my model. The bigger it is, ther more accuarate the model.</p></li>
+<li><p>param2: The second hyperparameter to my model. The closer the value to 1.0, the smarter it is.</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+</section>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">¶</a></h2>
+<p>You <strong>must</strong> test that your model works with Helix for it to be included. Helix uses <a class="reference external" href="https://docs.pytest.org/en/stable/index.html"><code class="docutils literal notranslate"><span class="pre">pytest</span></code></a> and <code class="docutils literal notranslate"><span class="pre">streamlit</span></code>’s <a class="reference external" href="https://docs.streamlit.io/develop/concepts/app-testing/get-started">testing framework</a>.</p>
+<p>You <strong>must</strong> add a test for both automatic hyperparameter search and manual hyperparameter tuning.</p>
+<section id="what-to-test">
+<h3>What to test<a class="headerlink" href="#what-to-test" title="Link to this heading">¶</a></h3>
+<p>What you are testing, in this case, is not the performance of the model in terms of some metric like accuracy or R^2, but whether your model is properly integrated into Helix. Your tests should check the following:</p>
+<ul class="simple">
+<li><p>That there are no errors or exceptions when running the model</p></li>
+<li><p>That it creates the model directory in the experiment</p></li>
+<li><p>That it creates the expected <code class="docutils literal notranslate"><span class="pre">.pkl</span></code> file</p></li>
+<li><p>That it creates the plot directory for the experiment and that that directory is not empty. i.e. you get the performance plots</p></li>
+<li><p>That you get the file with the expected predictions</p></li>
+<li><p>That you get the file with the model metrics</p></li>
+</ul>
+</section>
+<section id="how-to-add-tests">
+<h3>How to add tests<a class="headerlink" href="#how-to-add-tests" title="Link to this heading">¶</a></h3>
+<p>You should add your tests to <code class="docutils literal notranslate"><span class="pre">tests/pages/test_4_Train_Models.py</span></code>.</p>
+<p>Generally, you will write 2 test functions: one to test your model with automatic hyperparameter search, and one to test it with manual hyperparameter tuning. Take the tests for SVM models. You will find 2 tests: <code class="docutils literal notranslate"><span class="pre">test_auto_svm</span></code> and <code class="docutils literal notranslate"><span class="pre">test_manual_svm</span></code>. You might call your tests: <code class="docutils literal notranslate"><span class="pre">test_auto_&lt;model_name&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">test_manual_&lt;model_name&gt;</span></code>.</p>
+<section id="testing-ahps">
+<h4>Testing AHPS<a class="headerlink" href="#testing-ahps" title="Link to this heading">¶</a></h4>
+<p>This test simulates the user setting up the model to be trained with <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html#sklearn.model_selection.GridSearchCV"><code class="docutils literal notranslate"><span class="pre">GridSearchCV</span></code></a>. This test should take one parameter called <code class="docutils literal notranslate"><span class="pre">new_regression_experiment</span></code> (or <code class="docutils literal notranslate"><span class="pre">new_classification_experiment</span></code> if training a classifier) of type <code class="docutils literal notranslate"><span class="pre">str</span></code>.</p>
+<p>Below is <code class="docutils literal notranslate"><span class="pre">test_auto_svm</span></code> as an expample:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">test_auto_svm</span><span class="p">(</span><span class="n">new_regression_experiment</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Arrange</span>
+    <span class="n">exp_dir</span> <span class="o">=</span> <span class="n">helix_experiments_base_dir</span><span class="p">()</span> <span class="o">/</span> <span class="n">new_regression_experiment</span>
+    <span class="n">expected_model_dir</span> <span class="o">=</span> <span class="n">ml_model_dir</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">expected_plot_dir</span> <span class="o">=</span> <span class="n">ml_plot_dir</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">expected_preds_file</span> <span class="o">=</span> <span class="n">ml_predictions_path</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">expected_metrics_file</span> <span class="o">=</span> <span class="n">ml_metrics_path</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">k</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">at</span> <span class="o">=</span> <span class="n">AppTest</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;helix/pages/4_Train_Models.py&quot;</span><span class="p">,</span> <span class="n">default_timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">at</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># Act</span>
+    <span class="c1"># Select the experiment</span>
+    <span class="n">exp_selector</span> <span class="o">=</span> <span class="n">get_element_by_key</span><span class="p">(</span>
+        <span class="n">at</span><span class="p">,</span> <span class="s2">&quot;selectbox&quot;</span><span class="p">,</span> <span class="n">ViewExperimentKeys</span><span class="o">.</span><span class="n">ExperimentName</span>
+    <span class="p">)</span>
+    <span class="n">exp_selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">new_regression_experiment</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Set the number of k-folds</span>
+    <span class="n">k_input</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;number_input&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">)</span>
+    <span class="n">k_input</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Select SVM</span>
+    <span class="n">svm_toggle</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;toggle&quot;</span><span class="p">,</span> <span class="s2">&quot;Support Vector Machine&quot;</span><span class="p">)</span>
+    <span class="n">svm_toggle</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Leave hyperparameters on their default values</span>
+    <span class="c1"># Leave save models and plots as true to get the outputs</span>
+    <span class="c1"># Click run</span>
+    <span class="n">button</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;button&quot;</span><span class="p">,</span> <span class="s2">&quot;Run Training&quot;</span><span class="p">)</span>
+    <span class="n">button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># Assert</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">at</span><span class="o">.</span><span class="n">exception</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">at</span><span class="o">.</span><span class="n">error</span>
+    <span class="k">assert</span> <span class="n">expected_model_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pkl&quot;</span><span class="p">),</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">expected_model_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()))</span>
+    <span class="p">)</span>  <span class="c1"># directory is not empty</span>
+    <span class="k">assert</span> <span class="n">expected_plot_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">),</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">expected_plot_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()))</span>
+    <span class="p">)</span>  <span class="c1"># directory is not empty</span>
+    <span class="k">assert</span> <span class="n">expected_preds_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">expected_metrics_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>You should be able to create a copy of this example and rename it to <code class="docutils literal notranslate"><span class="pre">test_auto_&lt;my_model&gt;</span></code>. Then, replace the 2 lines underneath where it says “# Select SVM” with the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model_toggle</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;toggle&quot;</span><span class="p">,</span> <span class="s2">&quot;My Model&quot;</span><span class="p">)</span>
+<span class="n">my_model_toggle</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Subsitute “My Model” with the actual name of your model.</p>
+</section>
+<section id="testing-manual-hyperparameter-tuning">
+<h4>Testing manual hyperparameter tuning<a class="headerlink" href="#testing-manual-hyperparameter-tuning" title="Link to this heading">¶</a></h4>
+<p>This test simulates the user setting up the model to be trained without AHPS. This test should take 3 parameters called <code class="docutils literal notranslate"><span class="pre">new_regression_experiment</span></code> (or <code class="docutils literal notranslate"><span class="pre">new_classification_experiment</span></code> if testing a classifier) of type <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">data_split_method</span></code> of type <code class="docutils literal notranslate"><span class="pre">DataSplitMethods</span></code> and <code class="docutils literal notranslate"><span class="pre">holdout_or_k</span></code> of type <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p>
+<p>Below is <code class="docutils literal notranslate"><span class="pre">test_manual_svm</span></code> as an expample. The decorator above the function signature doesn’t need to be altered; it causes the test to run the page with bootstrapping and cross-validation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span>
+    <span class="s2">&quot;data_split_method,holdout_or_k&quot;</span><span class="p">,</span>
+    <span class="p">[</span>
+        <span class="p">(</span><span class="n">DataSplitMethods</span><span class="o">.</span><span class="n">Holdout</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">DataSplitMethods</span><span class="o">.</span><span class="n">KFold</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="mi">3</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_manual_svm</span><span class="p">(</span>
+    <span class="n">new_regression_experiment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data_split_method</span><span class="p">:</span> <span class="n">DataSplitMethods</span><span class="p">,</span> <span class="n">holdout_or_k</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">):</span>
+    <span class="c1"># Arrange</span>
+    <span class="n">exp_dir</span> <span class="o">=</span> <span class="n">helix_experiments_base_dir</span><span class="p">()</span> <span class="o">/</span> <span class="n">new_regression_experiment</span>
+    <span class="n">expected_model_dir</span> <span class="o">=</span> <span class="n">ml_model_dir</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">expected_plot_dir</span> <span class="o">=</span> <span class="n">ml_plot_dir</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">expected_preds_file</span> <span class="o">=</span> <span class="n">ml_predictions_path</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">expected_metrics_file</span> <span class="o">=</span> <span class="n">ml_metrics_path</span><span class="p">(</span><span class="n">exp_dir</span><span class="p">)</span>
+    <span class="n">at</span> <span class="o">=</span> <span class="n">AppTest</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">&quot;helix/pages/4_Train_Models.py&quot;</span><span class="p">,</span> <span class="n">default_timeout</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">at</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># Act</span>
+    <span class="c1"># Select the experiment</span>
+    <span class="n">exp_selector</span> <span class="o">=</span> <span class="n">get_element_by_key</span><span class="p">(</span>
+        <span class="n">at</span><span class="p">,</span> <span class="s2">&quot;selectbox&quot;</span><span class="p">,</span> <span class="n">ViewExperimentKeys</span><span class="o">.</span><span class="n">ExperimentName</span>
+    <span class="p">)</span>
+    <span class="n">exp_selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">new_regression_experiment</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Unselect AHPS, which is on by default</span>
+    <span class="n">ahps_toggle</span> <span class="o">=</span> <span class="n">get_element_by_key</span><span class="p">(</span>
+        <span class="n">at</span><span class="p">,</span> <span class="s2">&quot;toggle&quot;</span><span class="p">,</span> <span class="n">ExecutionStateKeys</span><span class="o">.</span><span class="n">UseHyperParamSearch</span>
+    <span class="p">)</span>
+    <span class="n">ahps_toggle</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Select the data split method</span>
+    <span class="n">data_split_selector</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;selectbox&quot;</span><span class="p">,</span> <span class="s2">&quot;Data split method&quot;</span><span class="p">)</span>
+    <span class="n">data_split_selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">data_split_method</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Set the number of bootstraps / k-folds</span>
+    <span class="k">if</span> <span class="n">holdout_input</span> <span class="o">:=</span> <span class="n">get_element_by_label</span><span class="p">(</span>
+        <span class="n">at</span><span class="p">,</span> <span class="s2">&quot;number_input&quot;</span><span class="p">,</span> <span class="s2">&quot;Number of bootstraps&quot;</span>
+    <span class="p">):</span>
+        <span class="n">holdout_input</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">holdout_or_k</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">k_input</span> <span class="o">:=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;number_input&quot;</span><span class="p">,</span> <span class="s2">&quot;k&quot;</span><span class="p">):</span>
+        <span class="n">k_input</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">holdout_or_k</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Select SVM</span>
+    <span class="n">svm_toggle</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;toggle&quot;</span><span class="p">,</span> <span class="s2">&quot;Support Vector Machine&quot;</span><span class="p">)</span>
+    <span class="n">svm_toggle</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+    <span class="c1"># Leave hyperparameters on their default values</span>
+    <span class="c1"># Leave save models and plots as true to get the outputs</span>
+    <span class="c1"># Click run</span>
+    <span class="n">button</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;button&quot;</span><span class="p">,</span> <span class="s2">&quot;Run Training&quot;</span><span class="p">)</span>
+    <span class="n">button</span><span class="o">.</span><span class="n">click</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="c1"># Assert</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">at</span><span class="o">.</span><span class="n">exception</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">at</span><span class="o">.</span><span class="n">error</span>
+    <span class="k">assert</span> <span class="n">expected_model_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.pkl&quot;</span><span class="p">),</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">expected_model_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()))</span>
+    <span class="p">)</span>  <span class="c1"># directory is not empty</span>
+    <span class="k">assert</span> <span class="n">expected_plot_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.png&quot;</span><span class="p">),</span> <span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">expected_plot_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()))</span>
+    <span class="p">)</span>  <span class="c1"># directory is not empty</span>
+    <span class="k">assert</span> <span class="n">expected_preds_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">expected_metrics_file</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Similar to the automatic hyperparameter search test, you should only need to edit the lines underneath where it says “# Select SVM”, replacing them with the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model_toggle</span> <span class="o">=</span> <span class="n">get_element_by_label</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="s2">&quot;toggle&quot;</span><span class="p">,</span> <span class="s2">&quot;My Model&quot;</span><span class="p">)</span>
+<span class="n">my_model_toggle</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Subsitute “My Model” with the actual name of your model.</p>
+</section>
+</section>
+<section id="running-the-tests">
+<h3>Running the tests<a class="headerlink" href="#running-the-tests" title="Link to this heading">¶</a></h3>
+<p>The tests will run when you open a pull request to Helix. They will re-run everytime you push to that PR. You can also run them manually:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>pytests
+</pre></div>
+</div>
+<p>Be patient, the tests can take several minutes. Your changes may affect other tests, so be aware.</p>
+</section>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code_quality.html">Code quality</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Adding a model to Helix</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#model-specifications">Model specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#hyperparameter-tuning">Hyperparameter tuning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">helix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="code_quality.html" title="previous chapter">Code quality</a></li>
+      <li>Next: <a href="../apidocs/modules.html" title="next chapter">helix</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/devs/new_models.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

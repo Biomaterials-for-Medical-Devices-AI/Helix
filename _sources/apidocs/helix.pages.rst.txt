@@ -1,0 +1,61 @@
+helix.pages package
+===================
+
+Submodules
+----------
+
+helix.pages.1\_New\_Experiment module
+-------------------------------------
+
+.. automodule:: helix.pages.1_New_Experiment
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.pages.2\_Data\_Preprocessing module
+-----------------------------------------
+
+.. automodule:: helix.pages.2_Data_Preprocessing
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.pages.3\_Data\_Visualisation module
+-----------------------------------------
+
+.. automodule:: helix.pages.3_Data_Visualisation
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.pages.4\_Train\_Models module
+-----------------------------------
+
+.. automodule:: helix.pages.4_Train_Models
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.pages.5\_Feature\_Importance module
+-----------------------------------------
+
+.. automodule:: helix.pages.5_Feature_Importance
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.pages.6\_View\_Experiments module
+---------------------------------------
+
+.. automodule:: helix.pages.6_View_Experiments
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.pages
+   :members:
+   :show-inheritance:
+   :undoc-members:

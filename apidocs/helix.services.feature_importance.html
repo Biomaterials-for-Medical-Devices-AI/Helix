@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>helix.services.feature_importance package &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="helix.services.machine_learning package" href="helix.services.machine_learning.html" />
+    <link rel="prev" title="helix.services package" href="helix.services.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="helix-services-feature-importance-package">
+<h1>helix.services.feature_importance package<a class="headerlink" href="#helix-services-feature-importance-package" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-helix.services.feature_importance.ensemble_methods">
+<span id="helix-services-feature-importance-ensemble-methods-module"></span><h2>helix.services.feature_importance.ensemble_methods module<a class="headerlink" href="#module-helix.services.feature_importance.ensemble_methods" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.ensemble_methods.calculate_ensemble_fuzzy">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.ensemble_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_ensemble_fuzzy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_importance_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Namespace</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.feature_importance.ensemble_methods.calculate_ensemble_fuzzy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.ensemble_methods.calculate_ensemble_majorityvote">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.ensemble_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_ensemble_majorityvote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_importance_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.feature_importance.ensemble_methods.calculate_ensemble_majorityvote" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate majority vote of feature importance results.
+For majority vote, each vector in the feature importance matrix has their features ranked based on their importance.
+Subsequently, the final feature importance is the average of the most common rank order for each feature.
+For example, feature Xi has a final rank vector of [1, 1, 1, 2], where each rank rk is established by a different feature importance method k.
+The final feature importance value for feature Xi is the average value from the three feature importance methods that ranked it as 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_importance_dict</strong> – <p>Dictionary where:
+- Keys are model names
+- Values are DataFrames where:</p>
+<blockquote>
+<div><ul>
+<li><p>Rows are features</p></li>
+<li><p>Columns are importance methods (SHAP, Permutation, etc.)</p></li>
+<li><p>Values are already normalized between 0 and 1</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>logger</strong> – Logger instance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with features as index and a single column</dt><dd><p>containing the majority vote importance.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.ensemble_methods.calculate_ensemble_mean">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.ensemble_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_ensemble_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_importance_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.feature_importance.ensemble_methods.calculate_ensemble_mean" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate mean of feature importance results across models and methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_importance_dict</strong> – <p>Dictionary where:
+- Keys are model names
+- Values are DataFrames where:</p>
+<blockquote>
+<div><ul>
+<li><p>Rows are features</p></li>
+<li><p>Columns are importance methods (SHAP, Permutation, etc.)</p></li>
+<li><p>Values are already normalized between 0 and 1</p></li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>logger</strong> – Logger instance</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>DataFrame with unique features as index and a single column</dt><dd><p>containing the overall mean importance across all models, methods, and repetitions.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.feature_importance.global_methods">
+<span id="helix-services-feature-importance-global-methods-module"></span><h2>helix.services.feature_importance.global_methods module<a class="headerlink" href="#module-helix.services.feature_importance.global_methods" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.global_methods.calculate_global_shap_values">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.global_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_global_shap_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.feature_importance.global_methods.calculate_global_shap_values" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate SHAP values for a given model and dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Model object.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – The dataset.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SHAP dataframe and SHAP values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[pd.DataFrame, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.global_methods.calculate_permutation_importance">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.global_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_permutation_importance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutation_importance_scoring</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">permutation_importance_repeat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.feature_importance.global_methods.calculate_permutation_importance" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate permutation importance for a given model and dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Model object.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – Input features.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em>) – Target variable.</p></li>
+<li><p><strong>permutation_importance_scoring</strong> (<em>str</em>) – Permutation importance scoring method.</p></li>
+<li><p><strong>permutation_importance_repeat</strong> (<em>int</em>) – Number of repeats for importance scoring.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Seed for the random state.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Permutation importance values</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>permutation_importance</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.feature_importance.local_methods">
+<span id="helix-services-feature-importance-local-methods-module"></span><h2>helix.services.feature_importance.local_methods module<a class="headerlink" href="#module-helix.services.feature_importance.local_methods" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.local_methods.calculate_lime_values">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.local_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_lime_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><span class="pre">ProblemTypes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#helix.services.feature_importance.local_methods.calculate_lime_values" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate LIME values for a given model and dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – The model.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – The dataset.</p></li>
+<li><p><strong>problem_type</strong> (<a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><em>ProblemTypes</em></a>) – The problem type.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The LIME values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.local_methods.calculate_local_shap_values">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.local_methods.</span></span><span class="sig-name descname"><span class="pre">calculate_local_shap_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">DataFrame</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#helix.services.feature_importance.local_methods.calculate_local_shap_values" title="Link to this definition">¶</a></dt>
+<dd><p>Calculate local SHAP values for a given model and dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – Model object.</p></li>
+<li><p><strong>X</strong> (<em>pd.DataFrame</em>) – The dataset.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>SHAP dataframe and SHAP values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple[pd.DataFrame, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-helix.services.feature_importance.results">
+<span id="helix-services-feature-importance-results-module"></span><h2>helix.services.feature_importance.results module<a class="headerlink" href="#module-helix.services.feature_importance.results" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.results.save_fuzzy_sets_plots">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.results.</span></span><span class="sig-name descname"><span class="pre">save_fuzzy_sets_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">universe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">membership_functions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_cols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.feature_importance.results.save_fuzzy_sets_plots" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.results.save_importance_results">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.results.</span></span><span class="sig-name descname"><span class="pre">save_importance_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_importance_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">importance_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_importance_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fi_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions"><span class="pre">FeatureImportanceOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shap_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.feature_importance.results.save_importance_results" title="Link to this definition">¶</a></dt>
+<dd><p>Save the feature importance results to a CSV file and the plots.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_importance_df</strong> (<em>pd.DataFrame</em>) – DataFrame of feature importance results.</p></li>
+<li><p><strong>model_type</strong> (<em>_type_</em>) – Type of model.</p></li>
+<li><p><strong>importance_type</strong> (<em>str</em>) – Type of feature importance method.</p></li>
+<li><p><strong>feature_importance_type</strong> (<em>str</em>) – Type of feature importance method (Again for some reason).</p></li>
+<li><p><strong>experiment_name</strong> (<em>str</em>) – Name of the experiment, to know where to save outputs.</p></li>
+<li><p><strong>fi_opt</strong> (<a class="reference internal" href="helix.options.html#helix.options.fi.FeatureImportanceOptions" title="helix.options.fi.FeatureImportanceOptions"><em>FeatureImportanceOptions</em></a>) – Feature importance options.</p></li>
+<li><p><strong>plot_opt</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – Plotting options.</p></li>
+<li><p><strong>logger</strong> (<em>Logger</em>) – The logger.</p></li>
+<li><p><strong>shap_values</strong> (<em>_type_</em><em>, </em><em>optional</em>) – SHAP values. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.feature_importance.results.save_target_clusters_plots">
+<span class="sig-prename descclassname"><span class="pre">helix.services.feature_importance.results.</span></span><span class="sig-name descname"><span class="pre">save_target_clusters_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_cluster</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exec_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.execution.ExecutionOptions" title="helix.options.execution.ExecutionOptions"><span class="pre">ExecutionOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Logger</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.services.feature_importance.results.save_target_clusters_plots" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-helix.services.feature_importance">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-helix.services.feature_importance" title="Link to this heading">¶</a></h2>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../devs/index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">helix</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="helix.html">helix package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">helix</a><ul>
+  <li><a href="helix.html">helix package</a><ul>
+  <li><a href="helix.services.html">helix.services package</a><ul>
+      <li>Previous: <a href="helix.services.html" title="previous chapter">helix.services package</a></li>
+      <li>Next: <a href="helix.services.machine_learning.html" title="next chapter">helix.services.machine_learning package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/apidocs/helix.services.feature_importance.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

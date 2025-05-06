@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Installation &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code quality" href="code_quality.html" />
+    <link rel="prev" title="Welcome to the Helix developer documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h1>
+<p><strong>N.B.:</strong> You may need to make sure you have OpenMP installed on your machine before you can install Helix.</p>
+<p>On Mac:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>libomp
+</pre></div>
+</div>
+<p>On Linux (Ubuntu)</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libomp-dev
+</pre></div>
+</div>
+<p>On Windows, this doesn’t seem to be a problem. You should be able to proceed with installation.</p>
+<hr class="docutils" />
+<section id="getting-the-code">
+<h2>Getting the code<a class="headerlink" href="#getting-the-code" title="Link to this heading">¶</a></h2>
+<p>You can obtain the Helix source code by cloning the repository from Github.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Biomaterials-for-Medical-Devices-AI/Helix.git
+</pre></div>
+</div>
+</section>
+<section id="setting-up-your-developer-environment">
+<h2>Setting up your developer environment<a class="headerlink" href="#setting-up-your-developer-environment" title="Link to this heading">¶</a></h2>
+<p>First you will need to ensure that you have Python installed. Helix requires version <strong>3.11</strong> or higher to run.</p>
+<p>Next you need to create a virtual environment to run Helix.</p>
+<section id="mac-linux">
+<h3>Mac/Linux<a class="headerlink" href="#mac-linux" title="Link to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create using venv</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>&lt;path/to/env&gt;
+<span class="nb">source</span><span class="w"> </span>&lt;path/to/env&gt;/bin/activate
+
+<span class="c1"># -- OR --</span>
+
+<span class="c1"># Create using conda</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>&lt;env_name&gt;<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
+conda<span class="w"> </span>activate<span class="w"> </span>&lt;env_name&gt;
+</pre></div>
+</div>
+</section>
+<section id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create using venv</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>&lt;path<span class="se">\t</span>o<span class="se">\e</span>nv&gt;
+&lt;path/to/env&gt;<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+
+<span class="c1"># -- OR --</span>
+
+<span class="c1"># Create using conda</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>&lt;env_name&gt;<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11
+conda<span class="w"> </span>activate<span class="w"> </span>&lt;env_name&gt;
+</pre></div>
+</div>
+</section>
+<section id="install-uv">
+<h3>Install <code class="docutils literal notranslate"><span class="pre">uv</span></code><a class="headerlink" href="#install-uv" title="Link to this heading">¶</a></h3>
+<p>Once you have activated your virtual environment, you need to install <a class="reference external" href="https://docs.astral.sh/uv/">uv</a>. To install <code class="docutils literal notranslate"><span class="pre">uv</span></code>, use the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>uv
+</pre></div>
+</div>
+</section>
+</section>
+<section id="install-helix-requirements">
+<h2>Install Helix requirements<a class="headerlink" href="#install-helix-requirements" title="Link to this heading">¶</a></h2>
+<p>To install the requirements for Helix, use the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--all-groups
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">--all-groups</span></code> flag here will add the developer dependencies for formatting the code, code quality checks and testing.</p>
+</section>
+<section id="running-helix">
+<h2>Running Helix<a class="headerlink" href="#running-helix" title="Link to this heading">¶</a></h2>
+<p>Once you have installed Helix, you can run it from the terminal like so:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>run<span class="w"> </span>helix
+</pre></div>
+</div>
+<p>A browser window will open to the main page of the app.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../users/index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../users/using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#getting-the-code">Getting the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-your-developer-environment">Setting up your developer environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-helix-requirements">Install Helix requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-helix">Running Helix</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">helix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to the Helix developer documentation</a></li>
+      <li>Next: <a href="code_quality.html" title="next chapter">Code quality</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/devs/installation.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Using your models &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Welcome to the Helix developer documentation" href="../devs/index.html" />
+    <link rel="prev" title="View experiments" href="view_experiments.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="using-your-models">
+<h1>Using your models<a class="headerlink" href="#using-your-models" title="Link to this heading">¶</a></h1>
+<p>Currently, there is no ability to use your models to make predictions on new data inside Helix. Therefore, you will need to create your own Python scripts to use them. You will need to be familiar with the <code class="docutils literal notranslate"><span class="pre">scikit-learn</span></code> library. Particularly, with how to make predictions with models.</p>
+<p>Helix saves models from an experiment to <code class="docutils literal notranslate"><span class="pre">/home/&lt;username&gt;/HelixExperiments/&lt;experiment</span> <span class="pre">name&gt;/models</span></code> on <strong>Linux</strong>, <code class="docutils literal notranslate"><span class="pre">/Users/&lt;username&gt;/HelixExperiments/&lt;experiment</span> <span class="pre">name&gt;/models</span></code> on <strong>MacOS</strong>, and <code class="docutils literal notranslate"><span class="pre">C:\\Users\&lt;username&gt;\HelixExperiments\&lt;experiment</span> <span class="pre">name&gt;\models</span></code> on <strong>Windows</strong>. The models are saved as <strong>pickle files</strong> (<code class="docutils literal notranslate"><span class="pre">.pkl</span></code>). These models can be reused in your own code for making predictions.</p>
+<p>The example on this page (see <a class="reference internal" href="#loading-your-models"><span class="xref myst">Loading your models</span></a> and onwards) will assume an experiment that trained a classification model. But the principles are also applicable to regression models.</p>
+<section id="before-you-start">
+<h2>Before you start…<a class="headerlink" href="#before-you-start" title="Link to this heading">¶</a></h2>
+<p>Helix uses <a class="reference external" href="https://docs.python.org/3/library/pickle.html"><code class="docutils literal notranslate"><span class="pre">pickle</span></code></a> to save models for later use. This means that to use the models again without warnings or, potentially, errors, you must use an environment with the same packages and versions as Helix. See this page on <a class="reference external" href="https://scikit-learn.org/stable/model_persistence.html#model-persistence">model persistance</a>.</p>
+<p>To get a similar environment to that used by Helix, you will need to install the same versions of some packages. The easiest way to do this is to install Helix in your environment and you will get all the same packages with the same versions as Helix. For more information on which packages and versions Helix uses, Look at Helix’s <a class="reference external" href="https://github.com/Biomaterials-for-Medical-Devices-AI/Helix/blob/main/pyproject.toml"><code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></a>.</p>
+<section id="mac-linux">
+<h3>Mac/Linux<a class="headerlink" href="#mac-linux" title="Link to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a virtual environment with venv</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>&lt;path/to/env&gt;
+<span class="nb">source</span><span class="w"> </span>&lt;path/to/env&gt;/bin/activate
+pip<span class="w"> </span>install<span class="w"> </span>helix
+
+<span class="c1"># -- OR --</span>
+
+<span class="c1"># Create a virtual environment with conda</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>&lt;env_name&gt;<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w">  </span><span class="c1"># or 3.12</span>
+conda<span class="w"> </span>activate<span class="w"> </span>&lt;env_name&gt;
+pip<span class="w"> </span>install<span class="w"> </span>helix
+</pre></div>
+</div>
+<p>You may need to try <code class="docutils literal notranslate"><span class="pre">python3</span></code> and <code class="docutils literal notranslate"><span class="pre">pip3</span></code> if <code class="docutils literal notranslate"><span class="pre">python</span></code> and <code class="docutils literal notranslate"><span class="pre">pip</span></code> do not work.</p>
+</section>
+<section id="windows">
+<h3>Windows<a class="headerlink" href="#windows" title="Link to this heading">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a virtual environment with venv</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>&lt;path<span class="se">\t</span>o<span class="se">\e</span>nv&gt;
+&lt;path/to/env&gt;<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.26.4<span class="w"> </span><span class="nv">pandas</span><span class="o">==</span><span class="m">2</span>.2.2<span class="w"> </span><span class="nv">xgboost</span><span class="o">==</span><span class="m">2</span>.1.0<span class="w"> </span>scikit-learn<span class="o">==</span><span class="m">1</span>.5.2<span class="w"> </span><span class="nv">torch</span><span class="o">==</span><span class="m">2</span>.5.1<span class="w"> </span><span class="c1"># or torch==2.2.0 on intel MacOS</span>
+
+<span class="c1"># -- OR --</span>
+
+<span class="c1"># Create a virtual environment with conda</span>
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>&lt;env_name&gt;<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span><span class="c1"># or 3.12</span>
+conda<span class="w"> </span>activate<span class="w"> </span>&lt;env_name&gt;
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">numpy</span><span class="o">==</span><span class="m">1</span>.26.4<span class="w"> </span><span class="nv">pandas</span><span class="o">==</span><span class="m">2</span>.2.2<span class="w"> </span><span class="nv">xgboost</span><span class="o">==</span><span class="m">2</span>.1.0<span class="w"> </span>scikit-learn<span class="o">==</span><span class="m">1</span>.5.2<span class="w"> </span><span class="nv">torch</span><span class="o">==</span><span class="m">2</span>.5.1<span class="w"> </span><span class="c1"># or torch==2.2.0 on intel MacOS</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="loading-your-models">
+<h2>Loading your models<a class="headerlink" href="#loading-your-models" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+
+<span class="n">path_to_model_file</span> <span class="o">=</span> <span class="s2">&quot;...&quot;</span>  <span class="c1"># insert the path to your model</span>
+
+<span class="c1"># Open the model file in &quot;read bytes&quot; mode</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_model_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">model_file</span><span class="p">:</span>
+    <span class="n">clf</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">model_file</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="making-predictions">
+<h2>Making predictions<a class="headerlink" href="#making-predictions" title="Link to this heading">¶</a></h2>
+<p>When making predictions with you model, you need to take care that the new data for which you wish to make predictions are preprocessed the same way as your training data.</p>
+<p>If you preprocessed your data on the <strong>Data Preprocessing</strong> page, you can check how you preprocessed your data by selcting to your experiment on any of the following pages:</p>
+<ul class="simple">
+<li><p>Data Preprocessing</p></li>
+<li><p>Data Visualisation</p></li>
+<li><p>Train Models</p></li>
+<li><p>Feature Importance</p></li>
+<li><p>View Experiments
+Under the experiment selection box, there will be a dropdown labelled “Show Experiment Options”. Click this to expand and view your preprocessing options under the section labelled “Preprocessing Options”.</p></li>
+</ul>
+<p>When you run preprocessing, you get a file in your experiment directory ending in <code class="docutils literal notranslate"><span class="pre">_preprocessed.csv</span></code> or <code class="docutils literal notranslate"><span class="pre">_preprocessed.xlsx</span></code>. Look in this file to see which features made it through feature selection. If some features do not make it through, you will need to remove those features from your new data, or your model will not work.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="n">new_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;my_new_data.csv&quot;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Perform preprocessing on the new data using the same methodolody that you used to preprocess the training data in the original experiment.</span>
+<span class="n">preprocessed_data</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">prepocessed_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">prepocessed_data</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Make predictions</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+<span class="c1"># Calculate the accuracy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">accuracy_score</span>
+<span class="n">accuracy_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="view_experiments.html">View experiments</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Using your models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#before-you-start">Before you start…</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loading-your-models">Loading your models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#making-predictions">Making predictions</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devs/index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">helix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="view_experiments.html" title="previous chapter">View experiments</a></li>
+      <li>Next: <a href="../devs/index.html" title="next chapter">Welcome to the Helix developer documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/users/using_models.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

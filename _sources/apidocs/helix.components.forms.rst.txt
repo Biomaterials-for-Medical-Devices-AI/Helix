@@ -1,0 +1,45 @@
+helix.components.forms package
+==============================
+
+Submodules
+----------
+
+helix.components.forms.forms\_fi module
+---------------------------------------
+
+.. automodule:: helix.components.forms.forms_fi
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.forms.forms\_ml\_opts module
+---------------------------------------------
+
+.. automodule:: helix.components.forms.forms_ml_opts
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.forms.forms\_plots module
+------------------------------------------
+
+.. automodule:: helix.components.forms.forms_plots
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.components.forms.forms\_preprocessing module
+--------------------------------------------------
+
+.. automodule:: helix.components.forms.forms_preprocessing
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.components.forms
+   :members:
+   :show-inheritance:
+   :undoc-members:

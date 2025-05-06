@@ -1,0 +1,45 @@
+helix.services.feature\_importance package
+==========================================
+
+Submodules
+----------
+
+helix.services.feature\_importance.ensemble\_methods module
+-----------------------------------------------------------
+
+.. automodule:: helix.services.feature_importance.ensemble_methods
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.feature\_importance.global\_methods module
+---------------------------------------------------------
+
+.. automodule:: helix.services.feature_importance.global_methods
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.feature\_importance.local\_methods module
+--------------------------------------------------------
+
+.. automodule:: helix.services.feature_importance.local_methods
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.feature\_importance.results module
+-------------------------------------------------
+
+.. automodule:: helix.services.feature_importance.results
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.services.feature_importance
+   :members:
+   :show-inheritance:
+   :undoc-members:

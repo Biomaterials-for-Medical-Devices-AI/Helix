@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data Visualisation &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Training models" href="train_models.html" />
+    <link rel="prev" title="Preprocessing your data" href="data_preprocessing.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="data-visualisation">
+<h1>Data Visualisation<a class="headerlink" href="#data-visualisation" title="Link to this heading">¶</a></h1>
+<p>The <strong>Data Visualisation</strong> page allows you to explore and analyse your data using a variety of visual tools. This helps in understanding data distributions, correlations, and feature interactions.</p>
+<p><img alt="Data Visualisation Page" src="../_images/data-visualisation-page.png" /></p>
+<p>To begin, select your experiment from the dropdown menu where it says <strong>“Select an experiment”</strong>. This will load the dataset associated with your selected experiment.</p>
+<section id="dataset-overview">
+<h2>Dataset Overview<a class="headerlink" href="#dataset-overview" title="Link to this heading">¶</a></h2>
+<p>The dataset overview gives you a snapshot of how your data look. This is split into two tabs: one showing the <strong>Raw Data</strong> data (i.e. how it looked before preprocessing) and one showing the <strong>Preprocessed Data</strong> (i.e. how the data are after preprocessing). The overview also includes a normality test for each variable in the dataset (independent and dependent). Normality is determined by two statistical tests: the Shapiro-Wilk and the Kolmogorov-Smirnov test. If the p-value &lt; 0.05, the data is likely not normally distributed. If the p-value ≥ 0.05, the data might be normally distributed.</p>
+<p><img alt="Dataset Overview" src="../_images/dataset-overview.png" />
+<img alt="Normality Tests" src="../_images/normality-tests.png" /></p>
+</section>
+<section id="target-variable-distribution">
+<h2>Target Variable Distribution<a class="headerlink" href="#target-variable-distribution" title="Link to this heading">¶</a></h2>
+<p>Visualise the distribution of your target variable using histograms and KDE (Kernel Density Estimation).</p>
+<ul class="simple">
+<li><p><strong>Show KDE</strong>: Toggle to include a KDE curve.</p></li>
+<li><p><strong>Number of Bins</strong>: Adjust the number of bins in the histogram.</p></li>
+</ul>
+<p><img alt="Target Variable Distribution" src="../_images/target-variable-distribution.png" /></p>
+</section>
+<section id="correlation-heatmap">
+<h2>Correlation Heatmap<a class="headerlink" href="#correlation-heatmap" title="Link to this heading">¶</a></h2>
+<p>Display a heatmap showing correlations between selected features.</p>
+<ul class="simple">
+<li><p><strong>Select All Descriptors</strong>: Include all features in the heatmap.</p></li>
+<li><p><strong>Select Columns</strong>: Manually select specific features for the heatmap.</p></li>
+</ul>
+<p><img alt="Correlation Heatmap" src="../_images/correlation-heatmap.png" /></p>
+</section>
+<section id="pairplot">
+<h2>Pairplot<a class="headerlink" href="#pairplot" title="Link to this heading">¶</a></h2>
+<p>Generate pairwise scatter plots for selected features to identify trends and interactions.</p>
+<ul class="simple">
+<li><p><strong>Select All Descriptors</strong>: Include all features in the pairplot.</p></li>
+<li><p><strong>Select Columns</strong>: Manually select specific features for pairplot generation.</p></li>
+</ul>
+<p><img alt="Pairplot" src="../_images/pairplot.png" /></p>
+</section>
+<section id="t-sne-plot">
+<h2>t-SNE Plot<a class="headerlink" href="#t-sne-plot" title="Link to this heading">¶</a></h2>
+<p>Visualise high-dimensional data in two dimensions using t-SNE.</p>
+<p><img alt="t-SNE Plot" src="../_images/tsne-plot.png" /></p>
+</section>
+<section id="saving-visualisations">
+<h2>Saving Visualisations<a class="headerlink" href="#saving-visualisations" title="Link to this heading">¶</a></h2>
+<p>You can save generated plots to disk for reporting or further analysis. To save a plot, click the <strong>“Save Plot”</strong> button beneath each plot. You can also edit each plot individually by clicking the <strong>“Edit Plot”</strong> button beneath each plot and changing the settings in the panel.</p>
+</section>
+<section id="how-to-start">
+<h2>How to Start<a class="headerlink" href="#how-to-start" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Select an experiment.</p></li>
+<li><p>Choose the visualisation type.</p></li>
+<li><p>Adjust parameters as needed.</p></li>
+<li><p>Click the buttons to generate and save visualisations.</p></li>
+</ol>
+<p>Press <strong>“Create and Save”</strong> to save plots for further use.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data Visualisation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dataset-overview">Dataset Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#target-variable-distribution">Target Variable Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#correlation-heatmap">Correlation Heatmap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pairplot">Pairplot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#t-sne-plot">t-SNE Plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#saving-visualisations">Saving Visualisations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-start">How to Start</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="train_models.html">Training models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="feature_importance.html">Feature importance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devs/index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">helix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="data_preprocessing.html" title="previous chapter">Preprocessing your data</a></li>
+      <li>Next: <a href="train_models.html" title="next chapter">Training models</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/users/data_visualisation.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,102 @@
+helix.services package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   helix.services.feature_importance
+   helix.services.machine_learning
+
+Submodules
+----------
+
+helix.services.configuration module
+-----------------------------------
+
+.. automodule:: helix.services.configuration
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.data module
+--------------------------
+
+.. automodule:: helix.services.data
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.experiments module
+---------------------------------
+
+.. automodule:: helix.services.experiments
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.logs module
+--------------------------
+
+.. automodule:: helix.services.logs
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.metrics module
+-----------------------------
+
+.. automodule:: helix.services.metrics
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.ml\_models module
+--------------------------------
+
+.. automodule:: helix.services.ml_models
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.plotting module
+------------------------------
+
+.. automodule:: helix.services.plotting
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.preprocessing module
+-----------------------------------
+
+.. automodule:: helix.services.preprocessing
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.statistical\_tests module
+----------------------------------------
+
+.. automodule:: helix.services.statistical_tests
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.services.weights\_init module
+-----------------------------------
+
+.. automodule:: helix.services.weights_init
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.services
+   :members:
+   :show-inheritance:
+   :undoc-members:

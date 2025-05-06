@@ -1,0 +1,19 @@
+[flake8]
+max-line-length = 88
+extend-ignore =
+    E203,
+    W503,
+    E501,
+max-complexity = 12
+extend-exclude =
+    docs,
+    .github,
+    .gitignore,
+    LICENSE,
+    .pytest_cache,
+    README.md,
+    static,
+    .venv,
+per-file-ignores =
+    tests/pages/test_4_Train_Models.py:F403,F401,F811
+    tests/pages/test_5_Feature_Importance.py:F403,F401,F811

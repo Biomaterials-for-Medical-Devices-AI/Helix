@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Feature importance &#8212; Helix  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=27fed22d" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="View experiments" href="view_experiments.html" />
+    <link rel="prev" title="Training models" href="train_models.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="feature-importance">
+<h1>Feature importance<a class="headerlink" href="#feature-importance" title="Link to this heading">¶</a></h1>
+<p>Once you have trained some models in your experiment, you can then perform feature importance analyses to assess which features more most influential in the models’ decision making. You can get to the Feature Importance page by clinking on <strong>Feature Importance</strong> on the left hand side of the page.</p>
+<p><img alt="Feature importance page" src="../_images/feature-importance-page.png" /></p>
+<p>To begin explaining your models, you can click the <strong>“Explain all models”</strong> toggle and have all your models evaluated…</p>
+<p><img alt="Select all models" src="../_images/explain-all-models.png" /></p>
+<p>…or you can use the dropdown menu to select specific models to evaluate.</p>
+<p><img alt="Select specific models" src="../_images/select-specific-models.png" /></p>
+<section id="global-feature-importance-methods">
+<h2>Global feature importance methods<a class="headerlink" href="#global-feature-importance-methods" title="Link to this heading">¶</a></h2>
+<p>These methods evaluate the influence of individual features overall on a model’s decisions. There are two methods available.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://scikit-learn.org/1.5/modules/permutation_importance.html">Permutative importance</a></p></li>
+<li><p><a class="reference external" href="https://www.datacamp.com/tutorial/introduction-to-shap-values-machine-learning-interpretability">SHAP (<u>SH</u>apely <u>A</u>dditive ex<u>P</u>lanations)</a></p></li>
+</ul>
+<p><img alt="Global feature importance" src="../_images/global-fi.png" /></p>
+</section>
+<section id="ensemble-feature-importance-methods">
+<h2>Ensemble feature importance methods<a class="headerlink" href="#ensemble-feature-importance-methods" title="Link to this heading">¶</a></h2>
+<p>Ensemble methods combine results from multiple feature importance techniques, enhancing robustness. To use ensemble methods, you must configure at least one global importance method. There are two methods available.</p>
+<ul>
+<li><p>Mean</p>
+<p>Use the mean of importance estimates from the selected global methods.</p>
+</li>
+<li><p>Majority vote</p>
+<p>Take the majority vote of importance estimates from the selected global methods.</p>
+</li>
+</ul>
+<p><img alt="Ensemble feature importance" src="../_images/ensemble-fi.png" /></p>
+</section>
+<section id="local-feature-importance-methods">
+<h2>Local feature importance methods<a class="headerlink" href="#local-feature-importance-methods" title="Link to this heading">¶</a></h2>
+<p>These methods are used to interpret feature importance on a <em>per prediction</em> basis. You can see which features had the most influence - and in which direction - on each prediction. There are two methods available.</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://towardsdatascience.com/understanding-model-predictions-with-lime-a582fdff3a3b">LIME (<u>L</u>ocal <u>I</u>nterpretable <u>M</u>odel-agnostic <u>E</u>xplanation)</a></p></li>
+<li><p><a class="reference external" href="https://www.datacamp.com/tutorial/introduction-to-shap-values-machine-learning-interpretability">SHAP (<u>SH</u>apely <u>A</u>dditive ex<u>P</u>lanations)</a></p></li>
+</ul>
+<p><img alt="Local feature importance" src="../_images/local-fi.png" /></p>
+</section>
+<section id="additional-configuration-options">
+<h2>Additional configuration options<a class="headerlink" href="#additional-configuration-options" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p>Number of most important features to plot</p>
+<p>Change how many top features will be plotted.</p>
+</li>
+<li><p>Scoring function for permutative importance</p></li>
+<li><p>Number of repetitions for permutation importance</p>
+<p>The number of times to permute the features using permutative importance.</p>
+</li>
+</ul>
+<p><img alt="Additional feature importance configuration" src="../_images/additional-fi-config.png" /></p>
+<!-- ## Fuzzy feature importance
+Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
+
+- Number of features for fuzzy interpretation
+
+  Select the top number of features to be used for fuzzy interpretation.
+
+- Granular features
+
+  Check this box to perform a granular analysis of fuzzy features.
+
+- Number of clusters for target variable
+
+  Convert the target variable into this many clusters.
+
+- Names of clusters (comma-separated)
+
+  The list of names for the clusters. This should be the same length as number of clusters for target variable. The names should be separated by a comma followed by a single space. *e.g.* very low, low, medium, high, very high.
+
+- Number of top occurring rules for fuzzy synergy analysis
+
+  Set the number of most frequent fuzzy rules for synergy analysis.
+
+![Fuzzy feature selection](../_static/fuzzy-fi.png) -->
+</section>
+<section id="select-outputs-to-save">
+<h2>Select outputs to save<a class="headerlink" href="#select-outputs-to-save" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Save feature importance options</p></li>
+<li><p>Save feature importance results</p></li>
+</ul>
+<p><img alt="Select outputs to save" src="../_images/save-outputs.png" /></p>
+</section>
+<section id="run-the-analysis">
+<h2>Run the analysis<a class="headerlink" href="#run-the-analysis" title="Link to this heading">¶</a></h2>
+<p>Press the <strong>“Run Feature Importance”</strong> button to run your analysis. Be patient as this can take a little more time than the model training.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Helix</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">User documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to the Helix user documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation and running</a></li>
+<li class="toctree-l1"><a class="reference internal" href="create_experiment.html">Creating an experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_preprocessing.html">Preprocessing your data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_visualisation.html">Data Visualisation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="train_models.html">Training models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Feature importance</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#global-feature-importance-methods">Global feature importance methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ensemble-feature-importance-methods">Ensemble feature importance methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local-feature-importance-methods">Local feature importance methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-configuration-options">Additional configuration options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#select-outputs-to-save">Select outputs to save</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-the-analysis">Run the analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="view_experiments.html">View experiments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="using_models.html">Using your models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer documentation:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devs/index.html">Welcome to the Helix developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/code_quality.html">Code quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devs/new_models.html">Adding a model to Helix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../apidocs/modules.html">helix</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="train_models.html" title="previous chapter">Training models</a></li>
+      <li>Next: <a href="view_experiments.html" title="next chapter">View experiments</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, Daniel Lea, Eduardo Aguilar, Karthikeyan Sivakumar, Grazziela Figueredo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="../_sources/users/feature_importance.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

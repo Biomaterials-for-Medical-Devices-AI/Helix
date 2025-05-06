@@ -1,0 +1,101 @@
+helix.options package
+=====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   helix.options.choices
+
+Submodules
+----------
+
+helix.options.data module
+-------------------------
+
+.. automodule:: helix.options.data
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.enums module
+--------------------------
+
+.. automodule:: helix.options.enums
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.execution module
+------------------------------
+
+.. automodule:: helix.options.execution
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.fi module
+-----------------------
+
+.. automodule:: helix.options.fi
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.file\_paths module
+--------------------------------
+
+.. automodule:: helix.options.file_paths
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.fuzzy module
+--------------------------
+
+.. automodule:: helix.options.fuzzy
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.ml module
+-----------------------
+
+.. automodule:: helix.options.ml
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.plotting module
+-----------------------------
+
+.. automodule:: helix.options.plotting
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.preprocessing module
+----------------------------------
+
+.. automodule:: helix.options.preprocessing
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.options.search\_grids module
+----------------------------------
+
+.. automodule:: helix.options.search_grids
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: helix.options
+   :members:
+   :show-inheritance:
+   :undoc-members:
