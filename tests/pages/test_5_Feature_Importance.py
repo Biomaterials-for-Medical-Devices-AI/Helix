@@ -138,7 +138,7 @@ def test_ensemble_methods_disabled_without_global(
     )
     all_model_toggle.set_value(True).run()
     mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
-    maj_vote_checkbox = get_element_by_label(at, "checkbox", "Majority Vote")
+    maj_vote_checkbox = get_element_by_label(at, "checkbox", "Majority vote")
 
     # Assert
     assert not at.exception
