@@ -21,18 +21,18 @@ def fi_options_form():
     """Form for configuring feature importance options."""
     global_methods = {}
 
-    st.write("### Global Feature Importance Methods")
+    st.write("### Global feature importance methods")
     st.write(
         "Select global methods to assess feature importance across the entire dataset. "
         "These methods help in understanding overall feature impact."
     )
 
     use_permutation = st.checkbox(
-        "Permutation Importance",
+        "Permutation importance",
         help="Evaluate feature importance by permuting feature values.",
     )
 
-    global_methods["Permutation Importance"] = {
+    global_methods["Permutation importance"] = {
         "type": "global",
         "value": use_permutation,
     }
@@ -47,7 +47,7 @@ def fi_options_form():
         global_methods
     )
 
-    st.write("### Ensemble Feature Importance Methods")
+    st.write("### Ensemble feature importance methods")
     st.write(
         "Ensemble methods combine results from multiple feature importance techniques, "
         "enhancing robustness. Choose how to aggregate feature importance insights."
@@ -68,7 +68,7 @@ def fi_options_form():
     )
     ensemble_methods["Mean"] = use_mean
     use_majority = st.checkbox(
-        "Majority Vote",
+        "Majority vote",
         help="Use majority voting to identify important features.",
         disabled=ensemble_is_disabled,
     )
@@ -76,7 +76,7 @@ def fi_options_form():
 
     st.session_state[FeatureImportanceStateKeys.EnsembleMethods] = ensemble_methods
 
-    st.write("### Local Feature Importance Methods")
+    st.write("### Local feature importance methods")
     st.write(
         "Select local methods to interpret individual predictions. "
         "These methods focus on explaining predictions at a finer granularity."
@@ -101,7 +101,7 @@ def fi_options_form():
         local_importance_methods
     )
 
-    st.write("### Additional Configuration Options")
+    st.write("### Additional configuration options")
 
     # Number of important features
     st.number_input(
