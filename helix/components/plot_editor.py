@@ -109,36 +109,21 @@ def edit_plot_modal(plot_opts: PlottingOptions, plot_type: str) -> PlottingOptio
     st.subheader("Plot Dimensions")
     col1, col2 = st.columns(2)
     with col1:
-        # Default sizes based on plot type
-        default_width = {
-            "target_distribution": 10,
-            "heatmap": 12,
-            "pairplot": 16,
-            "tsne": 16,
-        }.get(plot_type, 10)
-
         width = st.number_input(
             "Width (inches)",
             min_value=4,
             max_value=20,
-            value=default_width,
+            value=plot_opts.width,
             key=PlotOptionKeys.Width,
             help="Set the width of the plot in inches",
         )
 
     with col2:
-        default_height = {
-            "target_distribution": 6,
-            "heatmap": 10,
-            "pairplot": 16,
-            "tsne": 8,
-        }.get(plot_type, 6)
-
         height = st.number_input(
             "Height (inches)",
             min_value=3,
             max_value=20,
-            value=default_height,
+            value=plot_opts.height,
             key=PlotOptionKeys.Height,
             help="Set the height of the plot in inches",
         )
