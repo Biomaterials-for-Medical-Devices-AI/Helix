@@ -18,7 +18,7 @@ Depending on whether your problem type, which was configured on the [New Experim
 
 - **Mulitple Linear Regression with Expectation Maximisation**
 
-  Train a Multiple Linear Regression model which uses Expectation Maximisation. **This is only available for regression problems**.
+  Train a Multiple Linear Regression model which uses Expectation Maximisation for feature selection and parameter estimation. **This is only available for regression problems**.
 
   - Alpha (relgularisation): the regularisation parameter.
 
