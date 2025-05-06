@@ -205,7 +205,7 @@ def test_permutation_importance(
     )
     all_model_toggle.set_value(True).run()
     # Select permutation importance
-    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation importance")
     perm_imp_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
@@ -217,7 +217,10 @@ def test_permutation_importance(
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert (fi_plots / "LogisticRegression-bar.png").exists()
+    assert list(filter(lambda x: x.endswith("-bar.png"), map(str, fi_plots.iterdir())))
+    assert list(
+        filter(lambda x: x.endswith("all-folds-mean.png"), map(str, fi_plots.iterdir()))
+    )
     assert fi_results.exists()
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
