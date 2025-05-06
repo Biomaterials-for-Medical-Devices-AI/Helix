@@ -28,7 +28,7 @@ Neurocomputing, Volume 511,2022, Pages 163-174,ISSN 0925-2312, https://doi.org/1
 
 D. Rengasamy, B. C. Rothwell; G. P. Figueredo, Towards a More Reliable Interpretation of Machine Learning Outputs for Safety-Critical Systems Using Feature Importance Fusion. Appl. Sci. 2021, 11, 11854. https://doi.org/10.3390/app112411854 [Link](https://www.mdpi.com/2076-3417/11/24/11854)
 
-To cite Helix, please use the following DOI:
+To cite the Helix package, please use the following DOI:
 
 [![DOI](https://zenodo.org/badge/934252090.svg)](https://doi.org/10.5281/zenodo.15351700)
 
@@ -67,7 +67,7 @@ Helix will open in your internet browser when you run it. The main screen will a
 - Jimiama M Mase (Data Scientist and Engineer)
 - [Reza Omidvar](https://github.com/ahmadrezaomidvar) (Data Scientist, Research Software Engineer)
 - [James Mitchell-White](https://scholar.google.com/citations?user=fecKRIYAAAAJ&hl=en) (Data Scientist, Research Software Engineer)
-- [Grazziela Figueredo](https://scholar.google.com/citations?user=DXNNUcUAAAAJ&hl=en) (Associate Professor, Principal Investigator)
+- [Grazziela Figueredo](https://scholar.google.com/citations?user=DXNNUcUAAAAJ&hl=en) (Associate Professor, Data Scientist, Product Owner, Principal Investigator)
 
 [poetry-badge]: https://img.shields.io/badge/uv-purple?style=for-the-badge&logo=uv&logoColor=%23DE5FE9
 [sklearn-badge]: https://img.shields.io/badge/scikit--learn-%23F7931E.svg?style=for-the-badge&logo=scikit-learn&logoColor=white
