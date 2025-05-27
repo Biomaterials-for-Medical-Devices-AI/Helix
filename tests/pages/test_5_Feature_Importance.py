@@ -375,10 +375,17 @@ def test_permutation_importance(
 
 
 # TODO: rename once global and ensemble nomenclature sorted
-def test_global_shap(new_classification_experiment: str, models_to_evaluate: None):
+def test_global_shap(
+    new_classification_experiment: str,
+    models_to_evaluate: None,
+    mock_clf_metrics: None,
+    mock_clf_metrics_mean_std: None,
+):
     # Arrange
     fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
-    # fi_results = fi_result_dir(helix_experiments_base_dir() / new_experiment)
+    fi_results = fi_result_dir(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=60.0)
     at.run()
 
@@ -406,12 +413,23 @@ def test_global_shap(new_classification_experiment: str, models_to_evaluate: Non
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert (fi_plots / "SHAP-global-LogisticRegression-bar.png").exists()
-    # TODO: check that global SHAP results should be getting saved, and fix
-    # assert fi_results.exists()
-    # assert list(
-    #     filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
-    # )  # directory is not empty
+    assert list(
+        filter(
+            lambda x: x.endswith("-bar.png") and FeatureImportanceTypes.SHAP.value in x,
+            map(str, fi_plots.iterdir()),
+        )
+    )
+    assert list(
+        filter(
+            lambda x: x.endswith("all-folds-mean.png")
+            and FeatureImportanceTypes.SHAP.value in x,
+            map(str, fi_plots.iterdir()),
+        )
+    )
+    assert fi_results.exists()
+    assert list(
+        filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
+    )  # directory is not empty
 
 
 # TODO: rename once global and ensemble nomenclature sorted
