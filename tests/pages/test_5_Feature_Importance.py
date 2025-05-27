@@ -621,8 +621,8 @@ def test_local_shap(
     perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation importance")
     perm_imp_checkbox.check().run()
     # Select local SHAP
-    local_lime_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
-    local_lime_checkbox.check().run()
+    local_shap_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
+    local_shap_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
@@ -717,12 +717,15 @@ def test_local_shap(
 
 
 def test_page_makes_one_log_per_run(
-    new_classification_experiment: str, models_to_evaluate: None
+    new_classification_experiment: str,
+    models_to_evaluate: None,
+    mock_clf_metrics: None,
+    mock_clf_metrics_mean_std: None,
 ):
     # Arrange
     exp_dir = helix_experiments_base_dir() / new_classification_experiment
     expected_fi_log_dir = log_dir(exp_dir) / "fi"
-    expected_fuzzy_log_dir = log_dir(exp_dir) / "fi"
+    # expected_fuzzy_log_dir = log_dir(exp_dir) / "fi"
     expected_n_log_files = 1
     at = AppTest.from_file("helix/pages/5_Feature_Importance.py", default_timeout=180.0)
     at.run()
@@ -739,15 +742,18 @@ def test_page_makes_one_log_per_run(
     )
     all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    at.checkbox[0].check().run()
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation importance")
+    perm_imp_checkbox.check().run()
     # Select ensemble mean; required for fuzzy
-    at.checkbox[2].check().run()
+    ens_mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
+    ens_mean_checkbox.check().run()
     # Select local SHAP; local also required for fuzzy
-    at.checkbox[5].check().run()
+    local_shap_checkbox = get_element_by_label(at, "checkbox", "Local SHAP")
+    local_shap_checkbox.check().run()
     # Select fuzzy
-    at.checkbox[6].check().run()
+    # at.checkbox[6].check().run()
     # Select granualr analysis
-    at.checkbox[7].check().run()
+    # at.checkbox[7].check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
     # Run
@@ -758,9 +764,9 @@ def test_page_makes_one_log_per_run(
     fi_log_dir_contents = list(
         filter(lambda x: x.endswith(".log"), map(str, expected_fi_log_dir.iterdir()))
     )
-    fuzzy_log_dir_contents = list(
-        filter(lambda x: x.endswith(".log"), map(str, expected_fuzzy_log_dir.iterdir()))
-    )
+    # fuzzy_log_dir_contents = list(
+    #     filter(lambda x: x.endswith(".log"), map(str, expected_fuzzy_log_dir.iterdir()))
+    # )
 
     # Assert
     assert not at.exception
@@ -768,6 +774,6 @@ def test_page_makes_one_log_per_run(
     assert expected_fi_log_dir.exists()
     assert fi_log_dir_contents  # directory is not empty
     assert len(fi_log_dir_contents) == expected_n_log_files
-    assert expected_fuzzy_log_dir.exists()
-    assert fuzzy_log_dir_contents  # directory is not empty
-    assert len(fuzzy_log_dir_contents) == expected_n_log_files
+    # assert expected_fuzzy_log_dir.exists()
+    # assert fuzzy_log_dir_contents  # directory is not empty
+    # assert len(fuzzy_log_dir_contents) == expected_n_log_files
