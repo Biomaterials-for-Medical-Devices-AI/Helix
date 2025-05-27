@@ -485,9 +485,11 @@ def test_ensemble_mean(
     )  # directory is not empty
 
 
-# TODO: rename once global and ensemble nomenclature sorted
 def test_ensemble_majority_vote(
-    new_classification_experiment: str, models_to_evaluate: None
+    new_classification_experiment: str,
+    models_to_evaluate: None,
+    mock_clf_metrics: None,
+    mock_clf_metrics_mean_std: None,
 ):
     # Arrange
     fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
@@ -509,10 +511,10 @@ def test_ensemble_majority_vote(
     )
     all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation importance")
     perm_imp_checkbox.check().run()
     # Select ensemble mean
-    ens_maj_vote_checkbox = get_element_by_label(at, "checkbox", "Majority Vote")
+    ens_maj_vote_checkbox = get_element_by_label(at, "checkbox", "Majority vote")
     ens_maj_vote_checkbox.check().run()
     # Leave additional configs as the defaults
     # Leave save output toggles as true, the default
@@ -524,7 +526,12 @@ def test_ensemble_majority_vote(
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert (fi_plots / "Ensemble Majority Vote-bar.png").exists()
+    assert list(
+        filter(
+            lambda x: x.endswith(f"{FeatureImportanceTypes.MajorityVote.value}.png"),
+            map(str, fi_plots.iterdir()),
+        )
+    )
     assert fi_results.exists()
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
