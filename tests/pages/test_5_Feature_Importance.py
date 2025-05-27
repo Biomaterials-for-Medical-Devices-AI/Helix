@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import pytest
 from sklearn.linear_model import LogisticRegression
@@ -21,6 +22,8 @@ from helix.options.file_paths import (
     fuzzy_result_dir,
     helix_experiments_base_dir,
     log_dir,
+    ml_metrics_full_path,
+    ml_metrics_mean_std_path,
     ml_model_dir,
 )
 from helix.services.configuration import save_options
@@ -65,6 +68,136 @@ def models_to_evaluate(
         model = LogisticRegression()
         model.fit(X_train, y_train)
         save_model(model, save_dir / f"{model.__class__.__name__}-{i}.pkl")
+
+
+@pytest.fixture
+def mock_clf_metrics(
+    new_classification_experiment: str,
+):
+    metrics = {
+        "linear model": [
+            {
+                "accuracy": {
+                    "train": {"value": 0.8967391304347826},
+                    "test": {"value": 0.8859934853420195},
+                },
+                "f1_score": {
+                    "train": {"value": 0.8781270044900578},
+                    "test": {"value": 0.866581956797967},
+                },
+                "precision_score": {
+                    "train": {"value": 0.8207434052757794},
+                    "test": {"value": 0.8042452830188679},
+                },
+                "recall_score": {
+                    "train": {"value": 0.9441379310344827},
+                    "test": {"value": 0.9393939393939394},
+                },
+                "roc_auc_score": {
+                    "train": {"value": 0.9660524199783517},
+                    "test": {"value": 0.9631011977053033},
+                },
+            },
+            {
+                "accuracy": {
+                    "train": {"value": 0.8616847826086956},
+                    "test": {"value": 0.8523344191096635},
+                },
+                "f1_score": {
+                    "train": {"value": 0.8443900947722409},
+                    "test": {"value": 0.8325123152709359},
+                },
+                "precision_score": {
+                    "train": {"value": 0.7583745194947831},
+                    "test": {"value": 0.7527839643652561},
+                },
+                "recall_score": {
+                    "train": {"value": 0.9524137931034483},
+                    "test": {"value": 0.931129476584022},
+                },
+                "roc_auc_score": {
+                    "train": {"value": 0.9631159734034329},
+                    "test": {"value": 0.953972767755759},
+                },
+            },
+            {
+                "accuracy": {
+                    "train": {"value": 0.8875},
+                    "test": {"value": 0.8990228013029316},
+                },
+                "f1_score": {
+                    "train": {"value": 0.8673076923076923},
+                    "test": {"value": 0.8806161745827985},
+                },
+                "precision_score": {
+                    "train": {"value": 0.8101796407185629},
+                    "test": {"value": 0.8245192307692307},
+                },
+                "recall_score": {
+                    "train": {"value": 0.9331034482758621},
+                    "test": {"value": 0.9449035812672176},
+                },
+                "roc_auc_score": {
+                    "train": {"value": 0.9637263027678986},
+                    "test": {"value": 0.9651006645141543},
+                },
+            },
+        ]
+    }
+    metrics_path = ml_metrics_full_path(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
+    metrics_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(metrics_path, "w") as mp:
+        json.dump(metrics, mp)
+
+
+@pytest.fixture
+def mock_clf_metrics_mean_std(
+    new_classification_experiment: str,
+):
+    metrics_mean_std = {
+        "linear model": {
+            "train": {
+                "accuracy": {"mean": 0.8819746376811594, "std": 0.014834622721725895},
+                "f1_score": {"mean": 0.8632749305233304, "std": 0.014065137634925323},
+                "precision_score": {
+                    "mean": 0.7964325218297085,
+                    "std": 0.027254442288661425,
+                },
+                "recall_score": {
+                    "mean": 0.9432183908045978,
+                    "std": 0.007910184153602411,
+                },
+                "roc_auc_score": {
+                    "mean": 0.9642982320498944,
+                    "std": 0.0012651763907432546,
+                },
+            },
+            "test": {
+                "accuracy": {"mean": 0.8791169019182048, "std": 0.019670905887370485},
+                "f1_score": {"mean": 0.8599034822172339, "std": 0.020198132541037736},
+                "precision_score": {
+                    "mean": 0.7938494927177849,
+                    "std": 0.030194275986245824,
+                },
+                "recall_score": {
+                    "mean": 0.9384756657483929,
+                    "std": 0.005660618919163446,
+                },
+                "roc_auc_score": {
+                    "mean": 0.9607248766584057,
+                    "std": 0.004843738078166715,
+                },
+            },
+        }
+    }
+    metrics_path = ml_metrics_mean_std_path(
+        helix_experiments_base_dir() / new_classification_experiment
+    )
+    metrics_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(metrics_path, "w") as mp:
+        json.dump(metrics_mean_std, mp)
 
 
 def test_page_loads_without_exception():
@@ -184,7 +317,10 @@ def test_ensemble_methods_disabled_without_global(
 
 
 def test_permutation_importance(
-    new_classification_experiment: str, models_to_evaluate: None
+    new_classification_experiment: str,
+    models_to_evaluate: None,
+    mock_clf_metrics: None,
+    mock_clf_metrics_mean_std: None,
 ):
     # Arrange
     fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
@@ -221,14 +357,14 @@ def test_permutation_importance(
     assert list(
         filter(
             lambda x: x.endswith("-bar.png")
-            and x.startswith(FeatureImportanceTypes.PermutationImportance.value),
+            and FeatureImportanceTypes.PermutationImportance.value in x,
             map(str, fi_plots.iterdir()),
         )
     )
     assert list(
         filter(
             lambda x: x.endswith("all-folds-mean.png")
-            and x.startswith(FeatureImportanceTypes.PermutationImportance.value),
+            and FeatureImportanceTypes.PermutationImportance.value in x,
             map(str, fi_plots.iterdir()),
         )
     )
