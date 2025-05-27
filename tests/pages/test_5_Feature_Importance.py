@@ -432,8 +432,12 @@ def test_global_shap(
     )  # directory is not empty
 
 
-# TODO: rename once global and ensemble nomenclature sorted
-def test_ensemble_mean(new_classification_experiment: str, models_to_evaluate: None):
+def test_ensemble_mean(
+    new_classification_experiment: str,
+    models_to_evaluate: None,
+    mock_clf_metrics: None,
+    mock_clf_metrics_mean_std: None,
+):
     # Arrange
     fi_plots = fi_plot_dir(helix_experiments_base_dir() / new_classification_experiment)
     fi_results = fi_result_dir(
@@ -454,7 +458,7 @@ def test_ensemble_mean(new_classification_experiment: str, models_to_evaluate: N
     )
     all_model_toggle.set_value(True).run()
     # Select permutation importance; global method required for ensemble
-    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation Importance")
+    perm_imp_checkbox = get_element_by_label(at, "checkbox", "Permutation importance")
     perm_imp_checkbox.check().run()
     # Select ensemble mean
     ens_mean_checkbox = get_element_by_label(at, "checkbox", "Mean")
@@ -469,7 +473,12 @@ def test_ensemble_mean(new_classification_experiment: str, models_to_evaluate: N
     assert not at.exception
     assert not at.error
     assert fi_plots.exists()
-    assert (fi_plots / "Ensemble Mean-bar.png").exists()
+    assert list(
+        filter(
+            lambda x: x.endswith(f"{FeatureImportanceTypes.Mean.value}.png"),
+            map(str, fi_plots.iterdir()),
+        )
+    )
     assert fi_results.exists()
     assert list(
         filter(lambda x: x.endswith(".csv"), map(str, fi_results.iterdir()))
