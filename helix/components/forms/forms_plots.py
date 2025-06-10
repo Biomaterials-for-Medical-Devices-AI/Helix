@@ -9,6 +9,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from helix.components.plot_editor import edit_plot_modal
 from helix.options.enums import DataAnalysisStateKeys, Normalisations
 from helix.options.plotting import PlottingOptions
+from helix.services.plotting import plot_target_variable_distribution
 
 
 @st.experimental_fragment
@@ -53,52 +54,12 @@ def target_variable_dist_form(
             plot_opts,  # return the original plot_opts
         )
 
-        plt.style.use(plot_settings.plot_colour_scheme)
-        plt.figure(
-            figsize=(
-                plot_settings.width,
-                plot_settings.height,
-            ),
-            dpi=plot_settings.dpi,
-        )
-        displot = sns.displot(
-            data=data,
-            x=data.columns[-1],
-            kde=show_kde,
-            bins=n_bins,
-            height=plot_settings.height,
-            aspect=plot_settings.width / plot_settings.height,
-        )
-
-        plt.title(
-            f"{dep_var_name} Distribution",
-            fontdict={
-                "fontsize": plot_settings.plot_title_font_size,
-                "family": plot_settings.plot_font_family,
-            },
-        )
-
-        plt.xlabel(
+        displot = plot_target_variable_distribution(
+            data,
+            show_kde,
+            n_bins,
+            plot_settings,
             dep_var_name,
-            fontsize=plot_settings.plot_axis_font_size,
-            family=plot_settings.plot_font_family,
-        )
-
-        plt.ylabel(
-            "Frequency",
-            fontsize=plot_settings.plot_axis_font_size,
-            family=plot_settings.plot_font_family,
-        )
-
-        plt.xticks(
-            rotation=plot_settings.angle_rotate_xaxis_labels,
-            fontsize=plot_settings.plot_axis_tick_size,
-            family=plot_settings.plot_font_family,
-        )
-        plt.yticks(
-            rotation=plot_settings.angle_rotate_yaxis_labels,
-            fontsize=plot_settings.plot_axis_tick_size,
-            family=plot_settings.plot_font_family,
         )
 
         st.pyplot(displot)

@@ -13,6 +13,70 @@ from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 from helix.options.plotting import PlottingOptions
 
 
+def plot_target_variable_distribution(
+    data: pd.DataFrame,
+    show_kde: bool,
+    n_bins: int,
+    plot_opts: PlottingOptions,
+    dep_var_name: str,
+    title: str = None,
+) -> None:
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    plt.figure(figsize=(plot_opts.width, plot_opts.height), dpi=plot_opts.dpi)
+
+    displot = sns.displot(
+        data=data,
+        x=data.columns[-1],
+        kde=show_kde,
+        bins=n_bins,
+        height=plot_opts.height,
+        aspect=plot_opts.width / plot_opts.height,
+    )
+
+    if title:
+        plt.title(
+            title,
+            fontdict={
+                "family": plot_opts.plot_font_family,
+                "fontsize": plot_opts.plot_title_font_size,
+            },
+        )
+    else:
+        plt.title(
+            f"{dep_var_name} Distribution",
+            fontdict={
+                "fontsize": plot_opts.plot_title_font_size,
+                "family": plot_opts.plot_font_family,
+            },
+        )
+
+    plt.xlabel(
+        dep_var_name,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    plt.ylabel(
+        "Frequency",
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    plt.xticks(
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+    plt.yticks(
+        rotation=plot_opts.angle_rotate_yaxis_labels,
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    return displot
+
+
 def plot_lime_importance(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,
