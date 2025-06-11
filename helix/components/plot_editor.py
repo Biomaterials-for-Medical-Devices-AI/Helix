@@ -194,8 +194,8 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
         dpi = st.slider(
             "Image resolution (DPI)",
             min_value=330,
-            max_value=700,
-            value=plot_opts.dpi if 330 < plot_opts.dpi <= 700 else 330,
+            max_value=2000,
+            value=plot_opts.dpi if 330 < plot_opts.dpi <= 2000 else 330,
             key=PlotOptionKeys.DPI + plot_type.value,
             help="Set the dots per inch (resolution) of the plot",
         )
