@@ -9,7 +9,10 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from helix.components.plot_editor import edit_plot_form
 from helix.options.enums import DataAnalysisStateKeys, Normalisations, PlotTypes
 from helix.options.plotting import PlottingOptions
-from helix.services.plotting import plot_target_variable_distribution
+from helix.services.plotting import (
+    plot_target_variable_distribution,
+    plot_correlation_heatmap,
+)
 
 
 @st.experimental_fragment
@@ -105,6 +108,8 @@ def correlation_heatmap_form(
             "Please select at least one independent variable to create the correlation heatmap."
         )
 
+    plot_settings = edit_plot_form(plot_opts, PlotTypes.CorrelationHeatmap)
+
     show_plot = st.checkbox(
         "Create Correlation Heatmap Plot",
         key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}",
@@ -114,122 +119,18 @@ def correlation_heatmap_form(
             st.session_state[f"{key_prefix}_redraw_heatmap"] = False
             plt.close("all")  # Close any existing plots
 
-        corr = corr_data.corr()
-        # Generate a mask for the upper triangle
-        mask = np.triu(np.ones_like(corr, dtype=bool))
+        correlation_heatmap = plot_correlation_heatmap(corr_data, plot_settings)
 
-        # Get plot-specific settings from session state or use loaded plot options
-        plot_settings = st.session_state.get(
-            f"{key_prefix}_plot_settings_heatmap",
-            plot_opts,
-        )
+        st.pyplot(correlation_heatmap)
 
-        # Set up the matplotlib figure with the specified style
-        plt.style.use(plot_settings.plot_colour_scheme)
-        fig, ax = plt.subplots(
-            figsize=(plot_settings.width, plot_settings.height),
-            dpi=plot_settings.dpi,
-        )
-
-        # Draw the heatmap with enhanced styling
-        sns.heatmap(
-            corr,
-            mask=mask,
-            cmap=plot_settings.plot_colour_map,
-            vmax=1.0,
-            vmin=-1.0,
-            center=0,
-            square=True,
-            linewidths=0.5,
-            annot=True,
-            fmt=".2f",
-            cbar_kws={
-                "shrink": 0.5,
-                "label": "Correlation Coefficient",
-                "format": "%.1f",
-                "aspect": 30,
-                "drawedges": True,
-            },
-            annot_kws={
-                "size": plot_settings.plot_axis_tick_size,
-                "family": plot_settings.plot_font_family,
-            },
-            xticklabels=True,  # Ensure x-axis labels are shown
-            yticklabels=True,  # Ensure y-axis labels are shown
-            ax=ax,
-        )
-
-        # Customize the plot appearance
-        ax.set_title(
-            "Correlation Heatmap",
-            fontsize=plot_settings.plot_title_font_size,
-            family=plot_settings.plot_font_family,
-            pad=20,  # Add padding above title
-        )
-
-        # Apply axis label rotations from plot settings
-        plt.xticks(
-            rotation=plot_settings.angle_rotate_xaxis_labels,
-            ha="right",
-            fontsize=plot_settings.plot_axis_tick_size,
-            family=plot_settings.plot_font_family,
-        )
-        plt.yticks(
-            rotation=plot_settings.angle_rotate_yaxis_labels,
-            fontsize=plot_settings.plot_axis_tick_size,
-            family=plot_settings.plot_font_family,
-        )
-
-        # Adjust layout to prevent label cutoff
-        plt.tight_layout()
-
-        st.pyplot(fig)
-
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(
-                "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}"
-            ):
-                fig.savefig(
-                    data_analysis_plot_dir / f"correlation_heatmap_{key_prefix}.png"
-                )
-                plt.clf()
-                st.success("Plot created and saved successfully.")
-        with col2:
-            pass  # Placeholder for commented out edit functionality
-            # if st.button(
-            #     "Edit Plot",
-            #     key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveCorrelationHeatmap}",
-            # ):
-            #     st.session_state[
-            #         f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveCorrelationHeatmap}"
-            #     ] = True
-
-            # if st.session_state.get(
-            #     f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}", False
-            # ):
-            #     # Get plot-specific settings
-            #     settings = edit_plot_modal(plot_opts, "heatmap")
-            #     col1, col2 = st.columns(2)
-            #     with col1:
-            #         if st.button(
-            #             "Apply Changes", key=f"{key_prefix}_apply_changes_heatmap"
-            #         ):
-            #             # Store settings in session state
-            #             st.session_state[f"{key_prefix}_plot_settings_heatmap"] = (
-            #                 settings
-            #             )
-            #             st.session_state[
-            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
-            #             ] = False
-            #             st.session_state[f"{key_prefix}_redraw_heatmap"] = True
-            #             st.rerun()
-            #     with col2:
-            #         if st.button("Cancel", key=f"{key_prefix}_cancel_heatmap"):
-            #             st.session_state[
-            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveHeatmap}"
-            #             ] = False
-            #             st.rerun()
+        if st.button(
+            "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}"
+        ):
+            correlation_heatmap.savefig(
+                data_analysis_plot_dir / f"correlation_heatmap_{key_prefix}.png"
+            )
+            plt.clf()
+            st.success("Plot created and saved successfully.")
 
 
 @st.experimental_fragment
