@@ -19,7 +19,6 @@ def plot_target_variable_distribution(
     n_bins: int,
     plot_opts: PlottingOptions,
     dep_var_name: str,
-    title: str = None,
 ) -> None:
 
     plt.style.use(plot_opts.plot_colour_scheme)
@@ -32,8 +31,10 @@ def plot_target_variable_distribution(
         bins=n_bins,
         height=plot_opts.height,
         aspect=plot_opts.width / plot_opts.height,
+        color=plot_opts.plot_colour,
     )
 
+    title = plot_opts.plot_title
     if title:
         plt.title(
             title,
@@ -51,17 +52,33 @@ def plot_target_variable_distribution(
             },
         )
 
-    plt.xlabel(
-        dep_var_name,
-        fontsize=plot_opts.plot_axis_font_size,
-        family=plot_opts.plot_font_family,
-    )
+    x_label = plot_opts.xaxis_label
+    if x_label:
+        plt.xlabel(
+            x_label,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+    else:
+        plt.xlabel(
+            dep_var_name,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
 
-    plt.ylabel(
-        "Frequency",
-        fontsize=plot_opts.plot_axis_font_size,
-        family=plot_opts.plot_font_family,
-    )
+    y_label = plot_opts.yaxis_label
+    if y_label:
+        plt.ylabel(
+            y_label,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+    else:
+        plt.ylabel(
+            "Frequency",
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
 
     plt.xticks(
         rotation=plot_opts.angle_rotate_xaxis_labels,
