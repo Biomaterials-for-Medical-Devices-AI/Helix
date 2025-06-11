@@ -188,6 +188,8 @@ if experiment_name:
                 "Your data are already preprocessed. Would you like to start again?"
             )
             preproc_again = st.checkbox("Redo preprocessing", value=False)
+            if preproc_again:
+                st.cache_data.clear()
         else:
             preproc_again = True
 
