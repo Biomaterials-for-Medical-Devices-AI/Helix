@@ -50,10 +50,7 @@ def target_variable_dist_form(
         "Create target variable distribution plot",
         key=f"{key_prefix}_{DataAnalysisStateKeys.TargetVarDistribution}",
     )
-    if show_plot or st.session_state.get("redraw_target_dist", False):
-        if st.session_state.get(f"{key_prefix}_redraw_target_dist"):
-            st.session_state[f"{key_prefix}_redraw_target_dist"] = False
-            plt.close("all")  # Close any existing plots
+    if show_plot:
 
         displot = plot_target_variable_distribution(
             data,
@@ -116,10 +113,7 @@ def correlation_heatmap_form(
         "Create Correlation Heatmap Plot",
         key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}",
     )
-    if show_plot or st.session_state.get(f"{key_prefix}_redraw_heatmap", False):
-        if st.session_state.get(f"{key_prefix}_redraw_heatmap"):
-            st.session_state[f"{key_prefix}_redraw_heatmap"] = False
-            plt.close("all")  # Close any existing plots
+    if show_plot:
 
         correlation_heatmap = plot_correlation_heatmap(corr_data, plot_settings)
 
@@ -197,10 +191,7 @@ def pairplot_form(  # noqa: C901
     show_plot = st.checkbox(
         "Create Pairplot", key=f"{key_prefix}_{DataAnalysisStateKeys.PairPlot}"
     )
-    if show_plot or st.session_state.get(f"{key_prefix}_redraw_pairplot", False):
-        if st.session_state.get(f"{key_prefix}_redraw_pairplot"):
-            st.session_state[f"{key_prefix}_redraw_pairplot"] = False
-            plt.close("all")  # Close any existing plots
+    if show_plot:
 
         pairplot = create_pairplot(
             pairplot_data, plot_settings, exclude_corner, kind, diag_kind
@@ -257,9 +248,6 @@ def tSNE_plot_form(  # noqa: C901
         "Create t-SNE Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.TSNEPlot}"
     )
     if show_plot:
-        if st.session_state.get(f"{key_prefix}_redraw_tsne"):
-            st.session_state[f"{key_prefix}_redraw_tsne"] = False
-            plt.close("all")  # Close any existing plots
 
         tsne_plot = create_tsne_plot(
             X,
