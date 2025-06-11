@@ -40,7 +40,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
 
     """
 
-    with st.expander("Change predetermined plot options for this plot", expanded=False):
+    with st.expander("Edit plot", expanded=False):
 
         st.subheader("Colours and styles")
 
