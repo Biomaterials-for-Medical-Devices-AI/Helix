@@ -233,9 +233,9 @@ def create_pairplot(
 
 
 def create_tsne_plot(
-    data,
-    normalised_data,
-    y,
+    data: pd.DataFrame,
+    normalised_data: pd.DataFrame,
+    y: pd.Series | np.ndarray,
     plot_opts: PlottingOptions,
     random_state: int,
     perplexity: int,
@@ -295,7 +295,7 @@ def create_tsne_plot(
 
     y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else "t-SNE Component 2"
     ax[0].set_ylabel(
-        "y_label",
+        y_label,
         fontsize=plot_opts.plot_axis_font_size,
         family=plot_opts.plot_font_family,
     )
