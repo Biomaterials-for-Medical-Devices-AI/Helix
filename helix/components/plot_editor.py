@@ -25,7 +25,7 @@ def get_safe_index(value: str, options: list[str], default_value: str) -> int:
         return options.index(default_value)
 
 
-def edit_plot_form(plot_opts, plot_type):
+def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
 
     with st.expander("Change predetermined plot options for this plot", expanded=False):
 
