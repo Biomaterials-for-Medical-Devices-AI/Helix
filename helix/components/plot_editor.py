@@ -26,6 +26,19 @@ def get_safe_index(value: str, options: list[str], default_value: str) -> int:
 
 
 def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
+    """
+    Form to edit the appearance of plots.
+    This form allows users to change the color scheme, font sizes, axis labels,
+    and other visual aspects of the plots.
+
+    Args:
+        plot_opts (PlottingOptions): Current plotting options to edit.
+        plot_type (PlotTypes): Type of the plot being edited.
+
+    Returns:
+        PlottingOptions: Updated plotting options based on user input.
+
+    """
 
     with st.expander("Change predetermined plot options for this plot", expanded=False):
 

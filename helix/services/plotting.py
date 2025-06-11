@@ -21,6 +21,20 @@ def plot_target_variable_distribution(
     plot_opts: PlottingOptions,
     dep_var_name: str,
 ) -> Figure:
+    """
+    Create a distribution plot for the target variable.
+
+    Args:
+        data (pd.DataFrame): The DataFrame containing the target variable.
+        show_kde (bool): Whether to show the kernel density estimate.
+        n_bins (int): Number of bins for the histogram.
+        plot_opts (PlottingOptions): The plotting options.
+        dep_var_name (str): The name of the dependent variable.
+
+    Returns:
+        Figure: The distribution plot figure.
+
+    """
 
     plt.style.use(plot_opts.plot_colour_scheme)
     plt.figure(figsize=(plot_opts.width, plot_opts.height), dpi=plot_opts.dpi)
@@ -80,6 +94,16 @@ def plot_target_variable_distribution(
 def plot_correlation_heatmap(
     corr_data: pd.DataFrame, plot_opts: PlottingOptions
 ) -> Figure:
+    """
+    Create a correlation heatmap for the given DataFrame.
+
+    Args:
+        corr_data (pd.DataFrame): The DataFrame containing the data to plot.
+        plot_opts (PlottingOptions): The plotting options.
+
+    Returns:
+        Figure: The correlation heatmap figure.
+    """
 
     corr = corr_data.corr()
     mask = np.triu(np.ones_like(corr, dtype=bool))
@@ -169,6 +193,20 @@ def create_pairplot(
     kind: str,
     diag_kind: str,
 ) -> Figure:
+    """
+    Create a pairplot of the given DataFrame.
+
+    Args:
+        pairplot_data (pd.DataFrame): The DataFrame to plot.
+        plot_opts (PlottingOptions): The plotting options.
+        exclude_corner (bool): Whether to exclude the corner plot.
+        kind (str): The type of plot to use for the pairplot.
+        diag_kind (str): The type of plot to use on the diagonal.
+
+    Returns:
+        Figure: The pairplot figure.
+
+    """
 
     plt.style.use(plot_opts.plot_colour_scheme)
 
@@ -239,7 +277,21 @@ def create_tsne_plot(
     plot_opts: PlottingOptions,
     random_state: int,
     perplexity: int,
-):
+) -> Figure:
+    """
+    Create a t-SNE plot for both normalised and original data.
+
+    Args:
+        data (pd.DataFrame): The original data to plot.
+        normalised_data (pd.DataFrame): The normalised data to plot.
+        y (pd.Series | np.ndarray): The target variable.
+        plot_opts (PlottingOptions): The plotting options.
+        random_state (int): Random state for reproducibility.
+        perplexity (int): Perplexity parameter for t-SNE.
+
+    Returns:
+        Figure: The t-SNE plot figure containing two subplots.
+    """
 
     tsne_normalised = TSNE(
         n_components=2, random_state=random_state, perplexity=perplexity
