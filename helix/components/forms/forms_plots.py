@@ -6,7 +6,7 @@ import streamlit as st
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from helix.components.plot_editor import edit_plot_modal, edit_plot_form
+from helix.components.plot_editor import edit_plot_form
 from helix.options.enums import DataAnalysisStateKeys, Normalisations, PlotTypes
 from helix.options.plotting import PlottingOptions
 from helix.services.plotting import plot_target_variable_distribution
