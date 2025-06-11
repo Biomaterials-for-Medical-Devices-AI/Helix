@@ -12,6 +12,7 @@ from helix.options.plotting import PlottingOptions
 from helix.services.plotting import (
     plot_target_variable_distribution,
     plot_correlation_heatmap,
+    create_pairplot,
 )
 
 
@@ -166,6 +167,32 @@ def pairplot_form(  # noqa: C901
             "Please select at least one independent variable to create the correlation plot."
         )
 
+    exclude_corner = st.checkbox(
+        "Exclude corner plot",
+        value=True,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.ExcludeCorner}",
+    )
+
+    col1, col2 = st.columns(2)
+    with col1:
+        kind = st.selectbox(
+            "Select how to display the correlation between variables",
+            options=["scatter", "kde", "hist", "reg"],
+            index=0,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.PairPlotCorrelationType}",
+            help="Select the type of distribution to plot in the pairplot.",
+        )
+    with col2:
+        diag_kind = st.selectbox(
+            "Select the diagonal plot type",
+            options=["hist", "kde", None],
+            index=0,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.PairPlotDiagonalType}",
+            help="Select the type of plot to use on the diagonal of the pairplot.",
+        )
+
+    plot_settings = edit_plot_form(plot_opts, PlotTypes.PairPlot)
+
     show_plot = st.checkbox(
         "Create Pairplot", key=f"{key_prefix}_{DataAnalysisStateKeys.PairPlot}"
     )
@@ -174,121 +201,19 @@ def pairplot_form(  # noqa: C901
             st.session_state[f"{key_prefix}_redraw_pairplot"] = False
             plt.close("all")  # Close any existing plots
 
-        # Get plot-specific settings from session state or use loaded plot options
-        plot_settings = st.session_state.get(
-            f"{key_prefix}_plot_settings_pairplot",
-            plot_opts,
+        pairplot = create_pairplot(
+            pairplot_data, plot_settings, exclude_corner, kind, diag_kind
         )
 
-        # Set the style and create the pairplot
-        plt.style.use(plot_settings.plot_colour_scheme)
-
-        # Create figure with proper DPI
-        with plt.rc_context({"figure.dpi": plot_settings.dpi}):
-            # Calculate the figure size based on number of variables
-            n_vars = len(pairplot_data.columns)
-            aspect_ratio = plot_settings.width / plot_settings.height
-            size_per_var = min(plot_settings.width, plot_settings.height) / n_vars
-
-            pairplot = sns.pairplot(
-                pairplot_data,
-                height=size_per_var,
-                aspect=aspect_ratio,
-                corner=True,
-                plot_kws={"s": 50, "alpha": 0.6},  # marker size  # transparency
-                diag_kws={"bins": 20, "alpha": 0.6},
-            )
-
-            # Add title to the pairplot
-            pairplot.figure.suptitle(
-                "Pairplot",
-                fontsize=plot_settings.plot_title_font_size,
-                family=plot_settings.plot_font_family,
-                y=1.02,  # Adjust title position to prevent overlap
-            )
-
-            # Apply axis label rotations and styling to all subplots
-            for ax in pairplot.axes.flat:
-                if ax is not None:  # Some axes might be None in corner=True mode
-                    # Set x-axis label rotations
-                    ax.set_xticklabels(
-                        ax.get_xticklabels(),
-                        rotation=plot_settings.angle_rotate_xaxis_labels,
-                        family=plot_settings.plot_font_family,
-                    )
-                    # Set y-axis label rotations
-                    ax.set_yticklabels(
-                        ax.get_yticklabels(),
-                        rotation=plot_settings.angle_rotate_yaxis_labels,
-                        family=plot_settings.plot_font_family,
-                    )
-
-            # Customize the appearance after creating the plot
-            for ax in pairplot.axes.flat:
-                if ax is not None:
-                    # Set font sizes
-                    ax.tick_params(labelsize=plot_opts.plot_axis_tick_size, rotation=45)
-                    if ax.get_xlabel():
-                        ax.set_xlabel(
-                            ax.get_xlabel(),
-                            fontsize=plot_opts.plot_axis_font_size,
-                            family=plot_opts.plot_font_family,
-                        )
-                    if ax.get_ylabel():
-                        ax.set_ylabel(
-                            ax.get_ylabel(),
-                            fontsize=plot_opts.plot_axis_font_size,
-                            family=plot_opts.plot_font_family,
-                        )
-
-            # Adjust layout to prevent label cutoff
-            plt.tight_layout()
         st.pyplot(pairplot)
         plt.close()
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(
-                "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SavePairPlot}"
-            ):
-                pairplot.savefig(data_analysis_plot_dir / f"pairplot_{key_prefix}.png")
-                plt.clf()
-                st.success("Plot created and saved successfully.")
-        with col2:
-            pass  # Placeholder for commented out edit functionality
-            # if st.button(
-            #     "Edit Plot", key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SavePairPlot}"
-            # ):
-            #     st.session_state[
-            #         f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-            #     ] = True
-
-            # if st.session_state.get(
-            #     f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}",
-            #     False,
-            # ):
-            #     # Get plot-specific settings
-            #     settings = edit_plot_modal(plot_opts, "pairplot")
-            #     col1, col2 = st.columns(2)
-            #     with col1:
-            #         if st.button(
-            #             "Apply Changes", key=f"{key_prefix}_apply_changes_pairplot"
-            #         ):
-            #             # Store settings in session state
-            #             st.session_state[f"{key_prefix}_plot_settings_pairplot"] = (
-            #                 settings
-            #             )
-            #             st.session_state[
-            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-            #             ] = False
-            #             st.session_state[f"{key_prefix}_redraw_pairplot"] = True
-            #             st.rerun()
-            #     with col2:
-            #         if st.button("Cancel", key=f"{key_prefix}_cancel_pairplot"):
-            #             st.session_state[
-            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SavePairPlot}"
-            #             ] = False
-            #             st.rerun()
+        if st.button(
+            "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SavePairPlot}"
+        ):
+            pairplot.savefig(data_analysis_plot_dir / f"pairplot_{key_prefix}.png")
+            plt.clf()
+            st.success("Plot created and saved successfully.")
 
 
 @st.experimental_fragment
