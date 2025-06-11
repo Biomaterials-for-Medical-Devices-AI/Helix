@@ -13,6 +13,7 @@ from helix.services.plotting import (
     plot_target_variable_distribution,
     plot_correlation_heatmap,
     create_pairplot,
+    create_tsne_plot,
 )
 
 
@@ -250,167 +251,31 @@ def tSNE_plot_form(  # noqa: C901
         key=f"{key_prefix}_{DataAnalysisStateKeys.Perplexity}",
     )
 
+    plot_settings = edit_plot_form(plot_opts, PlotTypes.TSNEPlot)
+
     show_plot = st.checkbox(
         "Create t-SNE Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.TSNEPlot}"
     )
-    if show_plot or st.session_state.get(f"{key_prefix}_redraw_tsne", False):
+    if show_plot:
         if st.session_state.get(f"{key_prefix}_redraw_tsne"):
             st.session_state[f"{key_prefix}_redraw_tsne"] = False
             plt.close("all")  # Close any existing plots
 
-        tsne_normalised = TSNE(
-            n_components=2, random_state=random_state, perplexity=perplexity
-        )
-        tsne_original = TSNE(
-            n_components=2, random_state=random_state, perplexity=perplexity
-        )
-
-        X_embedded_normalised = tsne_normalised.fit_transform(X_scaled)
-        X_embedded = tsne_original.fit_transform(X)
-
-        df_normalised = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
-        df_normalised["target"] = y
-
-        df = pd.DataFrame(X_embedded, columns=["x", "y"])
-        df["target"] = y
-
-        # Get plot-specific settings from session state or use loaded plot options
-        plot_settings = st.session_state.get(
-            f"{key_prefix}_plot_settings_tsne",
-            plot_opts,
+        tsne_plot = create_tsne_plot(
+            X,
+            X_scaled,
+            y,
+            plot_settings,
+            random_state,
+            perplexity,
         )
 
-        # Set style and create figure with proper DPI
-        plt.style.use(plot_settings.plot_colour_scheme)
-        with plt.rc_context({"figure.dpi": plot_settings.dpi}):
-            fig, axes = plt.subplots(
-                1, 2, figsize=(plot_settings.width, plot_settings.height)
-            )
-
-            # Plot 1: Normalised Data
-            sns.scatterplot(
-                data=df_normalised,
-                x="x",
-                y="y",
-                hue="target",
-                palette=plot_settings.plot_colour_map,
-                s=100,  # marker size
-                alpha=0.6,  # transparency
-                ax=axes[0],
-            )
-
-            # Customize first plot
-            axes[0].set_title(
-                "t-SNE Plot (Normalised Features)",
-                fontsize=plot_settings.plot_title_font_size,
-                family=plot_settings.plot_font_family,
-                pad=20,  # Add padding above title
-            )
-            axes[0].set_xlabel(
-                "t-SNE Component 1",
-                fontsize=plot_settings.plot_axis_font_size,
-                family=plot_settings.plot_font_family,
-            )
-            axes[0].set_ylabel(
-                "t-SNE Component 2",
-                fontsize=plot_settings.plot_axis_font_size,
-                family=plot_settings.plot_font_family,
-            )
-            # Apply axis label rotations and styling for first plot
-            axes[0].tick_params(
-                axis="both", which="major", labelsize=plot_settings.plot_axis_tick_size
-            )
-            for label in axes[0].get_xticklabels():
-                label.set_rotation(plot_settings.angle_rotate_xaxis_labels)
-                label.set_family(plot_settings.plot_font_family)
-            for label in axes[0].get_yticklabels():
-                label.set_rotation(plot_settings.angle_rotate_yaxis_labels)
-                label.set_family(plot_settings.plot_font_family)
-
-            # Plot 2: Original Data
-            sns.scatterplot(
-                data=df,
-                x="x",
-                y="y",
-                hue="target",
-                palette=plot_settings.plot_colour_map,
-                s=100,  # marker size
-                alpha=0.6,  # transparency
-                ax=axes[1],
-            )
-
-            # Customize second plot
-            axes[1].set_title(
-                "t-SNE Plot (Original Features)",
-                fontsize=plot_settings.plot_title_font_size,
-                family=plot_settings.plot_font_family,
-                pad=20,  # Add padding above title
-            )
-            axes[1].set_xlabel(
-                "t-SNE Component 1",
-                fontsize=plot_settings.plot_axis_font_size,
-                family=plot_settings.plot_font_family,
-            )
-            axes[1].set_ylabel(
-                "t-SNE Component 2",
-                fontsize=plot_settings.plot_axis_font_size,
-                family=plot_settings.plot_font_family,
-            )
-            # Apply axis label rotations and styling for second plot
-            axes[1].tick_params(
-                axis="both", which="major", labelsize=plot_settings.plot_axis_tick_size
-            )
-            for label in axes[1].get_xticklabels():
-                label.set_rotation(plot_settings.angle_rotate_xaxis_labels)
-                label.set_family(plot_settings.plot_font_family)
-            for label in axes[1].get_yticklabels():
-                label.set_rotation(plot_settings.angle_rotate_yaxis_labels)
-                label.set_family(plot_settings.plot_font_family)
-
-            # Adjust layout to prevent label cutoff
-            plt.tight_layout()
-
-        st.pyplot(fig)
+        st.pyplot(tsne_plot)
         plt.close()
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(
-                "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTSNEPlot}"
-            ):
-                fig.savefig(data_analysis_plot_dir / f"tsne_plot_{key_prefix}.png")
-                plt.clf()
-                st.success("Plots created and saved successfully.")
-        with col2:
-            pass  # Placeholder for commented out edit functionality
-            # if st.button(
-            #     "Edit Plot", key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveTSNEPlot}"
-            # ):
-            #     st.session_state[
-            #         f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-            #     ] = True
-
-            # if st.session_state.get(
-            #     f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}",
-            #     False,
-            # ):
-            #     # Get plot-specific settings
-            #     settings = edit_plot_modal(plot_opts, "tsne")
-            #     col1, col2 = st.columns(2)
-            #     with col1:
-            #         if st.button(
-            #             "Apply Changes", key=f"{key_prefix}_apply_changes_tsne"
-            #         ):
-            #             # Store settings in session state
-            #             st.session_state[f"{key_prefix}_plot_settings_tsne"] = settings
-            #             st.session_state[
-            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-            #             ] = False
-            #             st.session_state[f"{key_prefix}_redraw_tsne"] = True
-            #             st.rerun()
-            #     with col2:
-            #         if st.button("Cancel", key=f"{key_prefix}_cancel_tsne"):
-            #             st.session_state[
-            #                 f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTSNEPlot}"
-            #             ] = False
-            #             st.rerun()
+        if st.button(
+            "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTSNEPlot}"
+        ):
+            tsne_plot.savefig(data_analysis_plot_dir / f"tsne_plot_{key_prefix}.png")
+            plt.clf()
+            st.success("Plots created and saved successfully.")
