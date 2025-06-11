@@ -161,6 +161,76 @@ def plot_correlation_heatmap(
     return fig
 
 
+def create_pairplot(
+    pairplot_data: pd.DataFrame,
+    plot_opts: PlottingOptions,
+    exclude_corner: bool,
+    kind: str,
+    diag_kind: str,
+) -> Figure:
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+
+    with plt.rc_context({"figure.dpi": plot_opts.dpi}):
+
+        n_vars = len(pairplot_data.columns)
+        aspect_ratio = plot_opts.width / plot_opts.height
+        size_per_var = min(plot_opts.width, plot_opts.height) / n_vars
+
+        pairplot = sns.pairplot(
+            pairplot_data,
+            height=size_per_var,
+            aspect=aspect_ratio,
+            corner=exclude_corner,
+            kind=kind,
+            diag_kind=diag_kind,
+        )
+
+        title = plot_opts.plot_title if plot_opts.plot_title else "Pairplot"
+
+        pairplot.figure.suptitle(
+            title,
+            fontsize=plot_opts.plot_title_font_size,
+            family=plot_opts.plot_font_family,
+            y=1.02,  # Adjust title position to prevent overlap
+        )
+
+        for ax in pairplot.axes.flat:
+            if ax is not None:
+                # Rotate labels
+                ax.set_xticklabels(
+                    ax.get_xticklabels(),
+                    rotation=plot_opts.angle_rotate_xaxis_labels,
+                    family=plot_opts.plot_font_family,
+                )
+                ax.set_yticklabels(
+                    ax.get_yticklabels(),
+                    rotation=plot_opts.angle_rotate_yaxis_labels,
+                    family=plot_opts.plot_font_family,
+                )
+
+                # Set tick font size
+                ax.tick_params(labelsize=plot_opts.plot_axis_tick_size)
+
+                # Set axis labels
+                if ax.get_xlabel():
+                    ax.set_xlabel(
+                        ax.get_xlabel(),
+                        fontsize=plot_opts.plot_axis_font_size,
+                        family=plot_opts.plot_font_family,
+                    )
+                if ax.get_ylabel():
+                    ax.set_ylabel(
+                        ax.get_ylabel(),
+                        fontsize=plot_opts.plot_axis_font_size,
+                        family=plot_opts.plot_font_family,
+                    )
+
+        plt.tight_layout()
+
+        return pairplot.figure
+
+
 def plot_lime_importance(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,
