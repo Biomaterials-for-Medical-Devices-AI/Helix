@@ -1,9 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
 import streamlit as st
-from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.plot_editor import edit_plot_form
