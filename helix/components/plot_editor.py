@@ -29,10 +29,10 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
 
     with st.expander("Change predetermined plot options for this plot", expanded=False):
 
-        st.subheader("Colours and Styles")
+        st.subheader("Colours and styles")
 
         colour_scheme = st.selectbox(
-            "Color Scheme",
+            "Color scheme",
             plt.style.available,
             index=get_safe_index(
                 plot_opts.plot_colour_scheme, plt.style.available, "default"
@@ -44,7 +44,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
         # Color map for heatmaps
         if plot_type in [PlotTypes.CorrelationHeatmap, PlotTypes.TSNEPlot]:
             st.selectbox(
-                "Color Map",
+                "Color map",
                 plt.colormaps(),
                 index=get_safe_index(
                     plot_opts.plot_colour_map,
@@ -57,17 +57,17 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
 
         if plot_type in [PlotTypes.TargetVariableDistribution]:
             st.color_picker(
-                "Plot Colour",
+                "Plot colour",
                 value="#1f77b4",
                 key=PlotOptionKeys.PlotColour + plot_type.value,
                 help="Select the colour for the plot",
             )
 
-        st.subheader("Customise Plot Titles")
+        st.subheader("Customise plot titles")
 
         # Custom plot title
         plot_title = st.text_input(
-            "Plot Title",
+            "Plot title",
             value=None,
             key=PlotOptionKeys.PlotTitle + plot_type.value,
             help="Set a custom title for the plot",
@@ -76,7 +76,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
         col1, col2 = st.columns(2)
         with col1:
             yaxis_label = st.text_input(
-                "Y-Axis Label",
+                "Y-axis label",
                 value=None,
                 key=PlotOptionKeys.YAxisLabel + plot_type.value,
                 help="Set the label for the y-axis",
@@ -84,19 +84,19 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
 
         with col2:
             xaxis_label = st.text_input(
-                "X-Axis Label",
+                "X-axis label",
                 value=None,
                 key=PlotOptionKeys.XAxisLabel + plot_type.value,
                 help="Set the label for the x-axis",
             )
 
-        st.subheader("Font Settings")
+        st.subheader("Font settings")
 
         col1, col2 = st.columns(2)
 
         with col1:
             title_font_size = st.number_input(
-                "Title Font Size",
+                "Title font size",
                 min_value=8,
                 max_value=50,
                 value=plot_opts.plot_title_font_size,
@@ -105,7 +105,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             )
 
             axis_font_size = st.number_input(
-                "Axis Font Size",
+                "Axis font size",
                 min_value=8,
                 max_value=35,
                 value=plot_opts.plot_axis_font_size,
@@ -114,7 +114,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             )
 
             rotate_x = st.number_input(
-                "X-Axis Label Rotation",
+                "X-axis label rotation",
                 min_value=0,
                 max_value=90,
                 value=plot_opts.angle_rotate_xaxis_labels,
@@ -125,7 +125,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
         with col2:
 
             tick_size = st.number_input(
-                "Tick Label Size",
+                "Tick label size",
                 min_value=6,
                 max_value=35,
                 value=plot_opts.plot_axis_tick_size,
@@ -134,7 +134,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             )
 
             font_family = st.selectbox(
-                "Font Family",
+                "Font family",
                 PLOT_FONT_FAMILIES,
                 index=get_safe_index(
                     plot_opts.plot_font_family,
@@ -146,7 +146,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             )
 
             rotate_y = st.number_input(
-                "Y-Axis Label Rotation",
+                "Y-axis label rotation",
                 min_value=0,
                 max_value=90,
                 value=plot_opts.angle_rotate_yaxis_labels,
@@ -155,7 +155,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             )
 
         # Plot dimensions
-        st.subheader("Plot Dimensions")
+        st.subheader("Plot dimensions")
         col1, col2 = st.columns(2)
         with col1:
             width = st.number_input(
@@ -179,7 +179,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
 
         # Plot quality
         dpi = st.slider(
-            "Image Resolution (DPI)",
+            "Image resolution (DPI)",
             min_value=330,
             max_value=700,
             value=plot_opts.dpi if 330 < plot_opts.dpi <= 700 else 330,
