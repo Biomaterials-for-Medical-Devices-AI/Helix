@@ -4,11 +4,11 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.manifold import TSNE
 import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
+from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
 from helix.options.plotting import PlottingOptions

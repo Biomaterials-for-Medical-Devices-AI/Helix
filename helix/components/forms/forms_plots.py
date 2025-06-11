@@ -10,10 +10,10 @@ from helix.components.plot_editor import edit_plot_form
 from helix.options.enums import DataAnalysisStateKeys, Normalisations, PlotTypes
 from helix.options.plotting import PlottingOptions
 from helix.services.plotting import (
-    plot_target_variable_distribution,
-    plot_correlation_heatmap,
     create_pairplot,
     create_tsne_plot,
+    plot_correlation_heatmap,
+    plot_target_variable_distribution,
 )
 
 
