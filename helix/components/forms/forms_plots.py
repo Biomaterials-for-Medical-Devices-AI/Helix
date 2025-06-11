@@ -6,8 +6,8 @@ import streamlit as st
 from sklearn.manifold import TSNE
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from helix.components.plot_editor import edit_plot_modal
-from helix.options.enums import DataAnalysisStateKeys, Normalisations
+from helix.components.plot_editor import edit_plot_modal, edit_plot_form
+from helix.options.enums import DataAnalysisStateKeys, Normalisations, PlotTypes
 from helix.options.plotting import PlottingOptions
 from helix.services.plotting import plot_target_variable_distribution
 
@@ -39,6 +39,8 @@ def target_variable_dist_form(
         key=f"{key_prefix}_{DataAnalysisStateKeys.NBins}",
     )
 
+    plot_settings = edit_plot_form(plot_opts, PlotTypes.TargetVariableDistribution)
+
     show_plot = st.checkbox(
         "Create target variable distribution plot",
         key=f"{key_prefix}_{DataAnalysisStateKeys.TargetVarDistribution}",
@@ -47,12 +49,6 @@ def target_variable_dist_form(
         if st.session_state.get(f"{key_prefix}_redraw_target_dist"):
             st.session_state[f"{key_prefix}_redraw_target_dist"] = False
             plt.close("all")  # Close any existing plots
-
-        # Get plot-specific settings from session state or use loaded plot options
-        plot_settings = st.session_state.get(
-            f"{key_prefix}_plot_settings_target_distribution",
-            plot_opts,  # return the original plot_opts
-        )
 
         displot = plot_target_variable_distribution(
             data,
@@ -65,57 +61,15 @@ def target_variable_dist_form(
         st.pyplot(displot)
         plt.close()
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button(
-                "Save Plot",
-                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
-            ):
-                displot.savefig(
-                    data_analysis_plot_dir
-                    / f"{dep_var_name}_distribution_{key_prefix}.png"
-                )
-                plt.clf()
-                st.success("Plot created and saved successfully.")
-        with col2:
-            if st.button(
-                "Edit Plot",
-                key=f"{key_prefix}_edit_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
-            ):
-                st.session_state[
-                    f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
-                ] = True
-
-            if st.session_state.get(
-                f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
-                False,
-            ):
-                # Get plot-specific settings
-                settings = edit_plot_modal(plot_opts, "target_distribution")
-                col1, col2 = st.columns(2)
-                with col1:
-                    if st.button(
-                        "Apply Changes",
-                        key=f"{key_prefix}_apply_changes_target_distribution",
-                    ):
-                        # Store settings in session state
-                        st.session_state[
-                            f"{key_prefix}_plot_settings_target_distribution"
-                        ] = settings
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
-                        ] = False
-                        st.session_state[f"{key_prefix}_redraw_target_dist"] = True
-                        st.rerun()
-                with col2:
-                    if st.button(
-                        "Cancel",
-                        key=f"{key_prefix}_cancel_target_distribution",
-                    ):
-                        st.session_state[
-                            f"{key_prefix}_show_editor_{DataAnalysisStateKeys.SaveTargetVarDistribution}"
-                        ] = False
-                        st.rerun()
+        if st.button(
+            "Save Plot",
+            key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTargetVarDistribution}",
+        ):
+            displot.savefig(
+                data_analysis_plot_dir / f"{dep_var_name}_distribution_{key_prefix}.png"
+            )
+            plt.clf()
+            st.success("Plot created and saved successfully.")
 
 
 @st.experimental_fragment
