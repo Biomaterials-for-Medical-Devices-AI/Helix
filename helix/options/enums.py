@@ -173,6 +173,10 @@ class PlotOptionKeys(StrEnum):
     DPI = "dpi"
     Height = "plot_height"
     Width = "plot_width"
+    PlotTitle = "plot_title"
+    YAxisLabel = "yaxis_label"
+    XAxisLabel = "xaxis_label"
+    PlotColour = "plot_colour"
 
 
 class ViewExperimentKeys(StrEnum):
@@ -185,3 +189,13 @@ class FeatureImportanceTypes(StrEnum):
     Mean = "Mean"
     PermutationImportance = "Permutation importance"
     SHAP = "SHAP"
+
+
+class PlotTypes(StrEnum):
+    TargetVariableDistribution = "target_variable_distribution"
+    CorrelationHeatmap = "correlation_heatmap"
+    PairPlot = "pair_plot"
+    TSNEPlot = "tsne_plot"
+    ParityPlot = "parity_plot"
+    ConfusionMatrix = "confusion_matrix"
+    AUROC = "auc_roc"
