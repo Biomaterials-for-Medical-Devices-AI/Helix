@@ -170,7 +170,7 @@ def edit_plot_modal(plot_opts: PlottingOptions, plot_type: str) -> PlottingOptio
 
 def edit_plot_form(plot_opts, plot_type):
 
-    with st.expander("Change Predetermined Plot Options", expanded=False):
+    with st.expander("Change predetermined plot options for this plot", expanded=False):
 
         st.subheader("Colours and Styles")
 
@@ -186,7 +186,7 @@ def edit_plot_form(plot_opts, plot_type):
 
         # Color map for heatmaps
         if plot_type in [PlotTypes.CorrelationHeatmap, PlotTypes.TSNEPlot]:
-            colour_map = st.selectbox(
+            st.selectbox(
                 "Color Map",
                 plt.colormaps(),
                 index=get_safe_index(
@@ -199,7 +199,7 @@ def edit_plot_form(plot_opts, plot_type):
             )
 
         if plot_type in [PlotTypes.TargetVariableDistribution]:
-            plot_colour = st.color_picker(
+            st.color_picker(
                 "Plot Colour",
                 value="#1f77b4",
                 key=PlotOptionKeys.PlotColour + plot_type.value,
