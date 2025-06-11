@@ -4,6 +4,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from sklearn.manifold import TSNE
 import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
@@ -229,6 +230,129 @@ def create_pairplot(
         plt.tight_layout()
 
         return pairplot.figure
+
+
+def create_tsne_plot(
+    data,
+    normalised_data,
+    y,
+    plot_opts: PlottingOptions,
+    random_state: int,
+    perplexity: int,
+):
+
+    tsne_normalised = TSNE(
+        n_components=2, random_state=random_state, perplexity=perplexity
+    )
+
+    tsne_original = TSNE(
+        n_components=2, random_state=random_state, perplexity=perplexity
+    )
+
+    X_embedded_normalised = tsne_normalised.fit_transform(normalised_data)
+    X_embedded = tsne_original.fit_transform(data)
+
+    df_normalised = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
+    df_normalised["target"] = y
+
+    df = pd.DataFrame(X_embedded, columns=["x", "y"])
+    df["target"] = y
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(
+        1,
+        2,
+        figsize=(plot_opts.width, plot_opts.height),
+        dpi=plot_opts.dpi,
+    )
+
+    sns.scatterplot(
+        data=df_normalised,
+        x="x",
+        y="y",
+        hue="target",
+        palette=plot_opts.plot_colour_map,
+        s=100,  # marker size
+        alpha=0.6,  # transparency
+        ax=ax[0],
+    )
+
+    # Customize first plot
+    title = plot_opts.plot_title if plot_opts.plot_title else "t-SNE Plot"
+    ax[0].set_title(
+        title + " (Normalised Features)",
+        fontsize=plot_opts.plot_title_font_size,
+        family=plot_opts.plot_font_family,
+        pad=20,  # Add padding above title
+    )
+
+    x_label = plot_opts.xaxis_label if plot_opts.xaxis_label else "t-SNE Component 1"
+    ax[0].set_xlabel(
+        x_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else "t-SNE Component 2"
+    ax[0].set_ylabel(
+        "y_label",
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+    # Apply axis label rotations and styling for first plot
+    ax[0].tick_params(
+        axis="both", which="major", labelsize=plot_opts.plot_axis_tick_size
+    )
+    for label in ax[0].get_xticklabels():
+        label.set_rotation(plot_opts.angle_rotate_xaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+    for label in ax[0].get_yticklabels():
+        label.set_rotation(plot_opts.angle_rotate_yaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+
+    sns.scatterplot(
+        data=df,
+        x="x",
+        y="y",
+        hue="target",
+        palette=plot_opts.plot_colour_map,
+        s=100,  # marker size
+        alpha=0.6,  # transparency
+        ax=ax[1],
+    )
+
+    # Customize second plot
+    ax[1].set_title(
+        title + " (Original Features)",
+        fontsize=plot_opts.plot_title_font_size,
+        family=plot_opts.plot_font_family,
+        pad=20,  # Add padding above title
+    )
+    ax[1].set_xlabel(
+        x_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+    ax[1].set_ylabel(
+        y_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+    # Apply axis label rotations and styling for second plot
+    ax[1].tick_params(
+        axis="both", which="major", labelsize=plot_opts.plot_axis_tick_size
+    )
+    for label in ax[1].get_xticklabels():
+        label.set_rotation(plot_opts.angle_rotate_xaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+    for label in ax[1].get_yticklabels():
+        label.set_rotation(plot_opts.angle_rotate_yaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+
+    # Adjust layout to prevent label cutoff
+    plt.tight_layout()
+
+    return fig
 
 
 def plot_lime_importance(
