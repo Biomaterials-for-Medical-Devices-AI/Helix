@@ -19,7 +19,7 @@ def plot_target_variable_distribution(
     n_bins: int,
     plot_opts: PlottingOptions,
     dep_var_name: str,
-) -> None:
+) -> Figure:
 
     plt.style.use(plot_opts.plot_colour_scheme)
     plt.figure(figsize=(plot_opts.width, plot_opts.height), dpi=plot_opts.dpi)
@@ -34,51 +34,33 @@ def plot_target_variable_distribution(
         color=plot_opts.plot_colour,
     )
 
-    title = plot_opts.plot_title
-    if title:
-        plt.title(
-            title,
-            fontdict={
-                "family": plot_opts.plot_font_family,
-                "fontsize": plot_opts.plot_title_font_size,
-            },
-        )
-    else:
-        plt.title(
-            f"{dep_var_name} Distribution",
-            fontdict={
-                "fontsize": plot_opts.plot_title_font_size,
-                "family": plot_opts.plot_font_family,
-            },
-        )
+    title = (
+        plot_opts.plot_title if plot_opts.plot_title else f"{dep_var_name} Distribution"
+    )
 
-    x_label = plot_opts.xaxis_label
-    if x_label:
-        plt.xlabel(
-            x_label,
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
-    else:
-        plt.xlabel(
-            dep_var_name,
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
+    plt.title(
+        title,
+        fontdict={
+            "family": plot_opts.plot_font_family,
+            "fontsize": plot_opts.plot_title_font_size,
+        },
+    )
 
-    y_label = plot_opts.yaxis_label
-    if y_label:
-        plt.ylabel(
-            y_label,
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
-    else:
-        plt.ylabel(
-            "Frequency",
-            fontsize=plot_opts.plot_axis_font_size,
-            family=plot_opts.plot_font_family,
-        )
+    x_label = plot_opts.xaxis_label if plot_opts.xaxis_label else dep_var_name
+
+    plt.xlabel(
+        x_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else "Frequency"
+
+    plt.ylabel(
+        y_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
 
     plt.xticks(
         rotation=plot_opts.angle_rotate_xaxis_labels,
@@ -92,6 +74,91 @@ def plot_target_variable_distribution(
     )
 
     return displot
+
+
+def plot_correlation_heatmap(
+    corr_data: pd.DataFrame, plot_opts: PlottingOptions
+) -> Figure:
+
+    corr = corr_data.corr()
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(
+        figsize=(plot_opts.width, plot_opts.height),
+        dpi=plot_opts.dpi,
+    )
+
+    sns.heatmap(
+        corr,
+        mask=mask,
+        cmap=plot_opts.plot_colour_map,
+        vmax=1.0,
+        vmin=-1.0,
+        center=0,
+        square=True,
+        linewidths=0.5,
+        annot=True,
+        fmt=".2f",
+        cbar_kws={
+            "shrink": 0.5,
+            "label": "Correlation Coefficient",
+            "format": "%.1f",
+            "aspect": 30,
+            "drawedges": True,
+        },
+        annot_kws={
+            "size": plot_opts.plot_axis_tick_size,
+            "family": plot_opts.plot_font_family,
+        },
+        xticklabels=True,  # Ensure x-axis labels are shown
+        yticklabels=True,  # Ensure y-axis labels are shown
+        ax=ax,
+    )
+
+    title = plot_opts.plot_title if plot_opts.plot_title else "Correlation Heatmap"
+
+    ax.set_title(
+        title,
+        fontsize=plot_opts.plot_title_font_size,
+        family=plot_opts.plot_font_family,
+        pad=20,
+        wrap=True,
+    )
+
+    x_label = plot_opts.xaxis_label if plot_opts.xaxis_label else None
+
+    y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else None
+
+    if x_label:
+        ax.set_xlabel(
+            x_label,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+    if y_label:
+        ax.set_ylabel(
+            y_label,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+            rotation=plot_opts.angle_rotate_yaxis_labels,
+        )
+
+    plt.xticks(
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        ha="right",
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+    plt.yticks(
+        rotation=plot_opts.angle_rotate_yaxis_labels,
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    plt.tight_layout()
+
+    return fig
 
 
 def plot_lime_importance(
