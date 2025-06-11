@@ -19,3 +19,7 @@ class PlottingOptions:
     height: int | float
     width: int | float
     plot_colour_map: str = "viridis"
+    plot_title: str | None = None
+    yaxis_label: str | None = None
+    xaxis_label: str | None = None
+    plot_colour: str | None = None
