@@ -34,6 +34,13 @@ def group_plots_by_model_and_type(plots):
                     "Other": [],
                 }
 
+            custom_plot = "custom" in filename
+
+            if custom_plot:
+                # If it's a custom plot, add it to the Other category
+                plot_groups[model_name]["Other"].append(p)
+                continue
+
             # Check for plot type in the full filename
             if "train" in filename:
                 plot_groups[model_name]["Train"].append(p)
@@ -145,6 +152,8 @@ def plot_box(plot_dir: Path, box_title: str):
 
                 # Show other plots
                 for other_plot in group["Other"]:
+                    plot_name = other_plot.name.split("-")[-1].replace(".png", "")
+                    st.markdown(f"#### {plot_name.capitalize()}")
                     st.image(str(other_plot))
 
                 st.markdown("---")

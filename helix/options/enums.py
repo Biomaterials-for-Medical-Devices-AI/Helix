@@ -181,9 +181,21 @@ class PlotOptionKeys(StrEnum):
     XAxisLabel = "xaxis_label"
     PlotColour = "plot_colour"
 
+    ShowCustomPlotCreator = "show_custom_plot_creator"
+    SelectedModels = "selected_models"
+    SelectedSets = "selected_sets"
+    SelectedFolds = "selected_folds"
+    ColorBy = "color_by"
+    StyleBy = "style_by"
+    PointSize = "point_size"
+    PointColour = "point_colour"
+
 
 class ViewExperimentKeys(StrEnum):
     ExperimentName = "view_experiment_name"
+    ShowCustomPlotCreator = "show_custom_plot_creator"
+    CustomPlotName = "custom_plot_name"
+    SavePlotButton = "save_plot_button"
 
 
 class FeatureImportanceTypes(StrEnum):
