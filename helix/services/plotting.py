@@ -692,7 +692,6 @@ def plot_scatter(
     r2: float,
     dependent_variable: str,
     plot_opts: PlottingOptions,
-    title: str | None = None,
     point_colour: str = "#1f77b4",
     edge_color: str = "#1f77b4",
     point_size: int = 20,
@@ -758,7 +757,7 @@ def plot_scatter(
         family=plot_opts.plot_font_family,
     )
 
-    figure_title = title if title else "Parity Plot"
+    figure_title = plot_opts.plot_title if plot_opts.plot_title else "Parity Plot"
 
     ax.set_title(
         figure_title,

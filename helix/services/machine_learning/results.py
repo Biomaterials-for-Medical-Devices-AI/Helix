@@ -99,6 +99,7 @@ def _save_regression_plots(
             )
 
         figure_title = f"Prediction Error for {display_model_name} - {split_type}"
+        plot_opts.plot_title = figure_title
 
         fig = plot_scatter(
             y=y_true,
@@ -106,7 +107,6 @@ def _save_regression_plots(
             r2=metric_results["R2"][split_type.lower()],
             dependent_variable=dependent_variable,
             plot_opts=plot_opts,
-            title=figure_title,
         )
         save_path = directory / f"{model_name}-{split_type.lower()}-scatter.png"
         fig.savefig(save_path, dpi=plot_opts.dpi, bbox_inches="tight")
