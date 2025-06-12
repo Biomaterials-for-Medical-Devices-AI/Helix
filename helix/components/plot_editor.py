@@ -1,11 +1,14 @@
 """Component for editing plot appearance."""
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import streamlit as st
 
 from helix.options.choices.ui import PLOT_FONT_FAMILIES
-from helix.options.enums import PlotOptionKeys, PlotTypes
+from helix.options.enums import PlotOptionKeys, PlotTypes, ProblemTypes
 from helix.options.plotting import PlottingOptions
+from helix.options.execution import ExecutionOptions
+from helix.services.plotting import plot_scatter
 
 
 def get_safe_index(value: str, options: list[str], default_value: str) -> int:
@@ -222,3 +225,168 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             PlotOptionKeys.PlotColour + plot_type.value, None
         ),
     )
+
+
+def custom_plot_creator(
+    predictions: pd.DataFrame, plot_opts: PlottingOptions, exec_opts: ExecutionOptions
+) -> None:
+
+    style_by = [None]
+
+    model_list = predictions["Model Name"].unique()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        models = st.multiselect(
+            "Select models to plot",
+            options=model_list,
+            key=PlotOptionKeys.SelectedModels,
+            help="Select the models you want to plot.",
+        )
+
+        if len(models) > 1:
+            style_by.append("Model Name")
+
+    with col2:
+        set = st.multiselect(
+            "Select the sets to plot",
+            options=["Train", "Test"],
+            key=PlotOptionKeys.SelectedSets,
+            help="Select the sets you want to plot.",
+        )
+
+        if len(set) > 1:
+            style_by.append("Set")
+
+    if "Fold" in predictions.columns:
+        fold_list = predictions["Fold"].unique()
+        folds = st.multiselect(
+            "Select folds to plot",
+            options=fold_list,
+            key=PlotOptionKeys.SelectedFolds,
+            help="Select the folds you want to plot.",
+        )
+
+        if len(folds) > 1:
+            style_by.append("Fold")
+
+    if len(style_by) > 1:
+
+        with col1:
+            st.selectbox(
+                "Color by",
+                options=style_by,
+                index=len(style_by) - 1,
+                key=PlotOptionKeys.ColorBy,
+                help="Select how to style the plot.",
+            )
+        with col2:
+            st.selectbox(
+                "Style by",
+                options=style_by,
+                index=len(style_by) - 1,
+                key=PlotOptionKeys.StyleBy,
+                help="Select how to style the plot.",
+            )
+
+    else:
+        st.session_state[PlotOptionKeys.ColorBy] = None
+        st.session_state[PlotOptionKeys.StyleBy] = None
+
+    with col1:
+        point_border_colour = st.color_picker(
+            "Select a point border colour",
+            value="#000000",
+            key=PlotOptionKeys.PointColour + "Border",
+            help="Select a border colour for the points in the scatter plot.",
+        )
+
+    if st.session_state.get(PlotOptionKeys.ColorBy, None) is None:
+        with col2:
+            st.color_picker(
+                "Select a point colour",
+                value="#1f77b4",
+                key=PlotOptionKeys.PointColour,
+                help="Select a colour for the points in the scatter plot.",
+            )
+            st.session_state[PlotOptionKeys.ColourMap + PlotTypes.ParityPlot.value] = (
+                None
+            )
+
+    else:
+        with col2:
+            st.selectbox(
+                "Select colour map for the points",
+                options=[
+                    "tab10",
+                    "pastel",
+                    "muted",
+                    "bright",
+                    "deep",
+                    "colorblind",
+                    "dark",
+                ],
+                index=0,
+                key=PlotOptionKeys.ColourMap + PlotTypes.ParityPlot.value,
+            )
+
+    point_size = st.slider(
+        "Point size",
+        min_value=1,
+        max_value=100,
+        value=20,
+        key=PlotOptionKeys.PointSize,
+        help="Set the size of the points in the scatter plot.",
+    )
+
+    preds_filtered = predictions[
+        predictions["Model Name"].isin(
+            st.session_state.get(PlotOptionKeys.SelectedModels, [])
+        )
+    ]
+    preds_filtered = preds_filtered[
+        preds_filtered["Set"].isin(
+            st.session_state.get(PlotOptionKeys.SelectedSets, [])
+        )
+    ]
+
+    if "Fold" in preds_filtered.columns:
+        preds_filtered = preds_filtered[
+            preds_filtered["Fold"].isin(
+                st.session_state.get(PlotOptionKeys.SelectedFolds, [])
+            )
+        ]
+
+    hue = preds_filtered.get(st.session_state.get(PlotOptionKeys.ColorBy, None), None)
+    style = preds_filtered.get(st.session_state.get(PlotOptionKeys.StyleBy, None), None)
+
+    plot_settings = edit_plot_form(
+        plot_opts,
+        PlotTypes.ParityPlot,
+    )
+
+    if not preds_filtered.empty:
+        if exec_opts.problem_type == ProblemTypes.Regression:
+            scatter = plot_scatter(
+                y=preds_filtered["Y True"],
+                yp=preds_filtered["Y Prediction"],
+                r2=None,
+                dependent_variable=exec_opts.dependent_variable,
+                plot_opts=plot_settings,
+                point_colour=st.session_state.get(PlotOptionKeys.PointColour, None),
+                edge_color=point_border_colour,
+                point_size=point_size,
+                show_grid=True,
+                hue=hue,
+                style_by=style,
+                palette=st.session_state.get(
+                    PlotOptionKeys.ColourMap + PlotTypes.ParityPlot.value,
+                    None,
+                ),
+            )
+
+            return scatter
+        else:
+            pass
