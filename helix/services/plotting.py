@@ -717,7 +717,9 @@ def plot_scatter(
 
     # Create a scatter plot using Seaborn
     plt.style.use(plot_opts.plot_colour_scheme)
-    fig, ax = plt.subplots(figsize=(10, 8), dpi=plot_opts.dpi)
+    fig, ax = plt.subplots(
+        figsize=(plot_opts.width, plot_opts.height), dpi=plot_opts.dpi
+    )
     sns.scatterplot(
         x=y,
         y=yp,
