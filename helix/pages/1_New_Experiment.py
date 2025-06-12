@@ -51,6 +51,43 @@ def _file_is_uploaded() -> bool:
     return st.session_state.get(ExecutionStateKeys.UploadedFileName) is not None
 
 
+def infer_problem_type_from_file() -> Optional[ProblemTypes]:
+    """
+    Infer the problem type from the uploaded file. If the last column contains categorical
+    values (e.g. strings or few unique integers), return Classification. Otherwise, Regression.
+
+    Returns:
+        Optional[ProblemTypes]: The inferred problem type, or None if no file is uploaded or error occurs.
+    """
+    uploaded_file = st.session_state.get(ExecutionStateKeys.UploadedFileName)
+    if uploaded_file is None:
+        return None
+
+    try:
+        df = pd.read_csv(uploaded_file)
+        if df.empty:
+            return None
+
+        last_col = df.columns[-1]
+        target = df[last_col]
+
+        # Heuristic: if target is string/object or has few unique integers → classification
+        if target.dtype == "object" or target.dtype.name == "category":
+            return ProblemTypes.Classification
+        elif pd.api.types.is_integer_dtype(target):
+            n_unique = target.nunique()
+            if n_unique < 20 or n_unique <= len(df) * 0.05:
+                return ProblemTypes.Classification
+            else:
+                return ProblemTypes.Regression
+        elif pd.api.types.is_float_dtype(target):
+            return ProblemTypes.Regression
+        else:
+            return None
+    except Exception:
+        return None
+
+
 def _entrypoint(save_dir: Path):
     """Function to serve as the entrypoint for experiment creation, with access
     to the session state. This is so configuration captured in fragements is
@@ -184,11 +221,17 @@ def get_last_column_name(file) -> Optional[str]:
         return None
 
 
+suggested_problem_type = None
 if uploaded_file is not None:
     last_col = get_last_column_name(uploaded_file)
     # Only set if not already set by user
     if last_col and not st.session_state.get(ExecutionStateKeys.DependentVariableName):
         st.session_state[ExecutionStateKeys.DependentVariableName] = last_col
+
+    suggested_problem_type = infer_problem_type_from_file()
+    st.write(
+        f"**Suggested problem type based on the last column `{last_col}`: {suggested_problem_type}**"
+    )
 
 st.text_input(
     "Name of the dependent variable. **This will be used for the plots. As default, the name of the last column of the uploaded file will be used**",
@@ -199,7 +242,11 @@ st.selectbox(
     "Problem type",
     PROBLEM_TYPES,
     key=ExecutionStateKeys.ProblemType,
-    index=1,
+    index=(
+        PROBLEM_TYPES.index(suggested_problem_type.capitalize())
+        if suggested_problem_type
+        else 1
+    ),
 )
 st.info(
     """
