@@ -172,7 +172,7 @@ def edit_results_plots(experiment_path: Path) -> None:
                 plot_name += ".png"
 
             if not plot_name.startswith("custom_plot"):
-                plot_name = "custom_plot_" + plot_name
+                plot_name = "custom_plot-" + plot_name
 
             plot_path = ml_plot_dir(experiment_path) / plot_name
 
