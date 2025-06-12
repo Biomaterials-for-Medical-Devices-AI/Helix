@@ -690,10 +690,15 @@ def plot_scatter(
     y,
     yp,
     r2: float,
-    set_name: str,
     dependent_variable: str,
-    model_name: str,
     plot_opts: PlottingOptions,
+    title: str | None = None,
+    point_colour: str = "#1f77b4",
+    edge_color: str = "#1f77b4",
+    point_size: int = 20,
+    show_grid: bool = True,
+    hue=None,
+    style_by: str | None = None,
 ) -> Figure:
     """Create a scatter plot comparing predicted vs actual values.
 
@@ -713,30 +718,48 @@ def plot_scatter(
     # Create a scatter plot using Seaborn
     plt.style.use(plot_opts.plot_colour_scheme)
     fig, ax = plt.subplots(figsize=(10, 8), dpi=plot_opts.dpi)
-    sns.scatterplot(x=y, y=yp, ax=ax)
+    sns.scatterplot(
+        x=y,
+        y=yp,
+        ax=ax,
+        color=point_colour,
+        edgecolor=edge_color,
+        s=point_size,
+        hue=hue,
+        style=style_by,
+    )
 
     # Add the best fit line
     ax.plot([y.min(), y.max()], [y.min(), y.max()], "k--", lw=2, label="Best fit")
 
     # Set labels and title
+    x_label = (
+        (
+            plot_opts.xaxis_label
+            if plot_opts.xaxis_label
+            else "Measured " + dependent_variable
+        ),
+    )
     ax.set_xlabel(
-        "Measured " + dependent_variable,
+        x_label,
         fontsize=plot_opts.plot_axis_font_size,
         family=plot_opts.plot_font_family,
     )
+
+    y_label = (
+        plot_opts.yaxis_label
+        if plot_opts.yaxis_label
+        else "Predicted " + dependent_variable
+    )
+
     ax.set_ylabel(
-        "Predicted " + dependent_variable,
+        y_label,
         fontsize=plot_opts.plot_axis_font_size,
         family=plot_opts.plot_font_family,
     )
 
-    # Create title
-    if model_name.lower() == "linear model":
-        display_model_name = "Linear Regression"
-    else:
-        display_model_name = " ".join(word.capitalize() for word in model_name.split())
+    figure_title = title if title else "Parity Plot"
 
-    figure_title = f"Prediction Error for {display_model_name} - {set_name}"
     ax.set_title(
         figure_title,
         fontsize=plot_opts.plot_title_font_size,
@@ -744,23 +767,24 @@ def plot_scatter(
         wrap=True,
     )
 
-    # Add legend with R2 value
-    if isinstance(r2, dict) and "value" in r2:
-        r2_value = r2["value"]
-    else:
-        r2_value = r2
-    legend = f"R²: {r2_value:.3f}"
-    ax.plot([], [], " ", label=legend)  # Add empty line for R2 in legend
-    ax.legend(
-        prop={
-            "family": plot_opts.plot_font_family,
-            "size": plot_opts.plot_axis_tick_size,
-        },
-        loc="upper left",
-    )
+    if r2 is not None:
+        # Add legend with R2 value
+        if isinstance(r2, dict) and "value" in r2:
+            r2_value = r2["value"]
+        else:
+            r2_value = r2
+        legend = f"R²: {r2_value:.3f}"
+        ax.plot([], [], " ", label=legend)  # Add empty line for R2 in legend
+        ax.legend(
+            prop={
+                "family": plot_opts.plot_font_family,
+                "size": plot_opts.plot_axis_tick_size,
+            },
+            loc="upper left",
+        )
 
     # Add grid
-    ax.grid(visible=True, axis="both", linestyle="--", alpha=0.6)
+    ax.grid(visible=show_grid, axis="both", linestyle="--", alpha=0.6)
 
     # Adjust layout
     plt.tight_layout()
