@@ -335,8 +335,8 @@ def custom_plot_creator(
     point_size = st.slider(
         "Point size",
         min_value=1,
-        max_value=100,
-        value=20,
+        max_value=150,
+        value=75,
         key=PlotOptionKeys.PointSize,
         help="Set the size of the points in the scatter plot.",
     )
