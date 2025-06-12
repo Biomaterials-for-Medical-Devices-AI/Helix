@@ -81,7 +81,9 @@ def infer_problem_type_from_file() -> Optional[ProblemTypes]:
             return ProblemTypes.Classification
         elif pd.api.types.is_integer_dtype(target):
             n_unique = target.nunique()
-            if n_unique < 20 or n_unique <= len(df) * 0.05:
+            if (
+                n_unique < 20 or n_unique <= len(df) * 0.05
+            ):  # we assume that less than 20 unique values or less than 5% of the data are unique values indicates a classification problem
                 return ProblemTypes.Classification
             else:
                 return ProblemTypes.Regression
