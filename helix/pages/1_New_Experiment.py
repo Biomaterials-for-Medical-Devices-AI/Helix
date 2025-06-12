@@ -64,7 +64,12 @@ def infer_problem_type_from_file() -> Optional[ProblemTypes]:
         return None
 
     try:
-        df = pd.read_csv(uploaded_file)
+        if uploaded_file.name.endswith(".csv"):
+            df = pd.read_csv(uploaded_file)
+        elif uploaded_file.name.endswith(".xlsx"):
+            df = pd.read_excel(uploaded_file)
+        else:
+            return None
         if df.empty:
             return None
 
