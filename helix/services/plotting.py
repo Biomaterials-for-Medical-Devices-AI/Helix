@@ -698,6 +698,7 @@ def plot_scatter(
     show_grid: bool = True,
     hue=None,
     style_by: str | None = None,
+    palette: str = sns.color_palette("pastel"),
 ) -> Figure:
     """Create a scatter plot comparing predicted vs actual values.
 
@@ -726,6 +727,7 @@ def plot_scatter(
         s=point_size,
         hue=hue,
         style=style_by,
+        palette=palette,
     )
 
     # Add the best fit line
@@ -733,11 +735,9 @@ def plot_scatter(
 
     # Set labels and title
     x_label = (
-        (
-            plot_opts.xaxis_label
-            if plot_opts.xaxis_label
-            else "Measured " + dependent_variable
-        ),
+        plot_opts.xaxis_label
+        if plot_opts.xaxis_label
+        else "Measured " + dependent_variable
     )
     ax.set_xlabel(
         x_label,
