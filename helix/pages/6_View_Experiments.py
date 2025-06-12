@@ -5,8 +5,8 @@ import streamlit as st
 
 from helix.components.configuration import (
     display_options,
-    load_plot_options,
     load_execution_options,
+    load_plot_options,
 )
 from helix.components.experiments import experiment_selector
 from helix.components.images.logos import sidebar_logo
@@ -25,6 +25,7 @@ from helix.options.enums import (
 )
 from helix.options.file_paths import (
     data_analysis_plots_dir,
+    execution_options_path,
     fi_plot_dir,
     helix_experiments_base_dir,
     log_dir,
@@ -32,7 +33,6 @@ from helix.options.file_paths import (
     ml_plot_dir,
     ml_predictions_path,
     plot_options_path,
-    execution_options_path,
 )
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs

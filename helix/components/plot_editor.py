@@ -6,8 +6,8 @@ import streamlit as st
 
 from helix.options.choices.ui import PLOT_FONT_FAMILIES
 from helix.options.enums import PlotOptionKeys, PlotTypes, ProblemTypes
-from helix.options.plotting import PlottingOptions
 from helix.options.execution import ExecutionOptions
+from helix.options.plotting import PlottingOptions
 from helix.services.plotting import plot_scatter
 
 
