@@ -101,8 +101,10 @@ def _save_regression_plots(
         figure_title = f"Prediction Error for {display_model_name} - {split_type}"
         plot_opts.plot_title = figure_title
 
-        plot_opts.width = 10
-        plot_opts.height = 8
+        plot_opts.width, plot_opts.height = (
+            10,
+            8,
+        )  # this is to match the previous default size for parity plots
 
         fig = plot_scatter(
             y=y_true,
