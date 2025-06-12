@@ -166,17 +166,16 @@ def edit_results_plots(experiment_path: Path) -> None:
                 "Enter a name for the plot (without extension):",
                 value="custom_plot",
                 key=ViewExperimentKeys.CustomPlotName,
+                help="Name of the plot to save. Please provide any name you like, but mkae it as descriptive as possible. For example, 'RF vs XGBoost Test Set'",
             )
 
             if not plot_name.endswith(".png"):
                 plot_name += ".png"
 
             if not plot_name.startswith("custom_plot"):
-                plot_name = "custom_plot-" + plot_name
+                plot_name = "custom plots-" + plot_name
 
             plot_path = ml_plot_dir(experiment_path) / plot_name
-
-            # with col2:
 
             save_plot = st.button("Save plot", key=ViewExperimentKeys.SavePlotButton)
 
