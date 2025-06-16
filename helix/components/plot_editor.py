@@ -389,4 +389,6 @@ def custom_plot_creator(
 
             return scatter
         else:
-            pass
+            st.warning(
+                "Custom plots are currently only supported for regression problems."
+            )
