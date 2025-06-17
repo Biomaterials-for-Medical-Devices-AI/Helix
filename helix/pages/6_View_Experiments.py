@@ -166,7 +166,7 @@ def edit_results_plots(experiment_path: Path) -> None:
                 "Enter a name for the plot (without extension):",
                 value="custom_plot",
                 key=ViewExperimentKeys.CustomPlotName,
-                help="Name of the plot to save. Please provide any name you like, but mkae it as descriptive as possible. For example, 'RF vs XGBoost Test Set'",
+                help="Name of the plot to save. Please provide any name you like, but make it as descriptive as possible. For example, 'RF vs XGBoost Test Set'",
             )
 
             if not plot_name.endswith(".png"):
