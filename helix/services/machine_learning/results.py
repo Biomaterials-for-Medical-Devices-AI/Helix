@@ -90,13 +90,27 @@ def _save_regression_plots(
         plot_opts (PlottingOptions): Plot options
     """
     try:
+
+        if model_name.lower() == "linear model":
+            display_model_name = "Linear Regression"
+        else:
+            display_model_name = " ".join(
+                word.capitalize() for word in model_name.split()
+            )
+
+        figure_title = f"Prediction Error for {display_model_name} - {split_type}"
+        plot_opts.plot_title = figure_title
+
+        plot_opts.width, plot_opts.height = (
+            10,
+            8,
+        )  # this is to match the previous default size for parity plots
+
         fig = plot_scatter(
-            y_true,
-            y_pred,
-            metric_results["R2"][split_type.lower()],
-            split_type,
-            dependent_variable,
-            model_name,
+            y=y_true,
+            yp=y_pred,
+            r2=metric_results["R2"][split_type.lower()],
+            dependent_variable=dependent_variable,
             plot_opts=plot_opts,
         )
         save_path = directory / f"{model_name}-{split_type.lower()}-scatter.png"

@@ -3,10 +3,15 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from helix.components.configuration import display_options
+from helix.components.configuration import (
+    display_options,
+    load_execution_options,
+    load_plot_options,
+)
 from helix.components.experiments import experiment_selector
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
+from helix.components.plot_editor import custom_plot_creator
 from helix.components.plots import (
     display_metrics_table,
     display_predictions,
@@ -20,12 +25,14 @@ from helix.options.enums import (
 )
 from helix.options.file_paths import (
     data_analysis_plots_dir,
+    execution_options_path,
     fi_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_metrics_mean_std_path,
     ml_plot_dir,
     ml_predictions_path,
+    plot_options_path,
 )
 from helix.services.experiments import get_experiments
 from helix.services.logs import get_logs
@@ -120,9 +127,67 @@ def display_experiment_logs(experiment_path: Path) -> None:
             pass
 
 
+def edit_results_plots(experiment_path: Path) -> None:
+
+    predictions = ml_predictions_path(experiment_path)
+
+    plot_opts_path = plot_options_path(experiment_path)
+
+    execution_opts_path = execution_options_path(experiment_path)
+
+    create_plot = st.checkbox(
+        "Create custom results plot",
+        key=ViewExperimentKeys.ShowCustomPlotCreator,
+        help="Enable to create a custom plot for the results of your experiment.",
+        value=False,
+    )
+
+    if (
+        predictions.exists()
+        and plot_opts_path.exists()
+        and execution_opts_path.exists()
+        and create_plot
+    ):
+
+        plot_opts = load_plot_options(plot_opts_path)
+        execution_opts = load_execution_options(execution_opts_path)
+        preds = pd.read_csv(predictions)
+
+        plot = custom_plot_creator(
+            predictions=preds,
+            plot_opts=plot_opts,
+            exec_opts=execution_opts,
+        )
+
+        if plot is not None:
+            st.pyplot(plot, use_container_width=True)
+
+            plot_name = st.text_input(
+                "Enter a name for the plot (without extension):",
+                value="custom_plot",
+                key=ViewExperimentKeys.CustomPlotName,
+                help="Name of the plot to save. Please provide any name you like, but make it as descriptive as possible. For example, 'RF vs XGBoost Test Set'",
+            )
+
+            if not plot_name.endswith(".png"):
+                plot_name += ".png"
+
+            if not plot_name.startswith("custom_plot"):
+                plot_name = "custom plots-" + plot_name
+
+            plot_path = ml_plot_dir(experiment_path) / plot_name
+
+            save_plot = st.button("Save plot", key=ViewExperimentKeys.SavePlotButton)
+
+            if plot_name and save_plot:
+                plot.savefig(plot_path, bbox_inches="tight")
+                st.success(f"Plot saved to {plot_path}")
+
+
 if experiment_name:
     base_dir = helix_experiments_base_dir()
     experiment_path = base_dir / experiment_name
     display_options(experiment_path)
     display_experiment_plots(experiment_path)
+    edit_results_plots(experiment_path)
     display_experiment_logs(experiment_path)
