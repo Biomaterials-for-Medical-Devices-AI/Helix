@@ -595,6 +595,53 @@ is used</p>
 <section id="module-helix.services.plotting">
 <span id="helix-services-plotting-module"></span><h2>helix.services.plotting module<a class="headerlink" href="#module-helix.services.plotting" title="Link to this heading">¶</a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.create_pairplot">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">create_pairplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pairplot_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_corner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diag_kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.create_pairplot" title="Link to this definition">¶</a></dt>
+<dd><p>Create a pairplot of the given DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pairplot_data</strong> (<em>pd.DataFrame</em>) – The DataFrame to plot.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+<li><p><strong>exclude_corner</strong> (<em>bool</em>) – Whether to exclude the corner plot.</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – The type of plot to use for the pairplot.</p></li>
+<li><p><strong>diag_kind</strong> (<em>str</em>) – The type of plot to use on the diagonal.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The pairplot figure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.create_tsne_plot">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">create_tsne_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalised_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.create_tsne_plot" title="Link to this definition">¶</a></dt>
+<dd><p>Create a t-SNE plot for both normalised and original data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The original data to plot.</p></li>
+<li><p><strong>normalised_data</strong> (<em>pd.DataFrame</em>) – The normalised data to plot.</p></li>
+<li><p><strong>y</strong> (<em>pd.Series</em><em> | </em><em>np.ndarray</em>) – The target variable.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em>) – Random state for reproducibility.</p></li>
+<li><p><strong>perplexity</strong> (<em>int</em>) – Perplexity parameter for t-SNE.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The t-SNE plot figure containing two subplots.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="helix.services.plotting.plot_auc_roc">
 <span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_auc_roc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_classes_labels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_score_probs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_auc_roc" title="Link to this definition">¶</a></dt>
 <dd><p>Plot the ROC curve for a multi-class classification model.</p>
@@ -680,6 +727,26 @@ is used</p>
 <li><p><strong>directory</strong> (<em>Path</em>) – The directory path to save the plot.</p></li>
 <li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_correlation_heatmap">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_correlation_heatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">corr_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_correlation_heatmap" title="Link to this definition">¶</a></dt>
+<dd><p>Create a correlation heatmap for the given DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>corr_data</strong> (<em>pd.DataFrame</em>) – The DataFrame containing the data to plot.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The correlation heatmap figure.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
 </dd>
 </dl>
 </dd></dl>
@@ -791,6 +858,29 @@ with the given title and styled with the given options.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The scatter plot figure</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.services.plotting.plot_target_variable_distribution">
+<span class="sig-prename descclassname"><span class="pre">helix.services.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_target_variable_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_kde</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dep_var_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Figure</span></span></span><a class="headerlink" href="#helix.services.plotting.plot_target_variable_distribution" title="Link to this definition">¶</a></dt>
+<dd><p>Create a distribution plot for the target variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>pd.DataFrame</em>) – The DataFrame containing the target variable.</p></li>
+<li><p><strong>show_kde</strong> (<em>bool</em>) – Whether to show the kernel density estimate.</p></li>
+<li><p><strong>n_bins</strong> (<em>int</em>) – Number of bins for the histogram.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The plotting options.</p></li>
+<li><p><strong>dep_var_name</strong> (<em>str</em>) – The name of the dependent variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The distribution plot figure.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Figure</p>

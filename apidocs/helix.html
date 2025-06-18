@@ -76,7 +76,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="helix.components.html#module-helix.components.plot_editor">helix.components.plot_editor module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helix.components.html#helix.components.plot_editor.edit_plot_modal"><code class="docutils literal notranslate"><span class="pre">edit_plot_modal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.components.html#helix.components.plot_editor.edit_plot_form"><code class="docutils literal notranslate"><span class="pre">edit_plot_form()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.components.html#helix.components.plot_editor.get_safe_index"><code class="docutils literal notranslate"><span class="pre">get_safe_index()</span></code></a></li>
 </ul>
 </li>
@@ -142,8 +142,11 @@
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.CorrelationHeatmap"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.CorrelationHeatmap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.DescriptorCorrelation"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.DescriptorCorrelation</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.DescriptorPairPlot"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.DescriptorPairPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.ExcludeCorner"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.ExcludeCorner</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.NBins"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.NBins</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.PairPlot"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.PairPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.PairPlotCorrelationType"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.PairPlotCorrelationType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.PairPlotDiagonalType"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.PairPlotDiagonalType</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.Perplexity"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.Perplexity</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.SaveHeatmap"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.SaveHeatmap</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.DataAnalysisStateKeys.SavePairPlot"><code class="docutils literal notranslate"><span class="pre">DataAnalysisStateKeys.SavePairPlot</span></code></a></li>
@@ -268,11 +271,25 @@
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.DPI"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.DPI</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.FontFamily"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.FontFamily</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.Height"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.Height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.PlotColour"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.PlotColour</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.PlotTitle"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.PlotTitle</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.RotateXAxisLabels"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.RotateXAxisLabels</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.RotateYAxisLabels"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.RotateYAxisLabels</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.SavePlots"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.SavePlots</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.TitleFontSize"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.TitleFontSize</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.Width"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.Width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.XAxisLabel"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.XAxisLabel</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotOptionKeys.YAxisLabel"><code class="docutils literal notranslate"><span class="pre">PlotOptionKeys.YAxisLabel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes"><code class="docutils literal notranslate"><span class="pre">PlotTypes</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.AUROC"><code class="docutils literal notranslate"><span class="pre">PlotTypes.AUROC</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.ConfusionMatrix"><code class="docutils literal notranslate"><span class="pre">PlotTypes.ConfusionMatrix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.CorrelationHeatmap"><code class="docutils literal notranslate"><span class="pre">PlotTypes.CorrelationHeatmap</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.PairPlot"><code class="docutils literal notranslate"><span class="pre">PlotTypes.PairPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.ParityPlot"><code class="docutils literal notranslate"><span class="pre">PlotTypes.ParityPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.TSNEPlot"><code class="docutils literal notranslate"><span class="pre">PlotTypes.TSNEPlot</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes.TargetVariableDistribution"><code class="docutils literal notranslate"><span class="pre">PlotTypes.TargetVariableDistribution</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes"><code class="docutils literal notranslate"><span class="pre">ProblemTypes</span></code></a><ul>
@@ -410,12 +427,16 @@
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.height"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.height</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_axis_font_size"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_axis_font_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_axis_tick_size"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_axis_tick_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_colour"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_colour</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_colour_map"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_colour_map</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_colour_scheme"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_colour_scheme</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_font_family"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_font_family</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_title"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_title</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.plot_title_font_size"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.plot_title_font_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.save_plots"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.save_plots</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.width"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.xaxis_label"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.xaxis_label</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions.yaxis_label"><code class="docutils literal notranslate"><span class="pre">PlottingOptions.yaxis_label</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -441,6 +462,7 @@
 <li class="toctree-l2"><a class="reference internal" href="helix.pages.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="helix.pages.html#module-helix.pages.1_New_Experiment">helix.pages.1_New_Experiment module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="helix.pages.html#helix.pages.1_New_Experiment.get_last_column_name"><code class="docutils literal notranslate"><span class="pre">get_last_column_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.pages.html#helix.pages.1_New_Experiment.infer_problem_type_from_file"><code class="docutils literal notranslate"><span class="pre">infer_problem_type_from_file()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="helix.pages.html#module-helix.pages.2_Data_Preprocessing">helix.pages.2_Data_Preprocessing module</a><ul>
@@ -550,15 +572,19 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="helix.services.html#module-helix.services.plotting">helix.services.plotting module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.create_pairplot"><code class="docutils literal notranslate"><span class="pre">create_pairplot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.create_tsne_plot"><code class="docutils literal notranslate"><span class="pre">create_tsne_plot()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_auc_roc"><code class="docutils literal notranslate"><span class="pre">plot_auc_roc()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_bar_chart"><code class="docutils literal notranslate"><span class="pre">plot_bar_chart()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_beta_coefficients"><code class="docutils literal notranslate"><span class="pre">plot_beta_coefficients()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">plot_confusion_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_correlation_heatmap"><code class="docutils literal notranslate"><span class="pre">plot_correlation_heatmap()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_global_shap_importance"><code class="docutils literal notranslate"><span class="pre">plot_global_shap_importance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_lime_importance"><code class="docutils literal notranslate"><span class="pre">plot_lime_importance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_local_shap_importance"><code class="docutils literal notranslate"><span class="pre">plot_local_shap_importance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_permutation_importance"><code class="docutils literal notranslate"><span class="pre">plot_permutation_importance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_scatter"><code class="docutils literal notranslate"><span class="pre">plot_scatter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.plotting.plot_target_variable_distribution"><code class="docutils literal notranslate"><span class="pre">plot_target_variable_distribution()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="helix.services.html#module-helix.services.preprocessing">helix.services.preprocessing module</a><ul>

@@ -8,9 +8,403 @@ import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
+from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
 from helix.options.plotting import PlottingOptions
+
+
+def plot_target_variable_distribution(
+    data: pd.DataFrame,
+    show_kde: bool,
+    n_bins: int,
+    plot_opts: PlottingOptions,
+    dep_var_name: str,
+) -> Figure:
+    """
+    Create a distribution plot for the target variable.
+
+    Args:
+        data (pd.DataFrame): The DataFrame containing the target variable.
+        show_kde (bool): Whether to show the kernel density estimate.
+        n_bins (int): Number of bins for the histogram.
+        plot_opts (PlottingOptions): The plotting options.
+        dep_var_name (str): The name of the dependent variable.
+
+    Returns:
+        Figure: The distribution plot figure.
+
+    """
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    plt.figure(figsize=(plot_opts.width, plot_opts.height), dpi=plot_opts.dpi)
+
+    displot = sns.displot(
+        data=data,
+        x=data.columns[-1],
+        kde=show_kde,
+        bins=n_bins,
+        height=plot_opts.height,
+        aspect=plot_opts.width / plot_opts.height,
+        color=plot_opts.plot_colour,
+    )
+
+    title = (
+        plot_opts.plot_title if plot_opts.plot_title else f"{dep_var_name} Distribution"
+    )
+
+    plt.title(
+        title,
+        fontdict={
+            "family": plot_opts.plot_font_family,
+            "fontsize": plot_opts.plot_title_font_size,
+        },
+    )
+
+    x_label = plot_opts.xaxis_label if plot_opts.xaxis_label else dep_var_name
+
+    plt.xlabel(
+        x_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else "Frequency"
+
+    plt.ylabel(
+        y_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    plt.xticks(
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+    plt.yticks(
+        rotation=plot_opts.angle_rotate_yaxis_labels,
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    return displot
+
+
+def plot_correlation_heatmap(
+    corr_data: pd.DataFrame, plot_opts: PlottingOptions
+) -> Figure:
+    """
+    Create a correlation heatmap for the given DataFrame.
+
+    Args:
+        corr_data (pd.DataFrame): The DataFrame containing the data to plot.
+        plot_opts (PlottingOptions): The plotting options.
+
+    Returns:
+        Figure: The correlation heatmap figure.
+    """
+
+    corr = corr_data.corr()
+    mask = np.triu(np.ones_like(corr, dtype=bool))
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(
+        figsize=(plot_opts.width, plot_opts.height),
+        dpi=plot_opts.dpi,
+    )
+
+    sns.heatmap(
+        corr,
+        mask=mask,
+        cmap=plot_opts.plot_colour_map,
+        vmax=1.0,
+        vmin=-1.0,
+        center=0,
+        square=True,
+        linewidths=0.5,
+        annot=True,
+        fmt=".2f",
+        cbar_kws={
+            "shrink": 0.5,
+            "label": "Correlation Coefficient",
+            "format": "%.1f",
+            "aspect": 30,
+            "drawedges": True,
+        },
+        annot_kws={
+            "size": plot_opts.plot_axis_tick_size,
+            "family": plot_opts.plot_font_family,
+        },
+        xticklabels=True,  # Ensure x-axis labels are shown
+        yticklabels=True,  # Ensure y-axis labels are shown
+        ax=ax,
+    )
+
+    title = plot_opts.plot_title if plot_opts.plot_title else "Correlation Heatmap"
+
+    ax.set_title(
+        title,
+        fontsize=plot_opts.plot_title_font_size,
+        family=plot_opts.plot_font_family,
+        pad=20,
+        wrap=True,
+    )
+
+    x_label = plot_opts.xaxis_label if plot_opts.xaxis_label else None
+
+    y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else None
+
+    if x_label:
+        ax.set_xlabel(
+            x_label,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+        )
+    if y_label:
+        ax.set_ylabel(
+            y_label,
+            fontsize=plot_opts.plot_axis_font_size,
+            family=plot_opts.plot_font_family,
+            rotation=plot_opts.angle_rotate_yaxis_labels,
+        )
+
+    plt.xticks(
+        rotation=plot_opts.angle_rotate_xaxis_labels,
+        ha="right",
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+    plt.yticks(
+        rotation=plot_opts.angle_rotate_yaxis_labels,
+        fontsize=plot_opts.plot_axis_tick_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    plt.tight_layout()
+
+    return fig
+
+
+def create_pairplot(
+    pairplot_data: pd.DataFrame,
+    plot_opts: PlottingOptions,
+    exclude_corner: bool,
+    kind: str,
+    diag_kind: str,
+) -> Figure:
+    """
+    Create a pairplot of the given DataFrame.
+
+    Args:
+        pairplot_data (pd.DataFrame): The DataFrame to plot.
+        plot_opts (PlottingOptions): The plotting options.
+        exclude_corner (bool): Whether to exclude the corner plot.
+        kind (str): The type of plot to use for the pairplot.
+        diag_kind (str): The type of plot to use on the diagonal.
+
+    Returns:
+        Figure: The pairplot figure.
+
+    """
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+
+    with plt.rc_context({"figure.dpi": plot_opts.dpi}):
+
+        n_vars = len(pairplot_data.columns)
+        aspect_ratio = plot_opts.width / plot_opts.height
+        size_per_var = min(plot_opts.width, plot_opts.height) / n_vars
+
+        pairplot = sns.pairplot(
+            pairplot_data,
+            height=size_per_var,
+            aspect=aspect_ratio,
+            corner=exclude_corner,
+            kind=kind,
+            diag_kind=diag_kind,
+        )
+
+        title = plot_opts.plot_title if plot_opts.plot_title else "Pairplot"
+
+        pairplot.figure.suptitle(
+            title,
+            fontsize=plot_opts.plot_title_font_size,
+            family=plot_opts.plot_font_family,
+            y=1.02,  # Adjust title position to prevent overlap
+        )
+
+        for ax in pairplot.axes.flat:
+            if ax is not None:
+                # Rotate labels
+                ax.set_xticklabels(
+                    ax.get_xticklabels(),
+                    rotation=plot_opts.angle_rotate_xaxis_labels,
+                    family=plot_opts.plot_font_family,
+                )
+                ax.set_yticklabels(
+                    ax.get_yticklabels(),
+                    rotation=plot_opts.angle_rotate_yaxis_labels,
+                    family=plot_opts.plot_font_family,
+                )
+
+                # Set tick font size
+                ax.tick_params(labelsize=plot_opts.plot_axis_tick_size)
+
+                # Set axis labels
+                if ax.get_xlabel():
+                    ax.set_xlabel(
+                        ax.get_xlabel(),
+                        fontsize=plot_opts.plot_axis_font_size,
+                        family=plot_opts.plot_font_family,
+                    )
+                if ax.get_ylabel():
+                    ax.set_ylabel(
+                        ax.get_ylabel(),
+                        fontsize=plot_opts.plot_axis_font_size,
+                        family=plot_opts.plot_font_family,
+                    )
+
+        plt.tight_layout()
+
+        return pairplot.figure
+
+
+def create_tsne_plot(
+    data: pd.DataFrame,
+    normalised_data: pd.DataFrame,
+    y: pd.Series | np.ndarray,
+    plot_opts: PlottingOptions,
+    random_state: int,
+    perplexity: int,
+) -> Figure:
+    """
+    Create a t-SNE plot for both normalised and original data.
+
+    Args:
+        data (pd.DataFrame): The original data to plot.
+        normalised_data (pd.DataFrame): The normalised data to plot.
+        y (pd.Series | np.ndarray): The target variable.
+        plot_opts (PlottingOptions): The plotting options.
+        random_state (int): Random state for reproducibility.
+        perplexity (int): Perplexity parameter for t-SNE.
+
+    Returns:
+        Figure: The t-SNE plot figure containing two subplots.
+    """
+
+    tsne_normalised = TSNE(
+        n_components=2, random_state=random_state, perplexity=perplexity
+    )
+
+    tsne_original = TSNE(
+        n_components=2, random_state=random_state, perplexity=perplexity
+    )
+
+    X_embedded_normalised = tsne_normalised.fit_transform(normalised_data)
+    X_embedded = tsne_original.fit_transform(data)
+
+    df_normalised = pd.DataFrame(X_embedded_normalised, columns=["x", "y"])
+    df_normalised["target"] = y
+
+    df = pd.DataFrame(X_embedded, columns=["x", "y"])
+    df["target"] = y
+
+    plt.style.use(plot_opts.plot_colour_scheme)
+    fig, ax = plt.subplots(
+        1,
+        2,
+        figsize=(plot_opts.width, plot_opts.height),
+        dpi=plot_opts.dpi,
+    )
+
+    sns.scatterplot(
+        data=df_normalised,
+        x="x",
+        y="y",
+        hue="target",
+        palette=plot_opts.plot_colour_map,
+        s=100,  # marker size
+        alpha=0.6,  # transparency
+        ax=ax[0],
+    )
+
+    # Customize first plot
+    title = plot_opts.plot_title if plot_opts.plot_title else "t-SNE Plot"
+    ax[0].set_title(
+        title + " (Normalised Features)",
+        fontsize=plot_opts.plot_title_font_size,
+        family=plot_opts.plot_font_family,
+        pad=20,  # Add padding above title
+    )
+
+    x_label = plot_opts.xaxis_label if plot_opts.xaxis_label else "t-SNE Component 1"
+    ax[0].set_xlabel(
+        x_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+
+    y_label = plot_opts.yaxis_label if plot_opts.yaxis_label else "t-SNE Component 2"
+    ax[0].set_ylabel(
+        y_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+    # Apply axis label rotations and styling for first plot
+    ax[0].tick_params(
+        axis="both", which="major", labelsize=plot_opts.plot_axis_tick_size
+    )
+    for label in ax[0].get_xticklabels():
+        label.set_rotation(plot_opts.angle_rotate_xaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+    for label in ax[0].get_yticklabels():
+        label.set_rotation(plot_opts.angle_rotate_yaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+
+    sns.scatterplot(
+        data=df,
+        x="x",
+        y="y",
+        hue="target",
+        palette=plot_opts.plot_colour_map,
+        s=100,  # marker size
+        alpha=0.6,  # transparency
+        ax=ax[1],
+    )
+
+    # Customize second plot
+    ax[1].set_title(
+        title + " (Original Features)",
+        fontsize=plot_opts.plot_title_font_size,
+        family=plot_opts.plot_font_family,
+        pad=20,  # Add padding above title
+    )
+    ax[1].set_xlabel(
+        x_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+    ax[1].set_ylabel(
+        y_label,
+        fontsize=plot_opts.plot_axis_font_size,
+        family=plot_opts.plot_font_family,
+    )
+    # Apply axis label rotations and styling for second plot
+    ax[1].tick_params(
+        axis="both", which="major", labelsize=plot_opts.plot_axis_tick_size
+    )
+    for label in ax[1].get_xticklabels():
+        label.set_rotation(plot_opts.angle_rotate_xaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+    for label in ax[1].get_yticklabels():
+        label.set_rotation(plot_opts.angle_rotate_yaxis_labels)
+        label.set_family(plot_opts.plot_font_family)
+
+    # Adjust layout to prevent label cutoff
+    plt.tight_layout()
+
+    return fig
 
 
 def plot_lime_importance(

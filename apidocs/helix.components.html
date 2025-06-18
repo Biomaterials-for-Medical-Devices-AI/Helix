@@ -188,19 +188,20 @@ to allow the user to select multiple models to explain using the FI pipeline.</p
 <span id="helix-components-plot-editor-module"></span><h2>helix.components.plot_editor module<a class="headerlink" href="#module-helix.components.plot_editor" title="Link to this heading">¶</a></h2>
 <p>Component for editing plot appearance.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="helix.components.plot_editor.edit_plot_modal">
-<span class="sig-prename descclassname"><span class="pre">helix.components.plot_editor.</span></span><span class="sig-name descname"><span class="pre">edit_plot_modal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></span><a class="headerlink" href="#helix.components.plot_editor.edit_plot_modal" title="Link to this definition">¶</a></dt>
-<dd><p>Display a modal dialog for editing plot appearance.</p>
+<dt class="sig sig-object py" id="helix.components.plot_editor.edit_plot_form">
+<span class="sig-prename descclassname"><span class="pre">helix.components.plot_editor.</span></span><span class="sig-name descname"><span class="pre">edit_plot_form</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_opts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><span class="pre">PlottingOptions</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes" title="helix.options.enums.PlotTypes"><span class="pre">PlotTypes</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.components.plot_editor.edit_plot_form" title="Link to this definition">¶</a></dt>
+<dd><p>Form to edit the appearance of plots.
+This form allows users to change the color scheme, font sizes, axis labels,
+and other visual aspects of the plots.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – The current plotting options</p></li>
-<li><p><strong>plot_type</strong> (<em>str</em>) – Type of plot being edited (e.g., ‘target_distribution’, ‘heatmap’, ‘pairplot’, ‘tsne’)
-Used to create unique form IDs for each plot type.</p></li>
+<li><p><strong>plot_opts</strong> (<a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions"><em>PlottingOptions</em></a>) – Current plotting options to edit.</p></li>
+<li><p><strong>plot_type</strong> (<a class="reference internal" href="helix.options.html#helix.options.enums.PlotTypes" title="helix.options.enums.PlotTypes"><em>PlotTypes</em></a>) – Type of the plot being edited.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The new plotting options for the specific plot.</p>
+<dd class="field-even"><p>Updated plotting options based on user input.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="helix.options.html#helix.options.plotting.PlottingOptions" title="helix.options.plotting.PlottingOptions">PlottingOptions</a></p>
