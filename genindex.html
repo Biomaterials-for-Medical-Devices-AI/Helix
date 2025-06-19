@@ -138,6 +138,8 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.FuzzyStateKeys.ClusterNames">ClusterNames (helix.options.enums.FuzzyStateKeys attribute)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.ColorBy">ColorBy (helix.options.enums.PlotOptionKeys attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.ColourMap">ColourMap (helix.options.enums.PlotOptionKeys attribute)</a>
 </li>
   </ul></td>
@@ -167,6 +169,10 @@
       <li><a href="apidocs/helix.services.html#helix.services.plotting.create_pairplot">create_pairplot() (in module helix.services.plotting)</a>
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.plotting.create_tsne_plot">create_tsne_plot() (in module helix.services.plotting)</a>
+</li>
+      <li><a href="apidocs/helix.components.html#helix.components.plot_editor.custom_plot_creator">custom_plot_creator() (in module helix.components.plot_editor)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.ViewExperimentKeys.CustomPlotName">CustomPlotName (helix.options.enums.ViewExperimentKeys attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -247,6 +253,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.components.html#helix.components.plot_editor.edit_plot_form">edit_plot_form() (in module helix.components.plot_editor)</a>
+</li>
+      <li><a href="apidocs/helix.pages.html#helix.pages.6_View_Experiments.edit_results_plots">edit_results_plots() (in module helix.pages.6_View_Experiments)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.FeatureImportanceStateKeys.EnsembleMethods">EnsembleMethods (helix.options.enums.FeatureImportanceStateKeys attribute)</a>
 </li>
@@ -1199,10 +1207,10 @@
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.plotting.plot_lime_importance">plot_lime_importance() (in module helix.services.plotting)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.services.html#helix.services.plotting.plot_local_shap_importance">plot_local_shap_importance() (in module helix.services.plotting)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.components.html#helix.components.configuration.plot_options_box">plot_options_box() (in module helix.components.configuration)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.file_paths.plot_options_path">plot_options_path() (in module helix.options.file_paths)</a>
@@ -1226,6 +1234,10 @@
       <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.PlotTitle">PlotTitle (helix.options.enums.PlotOptionKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.PlotTypes">PlotTypes (class in helix.options.enums)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.PointColour">PointColour (helix.options.enums.PlotOptionKeys attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.PointSize">PointSize (helix.options.enums.PlotOptionKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.SvmKernels.Poly">Poly (helix.options.enums.SvmKernels attribute)</a>
 </li>
@@ -1347,14 +1359,16 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SaveHeatmap">SaveHeatmap (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.options.html#helix.options.enums.MachineLearningStateKeys.SaveModels">SaveModels (helix.options.enums.MachineLearningStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SavePairPlot">SavePairPlot (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.ViewExperimentKeys.SavePlotButton">SavePlotButton (helix.options.enums.ViewExperimentKeys attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.SavePlots">SavePlots (helix.options.enums.PlotOptionKeys attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SaveTargetVarDistribution">SaveTargetVarDistribution (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SaveTSNEPlot">SaveTSNEPlot (helix.options.enums.DataAnalysisStateKeys attribute)</a>
@@ -1365,6 +1379,12 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SelectAllDescriptorsPairPlot">SelectAllDescriptorsPairPlot (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.SelectedFolds">SelectedFolds (helix.options.enums.PlotOptionKeys attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.SelectedModels">SelectedModels (helix.options.enums.PlotOptionKeys attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.SelectedSets">SelectedSets (helix.options.enums.PlotOptionKeys attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SelectNormTsne">SelectNormTsne (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.OptimiserTypes.SGD">SGD (helix.options.enums.OptimiserTypes attribute)</a>
@@ -1373,6 +1393,12 @@
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.statistical_tests.shapiro_wilk_test">shapiro_wilk_test() (in module helix.services.statistical_tests)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.ShowCustomPlotCreator">ShowCustomPlotCreator (helix.options.enums.PlotOptionKeys attribute)</a>
+
+      <ul>
+        <li><a href="apidocs/helix.options.html#helix.options.enums.ViewExperimentKeys.ShowCustomPlotCreator">(helix.options.enums.ViewExperimentKeys attribute)</a>
+</li>
+      </ul></li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.ShowKDE">ShowKDE (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.components.images.html#helix.components.images.logos.sidebar_logo">sidebar_logo() (in module helix.components.images.logos)</a>
@@ -1384,6 +1410,8 @@
       <li><a href="apidocs/helix.options.html#helix.options.enums.Normalisations.Standardisation">Standardisation (helix.options.enums.Normalisations attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.TransformationsY.StandardisationNormalisation">StandardisationNormalisation (helix.options.enums.TransformationsY attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.PlotOptionKeys.StyleBy">StyleBy (helix.options.enums.PlotOptionKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.ModelNames.SVM">SVM (helix.options.enums.ModelNames attribute)</a>
 </li>
