@@ -26,7 +26,12 @@ from helix.services.configuration import (
 from helix.services.ml_models import load_models
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.preprocessing import find_non_numeric_columns
-from helix.options.enums import Normalisations, ExecutionStateKeys, ProblemTypes
+from helix.options.enums import (
+    Normalisations,
+    ExecutionStateKeys,
+    ProblemTypes,
+    PredictStateKeys,
+)
 
 # Set page contents
 st.set_page_config(
@@ -158,7 +163,7 @@ if experiment_name:
     uploaded_file = st.file_uploader(
         "Upload the data ",
         type=["csv", "xlsx"],
-        key="file",
+        key=PredictStateKeys.PredictFile,
         help="Updload a CSV or Excel (.xslx) file containing your data.",
     )
 
@@ -189,7 +194,7 @@ if experiment_name:
             options=model_choices,
             gui_text="Select the models to use for the predictions of your new dataset",
             placeholder="Models for predictions",
-            key="models",
+            key=PredictStateKeys.PredictModels,
         )
 
     if uploaded_file:
@@ -212,7 +217,7 @@ if experiment_name:
 
     if st.button(
         "Predict",
-        key="predict_button",
+        key=PredictStateKeys.PredictButton,
         disabled=not models or not uploaded_file,
     ):
         get_predictions(
