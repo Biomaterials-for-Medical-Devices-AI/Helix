@@ -355,7 +355,7 @@ if experiment_name:
         ):
             st.session_state[FeatureImportanceStateKeys.ExplainModels] = model_choices
         else:
-            model_selector(model_choices)
+            model_selector(options=model_choices, gui_text="Select a model to explain", placeholder="Models to explain", key=FeatureImportanceStateKeys.ExplainModels)
 
         if model_choices := st.session_state.get(
             FeatureImportanceStateKeys.ExplainModels
