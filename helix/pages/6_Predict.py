@@ -1,37 +1,33 @@
-import streamlit as st
-from helix.components.images.logos import sidebar_logo
-from helix.services.experiments import (
-    get_experiments,
-)
 import pandas as pd
+import streamlit as st
+from scipy.stats import mode
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector, model_selector
-
+from helix.components.images.logos import sidebar_logo
+from helix.options.enums import (
+    ExecutionStateKeys,
+    Normalisations,
+    PredictStateKeys,
+    ProblemTypes,
+)
 from helix.options.file_paths import (
     data_options_path,
-    execution_options_path,
     data_preprocessing_options_path,
+    execution_options_path,
     helix_experiments_base_dir,
     ml_model_dir,
 )
-from scipy.stats import mode
-
+from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import (
     load_data_options,
-    load_execution_options,
     load_data_preprocessing_options,
+    load_execution_options,
 )
+from helix.services.experiments import get_experiments
 from helix.services.ml_models import load_models
-from helix.options.preprocessing import PreprocessingOptions
 from helix.services.preprocessing import find_non_numeric_columns
-from helix.options.enums import (
-    Normalisations,
-    ExecutionStateKeys,
-    ProblemTypes,
-    PredictStateKeys,
-)
 
 # Set page contents
 st.set_page_config(

@@ -28,7 +28,7 @@ def experiment_selector(options: list) -> str:
     )
 
 
-def model_selector(options: list, gui_text:str, placeholder:str, key:str) -> Path:
+def model_selector(options: list, gui_text: str, placeholder: str, key: str) -> Path:
     """Select a model or models for their intended use. This function creates a multiselect widget
     to allow the user to select multiple models to use for FI pipeline or to Predict on new datasets.
 
