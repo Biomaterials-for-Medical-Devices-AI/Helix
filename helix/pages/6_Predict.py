@@ -13,13 +13,8 @@ from helix.options.file_paths import (
     data_options_path,
     execution_options_path,
     data_preprocessing_options_path,
-    fi_options_path,
-    fi_plot_dir,
-    fuzzy_plot_dir,
     helix_experiments_base_dir,
-    log_dir,
     ml_model_dir,
-    plot_options_path,
 )
 from scipy.stats import mode
 
@@ -27,8 +22,6 @@ from helix.services.configuration import (
     load_data_options,
     load_execution_options,
     load_data_preprocessing_options,
-    load_plot_options,
-    save_options,
 )
 from helix.services.ml_models import load_models
 from helix.options.preprocessing import PreprocessingOptions
@@ -161,9 +154,6 @@ if experiment_name:
     st.write(
         "For this experiment, the following columns were used as independent variables:"
     )
-    st.write(independent_variables)
-
-    st.write(raw_data)
 
     uploaded_file = st.file_uploader(
         "Upload the data ",
@@ -173,8 +163,11 @@ if experiment_name:
     )
 
     if uploaded_file:
-
-        predict_data = pd.read_csv(uploaded_file)
+        if uploaded_file.name.endswith(".csv"):
+            predict_data = pd.read_csv(uploaded_file)
+        elif uploaded_file.name.endswith(".xlsx"):
+            predict_data = pd.read_excel(uploaded_file)
+        st.write("#### View the provided data")
         st.dataframe(predict_data)
 
     model_dir = ml_model_dir(base_dir / experiment_name)
