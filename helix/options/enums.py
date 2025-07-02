@@ -214,3 +214,9 @@ class PlotTypes(StrEnum):
     ParityPlot = "parity_plot"
     ConfusionMatrix = "confusion_matrix"
     AUROC = "auc_roc"
+
+
+class PredictStateKeys(StrEnum):
+    PredictFile = "predict_file"
+    PredictModels = "predict_models"
+    PredictButton = "predict_button"

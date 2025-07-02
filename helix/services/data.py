@@ -307,3 +307,12 @@ def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
             raise
     else:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
+
+
+def read_uploaded_file(uploaded_file):
+    if uploaded_file.name.endswith(".csv"):
+        data = pd.read_csv(uploaded_file)
+    elif uploaded_file.name.endswith(".xlsx"):
+        data = pd.read_excel(uploaded_file)
+
+    return data
