@@ -2,11 +2,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from helix.options.enums import (
-    ExecutionStateKeys,
-    FeatureImportanceStateKeys,
-    ViewExperimentKeys,
-)
+from helix.options.enums import ExecutionStateKeys, ViewExperimentKeys
 
 
 def experiment_selector(options: list) -> str:
