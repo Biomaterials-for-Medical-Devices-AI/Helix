@@ -4,7 +4,7 @@ from helix.services.experiments import (
     get_experiments,
 )
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler, StandardScaler
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.configuration import display_options
 from helix.components.experiments import experiment_selector, model_selector
@@ -21,6 +21,7 @@ from helix.options.file_paths import (
     ml_model_dir,
     plot_options_path,
 )
+from scipy.stats import mode
 
 from helix.services.configuration import (
     load_data_options,
@@ -32,7 +33,7 @@ from helix.services.configuration import (
 from helix.services.ml_models import load_models
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.preprocessing import find_non_numeric_columns
-from helix.options.enums import Normalisations, ExecutionStateKeys
+from helix.options.enums import Normalisations, ExecutionStateKeys, ProblemTypes
 
 # Set page contents
 st.set_page_config(
@@ -46,6 +47,8 @@ def get_predictions(
     independent_variable_col_names: list,
     predict_data: pd.DataFrame,
     preprocessing_options: PreprocessingOptions,
+    models: list,
+    problem_type: ProblemTypes,
 ):
 
     X = raw_data[independent_variable_col_names]
@@ -72,14 +75,37 @@ def get_predictions(
                 predict_data, columns=independent_variable_col_names
             )
 
-    models = load_models(
+    trained_models = load_models(
         ml_model_dir(
             helix_experiments_base_dir()
             / st.session_state[ExecutionStateKeys.ExperimentName]
         )
     )
 
-    st.write(models)
+    predictions_df = pd.DataFrame()
+
+    for model_name, model in trained_models.items():
+        if model_name in models:
+            df_model_name = model_name.split(".")[0].replace("-", " ").capitalize()
+            predictions_df[df_model_name] = model.predict(predict_data)
+
+    if problem_type == ProblemTypes.Regression:
+        ensemble_prediction = predictions_df.mean(axis=1)
+        method = "Mean Prediction"
+
+    elif problem_type == ProblemTypes.Classification:
+        ensemble_prediction, _ = mode(predictions_df.values, axis=1, keepdims=False)
+        method = "Majority Vote"
+
+    ensemble_prediction = pd.Series(
+        ensemble_prediction, index=predictions_df.index, name=method
+    )
+
+    predictions_df = pd.concat(
+        [predict_data, predictions_df, ensemble_prediction], axis=1
+    )
+
+    st.dataframe(predictions_df)
 
 
 st.header("Predict")
@@ -201,4 +227,6 @@ if experiment_name:
             independent_variable_col_names=independent_variables,
             predict_data=predict_data,
             preprocessing_options=preprocessing_options,
+            models=models,
+            problem_type=exec_opt.problem_type,
         )
