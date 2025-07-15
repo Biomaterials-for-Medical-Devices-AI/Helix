@@ -253,10 +253,42 @@ def display_metrics_table(metrics_path: Path):
 @st.experimental_fragment
 def display_predictions(predictions_df: pd.DataFrame):
     """
-    Display the predictions in the UI.
+    Display the predictions from multiple models in a clean, concatenated format.
 
     Args:
-        predictions_path (Path): The path to the predictions file.
+        predictions_df (pd.DataFrame): DataFrame containing columns ['Model Name', 'Y True', 'Y Prediction', ...]
     """
     st.write("### Predictions")
-    st.write(predictions_df)
+
+    # Group by model and reshape each sub-DF
+    dfs = []
+    for model_name, group_df in predictions_df.groupby("Model Name"):
+        model_df = group_df.copy()
+
+        # Rename prediction column to include the model name
+        model_df = model_df.rename(columns={"Y Prediction": f"Prediction {model_name}"})
+
+        # Drop model name (already included in prediction column)
+        model_df = model_df.drop(columns=["Model Name"])
+
+        dfs.append(model_df.reset_index(drop=True))
+
+    # Concatenate all horizontally and remove duplicated columns
+    concatenated = pd.concat(dfs, axis=1)
+    concatenated = concatenated.loc[:, ~concatenated.columns.duplicated()]
+
+    # Reorder columns: keep others, then Y True, then predictions
+    y_true_col = "Y True"
+    prediction_cols = [
+        col for col in concatenated.columns if col.startswith("Prediction")
+    ]
+    other_cols = [
+        col for col in concatenated.columns if col not in prediction_cols + [y_true_col]
+    ]
+    ordered_cols = (
+        other_cols
+        + ([y_true_col] if y_true_col in concatenated.columns else [])
+        + prediction_cols
+    )
+
+    st.write(concatenated[ordered_cols])
