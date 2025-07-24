@@ -300,6 +300,9 @@ def save_actual_pred_plots(
             if model_name in [
                 ModelNames.LinearModel.value,
                 ModelNames.MLREM.value,
+                ModelNames.Lasso,
+                ModelNames.Ridge,
+                ModelNames.ElasticNet,
             ]:
                 _save_coefficient_plot(
                     model=trained_models[model_name][closest_index],
