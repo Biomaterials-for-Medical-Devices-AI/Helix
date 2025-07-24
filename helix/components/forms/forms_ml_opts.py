@@ -33,6 +33,7 @@ from helix.options.search_grids import (
     LASSO_GRID,
     RIDGE_GRID,
     ELASTICNET_GRID,
+    KNN_GRID,
     MLREM_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
@@ -103,6 +104,10 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
     if st.toggle("Elastic-Net", value=False):
         elasticnet_model_type = _elastic_net_model_opts(use_hyperparam_search)
         model_types.update(elasticnet_model_type)
+
+    if st.toggle("K-nearest neighbours", value=False):
+        knn_model_type = _KNN_model_opts(use_hyperparam_search)
+        model_types.update(knn_model_type)
 
     if st.toggle("Random Forest", value=False):
         rf_model_type = _random_forest_opts(use_hyperparam_search)
@@ -233,6 +238,48 @@ def _elastic_net_model_opts(use_hyperparam_search: bool) -> dict:
         params = ELASTICNET_GRID
 
     model_types[ModelNames.ElasticNet.value] = {
+        "use": True,
+        "params": params,
+    }
+
+    return model_types
+
+
+def _KNN_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+
+    if not use_hyperparam_search:
+        st.write("Options:")
+        n_neighbors = st.number_input(
+            "Number of neighbours",
+            value=5,
+            min_value=3,
+            max_value=15,
+            step=1,
+            help="Number of neighbors to use by default.",
+        )
+        leaf_size = st.number_input(
+            "Leaf size",
+            value=30,
+            min_value=5,
+            max_value=50,
+            step=5,
+            help="Leaf size passed to BallTree or KDTree. This can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem.",
+        )
+        p = st.slider(
+            "L1 ratio",
+            min_value=1,
+            max_value=2,
+            value=1,
+            step=1,
+            help="Power parameter for the Minkowski metric. When p = 1, this is equivalent to using manhattan_distance (l1), and euclidean_distance (l2) for p = 2. For arbitrary p, minkowski_distance (l_p) is used. This parameter is expected to be positive.",
+        )
+        params = {"n_neighbors": n_neighbors, "leaf_size": leaf_size, "p": p}
+        st.divider()
+    else:
+        params = KNN_GRID
+
+    model_types[ModelNames.KNearestNeighbours.value] = {
         "use": True,
         "params": params,
     }
