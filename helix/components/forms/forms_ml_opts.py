@@ -31,6 +31,8 @@ from helix.options.search_grids import (
     BRNN_GRID,
     LINEAR_MODEL_GRID,
     LASSO_GRID,
+    RIDGE_GRID,
+    ELASTICNET_GRID,
     MLREM_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
@@ -93,6 +95,14 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
     if st.toggle("LASSO", value=False):
         lasso_model_type = _lasso_model_opts(use_hyperparam_search)
         model_types.update(lasso_model_type)
+
+    if st.toggle("Ridge", value=False):
+        ridge_model_type = _ridge_model_opts(use_hyperparam_search)
+        model_types.update(ridge_model_type)
+
+    if st.toggle("Elastic-Net", value=False):
+        elasticnet_model_type = _elastic_net_model_opts(use_hyperparam_search)
+        model_types.update(elasticnet_model_type)
 
     if st.toggle("Random Forest", value=False):
         rf_model_type = _random_forest_opts(use_hyperparam_search)
@@ -163,6 +173,64 @@ def _lasso_model_opts(use_hyperparam_search: bool) -> dict:
         st.divider()
     else:
         params = LASSO_GRID
+
+    model_types[ModelNames.Lasso.value] = {
+        "use": True,
+        "params": params,
+    }
+
+    return model_types
+
+
+def _ridge_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+
+    if not use_hyperparam_search:
+        st.write("Options:")
+        fit_intercept = st.checkbox("Fit intercept")
+        alpha = st.number_input(
+            "Alpha (regularisation term)",
+            value=0.05,
+            min_value=0.0,
+            step=0.05,
+        )
+        params = {"fit_intercept": fit_intercept, "alpha": alpha}
+        st.divider()
+    else:
+        params = RIDGE_GRID
+
+    model_types[ModelNames.Lasso.value] = {
+        "use": True,
+        "params": params,
+    }
+
+    return model_types
+
+
+def _elastic_net_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+
+    if not use_hyperparam_search:
+        st.write("Options:")
+        fit_intercept = st.checkbox("Fit intercept")
+        alpha = st.number_input(
+            "Alpha (regularisation term)",
+            value=0.05,
+            min_value=0.0,
+            step=0.05,
+        )
+        l1_ratio = st.slider(
+            "L1 ratio",
+            min_value=0,
+            max_value=1,
+            value=0.5,
+            step=0.1,
+            help="Select based on how much L1 penalty to use for training. A value of 1 is 100% L1, a value of 0.5 is 50% L1 and 50% L2 and 0 100% L2.",
+        )
+        params = {"fit_intercept": fit_intercept, "alpha": alpha, "l1_ratio": l1_ratio}
+        st.divider()
+    else:
+        params = ELASTICNET_GRID
 
     model_types[ModelNames.Lasso.value] = {
         "use": True,
