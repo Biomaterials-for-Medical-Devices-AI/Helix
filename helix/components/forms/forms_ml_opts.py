@@ -30,6 +30,7 @@ from helix.options.enums import (
 from helix.options.search_grids import (
     BRNN_GRID,
     LINEAR_MODEL_GRID,
+    LASSO_GRID,
     MLREM_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
@@ -89,6 +90,10 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
         lm_model_type = _linear_model_opts(use_hyperparam_search)
         model_types.update(lm_model_type)
 
+    if st.toggle("LASSO", value=False):
+        lasso_model_type = _lasso_model_opts(use_hyperparam_search)
+        model_types.update(lasso_model_type)
+
     if st.toggle("Random Forest", value=False):
         rf_model_type = _random_forest_opts(use_hyperparam_search)
         model_types.update(rf_model_type)
@@ -139,6 +144,31 @@ def _linear_model_opts(use_hyperparam_search: bool) -> dict:
         "use": True,
         "params": params,
     }
+    return model_types
+
+
+def _lasso_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+
+    if not use_hyperparam_search:
+        st.write("Options:")
+        fit_intercept = st.checkbox("Fit intercept")
+        alpha = st.number_input(
+            "Alpha (regularisation term)",
+            value=0.05,
+            min_value=0.0,
+            step=0.05,
+        )
+        params = {"fit_intercept": fit_intercept, "alpha": alpha}
+        st.divider()
+    else:
+        params = LASSO_GRID
+
+    model_types[ModelNames.Lasso.value] = {
+        "use": True,
+        "params": params,
+    }
+
     return model_types
 
 
