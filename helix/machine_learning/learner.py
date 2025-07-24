@@ -7,7 +7,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from helix.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
 from helix.options.data import DataSplitOptions
-from helix.options.enums import DataSplitMethods, Metrics, ProblemTypes
+from helix.options.enums import DataSplitMethods, Metrics, ProblemTypes, ModelNames
 from helix.services.data import TabularData
 from helix.services.metrics import get_metrics
 from helix.services.ml_models import get_model, get_model_type
@@ -326,7 +326,11 @@ class GridSearchLearner:
             model_type = get_model_type(model_name, self._problem_type)
             model = get_model(model_type)
             # Add class_weight for classification problem
-            if self._problem_type.lower() == ProblemTypes.Classification:
+            if (
+                self._problem_type.lower() == ProblemTypes.Classification
+                and model_name
+                not in [ModelNames.GNB, ModelNames.KNearestNeighbours, ModelNames.MLP]
+            ):
                 params["params"]["class_weight"] = ["balanced"]
             gs = GridSearchCV(
                 estimator=model,
