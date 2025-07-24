@@ -7,6 +7,14 @@ LINEAR_MODEL_GRID = {
 
 LASSO_GRID = {"fit_intercept": [True, False], "alpha": [0.05, 0.1, 0.5, 0.8, 1.0]}
 
+RIDGE_GRID = {"fit_intercept": [True, False], "alpha": [0.05, 0.1, 0.5, 0.8, 1.0]}
+
+ELASTICNET_GRID = {
+    "fit_intercept": [True, False],
+    "alpha": [0.05, 0.1, 0.5, 0.8, 1.0],
+    "l1_ratio": [0, 0.5, 1],
+}
+
 RANDOM_FOREST_GRID = {
     "n_estimators": [100, 300, 500],
     "min_samples_split": [2, 0.05, 0.1],
