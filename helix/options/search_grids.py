@@ -9,6 +9,8 @@ LASSO_GRID = {"fit_intercept": [True, False], "alpha": [0.05, 0.1, 0.5, 0.8, 1.0
 
 RIDGE_GRID = {"fit_intercept": [True, False], "alpha": [0.05, 0.1, 0.5, 0.8, 1.0]}
 
+KNN_GRID = {"n_neighbors": [5, 10, 15], "leaf_size": [10, 15, 30, 45, 60], "p": [1, 2]}
+
 ELASTICNET_GRID = {
     "fit_intercept": [True, False],
     "alpha": [0.05, 0.1, 0.5, 0.8, 1.0],
