@@ -1,15 +1,15 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.linear_model import (
+    ElasticNet,
+    Lasso,
     LinearRegression,
     LogisticRegression,
-    Lasso,
-    ElasticNet,
     Ridge,
     RidgeClassifier,
 )
+from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.neural_network import MLPClassifier, MLPRegressor
-from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor

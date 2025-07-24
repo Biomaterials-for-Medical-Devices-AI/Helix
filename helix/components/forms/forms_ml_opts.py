@@ -23,25 +23,25 @@ from helix.options.enums import (
     ActivationFunctions,
     ExecutionStateKeys,
     MachineLearningStateKeys,
+    ModelFormStateKeys,
     ModelNames,
     PlotOptionKeys,
     ProblemTypes,
 )
 from helix.options.search_grids import (
     BRNN_GRID,
-    LINEAR_MODEL_GRID,
-    LASSO_GRID,
-    RIDGE_GRID,
     ELASTICNET_GRID,
-    KNN_GRID,
     GNB_GRID,
+    KNN_GRID,
+    LASSO_GRID,
+    LINEAR_MODEL_GRID,
     MLP_GRID,
     MLREM_GRID,
     RANDOM_FOREST_GRID,
+    RIDGE_GRID,
     SVM_GRID,
     XGB_GRID,
 )
-from helix.options.enums import ModelFormStateKeys
 
 
 ###########################################################################
