@@ -1,5 +1,5 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.linear_model import LinearRegression, LogisticRegression, Lasso
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
@@ -53,5 +53,6 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.XGBoost: XGBRegressor,
     ModelNames.SVM: SVR,
     ModelNames.MLREM: EMLinearRegression,
+    ModelNames.Lasso: Lasso,
     ModelNames.BRNN: BRNNRegressor,
 }
