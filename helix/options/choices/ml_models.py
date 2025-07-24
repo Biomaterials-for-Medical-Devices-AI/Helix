@@ -7,6 +7,7 @@ from sklearn.linear_model import (
     Ridge,
     RidgeClassifier,
 )
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
@@ -52,6 +53,7 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.XGBoost: XGBClassifier,
     ModelNames.SVM: SVC,
     ModelNames.Ridge: RidgeClassifier,
+    ModelNames.KNearestNeighbours: KNeighborsClassifier,
     ModelNames.BRNN: BRNNClassifier,
 }
 
@@ -64,5 +66,6 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.Lasso: Lasso,
     ModelNames.ElasticNet: ElasticNet,
     ModelNames.Ridge: Ridge,
+    ModelNames.KNearestNeighbours: KNeighborsRegressor,
     ModelNames.BRNN: BRNNRegressor,
 }
