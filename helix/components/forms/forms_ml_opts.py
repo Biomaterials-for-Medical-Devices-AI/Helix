@@ -34,6 +34,7 @@ from helix.options.search_grids import (
     RIDGE_GRID,
     ELASTICNET_GRID,
     KNN_GRID,
+    MLP_GRID,
     MLREM_GRID,
     RANDOM_FOREST_GRID,
     SVM_GRID,
@@ -105,8 +106,8 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
         elasticnet_model_type = _elastic_net_model_opts(use_hyperparam_search)
         model_types.update(elasticnet_model_type)
 
-    if st.toggle("K-nearest neighbours", value=False):
-        knn_model_type = _KNN_model_opts(use_hyperparam_search)
+    if st.toggle("K-Nearest Neighbours", value=False):
+        knn_model_type = _knn_model_opts(use_hyperparam_search)
         model_types.update(knn_model_type)
 
     if st.toggle("Random Forest", value=False):
@@ -120,6 +121,10 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
     if st.toggle("Support Vector Machine", value=False):
         svm_model_type = _svm_opts(use_hyperparam_search)
         model_types.update(svm_model_type)
+
+    if st.toggle("Multilayer Perceptron", value=False):
+        mlp_model_type = _mlp_model_opts(use_hyperparam_search)
+        model_types.update(mlp_model_type)
 
     # if st.toggle("Bayesian Regularised Neural Network", value=False):
     #     brnn_model_type = _brnn_opts(use_hyperparam_search)
@@ -245,7 +250,7 @@ def _elastic_net_model_opts(use_hyperparam_search: bool) -> dict:
     return model_types
 
 
-def _KNN_model_opts(use_hyperparam_search: bool) -> dict:
+def _knn_model_opts(use_hyperparam_search: bool) -> dict:
     model_types = {}
 
     if not use_hyperparam_search:
@@ -280,6 +285,68 @@ def _KNN_model_opts(use_hyperparam_search: bool) -> dict:
         params = KNN_GRID
 
     model_types[ModelNames.KNearestNeighbours.value] = {
+        "use": True,
+        "params": params,
+    }
+
+    return model_types
+
+
+def _mlp_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+
+    if not use_hyperparam_search:
+        st.write("Options:")
+        n_neurons = st.slider(
+            "Number of neurons per layer",
+            value=75,
+            min_value=10,
+            max_value=150,
+            step=5,
+        )
+        num_hidden_layers = st.slider(
+            "Number of hidden layers", value=1, min_value=1, max_value=5, step=1
+        )
+
+        hidden_layer_sizes = tuple([n_neurons] * num_hidden_layers)
+
+        activation = st.selectbox(
+            "Activation function", options=["logistic", "tanh", "relu"], index=0
+        )
+        solver = st.selectbox("Solver", options=["sgd", "adam"], index=1)
+        learning_rate_init = st.number_input(
+            "Initial learning rate",
+            min_value=0.005,
+            max_value=0.1,
+            value=0.005,
+            step=0.005,
+        )
+        learning_rate = st.selectbox(
+            "Learning rate", options=["constant", "adaptive"], index=1
+        )
+        max_iter = st.slider(
+            "Number of epochs (training iterations)",
+            min_value=100,
+            max_value=300,
+            value=150,
+            step=10,
+        )
+        early_stopping = st.toggle("Allow early stopping", value=False)
+
+        params = {
+            "hidden_layer_sizes": hidden_layer_sizes,
+            "activation": activation,
+            "solver": solver,
+            "learning_rate_init": learning_rate_init,
+            "learning_rate": learning_rate,
+            "max_iter": max_iter,
+            "early_stopping": early_stopping,
+        }
+        st.divider()
+    else:
+        params = MLP_GRID
+
+    model_types[ModelNames.MLP.value] = {
         "use": True,
         "params": params,
     }
