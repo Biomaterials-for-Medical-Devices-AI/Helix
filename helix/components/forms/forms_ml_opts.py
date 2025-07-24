@@ -40,6 +40,7 @@ from helix.options.search_grids import (
     SVM_GRID,
     XGB_GRID,
 )
+from helix.options.enums import ModelFormStateKeys
 
 
 ###########################################################################
@@ -153,7 +154,9 @@ def _linear_model_opts(use_hyperparam_search: bool) -> dict:
     model_types = {}
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept")
+        fit_intercept = st.checkbox(
+            "Fit intercept", key=ModelFormStateKeys.InterceptLinearRegression
+        )
         params = {
             "fit_intercept": fit_intercept,
         }
@@ -172,13 +175,15 @@ def _lasso_model_opts(use_hyperparam_search: bool) -> dict:
 
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept", key="intercept_lasso")
+        fit_intercept = st.checkbox(
+            "Fit intercept", key=ModelFormStateKeys.InterceptLasso
+        )
         alpha = st.number_input(
             "Alpha (regularisation term)",
             value=0.05,
             min_value=0.0,
             step=0.05,
-            key="reg_term_lasso",
+            key=ModelFormStateKeys.AlphaLasso,
         )
         params = {"fit_intercept": fit_intercept, "alpha": alpha}
         st.divider()
@@ -198,13 +203,15 @@ def _ridge_model_opts(use_hyperparam_search: bool) -> dict:
 
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept", key="intercept_ridge")
+        fit_intercept = st.checkbox(
+            "Fit intercept", key=ModelFormStateKeys.InterceptRidge
+        )
         alpha = st.number_input(
             "Alpha (regularisation term)",
             value=0.05,
             min_value=0.0,
             step=0.05,
-            key="reg_term_ridge",
+            key=ModelFormStateKeys.AlphaRidge,
         )
         params = {"fit_intercept": fit_intercept, "alpha": alpha}
         st.divider()
@@ -224,13 +231,15 @@ def _elastic_net_model_opts(use_hyperparam_search: bool) -> dict:
 
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept", key="intercept_elastic_net")
+        fit_intercept = st.checkbox(
+            "Fit intercept", key=ModelFormStateKeys.InterceptElasticNet
+        )
         alpha = st.number_input(
             "Alpha (regularisation term)",
             value=0.05,
             min_value=0.0,
             step=0.05,
-            key="reg_term_elastic_net",
+            key=ModelFormStateKeys.AlphaElasticNet,
         )
         l1_ratio = st.slider(
             "L1 ratio",
