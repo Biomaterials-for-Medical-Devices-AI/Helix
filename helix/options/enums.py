@@ -147,6 +147,7 @@ class ModelNames(StrEnum):
     Lasso = "least absolute shrinkage and selection operator"
     ElasticNet = "elastic net"
     Ridge = "ridge"
+    KNearestNeighbours = "k-nearest neighbours"
 
 
 class DataSplitMethods(StrEnum):
