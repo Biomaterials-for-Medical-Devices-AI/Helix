@@ -145,6 +145,8 @@ class ModelNames(StrEnum):
     BRNN = "bayesian regularised neural network"
     MLREM = "multiple linear regression with expectation maximisation"
     Lasso = "least absolute shrinkage and selection operator"
+    ElasticNet = "elastic net"
+    Ridge = "ridge"
 
 
 class DataSplitMethods(StrEnum):
