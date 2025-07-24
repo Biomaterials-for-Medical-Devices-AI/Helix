@@ -199,7 +199,7 @@ def _ridge_model_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = RIDGE_GRID
 
-    model_types[ModelNames.Lasso.value] = {
+    model_types[ModelNames.Ridge.value] = {
         "use": True,
         "params": params,
     }
@@ -232,7 +232,7 @@ def _elastic_net_model_opts(use_hyperparam_search: bool) -> dict:
     else:
         params = ELASTICNET_GRID
 
-    model_types[ModelNames.Lasso.value] = {
+    model_types[ModelNames.ElasticNet.value] = {
         "use": True,
         "params": params,
     }
