@@ -9,6 +9,7 @@ from sklearn.linear_model import (
 )
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.neural_network import MLPClassifier, MLPRegressor
+from sklearn.naive_bayes import GaussianNB
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
@@ -56,6 +57,7 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.Ridge: RidgeClassifier,
     ModelNames.KNearestNeighbours: KNeighborsClassifier,
     ModelNames.MLP: MLPClassifier,
+    ModelNames.GNB: GaussianNB,
     ModelNames.BRNN: BRNNClassifier,
 }
 
