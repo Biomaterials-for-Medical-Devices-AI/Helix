@@ -11,6 +11,18 @@ class MachineLearningStateKeys(StrEnum):
     Predictions = "predictions"
 
 
+class ModelFormStateKeys(StrEnum):
+    """ "Enum for the state keys in the ML forms."""
+
+    InterceptLinearRegression = "intercept_linear_regression"
+    InterceptLasso = "intercept_lasso"
+    AlphaLasso = "alpha_lasso"
+    InterceptRidge = "intercept_ridge"
+    AlphaRidge = "alpha_ridge"
+    InterceptElasticNet = "intercept_elastic_net"
+    AlphaElasticNet = "alpha_elastic_net"
+
+
 class FeatureImportanceStateKeys(StrEnum):
     """Enum for the state keys related to feature importance."""
 
