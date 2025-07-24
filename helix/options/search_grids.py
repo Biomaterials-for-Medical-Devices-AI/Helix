@@ -17,6 +17,8 @@ ELASTICNET_GRID = {
 
 KNN_GRID = {"n_neighbors": [5, 10, 15], "leaf_size": [10, 15, 30, 45, 60], "p": [1, 2]}
 
+GNB_GRID = {"var_smoothing": [1e-09, 1e-08]}
+
 MLP_GRID = {
     "hidden_layer_sizes": [(25,), (50,), (75,)],
     "activation": ["logistic", "tanh", "relu"],
