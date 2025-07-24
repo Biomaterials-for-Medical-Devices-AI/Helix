@@ -172,12 +172,13 @@ def _lasso_model_opts(use_hyperparam_search: bool) -> dict:
 
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept")
+        fit_intercept = st.checkbox("Fit intercept", key="intercept_lasso")
         alpha = st.number_input(
             "Alpha (regularisation term)",
             value=0.05,
             min_value=0.0,
             step=0.05,
+            key="reg_term_lasso",
         )
         params = {"fit_intercept": fit_intercept, "alpha": alpha}
         st.divider()
@@ -197,12 +198,13 @@ def _ridge_model_opts(use_hyperparam_search: bool) -> dict:
 
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept")
+        fit_intercept = st.checkbox("Fit intercept", key="intercept_ridge")
         alpha = st.number_input(
             "Alpha (regularisation term)",
             value=0.05,
             min_value=0.0,
             step=0.05,
+            key="reg_term_ridge",
         )
         params = {"fit_intercept": fit_intercept, "alpha": alpha}
         st.divider()
@@ -222,17 +224,18 @@ def _elastic_net_model_opts(use_hyperparam_search: bool) -> dict:
 
     if not use_hyperparam_search:
         st.write("Options:")
-        fit_intercept = st.checkbox("Fit intercept")
+        fit_intercept = st.checkbox("Fit intercept", key="intercept_elastic_net")
         alpha = st.number_input(
             "Alpha (regularisation term)",
             value=0.05,
             min_value=0.0,
             step=0.05,
+            key="reg_term_elastic_net",
         )
         l1_ratio = st.slider(
             "L1 ratio",
-            min_value=0,
-            max_value=1,
+            min_value=0.0,
+            max_value=1.0,
             value=0.5,
             step=0.1,
             help="Select based on how much L1 penalty to use for training. A value of 1 is 100% L1, a value of 0.5 is 50% L1 and 50% L2 and 0 100% L2.",
@@ -272,7 +275,7 @@ def _knn_model_opts(use_hyperparam_search: bool) -> dict:
             help="Leaf size passed to BallTree or KDTree. This can affect the speed of the construction and query, as well as the memory required to store the tree. The optimal value depends on the nature of the problem.",
         )
         p = st.slider(
-            "L1 ratio",
+            "p value",
             min_value=1,
             max_value=2,
             value=1,
