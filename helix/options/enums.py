@@ -144,6 +144,7 @@ class ModelNames(StrEnum):
     SVM = "svm"
     BRNN = "bayesian regularised neural network"
     MLREM = "multiple linear regression with expectation maximisation"
+    Lasso = "least absolute shrinkage and selection operator"
 
 
 class DataSplitMethods(StrEnum):
