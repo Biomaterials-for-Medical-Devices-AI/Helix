@@ -34,6 +34,7 @@ from helix.options.search_grids import (
     RIDGE_GRID,
     ELASTICNET_GRID,
     KNN_GRID,
+    GNB_GRID,
     MLP_GRID,
     MLREM_GRID,
     RANDOM_FOREST_GRID,
@@ -95,17 +96,21 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
         lm_model_type = _linear_model_opts(use_hyperparam_search)
         model_types.update(lm_model_type)
 
-    if st.toggle("LASSO", value=False):
-        lasso_model_type = _lasso_model_opts(use_hyperparam_search)
-        model_types.update(lasso_model_type)
+    if problem_type == ProblemTypes.Regression:
+        if st.toggle("LASSO", value=False):
+            lasso_model_type = _lasso_model_opts(use_hyperparam_search)
+            model_types.update(lasso_model_type)
+        if st.toggle("Elastic-Net", value=False):
+            elasticnet_model_type = _elastic_net_model_opts(use_hyperparam_search)
+            model_types.update(elasticnet_model_type)
+        if st.toggle("Ridge", value=False):
+            ridge_model_type = _ridge_model_opts(use_hyperparam_search)
+            model_types.update(ridge_model_type)
 
-    if st.toggle("Ridge", value=False):
-        ridge_model_type = _ridge_model_opts(use_hyperparam_search)
-        model_types.update(ridge_model_type)
-
-    if st.toggle("Elastic-Net", value=False):
-        elasticnet_model_type = _elastic_net_model_opts(use_hyperparam_search)
-        model_types.update(elasticnet_model_type)
+    else:
+        if st.toggle("Gaussian Naive Bayes"):
+            gnb_model_type = _gnb_model_opts(use_hyperparam_search)
+            model_types.update(gnb_model_type)
 
     if st.toggle("K-Nearest Neighbours", value=False):
         knn_model_type = _knn_model_opts(use_hyperparam_search)
@@ -301,6 +306,29 @@ def _knn_model_opts(use_hyperparam_search: bool) -> dict:
         "params": params,
     }
 
+    return model_types
+
+
+def _gnb_model_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+    if not use_hyperparam_search:
+        st.write("Options:")
+        var_smoothing = st.selectbox(
+            "Variable Smoothing",
+            options=[1e-09, 1e-08],
+            index=0,
+            help="Portion of the largest variance of all features that is added to variances for calculation stability.",
+        )
+        params = {
+            "var_smoothing": var_smoothing,
+        }
+        st.divider()
+    else:
+        params = GNB_GRID
+    model_types[ModelNames.GNB.value] = {
+        "use": True,
+        "params": params,
+    }
     return model_types
 
 
