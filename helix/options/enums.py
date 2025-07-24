@@ -148,6 +148,7 @@ class ModelNames(StrEnum):
     ElasticNet = "elastic net"
     Ridge = "ridge"
     KNearestNeighbours = "k nearest neighbours"
+    MLP = "multilayer perceptron"
 
 
 class DataSplitMethods(StrEnum):
