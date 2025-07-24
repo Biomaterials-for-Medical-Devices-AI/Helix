@@ -21,11 +21,11 @@ GNB_GRID = {"var_smoothing": [1e-09, 1e-08]}
 
 MLP_GRID = {
     "hidden_layer_sizes": [(25,), (50,), (75,)],
-    "activation": ["logistic", "tanh", "relu"],
-    "solver": ["sgd", "adam"],
-    "learning_rate": ["constant", "adaptive"],
-    "learning_rate_init": [0.001, 0.005, 0.01],
-    "max_iter": [100, 150, 200],
+    "activation": ["logistic", "relu"],
+    "solver": ["adam"],
+    "learning_rate": ["constant"],
+    "learning_rate_init": [0.001, 0.01],
+    "max_iter": [200],
     "early_stopping": [True, False],
 }
 
