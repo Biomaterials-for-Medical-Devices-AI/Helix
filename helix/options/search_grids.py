@@ -9,12 +9,22 @@ LASSO_GRID = {"fit_intercept": [True, False], "alpha": [0.05, 0.1, 0.5, 0.8, 1.0
 
 RIDGE_GRID = {"fit_intercept": [True, False], "alpha": [0.05, 0.1, 0.5, 0.8, 1.0]}
 
-KNN_GRID = {"n_neighbors": [5, 10, 15], "leaf_size": [10, 15, 30, 45, 60], "p": [1, 2]}
-
 ELASTICNET_GRID = {
     "fit_intercept": [True, False],
     "alpha": [0.05, 0.1, 0.5, 0.8, 1.0],
     "l1_ratio": [0, 0.5, 1],
+}
+
+KNN_GRID = {"n_neighbors": [5, 10, 15], "leaf_size": [10, 15, 30, 45, 60], "p": [1, 2]}
+
+MLP_GRID = {
+    "hidden_layer_sizes": [(25,), (50,), (75,)],
+    "activation": ["logistic", "tanh", "relu"],
+    "solver": ["sgd", "adam"],
+    "learning_rate": ["constant", "adaptive"],
+    "learning_rate_init": [0.001, 0.005, 0.01],
+    "max_iter": [100, 150, 200],
+    "early_stopping": [True, False],
 }
 
 RANDOM_FOREST_GRID = {
