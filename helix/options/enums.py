@@ -161,7 +161,7 @@ class ModelNames(StrEnum):
     Ridge = "ridge"
     KNearestNeighbours = "k nearest neighbours"
     MLP = "multilayer perceptron"
-    GNB = "gaussian_naive_bayes"
+    GNB = "gaussian naive bayes"
 
 
 class DataSplitMethods(StrEnum):
