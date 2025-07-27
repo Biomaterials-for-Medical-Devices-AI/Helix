@@ -141,17 +141,7 @@ class Learner:
 
             res[i] = {}
             for model_name, params in self._model_types.items():
-                # Add class_weight for classification problem
-                if (
-                    self._problem_type.lower() == ProblemTypes.Classification
-                    and model_name
-                    not in [
-                        ModelNames.GNB,
-                        ModelNames.KNearestNeighbours,
-                        ModelNames.MLP,
-                    ]
-                ):
-                    params["params"]["class_weight"] = "balanced"
+
                 res[i][model_name] = {}
                 model_type = get_model_type(model_name, self._problem_type)
                 model = get_model(model_type, params["params"])
@@ -208,17 +198,7 @@ class Learner:
 
             res[i] = {}
             for model_name, params in self._model_types.items():
-                # Add class_weight for classification problem
-                if (
-                    self._problem_type.lower() == ProblemTypes.Classification
-                    and model_name
-                    not in [
-                        ModelNames.GNB,
-                        ModelNames.KNearestNeighbours,
-                        ModelNames.MLP,
-                    ]
-                ):
-                    params["params"]["class_weight"] = "balanced"
+
                 res[i][model_name] = {}
                 self._logger.info(f"Fitting {model_name} for test fold sample {i+1}...")
                 model_type = get_model_type(model_name, self._problem_type)
@@ -341,13 +321,7 @@ class GridSearchLearner:
             )
             model_type = get_model_type(model_name, self._problem_type)
             model = get_model(model_type)
-            # Add class_weight for classification problem
-            if (
-                self._problem_type.lower() == ProblemTypes.Classification
-                and model_name
-                not in [ModelNames.GNB, ModelNames.KNearestNeighbours, ModelNames.MLP]
-            ):
-                params["params"]["class_weight"] = ["balanced"]
+
             gs = GridSearchCV(
                 estimator=model,
                 param_grid=params["params"],
