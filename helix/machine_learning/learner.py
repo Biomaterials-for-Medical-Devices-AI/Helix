@@ -7,7 +7,7 @@ from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
 from helix.options.choices.metrics import CLASSIFICATION_METRICS, REGRESSION_METRICS
 from helix.options.data import DataSplitOptions
-from helix.options.enums import DataSplitMethods, Metrics, ModelNames, ProblemTypes
+from helix.options.enums import DataSplitMethods, Metrics, ProblemTypes
 from helix.services.data import TabularData
 from helix.services.metrics import get_metrics
 from helix.services.ml_models import get_model, get_model_type
