@@ -89,10 +89,12 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
         string_toggle = "Logistic Regression"
 
     if st.toggle(string_toggle, value=False):
-        lm_model_type = _linear_model_opts(use_hyperparam_search)
+        lm_model_type = _linear_model_opts(use_hyperparam_search, problem_type)
         model_types.update(lm_model_type)
 
     if problem_type == ProblemTypes.Regression:
+
+        # these models only work for regression problems
 
         lasso_model_type = _lasso_model_opts(use_hyperparam_search)
         model_types.update(lasso_model_type)
@@ -105,19 +107,20 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
 
     else:
 
+        # GNB only works for classification problems
         gnb_model_type = _gnb_model_opts(use_hyperparam_search)
         model_types.update(gnb_model_type)
 
     knn_model_type = _knn_model_opts(use_hyperparam_search)
     model_types.update(knn_model_type)
 
-    rf_model_type = _random_forest_opts(use_hyperparam_search)
+    rf_model_type = _random_forest_opts(use_hyperparam_search, problem_type)
     model_types.update(rf_model_type)
 
     xgb_model_type = _xgboost_opts(use_hyperparam_search)
     model_types.update(xgb_model_type)
 
-    svm_model_type = _svm_opts(use_hyperparam_search)
+    svm_model_type = _svm_opts(use_hyperparam_search, problem_type)
     model_types.update(svm_model_type)
 
     mlp_model_type = _mlp_model_opts(use_hyperparam_search)
@@ -146,7 +149,7 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
 ###########################################################################
 # Below are the individual model options functions
 ###########################################################################
-def _linear_model_opts(use_hyperparam_search: bool) -> dict:
+def _linear_model_opts(use_hyperparam_search: bool, problem_type: ProblemTypes) -> dict:
     model_types = {}
     if not use_hyperparam_search:
         st.write("Options:")
@@ -156,9 +159,13 @@ def _linear_model_opts(use_hyperparam_search: bool) -> dict:
         params = {
             "fit_intercept": fit_intercept,
         }
+        if problem_type == ProblemTypes.Classification:
+            params["class_weight"] = "balanced"
         st.divider()
     else:
         params = LINEAR_MODEL_GRID
+        if problem_type == ProblemTypes.Classification:
+            params["class_weight"] = ["balanced"]
     model_types[ModelNames.LinearModel.value] = {
         "use": True,
         "params": params,
@@ -397,7 +404,9 @@ def _mlp_model_opts(use_hyperparam_search: bool) -> dict:
     return model_types
 
 
-def _random_forest_opts(use_hyperparam_search: bool) -> dict:
+def _random_forest_opts(
+    use_hyperparam_search: bool, problem_type: ProblemTypes
+) -> dict:
     model_types = {}
     if st.toggle("Random Forest", value=False):
         if not use_hyperparam_search:
@@ -429,9 +438,14 @@ def _random_forest_opts(use_hyperparam_search: bool) -> dict:
                 "min_samples_leaf": min_samples_leaf,
                 "max_depth": max_depth_rf if max_depth_rf > 0 else None,
             }
+            if problem_type == ProblemTypes.Classification:
+                params["class_weight"] = "balanced"
             st.divider()
         else:
             params = RANDOM_FOREST_GRID
+            if problem_type == ProblemTypes.Classification:
+                params["class_weight"] = ["balanced"]
+
         model_types[ModelNames.RandomForest.value] = {
             "use": True,
             "params": params,
@@ -490,7 +504,7 @@ def _xgboost_opts(use_hyperparam_search: bool) -> dict:
     return model_types
 
 
-def _svm_opts(use_hyperparam_search: bool) -> dict:
+def _svm_opts(use_hyperparam_search: bool, problem_type: ProblemTypes) -> dict:
     model_types = {}
 
     if st.toggle("Support Vector Machine", value=False):
@@ -504,9 +518,13 @@ def _svm_opts(use_hyperparam_search: bool) -> dict:
                 "degree": degree,
                 "C": c,
             }
+            if problem_type == ProblemTypes.Classification:
+                params["class_weight"] = "balanced"
             st.divider()
         else:
             params = SVM_GRID
+            if problem_type == ProblemTypes.Classification:
+                params["class_weight"] = ["balanced"]
 
         model_types[ModelNames.SVM.value] = {
             "use": True,
