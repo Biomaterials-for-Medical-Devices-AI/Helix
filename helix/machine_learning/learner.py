@@ -193,8 +193,8 @@ class Learner:
 
         for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
-            X_train, X_test = data.X_train[i], data.X_test[i]
-            y_train, y_test = data.y_train[i], data.y_test[i]
+            X_train, X_test = data.X_train[i].to_numpy(), data.X_test[i].to_numpy()
+            y_train, y_test = data.y_train[i].to_numpy(), data.y_test[i].to_numpy()
 
             res[i] = {}
             for model_name, params in self._model_types.items():
