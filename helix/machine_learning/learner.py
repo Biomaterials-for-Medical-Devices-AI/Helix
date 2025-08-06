@@ -141,9 +141,7 @@ class Learner:
 
             res[i] = {}
             for model_name, params in self._model_types.items():
-                # Add class_weight for classification problem
-                if self._problem_type.lower() == ProblemTypes.Classification:
-                    params["params"]["class_weight"] = "balanced"
+
                 res[i][model_name] = {}
                 model_type = get_model_type(model_name, self._problem_type)
                 model = get_model(model_type, params["params"])
@@ -195,14 +193,12 @@ class Learner:
 
         for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
-            X_train, X_test = data.X_train[i], data.X_test[i]
-            y_train, y_test = data.y_train[i], data.y_test[i]
+            X_train, X_test = data.X_train[i].to_numpy(), data.X_test[i].to_numpy()
+            y_train, y_test = data.y_train[i].to_numpy(), data.y_test[i].to_numpy()
 
             res[i] = {}
             for model_name, params in self._model_types.items():
-                # Add class_weight for classification problem
-                if self._problem_type.lower() == ProblemTypes.Classification:
-                    params["params"]["class_weight"] = "balanced"
+
                 res[i][model_name] = {}
                 self._logger.info(f"Fitting {model_name} for test fold sample {i+1}...")
                 model_type = get_model_type(model_name, self._problem_type)
@@ -325,9 +321,7 @@ class GridSearchLearner:
             )
             model_type = get_model_type(model_name, self._problem_type)
             model = get_model(model_type)
-            # Add class_weight for classification problem
-            if self._problem_type.lower() == ProblemTypes.Classification:
-                params["params"]["class_weight"] = ["balanced"]
+
             gs = GridSearchCV(
                 estimator=model,
                 param_grid=params["params"],
