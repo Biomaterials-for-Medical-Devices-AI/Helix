@@ -11,6 +11,18 @@ class MachineLearningStateKeys(StrEnum):
     Predictions = "predictions"
 
 
+class ModelFormStateKeys(StrEnum):
+    """ "Enum for the state keys in the ML forms."""
+
+    InterceptLinearRegression = "intercept_linear_regression"
+    InterceptLasso = "intercept_lasso"
+    AlphaLasso = "alpha_lasso"
+    InterceptRidge = "intercept_ridge"
+    AlphaRidge = "alpha_ridge"
+    InterceptElasticNet = "intercept_elastic_net"
+    AlphaElasticNet = "alpha_elastic_net"
+
+
 class FeatureImportanceStateKeys(StrEnum):
     """Enum for the state keys related to feature importance."""
 
@@ -144,6 +156,12 @@ class ModelNames(StrEnum):
     SVM = "svm"
     BRNN = "bayesian regularised neural network"
     MLREM = "multiple linear regression with expectation maximisation"
+    Lasso = "least absolute shrinkage and selection operator"
+    ElasticNet = "elastic net"
+    Ridge = "ridge"
+    KNearestNeighbours = "k nearest neighbours"
+    MLP = "multilayer perceptron"
+    GNB = "gaussian naive bayes"
 
 
 class DataSplitMethods(StrEnum):
@@ -214,3 +232,9 @@ class PlotTypes(StrEnum):
     ParityPlot = "parity_plot"
     ConfusionMatrix = "confusion_matrix"
     AUROC = "auc_roc"
+
+
+class PredictStateKeys(StrEnum):
+    PredictFile = "predict_file"
+    PredictModels = "predict_models"
+    PredictButton = "predict_button"

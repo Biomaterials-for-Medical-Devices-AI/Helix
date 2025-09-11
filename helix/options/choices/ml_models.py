@@ -1,5 +1,15 @@
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.linear_model import (
+    ElasticNet,
+    Lasso,
+    LinearRegression,
+    LogisticRegression,
+    Ridge,
+    RidgeClassifier,
+)
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.neural_network import MLPClassifier, MLPRegressor
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
@@ -44,6 +54,10 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.RandomForest: RandomForestClassifier,
     ModelNames.XGBoost: XGBClassifier,
     ModelNames.SVM: SVC,
+    ModelNames.Ridge: RidgeClassifier,
+    ModelNames.KNearestNeighbours: KNeighborsClassifier,
+    ModelNames.MLP: MLPClassifier,
+    ModelNames.GNB: GaussianNB,
     ModelNames.BRNN: BRNNClassifier,
 }
 
@@ -53,5 +67,10 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.XGBoost: XGBRegressor,
     ModelNames.SVM: SVR,
     ModelNames.MLREM: EMLinearRegression,
+    ModelNames.Lasso: Lasso,
+    ModelNames.ElasticNet: ElasticNet,
+    ModelNames.Ridge: Ridge,
+    ModelNames.KNearestNeighbours: KNeighborsRegressor,
+    ModelNames.MLP: MLPRegressor,
     ModelNames.BRNN: BRNNRegressor,
 }

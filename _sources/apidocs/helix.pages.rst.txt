@@ -44,10 +44,18 @@ helix.pages.5\_Feature\_Importance module
    :show-inheritance:
    :undoc-members:
 
-helix.pages.6\_View\_Experiments module
+helix.pages.6\_Predict module
+-----------------------------
+
+.. automodule:: helix.pages.6_Predict
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+helix.pages.7\_View\_Experiments module
 ---------------------------------------
 
-.. automodule:: helix.pages.6_View_Experiments
+.. automodule:: helix.pages.7_View_Experiments
    :members:
    :show-inheritance:
    :undoc-members:

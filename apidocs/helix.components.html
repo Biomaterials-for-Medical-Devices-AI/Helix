@@ -158,12 +158,17 @@ to allow the user to select multiple models to explain using the FI pipeline.</p
 
 <dl class="py function">
 <dt class="sig sig-object py" id="helix.components.experiments.model_selector">
-<span class="sig-prename descclassname"><span class="pre">helix.components.experiments.</span></span><span class="sig-name descname"><span class="pre">model_selector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#helix.components.experiments.model_selector" title="Link to this definition">¶</a></dt>
-<dd><p>Select a model or models to explain. This function creates a multiselect widget
-to allow the user to select multiple models to explain using the FI pipeline.</p>
+<span class="sig-prename descclassname"><span class="pre">helix.components.experiments.</span></span><span class="sig-name descname"><span class="pre">model_selector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gui_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">placeholder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#helix.components.experiments.model_selector" title="Link to this definition">¶</a></dt>
+<dd><p>Select a model or models for their intended use. This function creates a multiselect widget
+to allow the user to select multiple models to use for FI pipeline or to Predict on new datasets.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>options</strong> (<em>list</em>) – The list of model names to choose from.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>options</strong> (<em>list</em>) – The list of model names to choose from.</p></li>
+<li><p><strong>gui_text</strong> (<em>str</em>) – The text to display above the widget indicating what the models are meant to be used for.</p></li>
+<li><p><strong>placeholder</strong> (<em>str</em>) – The placeholder to show on the widget before the user does the selection.</p></li>
+<li><p><strong>key</strong> (<em>str</em>) – the key to use to save the information of the widget in the state session.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The path to the model on disk.</p>
@@ -249,10 +254,10 @@ and other visual aspects of the plots.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="helix.components.plots.display_predictions">
 <span class="sig-prename descclassname"><span class="pre">helix.components.plots.</span></span><span class="sig-name descname"><span class="pre">display_predictions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.components.plots.display_predictions" title="Link to this definition">¶</a></dt>
-<dd><p>Display the predictions in the UI.</p>
+<dd><p>Display the predictions from multiple models in a clean, concatenated format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>predictions_path</strong> (<em>Path</em>) – The path to the predictions file.</p>
+<dd class="field-odd"><p><strong>predictions_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing columns [‘Model Name’, ‘Y True’, ‘Y Prediction’, …]</p>
 </dd>
 </dl>
 </dd></dl>
