@@ -138,6 +138,9 @@ class Normalisations(StrEnum):
     Standardisation = "standardisation"
     MinMax = "minmax"
     NoNormalisation = "none"  # field name can't be None
+    MeanCentering = "mean centering"
+    MeanCenteringPoissonScaling = "mean centering poisson scaling"
+    ParetoScaling = "pareto scaling"
 
 
 class TransformationsY(StrEnum):
