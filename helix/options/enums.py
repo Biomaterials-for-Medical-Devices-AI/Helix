@@ -139,7 +139,7 @@ class Normalisations(StrEnum):
     MinMax = "minmax"
     NoNormalisation = "none"  # field name can't be None
     MeanCentering = "mean centering"
-    MeanCenteringPoissonScaling = "mean centering poisson scaling"
+    MeanCenteringPoissonScaling = "mean centering and poisson scaling"
     ParetoScaling = "pareto scaling"
 
 
