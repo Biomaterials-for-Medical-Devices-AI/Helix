@@ -15,6 +15,7 @@ from helix.options.enums import (
 from helix.options.file_paths import data_preprocessing_options_path
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import save_options
+from helix.preprocessing.variable_scaling import MeanCenterPoissonScaler
 
 
 def find_non_numeric_columns(data: pd.DataFrame | pd.Series) -> List[str]:
@@ -69,6 +70,9 @@ def normalise_independent_variables(normalisation_method: str, X):
 
     elif normalisation_method == Normalisations.MeanCentering:
         scaler = StandardScaler(with_std=False)
+
+    elif normalisation_method == Normalisations.MeanCenteringPoissonScaling:
+        scaler = MeanCenterPoissonScaler()
 
     column_names = X.columns
     processed_X = scaler.fit_transform(X)
