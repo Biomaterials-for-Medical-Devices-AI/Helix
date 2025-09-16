@@ -67,6 +67,9 @@ def normalise_independent_variables(normalisation_method: str, X):
     elif normalisation_method == Normalisations.MinMax:
         scaler = MinMaxScaler()
 
+    elif normalisation_method == Normalisations.MeanCentering:
+        scaler = StandardScaler(with_std=False)
+
     column_names = X.columns
     processed_X = scaler.fit_transform(X)
 
