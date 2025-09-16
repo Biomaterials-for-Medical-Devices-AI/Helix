@@ -24,6 +24,17 @@ def preprocessing_opts_form(data: pd.DataFrame, problem_type: ProblemTypes):
         If you select **"Minmax"**, your data will be scaled based on the minimum and maximum
         value of each feature. The resulting transformation will have values between 0 and 1.
 
+        If you select **"Mean centering"**, your data will be transformed by subtracting the mean
+        of each feature, so that the resulting distribution has a mean of 0 but is not scaled by variance.
+
+        If you select **"Mean centering and Poisson scaling"**, your data will first be mean-centered,
+        then scaled by dividing each feature by the square root of its mean. This is useful when the
+        variance of your data is approximately proportional to the mean, as in Poisson-like distributions.
+
+        If you select **"Pareto scaling"**, your data will be scaled by dividing each feature by
+        the square root of its standard deviation, without mean-centering. This reduces the relative
+        importance of high-variance features while keeping some of their weight.
+
         If you select **"None"**, the data will not be normalised.
         """
     )
