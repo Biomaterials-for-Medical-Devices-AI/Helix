@@ -350,7 +350,7 @@ def _mlp_model_opts(use_hyperparam_search: bool) -> dict:
             n_neurons = st.slider(
                 "Number of neurons per layer",
                 value=75,
-                min_value=10,
+                min_value=1,
                 max_value=150,
                 step=5,
             )
@@ -383,10 +383,19 @@ def _mlp_model_opts(use_hyperparam_search: bool) -> dict:
             )
             early_stopping = st.toggle("Allow early stopping", value=False)
 
+            alpha = st.number_input(
+                "L2 regularisation term strength ",
+                min_value=0.0,
+                max_value=0.1,
+                value=1e-4,
+                step=1e-4,
+            )
+
             params = {
                 "hidden_layer_sizes": hidden_layer_sizes,
                 "activation": activation,
                 "solver": solver,
+                "alpha": alpha,
                 "learning_rate_init": learning_rate_init,
                 "learning_rate": learning_rate,
                 "max_iter": max_iter,
