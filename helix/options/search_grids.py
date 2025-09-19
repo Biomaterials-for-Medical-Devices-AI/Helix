@@ -25,6 +25,7 @@ MLP_GRID = {
     "solver": ["adam"],
     "learning_rate": ["constant"],
     "learning_rate_init": [0.001, 0.01],
+    "alpha": [1e-4, 1e-3, 1e-2, 1e-1],
     "max_iter": [200],
     "early_stopping": [True, False],
 }
