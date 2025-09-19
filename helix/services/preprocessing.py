@@ -59,23 +59,29 @@ def normalise_independent_variables(normalisation_method: str, X):
         pd.DataFrame: The normalised independent variables.
     """
 
-    if normalisation_method == Normalisations.NoNormalisation:
-        return X
+    match normalisation_method:
+        case Normalisations.NoNormalisation:
+            return X
 
-    elif normalisation_method == Normalisations.Standardisation:
-        scaler = StandardScaler()
+        case Normalisations.Standardisation:
+            scaler = StandardScaler()
 
-    elif normalisation_method == Normalisations.MinMax:
-        scaler = MinMaxScaler()
+        case Normalisations.MinMax:
+            scaler = MinMaxScaler()
 
-    elif normalisation_method == Normalisations.MeanCentering:
-        scaler = StandardScaler(with_std=False)
+        case Normalisations.MeanCentering:
+            scaler = StandardScaler(with_std=False)
 
-    elif normalisation_method == Normalisations.MeanCenteringPoissonScaling:
-        scaler = MeanCenterPoissonScaler()
+        case Normalisations.MeanCenteringPoissonScaling:
+            scaler = MeanCenterPoissonScaler()
 
-    elif normalisation_method == Normalisations.ParetoScaling:
-        scaler = ParetoScaler()
+        case Normalisations.ParetoScaling:
+            scaler = ParetoScaler()
+
+        case _:
+            raise ValueError(
+                f"Unsupported normalisation method: {normalisation_method}"
+            )
 
     column_names = X.columns
     processed_X = scaler.fit_transform(X)
