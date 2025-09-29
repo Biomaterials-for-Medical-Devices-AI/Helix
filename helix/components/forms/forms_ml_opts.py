@@ -386,7 +386,7 @@ def _mlp_model_opts(use_hyperparam_search: bool) -> dict:
             alpha = st.number_input(
                 "L2 regularisation term strength ",
                 min_value=0.0,
-                max_value=0.1,
+                max_value=None,
                 value=1e-4,
                 step=1e-4,
                 format="%.4f",
