@@ -307,6 +307,27 @@ def read_uploaded_data(uploaded_file) -> pd.DataFrame:
         raise ValueError("uploaded_file must be a '.csv' or '.xlsx' file")
 
 
+def rearrange_data(df: pd.DataFrame, data_opts: DataOptions):
+    """Rearranges the data frame so that all feature columns are first and the target column last.
+
+    Args:
+        df (pd.DataFrame): The data frame to rearrange.
+        data_opts (DataOptions): The data options containing the target and feature columns.
+
+    Returns:
+        pd.DataFrame: The rearranged data frame.
+    """
+
+    target_col = data_opts.target_column
+    feature_cols = data_opts.feature_columns
+
+    cols = feature_cols + [target_col]
+
+    df = df[cols]
+
+    return df
+
+
 def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
     """Save data to either a '.csv' or '.xlsx' file.
 
