@@ -229,17 +229,7 @@ if uploaded_file is not None:
 
     feature_cols = [col for col in data.columns if col != target_col]
 
-    ## TODO: For future implementation
-    # if st.checkbox("Select an ID column"):
-    #     id_col = st.selectbox(
-    #         "",
-    #         options=data.columns.tolist(),
-    #         index=0,
-    #         help="Select a column that contains unique identifiers for each row, e.g. Patient ID or Sample ID.",
-    #     )
-    #     # st.session_state[ExecutionStateKeys.IDColumnName] = id_col
-
-    #     feature_cols = [col for col in feature_cols if col != id_col]
+    # TODO: allow user to select ID columns
 
     if st.toggle(
         "Select the feature columns manually (optional)",
