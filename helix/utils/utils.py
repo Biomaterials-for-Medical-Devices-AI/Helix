@@ -9,8 +9,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from helix.services.data import save_data
+from helix.services.data import save_data, rearrange_data
 from helix.utils.logging_utils import Logger, close_logger
+from helix.options.data import DataOptions
 
 
 def set_seed(seed: int) -> None:
@@ -59,7 +60,9 @@ def create_directory(path: Path):
         os.makedirs(path, exist_ok=True)
 
 
-def save_upload(upload_path: str, content: Any, mode: str = "w"):
+def save_upload(
+    upload_path: str, content: Any, data_options: DataOptions, mode: str = "w"
+):
     """Save a file given to the UI to disk.
 
     Args:
@@ -76,15 +79,15 @@ def save_upload(upload_path: str, content: Any, mode: str = "w"):
 
     if content.name.endswith(".csv"):
         df = pd.read_csv(content, header=0)
-        save_data(upload_path, df, logger)
-        close_logger(logger_instance, logger)
+
     elif content.name.endswith(".xlsx"):
         df = pd.read_excel(content, header=0)
-        save_data(upload_path, df, logger)
-        close_logger(logger_instance, logger)
     else:
-        close_logger(logger_instance, logger)
         raise ValueError("Uploaded file must be a '.csv' or a '.xlsx' file.")
+
+    df = rearrange_data(df, data_options)
+    save_data(upload_path, df, logger)
+    close_logger(logger_instance, logger)
 
 
 def cancel_pipeline(p: Process):
