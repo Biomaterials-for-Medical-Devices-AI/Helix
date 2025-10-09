@@ -130,7 +130,7 @@ def _entrypoint(save_dir: Path):
 
     # Save the data
     uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
-    save_upload(path_to_data, uploaded_file)
+    save_upload(path_to_data, uploaded_file, data_opts)
 
 
 st.set_page_config(
