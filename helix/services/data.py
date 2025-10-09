@@ -280,7 +280,6 @@ def read_data(data_path: Path, _logger: Logger) -> pd.DataFrame:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
 
 
-@st.cache_data()
 def read_uploaded_data(uploaded_file) -> pd.DataFrame:
     """Read a data file into memory from a '.csv' or '.xlsx' file.
 
@@ -355,12 +354,3 @@ def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
             raise
     else:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
-
-
-def read_uploaded_file(uploaded_file):
-    if uploaded_file.name.endswith(".csv"):
-        data = pd.read_csv(uploaded_file)
-    elif uploaded_file.name.endswith(".xlsx"):
-        data = pd.read_excel(uploaded_file)
-
-    return data
