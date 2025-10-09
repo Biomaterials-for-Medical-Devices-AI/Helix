@@ -296,12 +296,12 @@ def read_uploaded_data(uploaded_file) -> pd.DataFrame:
         try:
             return pd.read_csv(uploaded_file, header=0)
         except Exception as e:
-            raise
+            raise ValueError(f"Failed to read uploaded file{os.linesep}{e}")
     elif uploaded_file.name.endswith(".xlsx"):
         try:
             return pd.read_excel(uploaded_file, header=0)
         except Exception as e:
-            raise
+            raise ValueError(f"Failed to read uploaded file{os.linesep}{e}")
     else:
         raise ValueError("uploaded_file must be a '.csv' or '.xlsx' file")
 
