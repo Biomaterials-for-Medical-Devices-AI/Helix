@@ -14,6 +14,7 @@ from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import helix_experiments_base_dir, uploaded_file_path
 from helix.options.plotting import PlottingOptions
 from helix.services.experiments import create_experiment
+from helix.services.data import read_uploaded_data
 from helix.utils.utils import save_upload
 
 
@@ -203,6 +204,12 @@ uploaded_file = st.file_uploader(
     help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
 
+if uploaded_file is not None:
+    data = read_uploaded_data(uploaded_file=uploaded_file)
+    if st.checkbox("Show uploaded data"):
+        st.markdown(" #### Uploaded data")
+        st.dataframe(data)
+
 
 def get_last_column_name(file) -> Optional[str]:
     """
@@ -228,9 +235,23 @@ def get_last_column_name(file) -> Optional[str]:
         return None
 
 
+def select_target_column(dataframe: pd.DataFrame) -> str:
+    """ """
+    columns = dataframe.columns.tolist()
+
+    target_col = st.selectbox(
+        "Select the target column (dependent variable) to model",
+        options=columns,
+        index=len(columns) - 1,  # Default to last column
+    )
+
+    return target_col
+
+
 suggested_problem_type = None
 if uploaded_file is not None:
     last_col = get_last_column_name(uploaded_file)
+    target_col = select_target_column(data)
     # Only set if not already set by user
     if last_col and not st.session_state.get(ExecutionStateKeys.DependentVariableName):
         st.session_state[ExecutionStateKeys.DependentVariableName] = last_col
