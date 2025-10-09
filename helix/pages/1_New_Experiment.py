@@ -102,6 +102,8 @@ def _entrypoint(save_dir: Path):
     )
     data_opts = DataOptions(
         data_path=str(path_to_data),  # Path objects aren't JSON serialisable
+        target_column=st.session_state[ExecutionStateKeys.DependentVariable],
+        feature_columns=st.session_state[ExecutionStateKeys.FeatureColumns],
     )
     plot_opts = PlottingOptions(
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
