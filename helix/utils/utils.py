@@ -9,9 +9,9 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from helix.services.data import save_data, rearrange_data
-from helix.utils.logging_utils import Logger, close_logger
 from helix.options.data import DataOptions
+from helix.services.data import rearrange_data, save_data
+from helix.utils.logging_utils import Logger, close_logger
 
 
 def set_seed(seed: int) -> None:
