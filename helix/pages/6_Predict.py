@@ -25,7 +25,7 @@ from helix.services.configuration import (
     load_data_preprocessing_options,
     load_execution_options,
 )
-from helix.services.data import read_uploaded_file
+from helix.services.data import read_uploaded_data
 from helix.services.experiments import get_experiments
 from helix.services.ml_models import load_models
 from helix.services.preprocessing import find_non_numeric_columns
@@ -165,7 +165,7 @@ if experiment_name:
     )
 
     if uploaded_file:
-        predict_data = read_uploaded_file(uploaded_file)
+        predict_data = read_uploaded_data(uploaded_file)
         st.write("#### View the provided data")
         st.dataframe(predict_data)
 

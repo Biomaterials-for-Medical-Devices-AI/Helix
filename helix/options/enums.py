@@ -56,7 +56,9 @@ class ExecutionStateKeys(StrEnum):
     """Enum for state keys related to the execution of experiments."""
 
     ExperimentName = "experiment_name"
+    DependentVariable = "dependent_variable"
     DependentVariableName = "dependent_variable_name"
+    FeatureColumns = "feature_columns"
     UploadedFileName = "uploaded_file_name"
     RandomSeed = "random_seed"
     UseHyperParamSearch = "use_hyperparam_search"

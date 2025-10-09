@@ -24,5 +24,7 @@ class DataOptions:
     """
 
     data_path: str | None = None
+    target_column: str | None = None
+    feature_columns: list[str] | None = None
     data_split: DataSplitOptions | None = None
     normalisation: Normalisations = Normalisations.NoNormalisation
