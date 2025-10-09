@@ -188,13 +188,6 @@ uploaded_file = st.file_uploader(
     help="Updload a CSV or Excel (.xslx) file containing your data.",
 )
 
-if uploaded_file is not None:
-    uploaded_file.seek(0)
-    data = read_uploaded_data(uploaded_file=uploaded_file)
-    if st.checkbox("Show uploaded data"):
-        st.markdown(" #### Uploaded data")
-        st.dataframe(data)
-
 
 def select_target_column(dataframe: pd.DataFrame) -> str:
     """ """
@@ -212,7 +205,14 @@ def select_target_column(dataframe: pd.DataFrame) -> str:
 
 
 suggested_problem_type = None
+
 if uploaded_file is not None:
+
+    uploaded_file.seek(0)
+    data = read_uploaded_data(uploaded_file=uploaded_file)
+    if st.checkbox("Show uploaded data"):
+        st.markdown(" #### Uploaded data")
+        st.dataframe(data)
 
     target_col = select_target_column(data)
 
