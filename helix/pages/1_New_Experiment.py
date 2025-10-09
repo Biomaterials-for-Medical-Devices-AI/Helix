@@ -189,6 +189,7 @@ uploaded_file = st.file_uploader(
 )
 
 if uploaded_file is not None:
+    uploaded_file.seek(0)
     data = read_uploaded_data(uploaded_file=uploaded_file)
     if st.checkbox("Show uploaded data"):
         st.markdown(" #### Uploaded data")
