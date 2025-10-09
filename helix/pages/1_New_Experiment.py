@@ -201,6 +201,8 @@ def select_target_column(dataframe: pd.DataFrame) -> str:
         "Select the target column (dependent variable) to model",
         options=columns,
         index=len(columns) - 1,  # Default to last column
+        help="Select the column you want to predict. By default, the last column is selected.",
+        key=ExecutionStateKeys.DependentVariable,
     )
 
     return target_col
@@ -216,11 +218,38 @@ if uploaded_file is not None:
         f"**Suggested problem type based on the selected column `{target_col}`: {suggested_problem_type}**"
     )
 
-st.text_input(
-    "Name of the dependent variable. **This will be used for the plots. As default, the name of the selected column of the uploaded file will be used**",
-    value=target_col,
-    key=ExecutionStateKeys.DependentVariableName,
-)
+    st.text_input(
+        "Name of the dependent variable. **This will be used for the plots. As default, the name of the selected column of the uploaded file will be used**",
+        value=target_col,
+        key=ExecutionStateKeys.DependentVariableName,
+    )
+
+    feature_cols = [col for col in data.columns if col != target_col]
+
+    ## TODO: For future implementation
+    # if st.checkbox("Select an ID column"):
+    #     id_col = st.selectbox(
+    #         "",
+    #         options=data.columns.tolist(),
+    #         index=0,
+    #         help="Select a column that contains unique identifiers for each row, e.g. Patient ID or Sample ID.",
+    #     )
+    #     # st.session_state[ExecutionStateKeys.IDColumnName] = id_col
+
+    #     feature_cols = [col for col in feature_cols if col != id_col]
+
+    if st.toggle(
+        "Select the feature columns manually (optional)",
+        help="By default, all columns except the target column will be used as feature columns. If you want to select specific feature columns, toggle this option.",
+    ):
+        st.multiselect(
+            "",
+            options=feature_cols,
+            default=feature_cols,
+            key=ExecutionStateKeys.FeatureColumns,
+        )
+    else:
+        st.session_state[ExecutionStateKeys.FeatureColumns] = feature_cols
 
 st.selectbox(
     "Problem type",
