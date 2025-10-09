@@ -284,10 +284,11 @@ st.number_input(
 st.subheader("Configure experiment plots")
 plot_options_box()
 
-st.button(
+if st.button(
     "Create",
     type="primary",
     disabled=not is_valid or not _file_is_uploaded(),
     on_click=_entrypoint,
     args=(save_dir,),
-)
+):
+    st.success(f"Experiment created at `{save_dir}`")
