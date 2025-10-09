@@ -193,30 +193,6 @@ if uploaded_file is not None:
         st.dataframe(data)
 
 
-def get_last_column_name(file) -> Optional[str]:
-    """
-    Returns the name of the last column in the uploaded file.
-
-    Args:
-        file: A Streamlit UploadedFile object or None.
-
-    Returns:
-        The name of the last column as a string, or None if unavailable.
-    """
-    if file is None:
-        return None
-    try:
-        if file.name.endswith(".csv"):
-            df = pd.read_csv(file, nrows=0)  # Only read header
-        elif file.name.endswith(".xlsx"):
-            df = pd.read_excel(file, nrows=0)
-        else:
-            return None
-        return df.columns[-1] if len(df.columns) > 0 else None
-    except Exception:
-        return None
-
-
 def select_target_column(dataframe: pd.DataFrame) -> str:
     """ """
     columns = dataframe.columns.tolist()
@@ -232,19 +208,17 @@ def select_target_column(dataframe: pd.DataFrame) -> str:
 
 suggested_problem_type = None
 if uploaded_file is not None:
-    last_col = get_last_column_name(uploaded_file)
+
     target_col = select_target_column(data)
-    # Only set if not already set by user
-    if last_col and not st.session_state.get(ExecutionStateKeys.DependentVariableName):
-        st.session_state[ExecutionStateKeys.DependentVariableName] = last_col
 
     suggested_problem_type = infer_problem_type_from_column(data[target_col])
     st.write(
-        f"**Suggested problem type based on the last column `{target_col}`: {suggested_problem_type}**"
+        f"**Suggested problem type based on the selected column `{target_col}`: {suggested_problem_type}**"
     )
 
 st.text_input(
-    "Name of the dependent variable. **This will be used for the plots. As default, the name of the last column of the uploaded file will be used**",
+    "Name of the dependent variable. **This will be used for the plots. As default, the name of the selected column of the uploaded file will be used**",
+    value=target_col,
     key=ExecutionStateKeys.DependentVariableName,
 )
 
