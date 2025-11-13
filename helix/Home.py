@@ -37,6 +37,6 @@ st.write(
 )
 # RED ITALIC NOTE: Coming soon functionality
 st.markdown(
-    '<span style="color:red; font-size:0.8em;"><i>Coming up in the next version: Use trained models to predict on new data.</i></span>',
+    '<span style="color:red; font-size:1em;"><i>You are using Helix 1.0.3</i></span>',
     unsafe_allow_html=True,
 )
