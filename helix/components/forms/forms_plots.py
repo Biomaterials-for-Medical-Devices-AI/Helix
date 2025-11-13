@@ -242,8 +242,8 @@ def tSNE_plot_form(  # noqa: C901
     perplexity = st.slider(
         "Perplexity",
         min_value=5,
-        max_value=50,
-        value=30,
+        max_value=50 if 50 < len(y) else len(y) - 1,
+        value=30 if 50 < len(y) else int(len(y) / 2),
         help="The perplexity parameter controls the balance between local and global aspects of the data.",
         key=f"{key_prefix}_{DataAnalysisStateKeys.Perplexity}",
     )
