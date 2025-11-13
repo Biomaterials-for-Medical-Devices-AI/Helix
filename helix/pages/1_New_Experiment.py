@@ -261,7 +261,7 @@ if uploaded_file is not None:
 
                 select_all = st.toggle(
                     "Select all features in this group",
-                    value=True,
+                    value=False,
                     key=select_all_key,
                 )
 
@@ -289,7 +289,10 @@ if uploaded_file is not None:
         # Display summary
         st.write(f"✅ **Total selected features: `{len(selected_features)}`**")
         if not selected_features:
-            st.warning("No features selected!")
+            st.error(
+                "No features selected! Please select some features to create an experiment."
+            )
+            is_valid = False
 
     else:
         # Default: all columns except target
