@@ -21,6 +21,9 @@ PROBLEM_TYPES = [
 NORMALISATIONS = [
     Normalisations.Standardisation.capitalize(),
     Normalisations.MinMax.capitalize(),
+    Normalisations.MeanCentering.capitalize(),
+    Normalisations.MeanCenteringPoissonScaling.capitalize(),
+    Normalisations.ParetoScaling.capitalize(),
     Normalisations.NoNormalisation.capitalize(),
 ]
 TRANSFORMATIONS_Y = [

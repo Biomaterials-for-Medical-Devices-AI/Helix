@@ -41,33 +41,24 @@
 <section id="module-helix.pages.1_New_Experiment">
 <span id="helix-pages-1-new-experiment-module"></span><h2>helix.pages.1_New_Experiment module<a class="headerlink" href="#module-helix.pages.1_New_Experiment" title="Link to this heading">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="helix.pages.1_New_Experiment.get_last_column_name">
-<span class="sig-prename descclassname"><span class="pre">helix.pages.1_New_Experiment.</span></span><span class="sig-name descname"><span class="pre">get_last_column_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.1_New_Experiment.get_last_column_name" title="Link to this definition">¶</a></dt>
-<dd><p>Returns the name of the last column in the uploaded file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>file</strong> – A Streamlit UploadedFile object or None.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The name of the last column as a string, or None if unavailable.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="helix.pages.1_New_Experiment.infer_problem_type_from_file">
-<span class="sig-prename descclassname"><span class="pre">helix.pages.1_New_Experiment.</span></span><span class="sig-name descname"><span class="pre">infer_problem_type_from_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><span class="pre">ProblemTypes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.1_New_Experiment.infer_problem_type_from_file" title="Link to this definition">¶</a></dt>
-<dd><p>Infer the problem type from the uploaded file. If the last column contains categorical
+<dt class="sig sig-object py" id="helix.pages.1_New_Experiment.infer_problem_type_from_column">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.1_New_Experiment.</span></span><span class="sig-name descname"><span class="pre">infer_problem_type_from_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Series</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes"><span class="pre">ProblemTypes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#helix.pages.1_New_Experiment.infer_problem_type_from_column" title="Link to this definition">¶</a></dt>
+<dd><p>Infer the problem type given the target column. If the column contains categorical
 values (e.g. strings or few unique integers), return Classification. Otherwise, Regression.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The inferred problem type, or None if no file is uploaded or error occurs.</p>
+<dd class="field-odd"><p>The inferred problem type, or None if error occurs.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Optional[<a class="reference internal" href="helix.options.html#helix.options.enums.ProblemTypes" title="helix.options.enums.ProblemTypes">ProblemTypes</a>]</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="helix.pages.1_New_Experiment.select_target_column">
+<span class="sig-prename descclassname"><span class="pre">helix.pages.1_New_Experiment.</span></span><span class="sig-name descname"><span class="pre">select_target_column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataframe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#helix.pages.1_New_Experiment.select_target_column" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </section>
 <section id="module-helix.pages.2_Data_Preprocessing">

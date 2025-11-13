@@ -28,7 +28,9 @@ def get_safe_index(value: str, options: list[str], default_value: str) -> int:
         return options.index(default_value)
 
 
-def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
+def edit_plot_form(
+    plot_opts: PlottingOptions, plot_type: PlotTypes, key_prefix: str = ""
+):
     """
     Form to edit the appearance of plots.
     This form allows users to change the color scheme, font sizes, axis labels,
@@ -53,7 +55,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             index=get_safe_index(
                 plot_opts.plot_colour_scheme, plt.style.available, "default"
             ),
-            key=PlotOptionKeys.ColourScheme + plot_type.value,
+            key=key_prefix + PlotOptionKeys.ColourScheme,
             help="Select the color scheme for the plot",
         )
 
@@ -67,7 +69,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                     plt.colormaps(),
                     "viridis",
                 ),
-                key=PlotOptionKeys.ColourMap + plot_type.value,
+                key=key_prefix + PlotOptionKeys.ColourMap,
                 help="Select the color map for heatmaps",
             )
 
@@ -75,7 +77,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             st.color_picker(
                 "Plot colour",
                 value="#1f77b4",
-                key=PlotOptionKeys.PlotColour + plot_type.value,
+                key=key_prefix + PlotOptionKeys.PlotColour,
                 help="Select the colour for the plot",
             )
 
@@ -85,7 +87,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
         plot_title = st.text_input(
             "Plot title",
             value=None,
-            key=PlotOptionKeys.PlotTitle + plot_type.value,
+            key=key_prefix + PlotOptionKeys.PlotTitle,
             help="Set a custom title for the plot",
         )
 
@@ -94,7 +96,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             yaxis_label = st.text_input(
                 "Y-axis label",
                 value=None,
-                key=PlotOptionKeys.YAxisLabel + plot_type.value,
+                key=key_prefix + PlotOptionKeys.YAxisLabel,
                 help="Set the label for the y-axis",
             )
 
@@ -102,7 +104,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             xaxis_label = st.text_input(
                 "X-axis label",
                 value=None,
-                key=PlotOptionKeys.XAxisLabel + plot_type.value,
+                key=key_prefix + PlotOptionKeys.XAxisLabel,
                 help="Set the label for the x-axis",
             )
 
@@ -116,7 +118,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=8,
                 max_value=50,
                 value=plot_opts.plot_title_font_size,
-                key=PlotOptionKeys.TitleFontSize + plot_type.value,
+                key=key_prefix + PlotOptionKeys.TitleFontSize,
                 help="Set the font size for plot titles",
             )
 
@@ -125,7 +127,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=8,
                 max_value=35,
                 value=plot_opts.plot_axis_font_size,
-                key=PlotOptionKeys.AxisFontSize + plot_type.value,
+                key=key_prefix + PlotOptionKeys.AxisFontSize,
                 help="Set the font size for axis labels",
             )
 
@@ -134,7 +136,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=0,
                 max_value=90,
                 value=plot_opts.angle_rotate_xaxis_labels,
-                key=PlotOptionKeys.RotateXAxisLabels + plot_type.value,
+                key=key_prefix + PlotOptionKeys.RotateXAxisLabels,
                 help="Set the rotation angle for x-axis labels",
             )
 
@@ -145,7 +147,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=6,
                 max_value=35,
                 value=plot_opts.plot_axis_tick_size,
-                key=PlotOptionKeys.AxisTickSize + plot_type.value,
+                key=key_prefix + PlotOptionKeys.AxisTickSize,
                 help="Set the font size for axis tick labels",
             )
 
@@ -157,7 +159,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                     PLOT_FONT_FAMILIES,
                     "sans-serif",
                 ),
-                key=PlotOptionKeys.FontFamily + plot_type.value,
+                key=key_prefix + PlotOptionKeys.FontFamily,
                 help="Select the font family for all text elements",
             )
 
@@ -166,7 +168,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=0,
                 max_value=90,
                 value=plot_opts.angle_rotate_yaxis_labels,
-                key=PlotOptionKeys.RotateYAxisLabels + plot_type.value,
+                key=key_prefix + PlotOptionKeys.RotateYAxisLabels,
                 help="Set the rotation angle for y-axis labels",
             )
 
@@ -179,7 +181,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=4,
                 max_value=20,
                 value=plot_opts.width,
-                key=PlotOptionKeys.Width + plot_type.value,
+                key=key_prefix + PlotOptionKeys.Width,
                 help="Set the width of the plot in inches",
             )
 
@@ -189,7 +191,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
                 min_value=3,
                 max_value=20,
                 value=plot_opts.height,
-                key=PlotOptionKeys.Height + plot_type.value,
+                key=key_prefix + PlotOptionKeys.Height,
                 help="Set the height of the plot in inches",
             )
 
@@ -199,7 +201,7 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
             min_value=330,
             max_value=2000,
             value=plot_opts.dpi if 330 < plot_opts.dpi <= 2000 else 330,
-            key=PlotOptionKeys.DPI + plot_type.value,
+            key=key_prefix + PlotOptionKeys.DPI,
             help="Set the dots per inch (resolution) of the plot",
         )
 
@@ -216,14 +218,12 @@ def edit_plot_form(plot_opts: PlottingOptions, plot_type: PlotTypes):
         height=height,
         width=width,
         plot_colour_map=st.session_state.get(
-            PlotOptionKeys.ColourMap + plot_type.value, plot_opts.plot_colour_map
+            key_prefix + PlotOptionKeys.ColourMap, plot_opts.plot_colour_map
         ),
         plot_title=plot_title,
         yaxis_label=yaxis_label,
         xaxis_label=xaxis_label,
-        plot_colour=st.session_state.get(
-            PlotOptionKeys.PlotColour + plot_type.value, None
-        ),
+        plot_colour=st.session_state.get(key_prefix + PlotOptionKeys.PlotColour, None),
     )
 
 

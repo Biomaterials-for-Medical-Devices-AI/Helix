@@ -57,7 +57,7 @@
 <span id="helix-options-data-module"></span><h2>helix.options.data module<a class="headerlink" href="#module-helix.options.data" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="helix.options.data.DataOptions">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helix.options.data.</span></span><span class="sig-name descname"><span class="pre">DataOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#helix.options.data.DataSplitOptions" title="helix.options.data.DataSplitOptions"><span class="pre">DataSplitOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalisation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#helix.options.enums.Normalisations" title="helix.options.enums.Normalisations"><span class="pre">Normalisations</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Normalisations.NoNormalisation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.options.data.DataOptions" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helix.options.data.</span></span><span class="sig-name descname"><span class="pre">DataOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_column</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feature_columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#helix.options.data.DataSplitOptions" title="helix.options.data.DataSplitOptions"><span class="pre">DataSplitOptions</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalisation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#helix.options.enums.Normalisations" title="helix.options.enums.Normalisations"><span class="pre">Normalisations</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Normalisations.NoNormalisation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.options.data.DataOptions" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Options class specifying where data are saved, how to split them, and which
 normalisation technique to use.</p>
@@ -72,8 +72,18 @@ normalisation technique to use.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.data.DataOptions.feature_columns">
+<span class="sig-name descname"><span class="pre">feature_columns</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#helix.options.data.DataOptions.feature_columns" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="helix.options.data.DataOptions.normalisation">
 <span class="sig-name descname"><span class="pre">normalisation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#helix.options.enums.Normalisations" title="helix.options.enums.Normalisations"><span class="pre">Normalisations</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></em><a class="headerlink" href="#helix.options.data.DataOptions.normalisation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.data.DataOptions.target_column">
+<span class="sig-name descname"><span class="pre">target_column</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#helix.options.data.DataOptions.target_column" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -321,6 +331,11 @@ as well as the size of the test size.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.enums.ExecutionStateKeys.DependentVariable">
+<span class="sig-name descname"><span class="pre">DependentVariable</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dependent_variable'</span></em><a class="headerlink" href="#helix.options.enums.ExecutionStateKeys.DependentVariable" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="helix.options.enums.ExecutionStateKeys.DependentVariableName">
 <span class="sig-name descname"><span class="pre">DependentVariableName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dependent_variable_name'</span></em><a class="headerlink" href="#helix.options.enums.ExecutionStateKeys.DependentVariableName" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -328,6 +343,11 @@ as well as the size of the test size.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="helix.options.enums.ExecutionStateKeys.ExperimentName">
 <span class="sig-name descname"><span class="pre">ExperimentName</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'experiment_name'</span></em><a class="headerlink" href="#helix.options.enums.ExecutionStateKeys.ExperimentName" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.enums.ExecutionStateKeys.FeatureColumns">
+<span class="sig-name descname"><span class="pre">FeatureColumns</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'feature_columns'</span></em><a class="headerlink" href="#helix.options.enums.ExecutionStateKeys.FeatureColumns" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -693,6 +713,16 @@ as well as the size of the test size.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">helix.options.enums.</span></span><span class="sig-name descname"><span class="pre">Normalisations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#helix.options.enums.Normalisations" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">StrEnum</span></code></p>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.enums.Normalisations.MeanCentering">
+<span class="sig-name descname"><span class="pre">MeanCentering</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mean</span> <span class="pre">centering'</span></em><a class="headerlink" href="#helix.options.enums.Normalisations.MeanCentering" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.enums.Normalisations.MeanCenteringPoissonScaling">
+<span class="sig-name descname"><span class="pre">MeanCenteringPoissonScaling</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'mean</span> <span class="pre">centering</span> <span class="pre">and</span> <span class="pre">poisson</span> <span class="pre">scaling'</span></em><a class="headerlink" href="#helix.options.enums.Normalisations.MeanCenteringPoissonScaling" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="helix.options.enums.Normalisations.MinMax">
 <span class="sig-name descname"><span class="pre">MinMax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'minmax'</span></em><a class="headerlink" href="#helix.options.enums.Normalisations.MinMax" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -700,6 +730,11 @@ as well as the size of the test size.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="helix.options.enums.Normalisations.NoNormalisation">
 <span class="sig-name descname"><span class="pre">NoNormalisation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'none'</span></em><a class="headerlink" href="#helix.options.enums.Normalisations.NoNormalisation" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="helix.options.enums.Normalisations.ParetoScaling">
+<span class="sig-name descname"><span class="pre">ParetoScaling</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pareto</span> <span class="pre">scaling'</span></em><a class="headerlink" href="#helix.options.enums.Normalisations.ParetoScaling" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1521,16 +1556,17 @@ The path will be to a <cite>json</cite> file called <cite>plot_options.json</cit
 <dl class="py function">
 <dt class="sig sig-object py" id="helix.options.file_paths.preprocessed_data_path">
 <span class="sig-prename descclassname"><span class="pre">helix.options.file_paths.</span></span><span class="sig-name descname"><span class="pre">preprocessed_data_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">experiment_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="headerlink" href="#helix.options.file_paths.preprocessed_data_path" title="Link to this definition">¶</a></dt>
-<dd><p>Create the full path to the directory to save raw data.</p>
+<dd><p>Return the full path for the preprocessed version of a file.</p>
+<p>This function safely handles file names containing multiple dots.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>file_name</strong> (<em>str</em>) – The name of the file.</p></li>
-<li><p><strong>experiment_path</strong> (<em>Path</em>) – The path of the experiment.</p></li>
+<li><p><strong>file_name</strong> (<em>str</em>) – The original file name, e.g. ‘data.v1.csv’.</p></li>
+<li><p><strong>experiment_path</strong> (<em>Path</em>) – The experiment directory path.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The full path for the raw data directory.</p>
+<dd class="field-even"><p>The path to the preprocessed file inside the experiment directory.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Path</p>

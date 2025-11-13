@@ -226,6 +226,8 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataPreprocessingStateKeys.DependentNormalisation">DependentNormalisation (helix.options.enums.DataPreprocessingStateKeys attribute)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.ExecutionStateKeys.DependentVariable">DependentVariable (helix.options.enums.ExecutionStateKeys attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.ExecutionStateKeys.DependentVariableName">DependentVariableName (helix.options.enums.ExecutionStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.DescriptorCorrelation">DescriptorCorrelation (helix.options.enums.DataAnalysisStateKeys attribute)</a>
@@ -300,9 +302,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.options.html#helix.options.enums.Metrics.F1Score">F1Score (helix.options.enums.Metrics attribute)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.data.DataOptions.feature_columns">feature_columns (helix.options.data.DataOptions attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.fi.FeatureImportanceOptions.feature_importance_ensemble">feature_importance_ensemble (helix.options.fi.FeatureImportanceOptions attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.preprocessing.PreprocessingOptions.feature_selection_methods">feature_selection_methods (helix.options.preprocessing.PreprocessingOptions attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.ExecutionStateKeys.FeatureColumns">FeatureColumns (helix.options.enums.ExecutionStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.fi.FeatureImportanceOptions">FeatureImportanceOptions (class in helix.options.fi)</a>
 </li>
@@ -322,10 +328,10 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.file_paths.fi_result_dir">fi_result_dir() (in module helix.options.file_paths)</a>
 </li>
-      <li><a href="apidocs/helix.options.html#helix.options.enums.FeatureImportanceStateKeys.FILogBox">FILogBox (helix.options.enums.FeatureImportanceStateKeys attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.FeatureImportanceStateKeys.FILogBox">FILogBox (helix.options.enums.FeatureImportanceStateKeys attribute)</a>
+</li>
       <li><a href="apidocs/helix.services.html#helix.services.metrics.find_mean_model_index">find_mean_model_index() (in module helix.services.metrics)</a>
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.preprocessing.find_non_numeric_columns">find_non_numeric_columns() (in module helix.services.preprocessing)</a>
@@ -359,8 +365,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apidocs/helix.services.html#helix.services.experiments.get_experiments">get_experiments() (in module helix.services.experiments)</a>
-</li>
-      <li><a href="apidocs/helix.pages.html#helix.pages.1_New_Experiment.get_last_column_name">get_last_column_name() (in module helix.pages.1_New_Experiment)</a>
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.logs.get_logs">get_logs() (in module helix.services.logs)</a>
 </li>
@@ -833,7 +837,7 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataPreprocessingStateKeys.IndependentNormalisation">IndependentNormalisation (helix.options.enums.DataPreprocessingStateKeys attribute)</a>
 </li>
-      <li><a href="apidocs/helix.pages.html#helix.pages.1_New_Experiment.infer_problem_type_from_file">infer_problem_type_from_file() (in module helix.pages.1_New_Experiment)</a>
+      <li><a href="apidocs/helix.pages.html#helix.pages.1_New_Experiment.infer_problem_type_from_column">infer_problem_type_from_column() (in module helix.pages.1_New_Experiment)</a>
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.data.DataBuilder.ingest">ingest() (helix.services.data.DataBuilder method)</a>
 </li>
@@ -942,6 +946,10 @@
       <li><a href="apidocs/helix.options.html#helix.options.ml.MLREMOptions.max_iterations">max_iterations (helix.options.ml.MLREMOptions attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.FeatureImportanceTypes.Mean">Mean (helix.options.enums.FeatureImportanceTypes attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.Normalisations.MeanCentering">MeanCentering (helix.options.enums.Normalisations attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.Normalisations.MeanCenteringPoissonScaling">MeanCenteringPoissonScaling (helix.options.enums.Normalisations attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.data.DataSplitOptions.method">method (helix.options.data.DataSplitOptions attribute)</a>
 </li>
@@ -1198,6 +1206,8 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.PairPlotDiagonalType">PairPlotDiagonalType (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.Normalisations.ParetoScaling">ParetoScaling (helix.options.enums.Normalisations attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.PlotTypes.ParityPlot">ParityPlot (helix.options.enums.PlotTypes attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.fi.FeatureImportanceOptions.permutation_importance_repeat">permutation_importance_repeat (helix.options.fi.FeatureImportanceOptions attribute)</a>
@@ -1248,10 +1258,10 @@
 </li>
       <li><a href="apidocs/helix.components.html#helix.components.configuration.plot_options_box">plot_options_box() (in module helix.components.configuration)</a>
 </li>
-      <li><a href="apidocs/helix.options.html#helix.options.file_paths.plot_options_path">plot_options_path() (in module helix.options.file_paths)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/helix.options.html#helix.options.file_paths.plot_options_path">plot_options_path() (in module helix.options.file_paths)</a>
+</li>
       <li><a href="apidocs/helix.services.html#helix.services.plotting.plot_permutation_importance">plot_permutation_importance() (in module helix.services.plotting)</a>
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.plotting.plot_scatter">plot_scatter() (in module helix.services.plotting)</a>
@@ -1330,7 +1340,9 @@
 </li>
       <li><a href="apidocs/helix.services.html#helix.services.data.read_data">read_data() (in module helix.services.data)</a>
 </li>
-      <li><a href="apidocs/helix.services.html#helix.services.data.read_uploaded_file">read_uploaded_file() (in module helix.services.data)</a>
+      <li><a href="apidocs/helix.services.html#helix.services.data.read_uploaded_data">read_uploaded_data() (in module helix.services.data)</a>
+</li>
+      <li><a href="apidocs/helix.services.html#helix.services.data.rearrange_data">rearrange_data() (in module helix.services.data)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.Metrics.Recall">Recall (helix.options.enums.Metrics attribute)</a>
 </li>
@@ -1338,10 +1350,10 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataPreprocessingStateKeys.RegularisationTerm">RegularisationTerm (helix.options.enums.DataPreprocessingStateKeys attribute)</a>
 </li>
-      <li><a href="apidocs/helix.options.html#helix.options.enums.ActivationFunctions.ReLU">ReLU (helix.options.enums.ActivationFunctions attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apidocs/helix.options.html#helix.options.enums.ActivationFunctions.ReLU">ReLU (helix.options.enums.ActivationFunctions attribute)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.FuzzyStateKeys.RerunFI">RerunFI (helix.options.enums.FuzzyStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.MachineLearningStateKeys.RerunML">RerunML (helix.options.enums.MachineLearningStateKeys attribute)</a>
@@ -1424,6 +1436,8 @@
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.FeatureImportanceStateKeys.ScoringFunction">ScoringFunction (helix.options.enums.FeatureImportanceStateKeys attribute)</a>
 </li>
+      <li><a href="apidocs/helix.pages.html#helix.pages.1_New_Experiment.select_target_column">select_target_column() (in module helix.pages.1_New_Experiment)</a>
+</li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SelectAllDescriptorsCorrelation">SelectAllDescriptorsCorrelation (helix.options.enums.DataAnalysisStateKeys attribute)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.DataAnalysisStateKeys.SelectAllDescriptorsPairPlot">SelectAllDescriptorsPairPlot (helix.options.enums.DataAnalysisStateKeys attribute)</a>
@@ -1475,6 +1489,8 @@
       <li><a href="apidocs/helix.services.html#helix.services.data.TabularData">TabularData (class in helix.services.data)</a>
 </li>
       <li><a href="apidocs/helix.options.html#helix.options.enums.ActivationFunctions.Tanh">Tanh (helix.options.enums.ActivationFunctions attribute)</a>
+</li>
+      <li><a href="apidocs/helix.options.html#helix.options.data.DataOptions.target_column">target_column (helix.options.data.DataOptions attribute)</a>
 </li>
       <li><a href="apidocs/helix.components.forms.html#helix.components.forms.forms_plots.target_variable_dist_form">target_variable_dist_form() (in module helix.components.forms.forms_plots)</a>
 </li>

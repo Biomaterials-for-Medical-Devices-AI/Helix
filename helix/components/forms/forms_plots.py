@@ -40,7 +40,11 @@ def target_variable_dist_form(
         key=f"{key_prefix}_{DataAnalysisStateKeys.NBins}",
     )
 
-    plot_settings = edit_plot_form(plot_opts, PlotTypes.TargetVariableDistribution)
+    plot_settings = edit_plot_form(
+        plot_opts,
+        plot_type=PlotTypes.TargetVariableDistribution,
+        key_prefix=key_prefix + PlotTypes.TargetVariableDistribution.value,
+    )
 
     show_plot = st.checkbox(
         "Create target variable distribution plot",
@@ -103,7 +107,11 @@ def correlation_heatmap_form(
             "Please select at least one independent variable to create the correlation heatmap."
         )
 
-    plot_settings = edit_plot_form(plot_opts, PlotTypes.CorrelationHeatmap)
+    plot_settings = edit_plot_form(
+        plot_opts,
+        PlotTypes.CorrelationHeatmap,
+        key_prefix + PlotTypes.CorrelationHeatmap.value,
+    )
 
     show_plot = st.checkbox(
         "Create Correlation Heatmap Plot",
@@ -182,7 +190,9 @@ def pairplot_form(  # noqa: C901
             help="Select the type of plot to use on the diagonal of the pairplot.",
         )
 
-    plot_settings = edit_plot_form(plot_opts, PlotTypes.PairPlot)
+    plot_settings = edit_plot_form(
+        plot_opts, PlotTypes.PairPlot, key_prefix + PlotTypes.PairPlot.value
+    )
 
     show_plot = st.checkbox(
         "Create Pairplot", key=f"{key_prefix}_{DataAnalysisStateKeys.PairPlot}"
@@ -232,13 +242,15 @@ def tSNE_plot_form(  # noqa: C901
     perplexity = st.slider(
         "Perplexity",
         min_value=5,
-        max_value=50,
-        value=30,
+        max_value=50 if 50 < len(y) else len(y) - 1,
+        value=30 if 50 < len(y) else int(len(y) / 2),
         help="The perplexity parameter controls the balance between local and global aspects of the data.",
         key=f"{key_prefix}_{DataAnalysisStateKeys.Perplexity}",
     )
 
-    plot_settings = edit_plot_form(plot_opts, PlotTypes.TSNEPlot)
+    plot_settings = edit_plot_form(
+        plot_opts, PlotTypes.TSNEPlot, key_prefix + PlotTypes.TSNEPlot.value
+    )
 
     show_plot = st.checkbox(
         "Create t-SNE Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.TSNEPlot}"

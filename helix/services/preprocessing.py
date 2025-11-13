@@ -14,6 +14,7 @@ from helix.options.enums import (
 )
 from helix.options.file_paths import data_preprocessing_options_path
 from helix.options.preprocessing import PreprocessingOptions
+from helix.preprocessing.variable_scaling import MeanCenterPoissonScaler, ParetoScaler
 from helix.services.configuration import save_options
 
 
@@ -58,14 +59,29 @@ def normalise_independent_variables(normalisation_method: str, X):
         pd.DataFrame: The normalised independent variables.
     """
 
-    if normalisation_method == Normalisations.NoNormalisation:
-        return X
+    match normalisation_method:
+        case Normalisations.NoNormalisation:
+            return X
 
-    elif normalisation_method == Normalisations.Standardisation:
-        scaler = StandardScaler()
+        case Normalisations.Standardisation:
+            scaler = StandardScaler()
 
-    elif normalisation_method == Normalisations.MinMax:
-        scaler = MinMaxScaler()
+        case Normalisations.MinMax:
+            scaler = MinMaxScaler()
+
+        case Normalisations.MeanCentering:
+            scaler = StandardScaler(with_std=False)
+
+        case Normalisations.MeanCenteringPoissonScaling:
+            scaler = MeanCenterPoissonScaler()
+
+        case Normalisations.ParetoScaling:
+            scaler = ParetoScaler()
+
+        case _:
+            raise ValueError(
+                f"Unsupported normalisation method: {normalisation_method}"
+            )
 
     column_names = X.columns
     processed_X = scaler.fit_transform(X)

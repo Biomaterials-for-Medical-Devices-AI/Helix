@@ -119,7 +119,9 @@
 <li class="toctree-l3"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions"><code class="docutils literal notranslate"><span class="pre">DataOptions</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions.data_path"><code class="docutils literal notranslate"><span class="pre">DataOptions.data_path</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions.data_split"><code class="docutils literal notranslate"><span class="pre">DataOptions.data_split</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions.feature_columns"><code class="docutils literal notranslate"><span class="pre">DataOptions.feature_columns</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions.normalisation"><code class="docutils literal notranslate"><span class="pre">DataOptions.normalisation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.data.DataOptions.target_column"><code class="docutils literal notranslate"><span class="pre">DataOptions.target_column</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="helix.options.html#helix.options.data.DataSplitOptions"><code class="docutils literal notranslate"><span class="pre">DataSplitOptions</span></code></a><ul>
@@ -181,8 +183,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.DataSplit"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.DataSplit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.DependentVariable"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.DependentVariable</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.DependentVariableName"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.DependentVariableName</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.ExperimentName"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.ExperimentName</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.FeatureColumns"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.FeatureColumns</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.Normalisation"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.Normalisation</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.NumberOfBootstraps"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.NumberOfBootstraps</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.ExecutionStateKeys.ProblemType"><code class="docutils literal notranslate"><span class="pre">ExecutionStateKeys.ProblemType</span></code></a></li>
@@ -269,8 +273,11 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations"><code class="docutils literal notranslate"><span class="pre">Normalisations</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations.MeanCentering"><code class="docutils literal notranslate"><span class="pre">Normalisations.MeanCentering</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations.MeanCenteringPoissonScaling"><code class="docutils literal notranslate"><span class="pre">Normalisations.MeanCenteringPoissonScaling</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations.MinMax"><code class="docutils literal notranslate"><span class="pre">Normalisations.MinMax</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations.NoNormalisation"><code class="docutils literal notranslate"><span class="pre">Normalisations.NoNormalisation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations.ParetoScaling"><code class="docutils literal notranslate"><span class="pre">Normalisations.ParetoScaling</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="helix.options.html#helix.options.enums.Normalisations.Standardisation"><code class="docutils literal notranslate"><span class="pre">Normalisations.Standardisation</span></code></a></li>
 </ul>
 </li>
@@ -495,8 +502,8 @@
 <li class="toctree-l1"><a class="reference internal" href="helix.pages.html">helix.pages package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="helix.pages.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="helix.pages.html#module-helix.pages.1_New_Experiment">helix.pages.1_New_Experiment module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="helix.pages.html#helix.pages.1_New_Experiment.get_last_column_name"><code class="docutils literal notranslate"><span class="pre">get_last_column_name()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helix.pages.html#helix.pages.1_New_Experiment.infer_problem_type_from_file"><code class="docutils literal notranslate"><span class="pre">infer_problem_type_from_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.pages.html#helix.pages.1_New_Experiment.infer_problem_type_from_column"><code class="docutils literal notranslate"><span class="pre">infer_problem_type_from_column()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.pages.html#helix.pages.1_New_Experiment.select_target_column"><code class="docutils literal notranslate"><span class="pre">select_target_column()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="helix.pages.html#module-helix.pages.2_Data_Preprocessing">helix.pages.2_Data_Preprocessing module</a><ul>
@@ -580,7 +587,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.data.ingest_data"><code class="docutils literal notranslate"><span class="pre">ingest_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.data.read_data"><code class="docutils literal notranslate"><span class="pre">read_data()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.data.read_uploaded_file"><code class="docutils literal notranslate"><span class="pre">read_uploaded_file()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.data.read_uploaded_data"><code class="docutils literal notranslate"><span class="pre">read_uploaded_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.data.rearrange_data"><code class="docutils literal notranslate"><span class="pre">rearrange_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="helix.services.html#helix.services.data.save_data"><code class="docutils literal notranslate"><span class="pre">save_data()</span></code></a></li>
 </ul>
 </li>
