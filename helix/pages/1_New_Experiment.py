@@ -296,7 +296,9 @@ if uploaded_file is not None:
 
     else:
         # Default: all columns except target
-        st.session_state["FeatureColumns"] = feature_cols
+        st.session_state["FeatureColumns"] = [
+            col for col in data.columns if col != target_col
+        ]
         st.write(f"Using all {len(feature_cols)} feature columns by default.")
 
 st.selectbox(
