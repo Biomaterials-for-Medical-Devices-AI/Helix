@@ -1,4 +1,5 @@
 import os
+from math import ceil
 from pathlib import Path
 from typing import Optional
 
@@ -231,18 +232,69 @@ if uploaded_file is not None:
 
     # TODO: allow user to select ID columns
 
+    n_features = len(feature_cols)
+    group_size = 150
+
     if st.toggle(
         "Select the feature columns manually (optional)",
-        help="By default, all columns except the target column will be used as feature columns. If you want to select specific feature columns, toggle this option.",
+        help="By default, all columns except the target column will be used as features. You can manually select specific ones below.",
     ):
-        st.multiselect(
-            "",
-            options=feature_cols,
-            default=feature_cols,
-            key=ExecutionStateKeys.FeatureColumns,
-        )
+        # Initialize checkbox states if not set
+        if "feature_checkboxes" not in st.session_state:
+            st.session_state.feature_checkboxes = {col: True for col in feature_cols}
+
+        st.markdown("#### Select which features to include:")
+
+        # Split features into chunks of group_size
+        num_groups = ceil(n_features / group_size)
+        for i in range(num_groups):
+            start_idx = i * group_size
+            end_idx = min((i + 1) * group_size, n_features)
+            group = feature_cols[start_idx:end_idx]
+            first_feat, last_feat = group[0], group[-1]
+
+            with st.expander(
+                f"Features {start_idx + 1}–{end_idx} ({len(group)}) | {first_feat} → {last_feat}"
+            ):
+                # Select-all toggle for this group
+                select_all_key = f"group_select_{i}"
+
+                select_all = st.toggle(
+                    "Select all features in this group",
+                    value=True,
+                    key=select_all_key,
+                )
+
+                st.divider()
+                cols = st.columns(5)  # Adjust layout columns per row
+
+                for j, col_name in enumerate(group):
+                    with cols[j % 5]:
+                        st.session_state.feature_checkboxes[col_name] = st.checkbox(
+                            col_name,
+                            value=(select_all),
+                            key=f"chk_{col_name}",
+                        )
+
+        # Extract selected features
+        selected_features = [
+            col
+            for col, checked in st.session_state.feature_checkboxes.items()
+            if checked
+        ]
+
+        # Save to session_state
+        st.session_state["FeatureColumns"] = selected_features
+
+        # Display summary
+        st.write(f"✅ **Total selected features: `{len(selected_features)}`**")
+        if not selected_features:
+            st.warning("No features selected!")
+
     else:
-        st.session_state[ExecutionStateKeys.FeatureColumns] = feature_cols
+        # Default: all columns except target
+        st.session_state["FeatureColumns"] = feature_cols
+        st.write(f"Using all {len(feature_cols)} feature columns by default.")
 
 st.selectbox(
     "Problem type",
