@@ -15,19 +15,22 @@ def uploaded_file_path(file_name: str, experiment_path: Path) -> Path:
 
 
 def preprocessed_data_path(file_name: str, experiment_path: Path) -> Path:
-    """Create the full path to the directory to save raw data.
+    """Return the full path for the preprocessed version of a file.
+
+    This function safely handles file names containing multiple dots.
 
     Args:
-        file_name (str): The name of the file.
-        experiment_path (Path): The path of the experiment.
+        file_name (str): The original file name, e.g. 'data.v1.csv'.
+        experiment_path (Path): The experiment directory path.
 
     Returns:
-        Path: The full path for the raw data directory.
+        Path: The path to the preprocessed file inside the experiment directory.
     """
-    name, ext = file_name.split(".")
-    file_name = f"{name}_preprocessed.{ext}"
-
-    return experiment_path / file_name
+    file_path = Path(file_name)
+    stem = file_path.stem  # 'data.v1'
+    suffix = file_path.suffix  # '.csv'
+    new_name = f"{stem}_preprocessed{suffix}"
+    return experiment_path / new_name
 
 
 def log_dir(experiment_path: Path) -> Path:
