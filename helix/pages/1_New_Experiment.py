@@ -1,4 +1,5 @@
 import os
+from math import ceil
 from pathlib import Path
 from typing import Optional
 
@@ -13,6 +14,7 @@ from helix.options.enums import ExecutionStateKeys, PlotOptionKeys, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.file_paths import helix_experiments_base_dir, uploaded_file_path
 from helix.options.plotting import PlottingOptions
+from helix.services.data import read_uploaded_data
 from helix.services.experiments import create_experiment
 from helix.utils.utils import save_upload
 
@@ -51,47 +53,29 @@ def _file_is_uploaded() -> bool:
     return st.session_state.get(ExecutionStateKeys.UploadedFileName) is not None
 
 
-def infer_problem_type_from_file() -> Optional[ProblemTypes]:
+def infer_problem_type_from_column(target: pd.Series) -> Optional[ProblemTypes]:
     """
-    Infer the problem type from the uploaded file. If the last column contains categorical
+    Infer the problem type given the target column. If the column contains categorical
     values (e.g. strings or few unique integers), return Classification. Otherwise, Regression.
 
     Returns:
-        Optional[ProblemTypes]: The inferred problem type, or None if no file is uploaded or error occurs.
+        Optional[ProblemTypes]: The inferred problem type, or None if error occurs.
     """
-    uploaded_file = st.session_state.get(ExecutionStateKeys.UploadedFileName)
-    if uploaded_file is None:
-        return None
 
-    try:
-        if uploaded_file.name.endswith(".csv"):
-            df = pd.read_csv(uploaded_file)
-        elif uploaded_file.name.endswith(".xlsx"):
-            df = pd.read_excel(uploaded_file)
-        else:
-            return None
-        if df.empty:
-            return None
-
-        last_col = df.columns[-1]
-        target = df[last_col]
-
-        # Heuristic: if target is string/object or has few unique integers → classification
-        if target.dtype == "object" or target.dtype.name == "category":
+    # Heuristic: if target is string/object or has few unique integers → classification
+    if target.dtype == "object" or target.dtype.name == "category":
+        return ProblemTypes.Classification
+    elif pd.api.types.is_integer_dtype(target):
+        n_unique = target.nunique()
+        if (
+            n_unique < 20 or n_unique <= len(target) * 0.05
+        ):  # we assume that less than 20 unique values or less than 5% of the data are unique values indicates a classification problem
             return ProblemTypes.Classification
-        elif pd.api.types.is_integer_dtype(target):
-            n_unique = target.nunique()
-            if (
-                n_unique < 20 or n_unique <= len(df) * 0.05
-            ):  # we assume that less than 20 unique values or less than 5% of the data are unique values indicates a classification problem
-                return ProblemTypes.Classification
-            else:
-                return ProblemTypes.Regression
-        elif pd.api.types.is_float_dtype(target):
-            return ProblemTypes.Regression
         else:
-            return None
-    except Exception:
+            return ProblemTypes.Regression
+    elif pd.api.types.is_float_dtype(target):
+        return ProblemTypes.Regression
+    else:
         return None
 
 
@@ -119,6 +103,8 @@ def _entrypoint(save_dir: Path):
     )
     data_opts = DataOptions(
         data_path=str(path_to_data),  # Path objects aren't JSON serialisable
+        target_column=st.session_state[ExecutionStateKeys.DependentVariable],
+        feature_columns=st.session_state[ExecutionStateKeys.FeatureColumns],
     )
     plot_opts = PlottingOptions(
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
@@ -145,7 +131,7 @@ def _entrypoint(save_dir: Path):
 
     # Save the data
     uploaded_file = st.session_state[ExecutionStateKeys.UploadedFileName]
-    save_upload(path_to_data, uploaded_file)
+    save_upload(path_to_data, uploaded_file, data_opts)
 
 
 st.set_page_config(
@@ -204,46 +190,116 @@ uploaded_file = st.file_uploader(
 )
 
 
-def get_last_column_name(file) -> Optional[str]:
-    """
-    Returns the name of the last column in the uploaded file.
+def select_target_column(dataframe: pd.DataFrame) -> str:
+    """ """
+    columns = dataframe.columns.tolist()
 
-    Args:
-        file: A Streamlit UploadedFile object or None.
+    target_col = st.selectbox(
+        "Select the target column (dependent variable) to model",
+        options=columns,
+        index=len(columns) - 1,  # Default to last column
+        help="Select the column you want to predict. By default, the last column is selected.",
+        key=ExecutionStateKeys.DependentVariable,
+    )
 
-    Returns:
-        The name of the last column as a string, or None if unavailable.
-    """
-    if file is None:
-        return None
-    try:
-        if file.name.endswith(".csv"):
-            df = pd.read_csv(file, nrows=0)  # Only read header
-        elif file.name.endswith(".xlsx"):
-            df = pd.read_excel(file, nrows=0)
-        else:
-            return None
-        return df.columns[-1] if len(df.columns) > 0 else None
-    except Exception:
-        return None
+    return target_col
 
 
 suggested_problem_type = None
-if uploaded_file is not None:
-    last_col = get_last_column_name(uploaded_file)
-    # Only set if not already set by user
-    if last_col and not st.session_state.get(ExecutionStateKeys.DependentVariableName):
-        st.session_state[ExecutionStateKeys.DependentVariableName] = last_col
 
-    suggested_problem_type = infer_problem_type_from_file()
+if uploaded_file is not None:
+
+    uploaded_file.seek(0)
+    data = read_uploaded_data(uploaded_file=uploaded_file)
+    if st.checkbox("Show uploaded data"):
+        st.markdown(" #### Uploaded data")
+        st.dataframe(data)
+
+    target_col = select_target_column(data)
+
+    suggested_problem_type = infer_problem_type_from_column(data[target_col])
     st.write(
-        f"**Suggested problem type based on the last column `{last_col}`: {suggested_problem_type}**"
+        f"**Suggested problem type based on the selected column `{target_col}`: {suggested_problem_type}**"
     )
 
-st.text_input(
-    "Name of the dependent variable. **This will be used for the plots. As default, the name of the last column of the uploaded file will be used**",
-    key=ExecutionStateKeys.DependentVariableName,
-)
+    st.text_input(
+        "Name of the dependent variable. **This will be used for the plots. As default, the name of the selected column of the uploaded file will be used**",
+        value=target_col,
+        key=ExecutionStateKeys.DependentVariableName,
+    )
+
+    feature_cols = [col for col in data.columns if col != target_col]
+
+    # TODO: allow user to select ID columns
+
+    n_features = len(feature_cols)
+    group_size = 150
+
+    if st.toggle(
+        "Select the feature columns manually (optional)",
+        help="By default, all columns except the target column will be used as features. You can manually select specific ones below.",
+    ):
+        # Initialize checkbox states if not set
+        if "feature_checkboxes" not in st.session_state:
+            st.session_state.feature_checkboxes = {col: True for col in feature_cols}
+
+        st.markdown("#### Select which features to include:")
+
+        # Split features into chunks of group_size
+        num_groups = ceil(n_features / group_size)
+        for i in range(num_groups):
+            start_idx = i * group_size
+            end_idx = min((i + 1) * group_size, n_features)
+            group = feature_cols[start_idx:end_idx]
+            first_feat, last_feat = group[0], group[-1]
+
+            with st.expander(
+                f"Features {start_idx + 1}–{end_idx} ({len(group)}) | {first_feat} → {last_feat}"
+            ):
+                # Select-all toggle for this group
+                select_all_key = f"group_select_{i}"
+
+                select_all = st.toggle(
+                    "Select all features in this group",
+                    value=False,
+                    key=select_all_key,
+                )
+
+                st.divider()
+                cols = st.columns(5)  # Adjust layout columns per row
+
+                for j, col_name in enumerate(group):
+                    with cols[j % 5]:
+                        st.session_state.feature_checkboxes[col_name] = st.checkbox(
+                            col_name,
+                            value=(select_all),
+                            key=f"chk_{col_name}",
+                        )
+
+        # Extract selected features
+        selected_features = [
+            col
+            for col, checked in st.session_state.feature_checkboxes.items()
+            if checked
+        ]
+
+        # Save to session_state
+        st.session_state[ExecutionStateKeys.FeatureColumns] = selected_features
+
+        # Display summary
+        st.write(f"✅ **Total selected features: `{len(selected_features)}`**")
+        if not selected_features:
+            st.error(
+                "No features selected! Please select some features to create an experiment."
+            )
+            is_valid = False
+
+    else:
+        # Default: all columns except target
+        st.session_state[ExecutionStateKeys.FeatureColumns] = [
+            col for col in data.columns if col != target_col
+        ]
+        st.write(f"Using all {len(feature_cols)} feature columns by default.")
 
 st.selectbox(
     "Problem type",
@@ -275,10 +331,11 @@ st.number_input(
 st.subheader("Configure experiment plots")
 plot_options_box()
 
-st.button(
+if st.button(
     "Create",
     type="primary",
     disabled=not is_valid or not _file_is_uploaded(),
     on_click=_entrypoint,
     args=(save_dir,),
-)
+):
+    st.success(f"Experiment created at `{save_dir}`")

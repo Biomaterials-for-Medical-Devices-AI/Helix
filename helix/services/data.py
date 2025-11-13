@@ -280,6 +280,53 @@ def read_data(data_path: Path, _logger: Logger) -> pd.DataFrame:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
 
 
+def read_uploaded_data(uploaded_file) -> pd.DataFrame:
+    """Read a data file into memory from a '.csv' or '.xlsx' file.
+
+    Args:
+        uploaded_file: The uploaded file to be read.
+
+    Raises:
+        ValueError: The data file wasn't a '.csv' or '.xlsx' file.
+
+    Returns:
+        pd.DataFrame: The data read from the file.
+    """
+    if uploaded_file.name.endswith(".csv"):
+        try:
+            return pd.read_csv(uploaded_file, header=0)
+        except Exception as e:
+            raise ValueError(f"Failed to read uploaded file{os.linesep}{e}")
+    elif uploaded_file.name.endswith(".xlsx"):
+        try:
+            return pd.read_excel(uploaded_file, header=0)
+        except Exception as e:
+            raise ValueError(f"Failed to read uploaded file{os.linesep}{e}")
+    else:
+        raise ValueError("uploaded_file must be a '.csv' or '.xlsx' file")
+
+
+def rearrange_data(df: pd.DataFrame, data_opts: DataOptions):
+    """Rearranges the data frame so that all feature columns are first and the target column last.
+
+    Args:
+        df (pd.DataFrame): The data frame to rearrange.
+        data_opts (DataOptions): The data options containing the target and feature columns.
+
+    Returns:
+        pd.DataFrame: The rearranged data frame.
+    """
+
+    target_col = data_opts.target_column
+    feature_cols = data_opts.feature_columns
+
+    cols = feature_cols + [target_col]
+
+    df = df[cols]
+
+    return df
+
+
 def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
     """Save data to either a '.csv' or '.xlsx' file.
 
@@ -307,12 +354,3 @@ def save_data(data_path: Path, data: pd.DataFrame, logger: Logger):
             raise
     else:
         raise ValueError("data_path must be to a '.csv' or '.xlsx' file")
-
-
-def read_uploaded_file(uploaded_file):
-    if uploaded_file.name.endswith(".csv"):
-        data = pd.read_csv(uploaded_file)
-    elif uploaded_file.name.endswith(".xlsx"):
-        data = pd.read_excel(uploaded_file)
-
-    return data
