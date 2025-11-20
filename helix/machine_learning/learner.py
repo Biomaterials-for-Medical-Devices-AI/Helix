@@ -2,6 +2,7 @@ from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
@@ -135,51 +136,59 @@ class Learner:
         metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
+        def _fit_single_model_holdout(model_name: str, params: dict, X_train, X_test, y_train, y_test):
+            model_res = {}
+            model_type = get_model_type(model_name, self._problem_type)
+            model = get_model(model_type, params["params"])
+            self._logger.info(f"Fitting {model_name}...")
+
+            # Standard model handling
+            model.fit(X_train, y_train)
+            y_pred_train = model.predict(X_train)
+            model_res["y_pred_train"] = y_pred_train
+            y_pred_test = model.predict(X_test)
+            model_res["y_pred_test"] = y_pred_test
+
+            if self._problem_type == ProblemTypes.Classification:
+                y_pred_probs_train = model.predict_proba(X_train)
+                model_res["y_pred_train_proba"] = y_pred_probs_train
+                y_pred_probs_test = model.predict_proba(X_test)
+                model_res["y_pred_test_proba"] = y_pred_probs_test
+            else:
+                y_pred_probs_train = None
+                y_pred_probs_test = None
+
+            model_metrics = _evaluate(
+                model_name,
+                self._metrics,
+                y_train,
+                y_pred_train,
+                y_pred_probs_train,
+                y_test,
+                y_pred_test,
+                y_pred_probs_test,
+                self._logger,
+                self._problem_type,
+            )
+
+            return model_name, model_res, model_metrics, model
+
         for i in range(self._data_split.n_bootstraps):
-            self._logger.info(f"Processing bootstrap sample {i+1}...")
+            self._logger.info(f"\n\n PROCESSING BOOSTRAP NUMBER {i+1}...")
             X_train, X_test, y_train, y_test = self._process_data_for_bootstrap(data, i)
 
             res[i] = {}
-            for model_name, params in self._model_types.items():
 
-                res[i][model_name] = {}
-                model_type = get_model_type(model_name, self._problem_type)
-                model = get_model(model_type, params["params"])
-                self._logger.info(f"Fitting {model_name} for bootstrap number {i+1}...")
+            results = Parallel(n_jobs=-1, prefer="threads")(
+                delayed(_fit_single_model_holdout)(model_name, params, X_train, X_test, y_train, y_test)
+                for model_name, params in self._model_types.items()
+            )
 
-                # Standard model handling
-                model.fit(X_train, y_train)
-                y_pred_train = model.predict(X_train)
-                res[i][model_name]["y_pred_train"] = y_pred_train
-                y_pred_test = model.predict(X_test)
-                res[i][model_name]["y_pred_test"] = y_pred_test
-
-                if self._problem_type == ProblemTypes.Classification:
-                    y_pred_probs_train = model.predict_proba(X_train)
-                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
-                    y_pred_probs_test = model.predict_proba(X_test)
-                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
-                else:
-                    y_pred_probs_train = None
-                    y_pred_probs_test = None
-
+            for model_name, model_res, model_metrics, model in results:
+                res[i][model_name] = model_res
                 if model_name not in metrics_full:
                     metrics_full[model_name] = []
-                metrics_full[model_name].append(
-                    _evaluate(
-                        model_name,
-                        self._metrics,
-                        y_train,
-                        y_pred_train,
-                        y_pred_probs_train,
-                        y_test,
-                        y_pred_test,
-                        y_pred_probs_test,
-                        self._logger,
-                        self._problem_type,
-                    )
-                )
-
+                metrics_full[model_name].append(model_metrics)
                 trained_models[model_name].append(model)
 
         metrics_mean_std = _compute_metrics_mean_std(metrics_full)
@@ -191,52 +200,60 @@ class Learner:
         metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
+        def _fit_single_model_kfold(model_name: str, params: dict, X_train, X_test, y_train, y_test):
+            model_res = {}
+            self._logger.info(f"Fitting {model_name}...")
+            model_type = get_model_type(model_name, self._problem_type)
+            model = get_model(model_type, params["params"])
+
+            # Standard model handling
+            model.fit(X_train, y_train)
+            y_pred_train = model.predict(X_train)
+            model_res["y_pred_train"] = y_pred_train
+            y_pred_test = model.predict(X_test)
+            model_res["y_pred_test"] = y_pred_test
+
+            if self._problem_type == ProblemTypes.Classification:
+                y_pred_probs_train = model.predict_proba(X_train)
+                model_res["y_pred_train_proba"] = y_pred_probs_train
+                y_pred_probs_test = model.predict_proba(X_test)
+                model_res["y_pred_test_proba"] = y_pred_probs_test
+            else:
+                y_pred_probs_train = None
+                y_pred_probs_test = None
+
+            model_metrics = _evaluate(
+                model_name,
+                self._metrics,
+                y_train,
+                y_pred_train,
+                y_pred_probs_train,
+                y_test,
+                y_pred_test,
+                y_pred_probs_test,
+                self._logger,
+                self._problem_type,
+            )
+
+            return model_name, model_res, model_metrics, model
+
         for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
             X_train, X_test = data.X_train[i].to_numpy(), data.X_test[i].to_numpy()
             y_train, y_test = data.y_train[i].to_numpy(), data.y_test[i].to_numpy()
 
             res[i] = {}
-            for model_name, params in self._model_types.items():
 
-                res[i][model_name] = {}
-                self._logger.info(f"Fitting {model_name} for test fold sample {i+1}...")
-                model_type = get_model_type(model_name, self._problem_type)
-                model = get_model(model_type, params["params"])
+            results = Parallel(n_jobs=-1, prefer="threads")(
+                delayed(_fit_single_model_kfold)(model_name, params, X_train, X_test, y_train, y_test)
+                for model_name, params in self._model_types.items()
+            )
 
-                # Standard model handling
-                model.fit(X_train, y_train)
-                y_pred_train = model.predict(X_train)
-                res[i][model_name]["y_pred_train"] = y_pred_train
-                y_pred_test = model.predict(X_test)
-                res[i][model_name]["y_pred_test"] = y_pred_test
-
-                if self._problem_type == ProblemTypes.Classification:
-                    y_pred_probs_train = model.predict_proba(X_train)
-                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
-                    y_pred_probs_test = model.predict_proba(X_test)
-                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
-                else:
-                    y_pred_probs_train = None
-                    y_pred_probs_test = None
-
+            for model_name, model_res, model_metrics, model in results:
+                res[i][model_name] = model_res
                 if model_name not in metrics_full:
                     metrics_full[model_name] = []
-                metrics_full[model_name].append(
-                    _evaluate(
-                        model_name,
-                        self._metrics,
-                        y_train,
-                        y_pred_train,
-                        y_pred_probs_train,
-                        y_test,
-                        y_pred_test,
-                        y_pred_probs_test,
-                        self._logger,
-                        self._problem_type,
-                    )
-                )
-
+                metrics_full[model_name].append(model_metrics)
                 trained_models[model_name].append(model)
 
         metrics_mean_std = _compute_metrics_mean_std(metrics_full)
@@ -430,7 +447,7 @@ def _evaluate(
         - y_pred_probs_test (np.ndarray): Predicted probabilities for the test set.
         - logger (object): The logger.
     """
-    logger.info(f"Evaluating {model_name}...")
+    logger.info(f"Starting evaluation for {model_name}...")
     eval_res = {}
 
     if y_pred_probs_test is not None and y_pred_probs_test.shape[1] < 3:
@@ -440,7 +457,7 @@ def _evaluate(
 
     for metric_name, metric in metrics.items():
         eval_res[metric_name] = {}
-        logger.info(f"Evaluating {model_name} on {metric_name}...")
+        logger.info(f"Evaluating {model_name} on metric {metric_name} (train/test)...")
 
         # Regression
         if problem_type == ProblemTypes.Regression:
@@ -472,6 +489,7 @@ def _evaluate(
         eval_res[metric_name]["test"] = {
             "value": metric_test,
         }
+    logger.info(f"Finished evaluation for {model_name}.")
     return eval_res
 
 
