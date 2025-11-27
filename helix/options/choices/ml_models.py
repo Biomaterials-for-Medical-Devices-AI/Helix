@@ -13,6 +13,7 @@ from sklearn.neural_network import MLPClassifier, MLPRegressor
 from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
+from helix.machine_learning.models.KANs import KANClassifier, KANRegressor
 from helix.machine_learning.models.mlrem import EMLinearRegression
 from helix.machine_learning.models.svm import SVC, SVR
 from helix.options.enums import ModelNames
@@ -59,6 +60,7 @@ CLASSIFIERS: dict[ModelNames, type] = {
     ModelNames.MLP: MLPClassifier,
     ModelNames.GNB: GaussianNB,
     ModelNames.BRNN: BRNNClassifier,
+    ModelNames.KAN: KANClassifier,
 }
 
 REGRESSORS: dict[ModelNames, type] = {
@@ -73,4 +75,5 @@ REGRESSORS: dict[ModelNames, type] = {
     ModelNames.KNearestNeighbours: KNeighborsRegressor,
     ModelNames.MLP: MLPRegressor,
     ModelNames.BRNN: BRNNRegressor,
+    ModelNames.KAN: KANRegressor,
 }

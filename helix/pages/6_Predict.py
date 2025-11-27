@@ -29,6 +29,7 @@ from helix.services.data import read_uploaded_data
 from helix.services.experiments import get_experiments
 from helix.services.ml_models import load_models
 from helix.services.preprocessing import find_non_numeric_columns
+from helix.utils.utils import get_trained_ml_models
 
 # Set page contents
 st.set_page_config(
@@ -49,7 +50,7 @@ def get_predictions(
     X = raw_data[independent_variable_col_names]
     predict_data = predict_data[independent_variable_col_names]
 
-    if preprocessing_options.data_is_preprocessed:
+    if preprocessing_options is not None and preprocessing_options.data_is_preprocessed:
 
         columns_to_drop = find_non_numeric_columns(X)
         if columns_to_drop:
@@ -74,7 +75,8 @@ def get_predictions(
         ml_model_dir(
             helix_experiments_base_dir()
             / st.session_state[ExecutionStateKeys.ExperimentName]
-        )
+        ),
+        models,
     )
 
     predictions_df = pd.DataFrame()
@@ -171,9 +173,7 @@ if experiment_name:
 
     model_dir = ml_model_dir(base_dir / experiment_name)
     if model_dir.exists():
-        model_choices = list(
-            filter(lambda x: x.endswith(".pkl"), [x.name for x in model_dir.iterdir()])
-        )
+        model_choices = get_trained_ml_models(model_dir)
     else:
         model_choices = []
 
@@ -182,7 +182,12 @@ if experiment_name:
             "You don't have any trained models in this experiment. "
             "Go to **Train Models** to create some models to evaulate."
         )
-
+    elif st.toggle(
+        "Predict using all trained models",
+        key=PredictStateKeys.ExplainAllModels,
+    ):
+        models = model_choices
+        st.session_state[PredictStateKeys.PredictModels] = models
     else:
         models = model_selector(
             options=model_choices,

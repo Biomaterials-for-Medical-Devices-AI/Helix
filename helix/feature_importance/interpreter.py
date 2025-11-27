@@ -107,6 +107,8 @@ class FeatureImportanceEstimator:
             return feature_importance_results
 
         # Iterate through all data indices
+        # NOTE: THIS IS KINDA WRONG. We are assuming user wants to explain all bootstraps/folds,
+        # which might not be the case. This will work if all the models are selected
         for idx in range(len(data.X_train)):
             X, y = data.X_train[idx], data.y_train[idx]
 

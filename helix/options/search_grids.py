@@ -1,6 +1,34 @@
 from helix.options.choices.ui import SVM_KERNELS
 from helix.options.enums import ActivationFunctions
 
+
+def _create_KAN_width():
+    max_num_neurons = 8
+    max_num_hidden_layers = 3
+
+    widths = [
+        [neurons for _ in range(hid_layer)]
+        for neurons in range(3, max_num_neurons, 2)
+        for hid_layer in range(1, max_num_hidden_layers)
+    ]
+
+    return widths
+
+
+def get_KAN_grid():
+
+    KAN_GRID = {
+        "width": _create_KAN_width(),
+        "grid": [5, 7],
+        "k": [1, 3],
+        "epochs": [100, 200],
+        "lr": [1.0, 0.1, 0.01],
+        "batch": [-1, 16, 32],
+    }
+
+    return KAN_GRID
+
+
 LINEAR_MODEL_GRID = {
     "fit_intercept": [True, False],
 }
