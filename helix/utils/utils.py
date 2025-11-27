@@ -8,6 +8,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import torch
 
 from helix.options.data import DataOptions
 from helix.services.data import rearrange_data, save_data
@@ -23,10 +24,10 @@ def set_seed(seed: int) -> None:
     seed: int
         The seed to use for the experiment
     """
-    # torch.manual_seed(seed)
+    torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
-    # torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
 
 
 def log_options(log_directory, opt: argparse.Namespace):
