@@ -40,7 +40,6 @@ class KANMixin(KAN):
                 seed=seed,
                 auto_save=False,
             )
-            self.loading_model = loading_model
 
         self.width = width
         self.grid = grid
@@ -51,6 +50,7 @@ class KANMixin(KAN):
         self.batch = batch
         self.problem_type = problem_type
         self.seed = seed
+        self.loading_model = loading_model
         self._kan_initialized = False
 
     # this is the same fit function as in the original MultKAN class, but with small modifications to match with Helix's API
@@ -425,6 +425,11 @@ class KANMixin(KAN):
             batch=model.batch,
             seed=model.seed,
             problem_type=model.problem_type.value,
+            classes=(
+                model.classes_
+                if model.problem_type.value == ProblemTypes.Classification
+                else None
+            ),
             _kan_initialized=model._kan_initialized,
             auto_save=model.auto_save,
             ckpt_path=model.ckpt_path,
@@ -473,34 +478,54 @@ class KANMixin(KAN):
         problem_type = config["problem_type"]
 
         if problem_type == ProblemTypes.Regression:
-            kan_model = KANRegressor
+            kan_model = KANRegressor(
+                width=config["width"],
+                grid=config["grid"],
+                k=config["k"],
+                epochs=config["epochs"],
+                lr=config["lr"],
+                batch=config["batch"],
+                seed=config["seed"],
+                loading_model=True,
+            )
         elif problem_type == ProblemTypes.Classification:
-            kan_model == KANClassifier
+            kan_model = KANClassifier(
+                width=config["width"],
+                grid=config["grid"],
+                k=config["k"],
+                epochs=config["epochs"],
+                lr=config["lr"],
+                batch=config["batch"],
+                seed=config["seed"],
+                loading_model=True,
+                classes=config["classes"],
+            )
 
-        model_load = kan_model(
-            width=config["width"],
-            grid=config["grid"],
-            k=config["k"],
-            epochs=config["epochs"],
-            lr=config["lr"],
-            batch=config["batch"],
-            seed=config["seed"],
-            loading_model=True,
-            # mult_arity=config["mult_arity"],
-            # base_fun=config["base_fun_name"],
-            # symbolic_enabled=config["symbolic_enabled"],
-            # affine_trainable=config["affine_trainable"],
-            # grid_eps=config["grid_eps"],
-            # grid_range=config["grid_range"],
-            # sp_trainable=config["sp_trainable"],
-            # sb_trainable=config["sb_trainable"],
-            # state_id=config["state_id"],
-            # auto_save=config["auto_save"],
-            # first_init=False,
-            # ckpt_path=config["ckpt_path"],
-            # round=config["round"] + 1,
-            # device=config["device"],
-        )
+        model_load = kan_model
+        # model_load = kan_model(
+        #     width=config["width"],
+        #     grid=config["grid"],
+        #     k=config["k"],
+        #     epochs=config["epochs"],
+        #     lr=config["lr"],
+        #     batch=config["batch"],
+        #     seed=config["seed"],
+        #     loading_model=True,
+        # mult_arity=config["mult_arity"],
+        # base_fun=config["base_fun_name"],
+        # symbolic_enabled=config["symbolic_enabled"],
+        # affine_trainable=config["affine_trainable"],
+        # grid_eps=config["grid_eps"],
+        # grid_range=config["grid_range"],
+        # sp_trainable=config["sp_trainable"],
+        # sb_trainable=config["sb_trainable"],
+        # state_id=config["state_id"],
+        # auto_save=config["auto_save"],
+        # first_init=False,
+        # ckpt_path=config["ckpt_path"],
+        # round=config["round"] + 1,
+        # device=config["device"],
+        # )
 
         model_load.load_state_dict(state)
         model_load.cache_data = torch.load(f"{path}_cache_data")
@@ -536,30 +561,45 @@ class KANClassifier(ClassifierMixin, BaseEstimator, KANMixin):
         batch: int = -1,
         seed: int = 42,
         loading_model=False,
+        classes=None,
     ):
 
+        # TODO: correct to use appropriate loss when it is fixed in the future
         super().__init__(
             width=width,
             grid=grid,
             k=k,
             seed=seed,
             epochs=epochs,
-            loss_fn=CrossEntropyLoss(),
+            loss_fn=None,
+            # loss_fn=CrossEntropyLoss(),
             lr=lr,
             batch=batch,
             problem_type=ProblemTypes.Classification,
             loading_model=loading_model,
         )
+        self.classes = None
+        self.classes_ = None
+        if loading_model:
+            self.classes_ = classes
+
+    def fit(self, X, y):
+
+        super().fit(X, y)
+        classes = np.unique(y).tolist()
+        self.classes_ = classes
+        self.classes = classes
+
+        return self
 
     def predict(self, X):
         y_pred_prob = self.predict_proba(X)
-        y_pred = (y_pred_prob > 0.5).astype(int)
-
+        y_pred = np.argmax(y_pred_prob, axis=1)
         return y_pred
 
     def predict_proba(self, X):
         X = self.sanitise_X(X)
-        y_pred_prob = self.forward(X).detach().numpy().ravel()
+        y_pred_prob = self.forward(X).detach().numpy()
         return y_pred_prob
 
 
