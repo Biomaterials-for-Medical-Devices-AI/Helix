@@ -16,10 +16,10 @@ def _create_KAN_width():
     return widths
 
 
-def get_KAN_grid(in_feats, out_nodes):
+def get_KAN_grid():
 
     KAN_GRID = {
-        "width": _create_KAN_width(in_feats, out_nodes),
+        "width": _create_KAN_width(),
         "grid": [5, 7],
         "k": [1, 3],
         "epochs": [100, 200],
