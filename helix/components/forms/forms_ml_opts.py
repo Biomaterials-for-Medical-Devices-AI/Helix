@@ -41,6 +41,7 @@ from helix.options.search_grids import (
     RIDGE_GRID,
     SVM_GRID,
     XGB_GRID,
+    get_KAN_grid,
 )
 
 
@@ -48,7 +49,7 @@ from helix.options.search_grids import (
 # Below are the options for which models will be used
 ###########################################################################
 @st.experimental_fragment
-def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
+def ml_options_form(problem_type: ProblemTypes):
     """
     The form for setting up the machine learning pipeline.
     """
@@ -125,6 +126,9 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
 
     mlp_model_type = _mlp_model_opts(use_hyperparam_search)
     model_types.update(mlp_model_type)
+
+    knn_model_type = _KAN_opts(use_hyperparam_search)
+    model_types.update(knn_model_type)
 
     # if st.toggle("Bayesian Regularised Neural Network", value=False):
     #     brnn_model_type = _brnn_opts(use_hyperparam_search)
@@ -595,6 +599,83 @@ def _mlrem_opts(use_hyperparam_search: bool) -> dict:
             "use": True,
             "params": params,
         }
+
+    return model_types
+
+
+def _KAN_opts(use_hyperparam_search: bool) -> dict:
+    model_types = {}
+
+    if st.toggle("KAN", value=False):
+
+        if not use_hyperparam_search:
+            st.write("Options")
+            n_neurons = st.number_input(
+                "Number of neurons per layer",
+                value=5,
+                min_value=1,
+                max_value=None,
+                step=1,
+            )
+            num_hidden_layers = st.number_input(
+                "Number of hidden layers", value=1, min_value=1, max_value=None, step=1
+            )
+
+            width = [n_neurons] * num_hidden_layers
+
+            grid = st.slider(
+                "Number of grid intervals",
+                min_value=1,
+                max_value=10,
+                value=5,
+                step=1,
+            )
+
+            k = st.slider(
+                "Spline order",
+                min_value=1,
+                max_value=10,
+                value=3,
+                step=1,
+            )
+
+            epochs = st.slider(
+                "Number of epochs (training iterations)",
+                min_value=10,
+                max_value=300,
+                value=100,
+                step=1,
+            )
+
+            lr = st.number_input(
+                "Learning rate",
+                min_value=0.005,
+                max_value=1.0,
+                value=0.1,
+                step=0.005,
+            )
+
+            batch = st.number_input(
+                "Batch size",
+                min_value=16,
+                max_value=128,
+                value=64,
+                step=16,
+            )
+            params = {
+                "width": width,
+                "grid": grid,
+                "k": k,
+                "epochs": epochs,
+                "lr": lr,
+                "batch": batch,
+            }
+            st.divider()
+
+        else:
+            params = get_KAN_grid()
+
+        model_types[ModelNames.KAN.value] = {"use": True, "params": params}
 
     return model_types
 
