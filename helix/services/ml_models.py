@@ -1,7 +1,6 @@
 import json
-import os
 from pathlib import Path
-from pickle import UnpicklingError, dump, load
+from pickle import dump, load
 from typing import TypeVar
 
 from kan import KAN
