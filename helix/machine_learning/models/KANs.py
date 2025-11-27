@@ -1,7 +1,5 @@
-import os
 from copy import deepcopy
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import sympy
@@ -9,7 +7,7 @@ import torch
 import yaml
 from kan import KAN
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
-from torch.nn import CrossEntropyLoss, Module
+from torch.nn import Module
 from tqdm import tqdm
 
 from helix.options.enums import ProblemTypes
@@ -157,47 +155,46 @@ class KANMixin(KAN):
         """
 
         # NOTE: this initialises the parent class KAN with the proper NN structure
-        if not self._kan_initialized:
-            in_feats = X.shape[1]
-            out_nodes = (
-                len(np.unique(y))
-                if self.problem_type == ProblemTypes.Classification
-                else 1
-            )
+        # if not self._kan_initialized:
+        in_feats = X.shape[1]
+        out_nodes = (
+            len(np.unique(y)) if self.problem_type == ProblemTypes.Classification else 1
+        )
 
-            new_width = deepcopy(self.width)
-            new_width.insert(0, in_feats)
-            new_width.append(out_nodes)
+        new_width = deepcopy(self.width)
+        new_width.insert(0, in_feats)
+        new_width.append(out_nodes)
 
-            KAN.__init__(
-                self,
-                width=new_width,
-                grid=self.grid,
-                k=self.k,
-                seed=self.seed,
-                auto_save=False,
-            )
+        KAN.__init__(
+            self,
+            width=new_width,
+            grid=self.grid,
+            k=self.k,
+            seed=self.seed,
+            auto_save=False,
+        )
 
-            self._kan_initialized = True
+        self._kan_initialized = True
 
         # take training arguments from the init method
-        opt = "Adam"
+        # opt = "Adam"
         steps = self.epochs
         loss_fn = self.loss_fn
         lr = self.lr
         batch = self.batch
 
-        if lamb > 0.0 and not self.save_act:
-            print("setting lamb=0. If you want to set lamb > 0, set self.save_act=True")
+        # if lamb > 0.0 and not self.save_act:
+        #     print("setting lamb=0. If you want to set lamb > 0, set self.save_act=True")
 
         old_save_act, old_symbolic_enabled = self.disable_symbolic_in_fit(lamb)
 
         pbar = tqdm(range(steps), desc="description", ncols=100)
 
-        if loss_fn == None:
-            loss_fn = loss_fn_eval = lambda x, y: torch.mean((x - y) ** 2)
-        else:
-            loss_fn = loss_fn_eval = loss_fn
+        # NOTE: due to Helix current limitations, only this loss will work
+        # if loss_fn is None:
+        loss_fn = loss_fn_eval = lambda x, y: torch.mean((x - y) ** 2)
+        # else:
+        #    loss_fn = loss_fn_eval = loss_fn
 
         grid_update_freq = int(stop_grid_update_step / grid_update_num)
 
@@ -232,9 +229,10 @@ class KANMixin(KAN):
         dataset["test_input"] = X
         dataset["test_label"] = y
 
-        if metrics != None:
-            for i in range(len(metrics)):
-                results[metrics[i].__name__] = []
+        # NOTE: metrics will always be None in helix
+        # if metrics is not None:
+        #     for i in range(len(metrics)):
+        #         results[metrics[i].__name__] = []
 
         if batch == -1 or batch > dataset["train_input"].shape[0]:
             batch_size = dataset["train_input"].shape[0]
@@ -245,41 +243,41 @@ class KANMixin(KAN):
 
         global train_loss, reg_
 
-        def closure():
-            global train_loss, reg_
-            optimizer.zero_grad()
-            pred = self.forward(
-                dataset["train_input"][train_id],
-                singularity_avoiding=singularity_avoiding,
-                y_th=y_th,
-            )
-            train_loss = loss_fn(pred, dataset["train_label"][train_id])
-            if self.save_act:
-                if reg_metric == "edge_backward":
-                    self.attribute()
-                if reg_metric == "node_backward":
-                    self.node_attribute()
-                reg_ = self.get_reg(
-                    reg_metric, lamb_l1, lamb_entropy, lamb_coef, lamb_coefdiff
-                )
-            else:
-                reg_ = torch.tensor(0.0)
-            objective = train_loss + lamb * reg_
-            objective.backward()
-            return objective
+        # def closure():
+        #     global train_loss, reg_
+        #     optimizer.zero_grad()
+        #     pred = self.forward(
+        #         dataset["train_input"][train_id],
+        #         singularity_avoiding=singularity_avoiding,
+        #         y_th=y_th,
+        #     )
+        #     train_loss = loss_fn(pred, dataset["train_label"][train_id])
+        #     if self.save_act:
+        #         if reg_metric == "edge_backward":
+        #             self.attribute()
+        #         if reg_metric == "node_backward":
+        #             self.node_attribute()
+        #         reg_ = self.get_reg(
+        #             reg_metric, lamb_l1, lamb_entropy, lamb_coef, lamb_coefdiff
+        #         )
+        #     else:
+        #         reg_ = torch.tensor(0.0)
+        #     objective = train_loss + lamb * reg_
+        #     objective.backward()
+        #     return objective
 
-        if save_fig:
-            if not os.path.exists(img_folder):
-                os.makedirs(img_folder)
+        # if save_fig:
+        #     if not os.path.exists(img_folder):
+        #         os.makedirs(img_folder)
 
         for _ in pbar:
 
             if _ == steps - 1 and old_save_act:
                 self.save_act = True
 
-            if save_fig and _ % save_fig_freq == 0:
-                save_act = self.save_act
-                self.save_act = True
+            # if save_fig and _ % save_fig_freq == 0:
+            #     save_act = self.save_act
+            #     self.save_act = True
 
             train_id = np.random.choice(
                 dataset["train_input"].shape[0], batch_size, replace=False
@@ -296,79 +294,80 @@ class KANMixin(KAN):
             ):
                 self.update_grid(dataset["train_input"][train_id])
 
-            if opt == "LBFGS":
-                optimizer.step(closure)
+            # if opt == "LBFGS":
+            #     optimizer.step(closure)
 
-            if opt == "Adam":
-                pred = self.forward(
-                    dataset["train_input"][train_id],
-                    singularity_avoiding=singularity_avoiding,
-                    y_th=y_th,
+            # if opt == "Adam":
+            pred = self.forward(
+                dataset["train_input"][train_id],
+                singularity_avoiding=singularity_avoiding,
+                y_th=y_th,
+            )
+            train_loss = loss_fn(pred, dataset["train_label"][train_id])
+            if self.save_act:
+                if reg_metric == "edge_backward":
+                    self.attribute()
+                if reg_metric == "node_backward":
+                    self.node_attribute()
+                reg_ = self.get_reg(
+                    reg_metric, lamb_l1, lamb_entropy, lamb_coef, lamb_coefdiff
                 )
-                train_loss = loss_fn(pred, dataset["train_label"][train_id])
-                if self.save_act:
-                    if reg_metric == "edge_backward":
-                        self.attribute()
-                    if reg_metric == "node_backward":
-                        self.node_attribute()
-                    reg_ = self.get_reg(
-                        reg_metric, lamb_l1, lamb_entropy, lamb_coef, lamb_coefdiff
-                    )
-                else:
-                    reg_ = torch.tensor(0.0)
-                loss = train_loss + lamb * reg_
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
+            else:
+                reg_ = torch.tensor(0.0)
+            loss = train_loss + lamb * reg_
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
 
             test_loss = loss_fn_eval(
                 self.forward(dataset["test_input"][test_id]),
                 dataset["test_label"][test_id],
             )
 
-            if metrics != None:
-                for i in range(len(metrics)):
-                    results[metrics[i].__name__].append(metrics[i]().item())
+            # NOTE: metrics will always be None in helix
+            # if metrics is not None:
+            #     for i in range(len(metrics)):
+            #         results[metrics[i].__name__].append(metrics[i]().item())
 
             results["train_loss"].append(torch.sqrt(train_loss).cpu().detach().numpy())
             results["test_loss"].append(torch.sqrt(test_loss).cpu().detach().numpy())
             results["reg"].append(reg_.cpu().detach().numpy())
 
             if _ % log == 0:
-                if display_metrics == None:
-                    pbar.set_description(
-                        "| train_loss: %.2e | test_loss: %.2e | reg: %.2e | "
-                        % (
-                            torch.sqrt(train_loss).cpu().detach().numpy(),
-                            torch.sqrt(test_loss).cpu().detach().numpy(),
-                            reg_.cpu().detach().numpy(),
-                        )
+                # if display_metrics is None:
+                pbar.set_description(
+                    "| train_loss: %.2e | test_loss: %.2e | reg: %.2e | "
+                    % (
+                        torch.sqrt(train_loss).cpu().detach().numpy(),
+                        torch.sqrt(test_loss).cpu().detach().numpy(),
+                        reg_.cpu().detach().numpy(),
                     )
-                else:
-                    string = ""
-                    data = ()
-                    for metric in display_metrics:
-                        string += f" {metric}: %.2e |"
-                        try:
-                            results[metric]
-                        except:
-                            raise Exception(f"{metric} not recognized")
-                        data += (results[metric][-1],)
-                    pbar.set_description(string % data)
+                )
+            # else:
+            #     string = ""
+            #     data = ()
+            #     for metric in display_metrics:
+            #         string += f" {metric}: %.2e |"
+            #         try:
+            #             results[metric]
+            #         except:
+            #             raise Exception(f"{metric} not recognized")
+            #         data += (results[metric][-1],)
+            #     pbar.set_description(string % data)
 
-            if save_fig and _ % save_fig_freq == 0:
-                self.plot(
-                    folder=img_folder,
-                    in_vars=in_vars,
-                    out_vars=out_vars,
-                    title="Step {}".format(_),
-                    beta=beta,
-                )
-                plt.savefig(
-                    img_folder + "/" + str(_) + ".jpg", bbox_inches="tight", dpi=200
-                )
-                plt.close()
-                self.save_act = save_act
+            # if save_fig and _ % save_fig_freq == 0:
+            #     self.plot(
+            #         folder=img_folder,
+            #         in_vars=in_vars,
+            #         out_vars=out_vars,
+            #         title="Step {}".format(_),
+            #         beta=beta,
+            #     )
+            #     plt.savefig(
+            #         img_folder + "/" + str(_) + ".jpg", bbox_inches="tight", dpi=200
+            #     )
+            #     plt.close()
+            #     self.save_act = save_act
 
         self.log_history("fit")
         # revert back to original state
@@ -532,19 +531,21 @@ class KANMixin(KAN):
         model_load.cache_data = torch.load(f"{path}_cache_data")
 
         depth = len(model_load.width) - 1
-        for l in range(depth):
-            out_dim = model_load.symbolic_fun[l].out_dim
-            in_dim = model_load.symbolic_fun[l].in_dim
-            funs_name = config[f"symbolic.funs_name.{l}"]
+        for layer in range(depth):
+            out_dim = model_load.symbolic_fun[layer].out_dim
+            in_dim = model_load.symbolic_fun[layer].in_dim
+            funs_name = config[f"symbolic.funs_name.{layer}"]
             for j in range(out_dim):
                 for i in range(in_dim):
                     fun_name = funs_name[j][i]
-                    model_load.symbolic_fun[l].funs_name[j][i] = fun_name
-                    model_load.symbolic_fun[l].funs[j][i] = SYMBOLIC_LIB[fun_name][0]
-                    model_load.symbolic_fun[l].funs_sympy[j][i] = SYMBOLIC_LIB[
+                    model_load.symbolic_fun[layer].funs_name[j][i] = fun_name
+                    model_load.symbolic_fun[layer].funs[j][i] = SYMBOLIC_LIB[fun_name][
+                        0
+                    ]
+                    model_load.symbolic_fun[layer].funs_sympy[j][i] = SYMBOLIC_LIB[
                         fun_name
                     ][1]
-                    model_load.symbolic_fun[l].funs_avoid_singularity[j][i] = (
+                    model_load.symbolic_fun[layer].funs_avoid_singularity[j][i] = (
                         SYMBOLIC_LIB[fun_name][3]
                     )
         return model_load
@@ -639,71 +640,191 @@ class KANRegressor(RegressorMixin, BaseEstimator, KANMixin):
         return y_pred
 
 
-f_inv = lambda x, y_th: (
-    (x_th := 1 / y_th),
-    y_th / x_th * x * (torch.abs(x) < x_th)
-    + torch.nan_to_num(1 / x) * (torch.abs(x) >= x_th),
-)
-f_inv2 = lambda x, y_th: (
-    (x_th := 1 / y_th ** (1 / 2)),
-    y_th * (torch.abs(x) < x_th) + torch.nan_to_num(1 / x**2) * (torch.abs(x) >= x_th),
-)
-f_inv3 = lambda x, y_th: (
-    (x_th := 1 / y_th ** (1 / 3)),
-    y_th / x_th * x * (torch.abs(x) < x_th)
-    + torch.nan_to_num(1 / x**3) * (torch.abs(x) >= x_th),
-)
-f_inv4 = lambda x, y_th: (
-    (x_th := 1 / y_th ** (1 / 4)),
-    y_th * (torch.abs(x) < x_th) + torch.nan_to_num(1 / x**4) * (torch.abs(x) >= x_th),
-)
-f_inv5 = lambda x, y_th: (
-    (x_th := 1 / y_th ** (1 / 5)),
-    y_th / x_th * x * (torch.abs(x) < x_th)
-    + torch.nan_to_num(1 / x**5) * (torch.abs(x) >= x_th),
-)
-f_sqrt = lambda x, y_th: (
-    (x_th := 1 / y_th**2),
-    x_th / y_th * x * (torch.abs(x) < x_th)
-    + torch.nan_to_num(torch.sqrt(torch.abs(x)) * torch.sign(x))
-    * (torch.abs(x) >= x_th),
-)
-f_power1d5 = lambda x, y_th: torch.abs(x) ** 1.5
-f_invsqrt = lambda x, y_th: (
-    (x_th := 1 / y_th**2),
-    y_th * (torch.abs(x) < x_th)
-    + torch.nan_to_num(1 / torch.sqrt(torch.abs(x))) * (torch.abs(x) >= x_th),
-)
-f_log = lambda x, y_th: (
-    (x_th := torch.e ** (-y_th)),
-    -y_th * (torch.abs(x) < x_th)
-    + torch.nan_to_num(torch.log(torch.abs(x))) * (torch.abs(x) >= x_th),
-)
-f_tan = lambda x, y_th: (
-    (clip := x % torch.pi),
-    (delta := torch.pi / 2 - torch.arctan(y_th)),
-    -y_th / delta * (clip - torch.pi / 2) * (torch.abs(clip - torch.pi / 2) < delta)
-    + torch.nan_to_num(torch.tan(clip)) * (torch.abs(clip - torch.pi / 2) >= delta),
-)
-f_arctanh = lambda x, y_th: (
-    (delta := 1 - torch.tanh(y_th) + 1e-4),
-    y_th * torch.sign(x) * (torch.abs(x) > 1 - delta)
-    + torch.nan_to_num(torch.arctanh(x)) * (torch.abs(x) <= 1 - delta),
-)
-f_arcsin = lambda x, y_th: (
-    (),
-    torch.pi / 2 * torch.sign(x) * (torch.abs(x) > 1)
-    + torch.nan_to_num(torch.arcsin(x)) * (torch.abs(x) <= 1),
-)
-f_arccos = lambda x, y_th: (
-    (),
-    torch.pi / 2 * (1 - torch.sign(x)) * (torch.abs(x) > 1)
-    + torch.nan_to_num(torch.arccos(x)) * (torch.abs(x) <= 1),
-)
-f_exp = lambda x, y_th: (
-    (x_th := torch.log(y_th)),
-    y_th * (x > x_th) + torch.exp(x) * (x <= x_th),
-)
+def f_inv(x, y_th):
+    x_th = 1 / y_th
+    return (
+        x_th,
+        y_th / x_th * x * (torch.abs(x) < x_th)
+        + torch.nan_to_num(1 / x) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_inv2(x, y_th):
+    x_th = 1 / y_th ** (1 / 2)
+    return (
+        x_th,
+        y_th * (torch.abs(x) < x_th)
+        + torch.nan_to_num(1 / x**2) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_inv3(x, y_th):
+    x_th = 1 / y_th ** (1 / 3)
+    return (
+        x_th,
+        y_th / x_th * x * (torch.abs(x) < x_th)
+        + torch.nan_to_num(1 / x**3) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_inv4(x, y_th):
+    x_th = 1 / y_th ** (1 / 4)
+    return (
+        x_th,
+        y_th * (torch.abs(x) < x_th)
+        + torch.nan_to_num(1 / x**4) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_inv5(x, y_th):
+    x_th = 1 / y_th ** (1 / 5)
+    return (
+        x_th,
+        y_th / x_th * x * (torch.abs(x) < x_th)
+        + torch.nan_to_num(1 / x**5) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_sqrt(x, y_th):
+    x_th = 1 / y_th**2
+    return (
+        x_th,
+        x_th / y_th * x * (torch.abs(x) < x_th)
+        + torch.nan_to_num(torch.sqrt(torch.abs(x)) * torch.sign(x))
+        * (torch.abs(x) >= x_th),
+    )
+
+
+def f_power1d5(x, y_th):
+    return torch.abs(x) ** 1.5
+
+
+def f_invsqrt(x, y_th):
+    x_th = 1 / y_th**2
+    return (
+        x_th,
+        y_th * (torch.abs(x) < x_th)
+        + torch.nan_to_num(1 / torch.sqrt(torch.abs(x))) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_log(x, y_th):
+    x_th = torch.e ** (-y_th)
+    return (
+        x_th,
+        -y_th * (torch.abs(x) < x_th)
+        + torch.nan_to_num(torch.log(torch.abs(x))) * (torch.abs(x) >= x_th),
+    )
+
+
+def f_tan(x, y_th):
+    clip = x % torch.pi
+    delta = torch.pi / 2 - torch.arctan(y_th)
+    return (
+        clip,
+        -y_th / delta * (clip - torch.pi / 2) * (torch.abs(clip - torch.pi / 2) < delta)
+        + torch.nan_to_num(torch.tan(clip)) * (torch.abs(clip - torch.pi / 2) >= delta),
+    )
+
+
+def f_arctanh(x, y_th):
+    delta = 1 - torch.tanh(y_th) + 1e-4
+    return (
+        delta,
+        y_th * torch.sign(x) * (torch.abs(x) > 1 - delta)
+        + torch.nan_to_num(torch.arctanh(x)) * (torch.abs(x) <= 1 - delta),
+    )
+
+
+def f_arcsin(x, y_th):
+    return (
+        (),
+        torch.pi / 2 * torch.sign(x) * (torch.abs(x) > 1)
+        + torch.nan_to_num(torch.arcsin(x)) * (torch.abs(x) <= 1),
+    )
+
+
+def f_arccos(x, y_th):
+    return (
+        (),
+        torch.pi / 2 * (1 - torch.sign(x)) * (torch.abs(x) > 1)
+        + torch.nan_to_num(torch.arccos(x)) * (torch.abs(x) <= 1),
+    )
+
+
+def f_exp(x, y_th):
+    x_th = torch.log(y_th)
+    return (
+        x_th,
+        y_th * (x > x_th) + torch.exp(x) * (x <= x_th),
+    )
+
+
+# f_inv = lambda x, y_th: (
+#     (x_th := 1 / y_th),
+#     y_th / x_th * x * (torch.abs(x) < x_th)
+#     + torch.nan_to_num(1 / x) * (torch.abs(x) >= x_th),
+# )
+# f_inv2 = lambda x, y_th: (
+#     (x_th := 1 / y_th ** (1 / 2)),
+#     y_th * (torch.abs(x) < x_th) + torch.nan_to_num(1 / x**2) * (torch.abs(x) >= x_th),
+# )
+# f_inv3 = lambda x, y_th: (
+#     (x_th := 1 / y_th ** (1 / 3)),
+#     y_th / x_th * x * (torch.abs(x) < x_th)
+#     + torch.nan_to_num(1 / x**3) * (torch.abs(x) >= x_th),
+# )
+# f_inv4 = lambda x, y_th: (
+#     (x_th := 1 / y_th ** (1 / 4)),
+#     y_th * (torch.abs(x) < x_th) + torch.nan_to_num(1 / x**4) * (torch.abs(x) >= x_th),
+# )
+# f_inv5 = lambda x, y_th: (
+#     (x_th := 1 / y_th ** (1 / 5)),
+#     y_th / x_th * x * (torch.abs(x) < x_th)
+#     + torch.nan_to_num(1 / x**5) * (torch.abs(x) >= x_th),
+# )
+# f_sqrt = lambda x, y_th: (
+#     (x_th := 1 / y_th**2),
+#     x_th / y_th * x * (torch.abs(x) < x_th)
+#     + torch.nan_to_num(torch.sqrt(torch.abs(x)) * torch.sign(x))
+#     * (torch.abs(x) >= x_th),
+# )
+# f_power1d5 = lambda x, y_th: torch.abs(x) ** 1.5
+# f_invsqrt = lambda x, y_th: (
+#     (x_th := 1 / y_th**2),
+#     y_th * (torch.abs(x) < x_th)
+#     + torch.nan_to_num(1 / torch.sqrt(torch.abs(x))) * (torch.abs(x) >= x_th),
+# )
+# f_log = lambda x, y_th: (
+#     (x_th := torch.e ** (-y_th)),
+#     -y_th * (torch.abs(x) < x_th)
+#     + torch.nan_to_num(torch.log(torch.abs(x))) * (torch.abs(x) >= x_th),
+# )
+# f_tan = lambda x, y_th: (
+#     (clip := x % torch.pi),
+#     (delta := torch.pi / 2 - torch.arctan(y_th)),
+#     -y_th / delta * (clip - torch.pi / 2) * (torch.abs(clip - torch.pi / 2) < delta)
+#     + torch.nan_to_num(torch.tan(clip)) * (torch.abs(clip - torch.pi / 2) >= delta),
+# )
+# f_arctanh = lambda x, y_th: (
+#     (delta := 1 - torch.tanh(y_th) + 1e-4),
+#     y_th * torch.sign(x) * (torch.abs(x) > 1 - delta)
+#     + torch.nan_to_num(torch.arctanh(x)) * (torch.abs(x) <= 1 - delta),
+# )
+# f_arcsin = lambda x, y_th: (
+#     (),
+#     torch.pi / 2 * torch.sign(x) * (torch.abs(x) > 1)
+#     + torch.nan_to_num(torch.arcsin(x)) * (torch.abs(x) <= 1),
+# )
+# f_arccos = lambda x, y_th: (
+#     (),
+#     torch.pi / 2 * (1 - torch.sign(x)) * (torch.abs(x) > 1)
+#     + torch.nan_to_num(torch.arccos(x)) * (torch.abs(x) <= 1),
+# )
+# f_exp = lambda x, y_th: (
+#     (x_th := torch.log(y_th)),
+#     y_th * (x > x_th) + torch.exp(x) * (x <= x_th),
+# )
 
 SYMBOLIC_LIB = {
     "x": (lambda x: x, lambda x: x, 1, lambda x, y_th: ((), x)),
@@ -780,7 +901,7 @@ SYMBOLIC_LIB = {
         3,
         lambda x, y_th: ((), torch.exp(-(x**2))),
     ),
-    #'cosh': (lambda x: torch.cosh(x), lambda x: sympy.cosh(x), 5),
-    #'sigmoid': (lambda x: torch.sigmoid(x), sympy.Function('sigmoid'), 4),
-    #'relu': (lambda x: torch.relu(x), relu),
+    # 'cosh': (lambda x: torch.cosh(x), lambda x: sympy.cosh(x), 5),
+    # 'sigmoid': (lambda x: torch.sigmoid(x), sympy.Function('sigmoid'), 4),
+    # 'relu': (lambda x: torch.relu(x), relu),
 }
