@@ -1,6 +1,7 @@
+import numpy as np
+
 from helix.options.choices.ui import SVM_KERNELS
 from helix.options.enums import ActivationFunctions
-import numpy as np
 
 
 def _create_KAN_width():

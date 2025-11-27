@@ -56,7 +56,7 @@ from helix.services.experiments import (
 from helix.services.logs import get_logs
 from helix.services.ml_models import load_trained_models
 from helix.utils.logging_utils import Logger, close_logger
-from helix.utils.utils import cancel_pipeline, set_seed, get_trained_ml_models
+from helix.utils.utils import cancel_pipeline, get_trained_ml_models, set_seed
 
 
 def build_configuration() -> tuple[

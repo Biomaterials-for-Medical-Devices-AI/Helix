@@ -1,17 +1,18 @@
 import os
+from copy import deepcopy
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import sympy
 import torch
+import yaml
 from kan import KAN
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from torch.nn import CrossEntropyLoss, Module
 from tqdm import tqdm
+
 from helix.options.enums import ProblemTypes
-from copy import deepcopy
-import sympy
-import yaml
 
 
 class KANMixin(KAN):

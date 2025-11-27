@@ -5,10 +5,10 @@ from pickle import UnpicklingError, dump, load
 from typing import TypeVar
 
 from kan import KAN
-from helix.machine_learning.models.KANs import KANMixin
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
+from helix.machine_learning.models.KANs import KANMixin
 from helix.options.choices.ml_models import CLASSIFIERS, REGRESSORS
 from helix.options.enums import ProblemTypes
 from helix.utils.utils import create_directory, get_trained_ml_models
