@@ -336,11 +336,24 @@ if experiment_name:
 
         model_dir = ml_model_dir(base_dir / experiment_name)
         if model_dir.exists():
+
+            # list of sklearn saved models
             model_choices = list(
                 filter(
-                    lambda x: x.endswith(".pkl"), [x.name for x in model_dir.iterdir()]
+                    lambda x: x.endswith(".pkl"),
+                    [x.name for x in model_dir.iterdir()],
                 )
             )
+
+            # list of KAN saved models
+            KAN_choices = list(
+                filter(
+                    lambda x: x.endswith(".yml"),
+                    [x.name for x in model_dir.iterdir()],
+                )
+            )
+            KAN_choices = [kan.split("_")[0] for kan in KAN_choices]
+            model_choices = sorted(model_choices + KAN_choices)
         else:
             model_choices = []
 
