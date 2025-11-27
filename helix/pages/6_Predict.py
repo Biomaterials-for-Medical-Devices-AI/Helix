@@ -50,7 +50,7 @@ def get_predictions(
     X = raw_data[independent_variable_col_names]
     predict_data = predict_data[independent_variable_col_names]
 
-    if preprocessing_options.data_is_preprocessed:
+    if preprocessing_options is not None and preprocessing_options.data_is_preprocessed:
 
         columns_to_drop = find_non_numeric_columns(X)
         if columns_to_drop:
