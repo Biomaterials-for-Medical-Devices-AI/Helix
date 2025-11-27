@@ -54,9 +54,9 @@ from helix.services.experiments import (
     get_experiments,
 )
 from helix.services.logs import get_logs
-from helix.services.ml_models import load_models_to_explain
+from helix.services.ml_models import load_trained_models
 from helix.utils.logging_utils import Logger, close_logger
-from helix.utils.utils import cancel_pipeline, set_seed
+from helix.utils.utils import cancel_pipeline, set_seed, get_trained_ml_models
 
 
 def build_configuration() -> tuple[
@@ -200,7 +200,7 @@ def pipeline(
     set_seed(seed)
 
     # Models will already be trained before feature importance
-    trained_models = load_models_to_explain(
+    trained_models = load_trained_models(
         ml_model_dir(biofefi_base_dir / experiment_name), explain_models
     )
 
@@ -336,24 +336,7 @@ if experiment_name:
 
         model_dir = ml_model_dir(base_dir / experiment_name)
         if model_dir.exists():
-
-            # list of sklearn saved models
-            model_choices = list(
-                filter(
-                    lambda x: x.endswith(".pkl"),
-                    [x.name for x in model_dir.iterdir()],
-                )
-            )
-
-            # list of KAN saved models
-            KAN_choices = list(
-                filter(
-                    lambda x: x.endswith(".yml"),
-                    [x.name for x in model_dir.iterdir()],
-                )
-            )
-            KAN_choices = [kan.split("_")[0] for kan in KAN_choices]
-            model_choices = sorted(model_choices + KAN_choices)
+            model_choices = get_trained_ml_models(model_dir)
         else:
             model_choices = []
 
