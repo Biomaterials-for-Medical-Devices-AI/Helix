@@ -167,6 +167,7 @@ class ModelNames(StrEnum):
     KNearestNeighbours = "k nearest neighbours"
     MLP = "multilayer perceptron"
     GNB = "gaussian naive bayes"
+    KAN = "kolmogorov arnold networks"
 
 
 class DataSplitMethods(StrEnum):
