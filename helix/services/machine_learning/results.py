@@ -2,6 +2,7 @@ import os
 import warnings
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder
 
@@ -314,6 +315,24 @@ def save_actual_pred_plots(
                     problem_type=exec_opts.problem_type,
                     logger=logger,
                 )
+            if model_name == ModelNames.KAN:
+
+                feat_names = data.X_train[closest_index].columns.tolist()
+                model = trained_models[model_name][closest_index]
+                model.plot(
+                    folder=directory,
+                    in_vars=feat_names if len(feat_names) < 10 else None,
+                    out_vars=exec_opts.dependent_variable,
+                )
+                plt.savefig(
+                    directory / f"{model_name}-ANN Architecture.png",
+                    bbox_inches="tight",
+                    dpi=plot_opts.dpi,
+                )
+
+                for f in directory.glob("sp*.png"):
+                    f.unlink()
+
         else:
             # Save classification plots
             y_pred_test_proba = ml_results[closest_index][model_name][
