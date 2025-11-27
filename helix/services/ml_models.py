@@ -4,6 +4,7 @@ from pathlib import Path
 from pickle import UnpicklingError, dump, load
 from typing import TypeVar
 
+from kan import KAN
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
@@ -47,8 +48,12 @@ def save_model(model, path: Path):
         path (Path): The file path to save the model.
     """
     path.parent.mkdir(exist_ok=True, parents=True)
-    with open(path, "wb") as f:
-        dump(model, f, protocol=5)
+
+    if isinstance(model, KAN):
+        model.saveckpt(path=path.with_suffix(""))
+    else:
+        with open(path, "wb") as f:
+            dump(model, f, protocol=5)
 
 
 def load_models(path: Path) -> dict[str, list]:
