@@ -10,6 +10,8 @@ from torch.nn import CrossEntropyLoss, Module
 from tqdm import tqdm
 from helix.options.enums import ProblemTypes
 from copy import deepcopy
+import sympy
+import yaml
 
 
 class KANMixin(KAN):
@@ -25,17 +27,20 @@ class KANMixin(KAN):
         lr: int,
         batch: int,
         problem_type: ProblemTypes,
+        loading_model: bool,
     ):
 
         # NOTE: We do not initialise parent class KAN yet as we do not have the information of the number of features in or the number of nodes out.
         # To match scikit learn methods, we deduce that on the fit method and then create the NN architecture inplace.
-        # super().__init__(
-        #     width=width,
-        #     grid=grid,
-        #     k=k,
-        #     seed=seed,
-        #     auto_save=False,
-        # )
+        if loading_model:
+            super().__init__(
+                width=width,
+                grid=grid,
+                k=k,
+                seed=seed,
+                auto_save=False,
+            )
+            self.loading_model = loading_model
 
         self.width = width
         self.grid = grid
@@ -386,10 +391,152 @@ class KANMixin(KAN):
 
         return y
 
+    def saveckpt(self, path="model"):
+        """
+        save the current model to files (configuration file and state file)
+
+        Args:
+        -----
+            path : str
+                the path where checkpoints are saved
+
+        Returns:
+        --------
+            None
+
+        Example
+        -------
+        >>> from kan import *
+        >>> device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        >>> model = KAN(width=[2,5,1], grid=5, k=3, seed=0)
+        >>> model.saveckpt('./mark')
+        # There will be three files appearing in the current folder: mark_cache_data, mark_config.yml, mark_state
+        """
+
+        model = self
+
+        dic = dict(
+            width=model.width,
+            grid=model.grid,
+            k=model.k,
+            epochs=model.epochs,
+            loss_fn=model.loss_fn,
+            lr=model.lr,
+            batch=model.batch,
+            seed=model.seed,
+            problem_type=model.problem_type.value,
+            _kan_initialized=model._kan_initialized,
+            auto_save=model.auto_save,
+            ckpt_path=model.ckpt_path,
+            round=model.round,
+            device=str(model.device),
+        )
+
+        if dic["device"].isdigit():
+            dic["device"] = int(model.device)
+
+        for i in range(model.depth):
+            dic[f"symbolic.funs_name.{i}"] = model.symbolic_fun[i].funs_name
+
+        with open(f"{path}_config.yml", "w") as outfile:
+            yaml.dump(dic, outfile, default_flow_style=False)
+
+        torch.save(model.state_dict(), f"{path}_state")
+        torch.save(model.cache_data, f"{path}_cache_data")
+
+    @staticmethod
+    def loadckpt(path="model"):
+        """
+        load checkpoint from path
+
+        Args:
+        -----
+            path : str
+                the path where checkpoints are saved
+
+        Returns:
+        --------
+            MultKAN
+
+        Example
+        -------
+        >>> from kan import *
+        >>> model = KAN(width=[2,5,1], grid=5, k=3, seed=0)
+        >>> model.saveckpt('./mark')
+        >>> KAN.loadckpt('./mark')
+        """
+        with open(f"{path}_config.yml", "r") as stream:
+            config = yaml.safe_load(stream)
+
+        state = torch.load(f"{path}_state")
+
+        problem_type = config["problem_type"]
+
+        if problem_type == ProblemTypes.Regression:
+            kan_model = KANRegressor
+        elif problem_type == ProblemTypes.Classification:
+            kan_model == KANClassifier
+
+        model_load = kan_model(
+            width=config["width"],
+            grid=config["grid"],
+            k=config["k"],
+            epochs=config["epochs"],
+            lr=config["lr"],
+            batch=config["batch"],
+            seed=config["seed"],
+            loading_model=True,
+            # mult_arity=config["mult_arity"],
+            # base_fun=config["base_fun_name"],
+            # symbolic_enabled=config["symbolic_enabled"],
+            # affine_trainable=config["affine_trainable"],
+            # grid_eps=config["grid_eps"],
+            # grid_range=config["grid_range"],
+            # sp_trainable=config["sp_trainable"],
+            # sb_trainable=config["sb_trainable"],
+            # state_id=config["state_id"],
+            # auto_save=config["auto_save"],
+            # first_init=False,
+            # ckpt_path=config["ckpt_path"],
+            # round=config["round"] + 1,
+            # device=config["device"],
+        )
+
+        model_load.load_state_dict(state)
+        model_load.cache_data = torch.load(f"{path}_cache_data")
+
+        depth = len(model_load.width) - 1
+        for l in range(depth):
+            out_dim = model_load.symbolic_fun[l].out_dim
+            in_dim = model_load.symbolic_fun[l].in_dim
+            funs_name = config[f"symbolic.funs_name.{l}"]
+            for j in range(out_dim):
+                for i in range(in_dim):
+                    fun_name = funs_name[j][i]
+                    model_load.symbolic_fun[l].funs_name[j][i] = fun_name
+                    model_load.symbolic_fun[l].funs[j][i] = SYMBOLIC_LIB[fun_name][0]
+                    model_load.symbolic_fun[l].funs_sympy[j][i] = SYMBOLIC_LIB[
+                        fun_name
+                    ][1]
+                    model_load.symbolic_fun[l].funs_avoid_singularity[j][i] = (
+                        SYMBOLIC_LIB[fun_name][3]
+                    )
+        return model_load
+
 
 class KANClassifier(ClassifierMixin, BaseEstimator, KANMixin):
 
-    def __init__(self, width=None, grid=5, k=3, seed=42, epochs=100, lr=1, batch=-1):
+    def __init__(
+        self,
+        width: list = None,
+        grid: int = 5,
+        k: int = 3,
+        epochs: int = 100,
+        lr: float = 1,
+        batch: int = -1,
+        seed: int = 42,
+        loading_model=False,
+    ):
 
         super().__init__(
             width=width,
@@ -401,6 +548,7 @@ class KANClassifier(ClassifierMixin, BaseEstimator, KANMixin):
             lr=lr,
             batch=batch,
             problem_type=ProblemTypes.Classification,
+            loading_model=loading_model,
         )
 
     def predict(self, X):
@@ -417,7 +565,17 @@ class KANClassifier(ClassifierMixin, BaseEstimator, KANMixin):
 
 class KANRegressor(RegressorMixin, BaseEstimator, KANMixin):
 
-    def __init__(self, width=None, grid=5, k=3, seed=42, epochs=100, lr=1, batch=-1):
+    def __init__(
+        self,
+        width: list = None,
+        grid: int = 5,
+        k: int = 3,
+        epochs: int = 100,
+        lr: float = 1,
+        batch: int = -1,
+        seed: int = 42,
+        loading_model=False,
+    ):
 
         super().__init__(
             width=width,
@@ -429,6 +587,7 @@ class KANRegressor(RegressorMixin, BaseEstimator, KANMixin):
             lr=lr,
             batch=batch,
             problem_type=ProblemTypes.Regression,
+            loading_model=loading_model,
         )
 
     def predict(self, X):
@@ -437,3 +596,150 @@ class KANRegressor(RegressorMixin, BaseEstimator, KANMixin):
         y_pred = self.forward(X).detach().numpy().ravel()
 
         return y_pred
+
+
+f_inv = lambda x, y_th: (
+    (x_th := 1 / y_th),
+    y_th / x_th * x * (torch.abs(x) < x_th)
+    + torch.nan_to_num(1 / x) * (torch.abs(x) >= x_th),
+)
+f_inv2 = lambda x, y_th: (
+    (x_th := 1 / y_th ** (1 / 2)),
+    y_th * (torch.abs(x) < x_th) + torch.nan_to_num(1 / x**2) * (torch.abs(x) >= x_th),
+)
+f_inv3 = lambda x, y_th: (
+    (x_th := 1 / y_th ** (1 / 3)),
+    y_th / x_th * x * (torch.abs(x) < x_th)
+    + torch.nan_to_num(1 / x**3) * (torch.abs(x) >= x_th),
+)
+f_inv4 = lambda x, y_th: (
+    (x_th := 1 / y_th ** (1 / 4)),
+    y_th * (torch.abs(x) < x_th) + torch.nan_to_num(1 / x**4) * (torch.abs(x) >= x_th),
+)
+f_inv5 = lambda x, y_th: (
+    (x_th := 1 / y_th ** (1 / 5)),
+    y_th / x_th * x * (torch.abs(x) < x_th)
+    + torch.nan_to_num(1 / x**5) * (torch.abs(x) >= x_th),
+)
+f_sqrt = lambda x, y_th: (
+    (x_th := 1 / y_th**2),
+    x_th / y_th * x * (torch.abs(x) < x_th)
+    + torch.nan_to_num(torch.sqrt(torch.abs(x)) * torch.sign(x))
+    * (torch.abs(x) >= x_th),
+)
+f_power1d5 = lambda x, y_th: torch.abs(x) ** 1.5
+f_invsqrt = lambda x, y_th: (
+    (x_th := 1 / y_th**2),
+    y_th * (torch.abs(x) < x_th)
+    + torch.nan_to_num(1 / torch.sqrt(torch.abs(x))) * (torch.abs(x) >= x_th),
+)
+f_log = lambda x, y_th: (
+    (x_th := torch.e ** (-y_th)),
+    -y_th * (torch.abs(x) < x_th)
+    + torch.nan_to_num(torch.log(torch.abs(x))) * (torch.abs(x) >= x_th),
+)
+f_tan = lambda x, y_th: (
+    (clip := x % torch.pi),
+    (delta := torch.pi / 2 - torch.arctan(y_th)),
+    -y_th / delta * (clip - torch.pi / 2) * (torch.abs(clip - torch.pi / 2) < delta)
+    + torch.nan_to_num(torch.tan(clip)) * (torch.abs(clip - torch.pi / 2) >= delta),
+)
+f_arctanh = lambda x, y_th: (
+    (delta := 1 - torch.tanh(y_th) + 1e-4),
+    y_th * torch.sign(x) * (torch.abs(x) > 1 - delta)
+    + torch.nan_to_num(torch.arctanh(x)) * (torch.abs(x) <= 1 - delta),
+)
+f_arcsin = lambda x, y_th: (
+    (),
+    torch.pi / 2 * torch.sign(x) * (torch.abs(x) > 1)
+    + torch.nan_to_num(torch.arcsin(x)) * (torch.abs(x) <= 1),
+)
+f_arccos = lambda x, y_th: (
+    (),
+    torch.pi / 2 * (1 - torch.sign(x)) * (torch.abs(x) > 1)
+    + torch.nan_to_num(torch.arccos(x)) * (torch.abs(x) <= 1),
+)
+f_exp = lambda x, y_th: (
+    (x_th := torch.log(y_th)),
+    y_th * (x > x_th) + torch.exp(x) * (x <= x_th),
+)
+
+SYMBOLIC_LIB = {
+    "x": (lambda x: x, lambda x: x, 1, lambda x, y_th: ((), x)),
+    "x^2": (lambda x: x**2, lambda x: x**2, 2, lambda x, y_th: ((), x**2)),
+    "x^3": (lambda x: x**3, lambda x: x**3, 3, lambda x, y_th: ((), x**3)),
+    "x^4": (lambda x: x**4, lambda x: x**4, 3, lambda x, y_th: ((), x**4)),
+    "x^5": (lambda x: x**5, lambda x: x**5, 3, lambda x, y_th: ((), x**5)),
+    "1/x": (lambda x: 1 / x, lambda x: 1 / x, 2, f_inv),
+    "1/x^2": (lambda x: 1 / x**2, lambda x: 1 / x**2, 2, f_inv2),
+    "1/x^3": (lambda x: 1 / x**3, lambda x: 1 / x**3, 3, f_inv3),
+    "1/x^4": (lambda x: 1 / x**4, lambda x: 1 / x**4, 4, f_inv4),
+    "1/x^5": (lambda x: 1 / x**5, lambda x: 1 / x**5, 5, f_inv5),
+    "sqrt": (lambda x: torch.sqrt(x), lambda x: sympy.sqrt(x), 2, f_sqrt),
+    "x^0.5": (lambda x: torch.sqrt(x), lambda x: sympy.sqrt(x), 2, f_sqrt),
+    "x^1.5": (
+        lambda x: torch.sqrt(x) ** 3,
+        lambda x: sympy.sqrt(x) ** 3,
+        4,
+        f_power1d5,
+    ),
+    "1/sqrt(x)": (
+        lambda x: 1 / torch.sqrt(x),
+        lambda x: 1 / sympy.sqrt(x),
+        2,
+        f_invsqrt,
+    ),
+    "1/x^0.5": (lambda x: 1 / torch.sqrt(x), lambda x: 1 / sympy.sqrt(x), 2, f_invsqrt),
+    "exp": (lambda x: torch.exp(x), lambda x: sympy.exp(x), 2, f_exp),
+    "log": (lambda x: torch.log(x), lambda x: sympy.log(x), 2, f_log),
+    "abs": (
+        lambda x: torch.abs(x),
+        lambda x: sympy.Abs(x),
+        3,
+        lambda x, y_th: ((), torch.abs(x)),
+    ),
+    "sin": (
+        lambda x: torch.sin(x),
+        lambda x: sympy.sin(x),
+        2,
+        lambda x, y_th: ((), torch.sin(x)),
+    ),
+    "cos": (
+        lambda x: torch.cos(x),
+        lambda x: sympy.cos(x),
+        2,
+        lambda x, y_th: ((), torch.cos(x)),
+    ),
+    "tan": (lambda x: torch.tan(x), lambda x: sympy.tan(x), 3, f_tan),
+    "tanh": (
+        lambda x: torch.tanh(x),
+        lambda x: sympy.tanh(x),
+        3,
+        lambda x, y_th: ((), torch.tanh(x)),
+    ),
+    "sgn": (
+        lambda x: torch.sign(x),
+        lambda x: sympy.sign(x),
+        3,
+        lambda x, y_th: ((), torch.sign(x)),
+    ),
+    "arcsin": (lambda x: torch.arcsin(x), lambda x: sympy.asin(x), 4, f_arcsin),
+    "arccos": (lambda x: torch.arccos(x), lambda x: sympy.acos(x), 4, f_arccos),
+    "arctan": (
+        lambda x: torch.arctan(x),
+        lambda x: sympy.atan(x),
+        4,
+        lambda x, y_th: ((), torch.arctan(x)),
+    ),
+    "arctanh": (lambda x: torch.arctanh(x), lambda x: sympy.atanh(x), 4, f_arctanh),
+    "0": (lambda x: x * 0, lambda x: x * 0, 0, lambda x, y_th: ((), x * 0)),
+    "gaussian": (
+        lambda x: torch.exp(-(x**2)),
+        lambda x: sympy.exp(-(x**2)),
+        3,
+        lambda x, y_th: ((), torch.exp(-(x**2))),
+    ),
+    #'cosh': (lambda x: torch.cosh(x), lambda x: sympy.cosh(x), 5),
+    #'sigmoid': (lambda x: torch.sigmoid(x), sympy.Function('sigmoid'), 4),
+    #'relu': (lambda x: torch.relu(x), relu),
+}
