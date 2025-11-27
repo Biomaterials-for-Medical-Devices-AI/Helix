@@ -183,7 +183,7 @@ if experiment_name:
             "Go to **Train Models** to create some models to evaulate."
         )
     elif st.toggle(
-        "Explain all models",
+        "Predict using all trained models",
         key=PredictStateKeys.ExplainAllModels,
     ):
         models = model_choices
