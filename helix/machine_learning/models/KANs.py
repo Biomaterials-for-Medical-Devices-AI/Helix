@@ -8,8 +8,8 @@ from kan import KAN
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from torch.nn import CrossEntropyLoss, Module
 from tqdm import tqdm
-
 from helix.options.enums import ProblemTypes
+from copy import deepcopy
 
 
 class KANMixin(KAN):
@@ -26,20 +26,27 @@ class KANMixin(KAN):
         batch: int,
         problem_type: ProblemTypes,
     ):
-        super().__init__(
-            width=width,
-            grid=grid,
-            k=k,
-            seed=seed,
-            auto_save=False,
-        )
 
+        # NOTE: We do not initialise parent class KAN yet as we do not have the information of the number of features in or the number of nodes out.
+        # To match scikit learn methods, we deduce that on the fit method and then create the NN architecture inplace.
+        # super().__init__(
+        #     width=width,
+        #     grid=grid,
+        #     k=k,
+        #     seed=seed,
+        #     auto_save=False,
+        # )
+
+        self.width = width
+        self.grid = grid
+        self.k = k
         self.epochs = epochs
         self.loss_fn = loss_fn
         self.lr = lr
         self.batch = batch
         self.problem_type = problem_type
         self.seed = seed
+        self._kan_initialized = False
 
     # this is the same fit function as in the original MultKAN class, but with small modifications to match with Helix's API
     def fit(
@@ -142,6 +149,30 @@ class KANMixin(KAN):
         >>> model.plot()
         # Most examples in toturals involve the fit() method. Please check them for useness.
         """
+
+        # NOTE: this initialises the parent class KAN with the proper NN structure
+        if not self._kan_initialized:
+            in_feats = X.shape[1]
+            out_nodes = (
+                len(np.unique(y))
+                if self.problem_type == ProblemTypes.Classification
+                else 1
+            )
+
+            new_width = deepcopy(self.width)
+            new_width.insert(0, in_feats)
+            new_width.append(out_nodes)
+
+            KAN.__init__(
+                self,
+                width=new_width,
+                grid=self.grid,
+                k=self.k,
+                seed=self.seed,
+                auto_save=False,
+            )
+
+            self._kan_initialized = True
 
         # take training arguments from the init method
         opt = "Adam"
