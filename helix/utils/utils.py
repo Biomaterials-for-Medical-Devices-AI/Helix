@@ -15,6 +15,28 @@ from helix.services.data import rearrange_data, save_data
 from helix.utils.logging_utils import Logger, close_logger
 
 
+def get_trained_ml_models(model_dir: Path) -> list:
+
+    sklearn_models = list(
+        filter(
+            lambda x: x.endswith(".pkl"),
+            [x.name for x in model_dir.iterdir()],
+        )
+    )
+
+    KAN_models = list(
+        filter(
+            lambda x: x.endswith(".yml"),
+            [x.name for x in model_dir.iterdir()],
+        )
+    )
+    KAN_models = [kan.split("_")[0] for kan in KAN_models]
+
+    model_choices = sorted(sklearn_models + KAN_models)
+
+    return model_choices
+
+
 def set_seed(seed: int) -> None:
     """
     Sets the seed for the experiment
