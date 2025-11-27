@@ -5,12 +5,13 @@ from pickle import UnpicklingError, dump, load
 from typing import TypeVar
 
 from kan import KAN
+from helix.machine_learning.models.KANs import KANMixin
 from pandas import DataFrame
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 
 from helix.options.choices.ml_models import CLASSIFIERS, REGRESSORS
 from helix.options.enums import ProblemTypes
-from helix.utils.utils import create_directory
+from helix.utils.utils import create_directory, get_trained_ml_models
 
 MlModel = TypeVar("MlModel", BaseEstimator, ClassifierMixin, RegressorMixin)
 
@@ -56,51 +57,73 @@ def save_model(model, path: Path):
             dump(model, f, protocol=5)
 
 
-def load_models(path: Path) -> dict[str, list]:
+def load_trained_models(path: Path, model_names: list | str) -> dict[str, list]:
     """Load pre-trained machine learning models.
 
     Args:
         path (Path): The path to the directory where the models are saved.
+        model_names (list[str] | str): The names of the models to explain, or "all".
 
     Returns:
-        dict[str, list]: The pre-trained models.
+        dict[str, list]: Dictionary mapping model class names to lists of loaded models.
     """
-    models: dict[str, list] = dict()
-    for file_name in sorted(path.iterdir()):
-        try:
-            with open(file_name, "rb") as file:
-                model = load(file)
-                model_name = str(file_name).split("/")[-1]
-                models[model_name] = model
-        except UnpicklingError:
-            pass  # ignore bad files
 
+    models: dict[str, list] = {}
+
+    # Decide which files to process
+    files = (
+        list(path.iterdir())
+        if model_names == "all"
+        else [path / name for name in model_names]
+    )
+
+    def add_model_to_dict(model):
+        """Helper to add a model to the dictionary."""
+        name = model.__class__.__name__
+        models.setdefault(name, []).append(model)
+
+    for file_name in files:
+        # try:
+        if str(file_name).endswith(".pkl"):
+            with open(file_name, "rb") as f:
+                model = load(f)
+            add_model_to_dict(model)
+        else:
+            model = KANMixin.loadckpt(file_name)
+            add_model_to_dict(model)
+    # except UnpicklingError:
+    #     continue  # ignore bad pickle files
     return models
 
 
-def load_models_to_explain(path: Path, model_names: list) -> dict[str, list]:
+def load_models(path: Path, model_names="all") -> dict[str, list]:
     """Load pre-trained machine learning models.
 
     Args:
         path (Path): The path to the directory where the models are saved.
-        model_names (str): The name of the models to explain.
 
     Returns:
         dict[str, list]: The pre-trained models.
     """
+
+    files = (
+        list(path.iterdir())
+        if model_names == "all"
+        else [path / name for name in model_names]
+    )
+
     models: dict[str, list] = dict()
-    for file_name in path.iterdir():
-        if os.path.basename(file_name) in model_names or model_names == "all":
-            try:
-                with open(file_name, "rb") as file:
-                    model = load(file)
-                    model_name = model.__class__.__name__
-                    if model_name in models:
-                        models[model_name].append(model)
-                    else:
-                        models[model_name] = [model]
-            except UnpicklingError:
-                pass  # ignore bad files
+    for file_name in files:
+
+        model_name = str(file_name).split("/")[-1]
+        if str(file_name).endswith(".pkl"):
+            with open(file_name, "rb") as file:
+                model = load(file)
+                models[model_name] = model
+        else:
+            model = KANMixin.loadckpt(file_name)
+            models[model_name] = model
+
     return models
 
 
@@ -130,7 +153,7 @@ def get_model_type(model_type: str, problem_type: ProblemTypes) -> type:
 
 def models_exist(path: Path) -> bool:
     try:
-        trained_models = load_models(path)
+        trained_models = get_trained_ml_models(path)
 
         if trained_models:
             return True
