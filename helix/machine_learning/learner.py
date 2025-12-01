@@ -329,6 +329,7 @@ class GridSearchLearner:
                 refit=refit,
                 cv=cv,
                 return_train_score=True,
+                n_jobs=-1,
             )
 
             # Fit the model
