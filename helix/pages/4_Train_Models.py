@@ -3,7 +3,6 @@
 This page allows users to configure and train machine learning models on their data.
 """
 
-from multiprocessing import Process
 from pathlib import Path
 
 import pandas as pd
@@ -55,7 +54,7 @@ from helix.services.ml_models import (
     save_models_metrics,
 )
 from helix.utils.logging_utils import Logger, close_logger
-from helix.utils.utils import cancel_pipeline, delete_directory, set_seed
+from helix.utils.utils import delete_directory, set_seed
 
 
 def build_configuration() -> (
