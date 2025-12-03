@@ -70,7 +70,6 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         n_samples, n_features = X.shape
 
         # Add intercept
-        print("Computing Matrices")
         H = np.ones((n_samples, n_features + 1), float)
         H[:, 1:] = X
         HT = H.T
@@ -83,8 +82,7 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         best_ssd = float("inf")
 
         # Beta optimisation loop
-        for i, beta in enumerate(np.logspace(-2, np.log10(self.max_beta), 50), 1):
-            print(f"Computing weights and ssd {i}")
+        for beta in np.logspace(-2, np.log10(self.max_beta), 50):
             weights, ssd = self._em_algorithm(H, HTy, G, y, beta, weights)
             if ssd < best_ssd:
                 best_ssd = ssd
