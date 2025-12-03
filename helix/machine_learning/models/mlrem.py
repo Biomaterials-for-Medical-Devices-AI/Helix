@@ -70,16 +70,22 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         n_samples, n_features = X.shape
 
         # Add intercept
+        print("Computing Matrices")
         H = np.ones((n_samples, n_features + 1), float)
         H[:, 1:] = X
+        HT = H.T
+        HTy = HT @ y
+        G = HT @ H
+        weights = LA.pinv(HT @ H) @ HTy
 
         best_beta = None
         best_weights = None
         best_ssd = float("inf")
 
         # Beta optimisation loop
-        for beta in np.arange(0.01, self.max_beta, 0.01):
-            weights, ssd = self._em_algorithm(H, y, beta)
+        for i, beta in enumerate(np.logspace(-2, np.log10(self.max_beta), 50), 1):
+            print(f"Computing weights and ssd {i}")
+            weights, ssd = self._em_algorithm(H, HTy, G, y, beta, weights)
             if ssd < best_ssd:
                 best_ssd = ssd
                 best_beta = beta
@@ -91,57 +97,60 @@ class EMLinearRegression(RegressorMixin, BaseEstimator):
         self.coefficients_ = best_weights[1:].flatten()
         return self
 
-    def _em_algorithm(self, H, y, beta):
+    def _em_algorithm(self, H, HTy, G, y, beta, weights):
         """Expectation-Maximisation algorithm for feature selection and weight estimation."""
         n_samples, n_features = H.shape
-        HT = H.T
-        HTy = HT @ y
-        weights = LA.pinv(HT @ H) @ HTy
 
-        ssd2 = 1.0  # Initial sum of squared differences
+        ssd2 = 1.0
         change = 1.0
         iteration = 0
-
-        # The loop below iterates through the EM process until convergence criteria are met.
-        # It stops if the maximum number of iterations is reached, if the relative change in SSD is below tolerance,
-        # or if SSD becomes very small, indicating convergence.
-        #
-        # In simpler terms:
-        # - The loop ensures the algorithm keeps refining the model until it finds the best possible estimates.
-        # - It stops when changes between iterations are small enough (convergence) or if the model has already stabilised.
 
         while (
             iteration < self.max_iterations and change > self.tolerance and ssd2 > 1e-15
         ):
+
             iteration += 1
             ssd1 = ssd2
 
-            # Update matrices
-            U = np.diag(
-                np.abs(weights).flatten()
-            )  # Diagonal matrix of absolute weight values to scale feature contributions
-            Ic = np.eye(n_features) * (
-                self.alpha + beta * ssd1**2
-            )  # Regularisation matrix incorporating alpha and beta
+            # ---- 1. Diagonal weights (vector form, no diag matrix needed) ----
+            u = np.abs(weights).flatten()
 
-            # M-step weight updates
-            R = LA.pinv(
-                Ic + U @ HT @ H @ U
-            )  # Intermediate inverse matrix for weight computation
-            weights = U @ R @ U @ HTy  # Updated weight vector
+            # Early stop if weights collapse
+            if np.all(u < 1e-12):
+                break
 
-            # Compute predictions and residuals
-            predictions = H @ weights
-            residuals = predictions - y
-            ssd2 = np.sqrt(np.sum(residuals**2) / n_samples)
+            # ---- 2. Regularisation matrix Ic ----
+            Ic = np.eye(n_features) * (self.alpha + beta * ssd1**2)
 
-            # Check convergence
-            change = 100 * np.abs(ssd2 - ssd1) / ssd1
+            # ---- 3. Build A = Ic + U G U  using vectorized diagonal mult ----
+            # A[i,j] = Ic[i,j] + u[i] * G[i,j] * u[j]
+            A = Ic + (u[:, None] * G * u[None, :])
 
-        return (
-            weights,
-            ssd2,
-        )  # Return the final weights and sum of squared differences for the EM algorithm
+            # ---- 4. b = U * HTy (diagonal mult) ----
+            b = u[:, None] * HTy
+
+            # ---- 5. Solve A w = b (avoid pinv) ----
+            try:
+                w_new = np.linalg.solve(A, b)
+            except np.linalg.LinAlgError:
+                # fallback to pseudo-inverse if A is nearly singular
+                w_new = np.linalg.pinv(A) @ b
+
+            # Multiply final U again: weights = U w_new
+            weights = u[:, None] * w_new
+
+            # Check for divergence
+            if not np.all(np.isfinite(weights)):
+                break
+
+            # ---- 6. Compute error ----
+            residuals = H @ weights - y
+            ssd2 = np.linalg.norm(residuals) / np.sqrt(n_samples)
+
+            # ---- 7. Convergence ----
+            change = abs(ssd2 - ssd1) / max(ssd1, 1e-12)
+
+        return weights, ssd2
 
     def predict(self, X):
         if self.coefficients_ is None:
