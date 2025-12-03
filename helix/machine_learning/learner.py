@@ -136,7 +136,9 @@ class Learner:
         metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
-        def _fit_single_model_holdout(model_name: str, params: dict, X_train, X_test, y_train, y_test):
+        def _fit_single_model_holdout(
+            model_name: str, params: dict, X_train, X_test, y_train, y_test
+        ):
             model_res = {}
             model_type = get_model_type(model_name, self._problem_type)
             model = get_model(model_type, params["params"])
@@ -179,8 +181,10 @@ class Learner:
 
             res[i] = {}
 
-            results = Parallel(n_jobs=-1, prefer="threads")(
-                delayed(_fit_single_model_holdout)(model_name, params, X_train, X_test, y_train, y_test)
+            results = Parallel(n_jobs=-1, prefer="processes")(
+                delayed(_fit_single_model_holdout)(
+                    model_name, params, X_train, X_test, y_train, y_test
+                )
                 for model_name, params in self._model_types.items()
             )
 
@@ -200,7 +204,9 @@ class Learner:
         metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
-        def _fit_single_model_kfold(model_name: str, params: dict, X_train, X_test, y_train, y_test):
+        def _fit_single_model_kfold(
+            model_name: str, params: dict, X_train, X_test, y_train, y_test
+        ):
             model_res = {}
             self._logger.info(f"Fitting {model_name}...")
             model_type = get_model_type(model_name, self._problem_type)
@@ -245,7 +251,9 @@ class Learner:
             res[i] = {}
 
             results = Parallel(n_jobs=-1, prefer="threads")(
-                delayed(_fit_single_model_kfold)(model_name, params, X_train, X_test, y_train, y_test)
+                delayed(_fit_single_model_kfold)(
+                    model_name, params, X_train, X_test, y_train, y_test
+                )
                 for model_name, params in self._model_types.items()
             )
 
