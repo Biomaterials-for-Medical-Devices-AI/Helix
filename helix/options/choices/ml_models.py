@@ -9,7 +9,6 @@ from sklearn.linear_model import (
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.neural_network import MLPClassifier, MLPRegressor
-from xgboost import XGBClassifier, XGBRegressor
 
 from helix.machine_learning.models.BRNNs import BRNNClassifier, BRNNRegressor
 from helix.machine_learning.models.mlrem import EMLinearRegression
@@ -18,6 +17,7 @@ from helix.machine_learning.models.random_forest import (
     RandomForestRegressor,
 )
 from helix.machine_learning.models.svm import SVC, SVR
+from helix.machine_learning.models.xgboost import XGBClassifier, XGBRegressor
 from helix.options.enums import ModelNames
 
 # Grid search parameters for each model
