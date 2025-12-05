@@ -3,7 +3,6 @@
 This page allows users to configure and train machine learning models on their data.
 """
 
-from multiprocessing import Process
 from pathlib import Path
 
 import pandas as pd
@@ -55,7 +54,7 @@ from helix.services.ml_models import (
     save_models_metrics,
 )
 from helix.utils.logging_utils import Logger, close_logger
-from helix.utils.utils import cancel_pipeline, delete_directory, set_seed
+from helix.utils.utils import delete_directory, set_seed
 
 
 def build_configuration() -> (
@@ -276,16 +275,9 @@ if experiment_name:
         data = ingest_data(exec_opts, data_opts, logger)
         # Save ML options
         save_options(ml_options_path(experiment_dir), ml_opts)
-        process = Process(
-            target=pipeline,
-            args=(ml_opts, exec_opts, plot_opts, data_opts, exp_name, data),
-            daemon=True,
-        )
-        process.start()
-        cancel_button = st.button("Cancel", on_click=cancel_pipeline, args=(process,))
         with st.spinner("Model training in progress. Check the logs for progress."):
-            # wait for the process to finish or be cancelled
-            process.join()
+            # wait for the process to finish
+            pipeline(ml_opts, exec_opts, plot_opts, data_opts, exp_name, data)
         try:
             st.session_state[MachineLearningStateKeys.MLLogBox] = get_logs(
                 log_dir(experiment_dir) / "ml"
@@ -297,10 +289,9 @@ if experiment_name:
             pass
 
         metrics = ml_metrics_mean_std_path(experiment_dir)
-        print(metrics)
         display_metrics_table(metrics)
 
-        if st.session_state.get(MachineLearningStateKeys.Predictions):
+        if st.session_state.get(MachineLearningStateKeys.Predictions) is not None:
             display_predictions(
                 st.session_state.get(MachineLearningStateKeys.Predictions)
             )
