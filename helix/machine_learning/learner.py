@@ -250,7 +250,7 @@ class Learner:
 
             res[i] = {}
 
-            results = Parallel(n_jobs=-1, prefer="threads")(
+            results = Parallel(n_jobs=-1, prefer="processes")(
                 delayed(_fit_single_model_kfold)(
                     model_name, params, X_train, X_test, y_train, y_test
                 )
