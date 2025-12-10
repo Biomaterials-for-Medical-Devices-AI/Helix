@@ -177,6 +177,7 @@ class Learner:
 
             return model_name, model_res, model_metrics, model
 
+        training_start = time()
         for i in range(self._data_split.n_bootstraps):
             self._logger.info(f"\n\n PROCESSING BOOSTRAP NUMBER {i+1}...")
             X_train, X_test, y_train, y_test = self._process_data_for_bootstrap(data, i)
@@ -196,6 +197,15 @@ class Learner:
                     metrics_full[model_name] = []
                 metrics_full[model_name].append(model_metrics)
                 trained_models[model_name].append(model)
+
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
 
         metrics_mean_std = _compute_metrics_mean_std(metrics_full)
         return res, metrics_full, metrics_mean_std, trained_models
@@ -245,6 +255,7 @@ class Learner:
 
             return model_name, model_res, model_metrics, model
 
+        training_start = time()
         for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
             X_train, X_test = data.X_train[i].to_numpy(), data.X_test[i].to_numpy()
@@ -265,6 +276,15 @@ class Learner:
                     metrics_full[model_name] = []
                 metrics_full[model_name].append(model_metrics)
                 trained_models[model_name].append(model)
+
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
 
         metrics_mean_std = _compute_metrics_mean_std(metrics_full)
         return res, metrics_full, metrics_mean_std, trained_models
@@ -368,6 +388,7 @@ class GridSearchLearner:
             hours = int(elapsed) // 3600
             minutes = (int(elapsed) % 3600) // 60
             seconds = int(elapsed) % 60
+            # Create format hh:mm:ss
             time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
             self._logger.info(f"Training completed in {time_str}")
 
