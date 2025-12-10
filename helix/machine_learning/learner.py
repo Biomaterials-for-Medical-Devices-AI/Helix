@@ -358,6 +358,8 @@ class GridSearchLearner:
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
         metrics_mean_std = {model_name: {} for model_name in self._model_types.keys()}
 
+        training_start = time()
+        self._logger("Training models...")
         for model_name, params in self._model_types.items():
             res[0][model_name] = {}
             # Set up grid search
@@ -379,7 +381,6 @@ class GridSearchLearner:
 
             # Fit the model
             self._logger.info(f"Fitting {model_name}...")
-            training_start = time()
             gs.fit(X_train, y_train)
 
             # Make predictions for evaluation
@@ -411,14 +412,6 @@ class GridSearchLearner:
                     self._problem_type,
                 )
             )
-            training_end = time()
-            elapsed = training_end - training_start
-            hours = int(elapsed) // 3600
-            minutes = (int(elapsed) % 3600) // 60
-            seconds = int(elapsed) % 60
-            # Create format hh:mm:ss
-            time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-            self._logger.info(f"Training completed in {time_str}")
 
             # append the best estimator
             trained_models[model_name].append(gs.best_estimator_)
@@ -426,6 +419,14 @@ class GridSearchLearner:
                 self._compute_metrics_statistics(gs.cv_results_, gs.best_index_)
             )
 
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
         return res, metrics_full, metrics_mean_std, trained_models
 
     def _compute_metrics_statistics(self, cv_results: dict, best_index: int) -> dict:
