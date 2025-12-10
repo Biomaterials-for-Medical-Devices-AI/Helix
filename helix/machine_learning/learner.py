@@ -183,21 +183,12 @@ class Learner:
 
             res[i] = {}
 
-            training_start = time()
             results = Parallel(n_jobs=-1, prefer="processes")(
                 delayed(_fit_single_model_holdout)(
                     model_name, params, X_train, X_test, y_train, y_test
                 )
                 for model_name, params in self._model_types.items()
             )
-            training_end = time()
-            elapsed = training_end - training_start
-            hours = int(elapsed) // 3600
-            minutes = (int(elapsed) % 3600) // 60
-            seconds = int(elapsed) % 60
-            # Create format hh:mm:ss
-            time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-            self._logger.info(f"Training completed in {time_str}")
 
             for model_name, model_res, model_metrics, model in results:
                 res[i][model_name] = model_res
@@ -277,14 +268,6 @@ class Learner:
                 )
                 for model_name, params in self._model_types.items()
             )
-            training_end = time()
-            elapsed = training_end - training_start
-            hours = int(elapsed) // 3600
-            minutes = (int(elapsed) % 3600) // 60
-            seconds = int(elapsed) % 60
-            # Create format hh:mm:ss
-            time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-            self._logger.info(f"Training completed in {time_str}")
 
             for model_name, model_res, model_metrics, model in results:
                 res[i][model_name] = model_res
