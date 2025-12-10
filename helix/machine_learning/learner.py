@@ -1,5 +1,4 @@
-from datetime import timedelta
-from time import time, strftime
+from time import time
 from typing import Any, Tuple
 
 import numpy as np
