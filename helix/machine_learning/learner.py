@@ -1,3 +1,5 @@
+from datetime import timedelta
+from time import time, strftime
 from typing import Any, Tuple
 
 import numpy as np
@@ -359,7 +361,15 @@ class GridSearchLearner:
 
             # Fit the model
             self._logger.info(f"Fitting {model_name}...")
+            training_start = time()
             gs.fit(X_train, y_train)
+            training_end = time()
+            elapsed = training_end - training_start
+            hours = int(elapsed) // 3600
+            minutes = (int(elapsed) % 3600) // 60
+            seconds = int(elapsed) % 60
+            time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            self._logger.info(f"Training completed in {time_str}")
 
             # Make predictions for evaluation
             y_pred_train = gs.predict(X_train)
