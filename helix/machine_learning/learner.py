@@ -177,7 +177,6 @@ class Learner:
             return model_name, model_res, model_metrics, model
 
         training_start = time()
-        self._logger.info("Training models...")
         for i in range(self._data_split.n_bootstraps):
             self._logger.info(f"\n\n PROCESSING BOOSTRAP NUMBER {i+1}...")
             X_train, X_test, y_train, y_test = self._process_data_for_bootstrap(data, i)
@@ -265,7 +264,6 @@ class Learner:
             return model_name, model_res, model_metrics, model
 
         training_start = time()
-        self._logger.info("Training models...")
         for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
             X_train, X_test = data.X_train[i].to_numpy(), data.X_test[i].to_numpy()
@@ -379,7 +377,6 @@ class GridSearchLearner:
         metrics_mean_std = {model_name: {} for model_name in self._model_types.keys()}
 
         training_start = time()
-        self._logger.info("Training models...")
         for model_name, params in self._model_types.items():
             res[0][model_name] = {}
             # Set up grid search
