@@ -16,7 +16,6 @@ from helix.services.metrics import get_metrics
 from helix.services.ml_models import get_model, get_model_type
 from helix.utils.logging_utils import Logger
 
-
 _MAX_CPUS = max(cpu_count() - 1, 1)
 
 
