@@ -48,6 +48,8 @@ class Learner:
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
         self._n_cpus = n_cpus
 
+        self._logger.info(f"Using {self._n_cpus} of {cpu_count()} CPUs for training")
+
     def _process_data_for_bootstrap(self, data, i):
         """
         Extracts and converts the datasets for the given samples
@@ -309,6 +311,8 @@ class GridSearchLearner:
         self._data_split = data_split
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
         self._n_cpus = n_cpus
+
+        self._logger.info(f"Using {self._n_cpus} of {cpu_count()} CPUs for training")
 
     def fit(self, data: TabularData) -> tuple[dict, dict, dict, dict]:
         """Fit models to the data using Grid Search with cross validation. Evaluates them
