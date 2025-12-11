@@ -15,6 +15,8 @@ Functions:
     - _brnn_opts: Configuration for Bayesian Regularised Neural Networks
 """
 
+from multiprocessing import cpu_count
+
 import streamlit as st
 
 from helix.components.configuration import data_split_options_box
@@ -76,6 +78,20 @@ def ml_options_form(problem_type: ProblemTypes = ProblemTypes.Regression):
 
     data_split_opts = data_split_options_box(not use_hyperparam_search)
     st.session_state[ExecutionStateKeys.DataSplit] = data_split_opts
+
+    max_cpus = max(cpu_count() - 1, 1)
+    st.info(
+        f"🔎 The number of CPUs you can use is capped at **{max_cpus}/{cpu_count()}**"
+        f" to protect your machine."
+    )
+    st.number_input(
+        "Number of CPUs",
+        min_value=1,
+        max_value=max_cpus,
+        value=max_cpus,
+        key=ExecutionStateKeys.NCPUs,
+        help="The more CPUs you use, faster the training will complete.",
+    )
 
     st.subheader("Select and configure which models to train")
     model_types = {}

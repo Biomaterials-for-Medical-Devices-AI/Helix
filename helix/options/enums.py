@@ -66,6 +66,7 @@ class ExecutionStateKeys(StrEnum):
     DataSplit = "data_split"
     NumberOfBootstraps = "num_bootstraps"
     Normalisation = "normalisation"
+    NCPUs = "n_cpus"
 
 
 class DataAnalysisStateKeys(StrEnum):

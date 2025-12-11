@@ -17,6 +17,7 @@ def run(
     data: DataBuilder,
     exec_opts: ExecutionOptions,
     logger: Logger,
+    n_cpus: int,
 ) -> None:
     """
     Run the ML training pipeline
@@ -28,6 +29,7 @@ def run(
             problem_type=exec_opts.problem_type,
             data_split=data_opts.data_split,
             logger=logger,
+            n_cpus=n_cpus,
         )
     else:
         learner = Learner(
@@ -35,6 +37,7 @@ def run(
             problem_type=exec_opts.problem_type,
             data_split=data_opts.data_split,
             logger=logger,
+            n_cpus=n_cpus,
         )
     res, metrics_full, metrics_mean_std, trained_models = learner.fit(data)
     logger.info(f"Performance Metric Statistics: {os.linesep}{metrics_mean_std}")

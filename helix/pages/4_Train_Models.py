@@ -123,6 +123,7 @@ def pipeline(
     set_seed(seed)
     logger_instance = Logger(Path(ml_opts.ml_log_dir))
     logger = logger_instance.make_logger()
+    n_cpus = st.session_state[ExecutionStateKeys.NCPUs]
 
     # Machine learning
     trained_models, metrics_full, metrics_mean_std = train.run(
@@ -132,6 +133,7 @@ def pipeline(
         data=data,
         exec_opts=exec_opts,
         logger=logger,
+        n_cpus=n_cpus,
     )
     if ml_opts.save_models:
         predictions = pd.DataFrame(

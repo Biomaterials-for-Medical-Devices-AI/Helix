@@ -1,3 +1,4 @@
+from multiprocessing import cpu_count
 from time import time
 from typing import Any, Tuple
 
@@ -14,6 +15,8 @@ from helix.services.data import TabularData
 from helix.services.metrics import get_metrics
 from helix.services.ml_models import get_model, get_model_type
 from helix.utils.logging_utils import Logger
+
+_MAX_CPUS = max(cpu_count() - 1, 1)
 
 
 class Learner:
@@ -36,12 +39,16 @@ class Learner:
         problem_type: ProblemTypes,
         data_split: DataSplitOptions,
         logger: Logger | None = None,
+        n_cpus: int = _MAX_CPUS,
     ) -> None:
         self._logger = logger
         self._model_types = model_types
         self._problem_type = problem_type
         self._data_split = data_split
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
+        self._n_cpus = n_cpus
+
+        self._logger.info(f"Using {self._n_cpus} of {cpu_count()} CPUs for training")
 
     def _process_data_for_bootstrap(self, data, i):
         """
@@ -183,7 +190,7 @@ class Learner:
 
             res[i] = {}
 
-            results = Parallel(n_jobs=-1, prefer="processes")(
+            results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
                 delayed(_fit_single_model_holdout)(
                     model_name, params, X_train, X_test, y_train, y_test
                 )
@@ -262,7 +269,7 @@ class Learner:
 
             res[i] = {}
 
-            results = Parallel(n_jobs=-1, prefer="processes")(
+            results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
                 delayed(_fit_single_model_kfold)(
                     model_name, params, X_train, X_test, y_train, y_test
                 )
@@ -296,12 +303,16 @@ class GridSearchLearner:
         problem_type: ProblemTypes,
         data_split: DataSplitOptions,
         logger: Logger | None = None,
+        n_cpus: int = _MAX_CPUS,
     ) -> None:
         self._logger = logger
         self._model_types: dict[str, Any] = model_types
         self._problem_type = problem_type
         self._data_split = data_split
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
+        self._n_cpus = n_cpus
+
+        self._logger.info(f"Using {self._n_cpus} of {cpu_count()} CPUs for training")
 
     def fit(self, data: TabularData) -> tuple[dict, dict, dict, dict]:
         """Fit models to the data using Grid Search with cross validation. Evaluates them
@@ -376,7 +387,7 @@ class GridSearchLearner:
                 refit=refit,
                 cv=cv,
                 return_train_score=True,
-                n_jobs=-1,
+                n_jobs=self._n_cpus,
             )
 
             # Fit the model
