@@ -14,6 +14,7 @@ from helix.options.enums import (
     FeatureImportanceStateKeys,
     FeatureImportanceTypes,
     ProblemTypes,
+    FuzzyStateKeys,
 )
 
 
@@ -152,66 +153,66 @@ def fi_options_form():
         key=FeatureImportanceStateKeys.NumberOfRepetitions,
     )
 
-    # # Fuzzy Options
-    # st.write("### Fuzzy Feature Importance Options")
-    # st.write(
-    #     "Activate fuzzy methods to capture interactions between features in a fuzzy rule-based system. "
-    #     "Define the number of features, clusters, and granular options for enhanced interpretability."
-    # )
+    # Fuzzy Options
+    st.write("### Fuzzy Feature Importance Options")
+    st.write(
+        "Activate fuzzy methods to capture interactions between features in a fuzzy rule-based system. "
+        "Define the number of features, clusters, and granular options for enhanced interpretability."
+    )
 
-    # # both ensemble_methods and local_importance_methods
-    # fuzzy_is_disabled = (not (use_lime or use_local_shap)) or (
-    #     not (use_mean or use_majority)
-    # )
-    # if fuzzy_is_disabled:
-    #     st.warning(
-    #         "You must configure both ensemble and local importance methods to use fuzzy feature selection.",
-    #         icon="⚠",
-    #     )
-    # fuzzy_feature_importance = st.checkbox(
-    #     "Enable Fuzzy Feature Importance",
-    #     help="Toggle fuzzy feature importance to analyze feature interactions.",
-    #     key=FuzzyStateKeys.FuzzyFeatureSelection,
-    #     disabled=fuzzy_is_disabled,
-    # )
+    # both ensemble_methods and local_importance_methods
+    fuzzy_is_disabled = (not (use_lime or use_local_shap)) or (
+        not (use_mean or use_majority)
+    )
+    if fuzzy_is_disabled:
+        st.warning(
+            "You must configure both ensemble and local importance methods to use fuzzy feature selection.",
+            icon="⚠",
+        )
+    fuzzy_feature_importance = st.checkbox(
+        "Enable Fuzzy Feature Importance",
+        help="Toggle fuzzy feature importance to analyze feature interactions.",
+        key=FuzzyStateKeys.FuzzyFeatureSelection,
+        disabled=fuzzy_is_disabled,
+    )
 
-    # if fuzzy_feature_importance:
-    #     st.number_input(
-    #         "Number of features for fuzzy interpretation",
-    #         min_value=1,
-    #         value=5,
-    #         help="Set the number of features for fuzzy analysis.",
-    #         key=FuzzyStateKeys.NumberOfFuzzyFeatures,
-    #     )
+    if fuzzy_feature_importance:
+        st.number_input(
+            "Number of features for fuzzy interpretation",
+            min_value=1,
+            value=5,
+            help="Set the number of features for fuzzy analysis.",
+            key=FuzzyStateKeys.NumberOfFuzzyFeatures,
+        )
 
-    #     st.checkbox(
-    #         "Granular features",
-    #         help="Divide features into granular categories for in-depth analysis.",
-    #         key=FuzzyStateKeys.GranularFeatures,
-    #     )
+        st.checkbox(
+            "Granular features",
+            help="Divide features into granular categories for in-depth analysis.",
+            key=FuzzyStateKeys.GranularFeatures,
+        )
 
-    #     st.number_input(
-    #         "Number of clusters for target variable",
-    #         min_value=2,
-    #         value=5,
-    #         help="Set the number of clusters to categorise the target variable for fuzzy interpretation.",
-    #         key=FuzzyStateKeys.NumberOfClusters,
-    #     )
+        st.number_input(
+            "Number of clusters for target variable",
+            min_value=2,
+            value=5,
+            help="Set the number of clusters to categorise the target variable for fuzzy interpretation.",
+            key=FuzzyStateKeys.NumberOfClusters,
+        )
 
-    #     st.text_input(
-    #         "Names of clusters (comma-separated)",
-    #         help="Specify names for each cluster (e.g., Low, Medium, High).",
-    #         key=FuzzyStateKeys.ClusterNames,
-    #         value=", ".join(["very low", "low", "medium", "high", "very high"]),
-    #     )
+        st.text_input(
+            "Names of clusters (comma-separated)",
+            help="Specify names for each cluster (e.g., Low, Medium, High).",
+            key=FuzzyStateKeys.ClusterNames,
+            value=", ".join(["very low", "low", "medium", "high", "very high"]),
+        )
 
-    #     st.number_input(
-    #         "Number of top occurring rules for fuzzy synergy analysis",
-    #         min_value=1,
-    #         value=10,
-    #         help="Set the number of most frequent fuzzy rules for synergy analysis.",
-    #         key=FuzzyStateKeys.NumberOfTopRules,
-    #     )
+        st.number_input(
+            "Number of top occurring rules for fuzzy synergy analysis",
+            min_value=1,
+            value=10,
+            help="Set the number of most frequent fuzzy rules for synergy analysis.",
+            key=FuzzyStateKeys.NumberOfTopRules,
+        )
 
     st.subheader("Select outputs to save")
 
