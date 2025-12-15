@@ -15,6 +15,7 @@ from helix.services.feature_importance.results import (
     save_target_clusters_plots,
 )
 from helix.utils.logging_utils import Logger
+from copy import deepcopy
 
 
 class Fuzzy:
@@ -50,7 +51,7 @@ class Fuzzy:
             dict: Dictionary of feature importance results.
         """
         # create a copy of the data - select first fold of the data
-        X_train, X_test = data.X_train[0], data.X_test[0]
+        X_train, X_test = deepcopy(data.X_train[0]), deepcopy(data.X_test[0])
         self._logger.info("-------- Start of fuzzy interpretation logging--------")
         # Step 1: fuzzy feature selection to select top features for fuzzy interpretation
         if self._fuzzy_opt.fuzzy_feature_selection:
