@@ -35,8 +35,7 @@ st.write(
     To view your previous experiments 📈, go to the sidebar on the **left** and click **"View Experiments"**.
 """
 )
-# RED ITALIC NOTE: Coming soon functionality
 st.markdown(
-    '<span style="color:red; font-size:1em;"><i>You are using Helix 1.0.3</i></span>',
+    '<span style="color:red; font-size:1em;"><i>You are using Helix 1.0.4</i></span>',
     unsafe_allow_html=True,
 )
