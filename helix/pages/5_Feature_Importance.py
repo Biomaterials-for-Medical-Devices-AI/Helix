@@ -18,7 +18,7 @@ from helix.components.forms.forms_fi import fi_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
 from helix.components.plots import plot_box, plot_box_v2
-from helix.feature_importance import feature_importance
+from helix.feature_importance import feature_importance, fuzzy_interpretation
 from helix.options.data import DataOptions
 from helix.options.enums import (
     ExecutionStateKeys,
@@ -33,12 +33,12 @@ from helix.options.file_paths import (
     execution_options_path,
     fi_options_path,
     fi_plot_dir,
+    fuzzy_options_path,
     fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_model_dir,
     plot_options_path,
-    fuzzy_options_path,
 )
 from helix.options.fuzzy import FuzzyOptions
 from helix.options.plotting import PlottingOptions
@@ -58,7 +58,6 @@ from helix.services.logs import get_logs
 from helix.services.ml_models import load_models_to_explain
 from helix.utils.logging_utils import Logger, close_logger
 from helix.utils.utils import cancel_pipeline, set_seed
-from helix.feature_importance import fuzzy_interpretation
 
 
 def build_configuration() -> tuple[

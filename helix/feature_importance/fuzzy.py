@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pandas as pd
 
 from helix.options.enums import ProblemTypes
@@ -15,7 +17,6 @@ from helix.services.feature_importance.results import (
     save_target_clusters_plots,
 )
 from helix.utils.logging_utils import Logger
-from copy import deepcopy
 
 
 class Fuzzy:

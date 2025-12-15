@@ -13,8 +13,8 @@ from helix.options.enums import (
     ExecutionStateKeys,
     FeatureImportanceStateKeys,
     FeatureImportanceTypes,
-    ProblemTypes,
     FuzzyStateKeys,
+    ProblemTypes,
 )
 
 
