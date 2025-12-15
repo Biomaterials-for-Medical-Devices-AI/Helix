@@ -183,7 +183,7 @@ def save_fuzzy_sets_plots(
             family=plot_opt.plot_font_family,
         )
         ax.legend()
-        fig.savefig(save_dir / f"{feature}.png")
+        fig.savefig(save_dir / f"fuzzy set-{feature}.png")
     plt.close()
 
 
