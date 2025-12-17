@@ -183,7 +183,7 @@ def save_fuzzy_sets_plots(
             family=plot_opt.plot_font_family,
         )
         ax.legend()
-        fig.savefig(save_dir / f"fuzzy set-{feature}.png")
+        fig.savefig(save_dir / f"fuzzy set-{feature}.png".replace("/", ""))
     plt.close()
 
 
@@ -215,5 +215,5 @@ def save_target_clusters_plots(
         family=plot_opt.plot_font_family,
         wrap=True,
     )
-    fig.savefig(save_dir / "target_clusters.png")
+    fig.savefig(save_dir / "fuzzy-target clusters.png")
     plt.close()
