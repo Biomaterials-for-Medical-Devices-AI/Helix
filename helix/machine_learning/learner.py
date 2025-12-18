@@ -1,7 +1,10 @@
+from multiprocessing import cpu_count
+from time import time
 from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
+from joblib import Parallel, delayed
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV, StratifiedKFold
 
@@ -12,6 +15,8 @@ from helix.services.data import TabularData
 from helix.services.metrics import get_metrics
 from helix.services.ml_models import get_model, get_model_type
 from helix.utils.logging_utils import Logger
+
+_MAX_CPUS = max(cpu_count() - 1, 1)
 
 
 class Learner:
@@ -34,12 +39,16 @@ class Learner:
         problem_type: ProblemTypes,
         data_split: DataSplitOptions,
         logger: Logger | None = None,
+        n_cpus: int = _MAX_CPUS,
     ) -> None:
         self._logger = logger
         self._model_types = model_types
         self._problem_type = problem_type
         self._data_split = data_split
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
+        self._n_cpus = n_cpus
+
+        self._logger.info(f"Using {self._n_cpus} of {cpu_count()} CPUs for training")
 
     def _process_data_for_bootstrap(self, data, i):
         """
@@ -135,52 +144,74 @@ class Learner:
         metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
+        def _fit_single_model_holdout(
+            model_name: str, params: dict, X_train, X_test, y_train, y_test
+        ):
+            model_res = {}
+            model_type = get_model_type(model_name, self._problem_type)
+            model = get_model(model_type, params["params"])
+            self._logger.info(f"Fitting {model_name}...")
+
+            # Standard model handling
+            model.fit(X_train, y_train)
+            y_pred_train = model.predict(X_train)
+            model_res["y_pred_train"] = y_pred_train
+            y_pred_test = model.predict(X_test)
+            model_res["y_pred_test"] = y_pred_test
+
+            if self._problem_type == ProblemTypes.Classification:
+                y_pred_probs_train = model.predict_proba(X_train)
+                model_res["y_pred_train_proba"] = y_pred_probs_train
+                y_pred_probs_test = model.predict_proba(X_test)
+                model_res["y_pred_test_proba"] = y_pred_probs_test
+            else:
+                y_pred_probs_train = None
+                y_pred_probs_test = None
+
+            model_metrics = _evaluate(
+                model_name,
+                self._metrics,
+                y_train,
+                y_pred_train,
+                y_pred_probs_train,
+                y_test,
+                y_pred_test,
+                y_pred_probs_test,
+                self._logger,
+                self._problem_type,
+            )
+
+            return model_name, model_res, model_metrics, model
+
+        training_start = time()
         for i in range(self._data_split.n_bootstraps):
-            self._logger.info(f"Processing bootstrap sample {i+1}...")
+            self._logger.info(f"\n\n PROCESSING BOOSTRAP NUMBER {i+1}...")
             X_train, X_test, y_train, y_test = self._process_data_for_bootstrap(data, i)
 
             res[i] = {}
-            for model_name, params in self._model_types.items():
 
-                res[i][model_name] = {}
-                model_type = get_model_type(model_name, self._problem_type)
-                model = get_model(model_type, params["params"])
-                self._logger.info(f"Fitting {model_name} for bootstrap number {i+1}...")
+            results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
+                delayed(_fit_single_model_holdout)(
+                    model_name, params, X_train, X_test, y_train, y_test
+                )
+                for model_name, params in self._model_types.items()
+            )
 
-                # Standard model handling
-                model.fit(X_train, y_train)
-                y_pred_train = model.predict(X_train)
-                res[i][model_name]["y_pred_train"] = y_pred_train
-                y_pred_test = model.predict(X_test)
-                res[i][model_name]["y_pred_test"] = y_pred_test
-
-                if self._problem_type == ProblemTypes.Classification:
-                    y_pred_probs_train = model.predict_proba(X_train)
-                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
-                    y_pred_probs_test = model.predict_proba(X_test)
-                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
-                else:
-                    y_pred_probs_train = None
-                    y_pred_probs_test = None
-
+            for model_name, model_res, model_metrics, model in results:
+                res[i][model_name] = model_res
                 if model_name not in metrics_full:
                     metrics_full[model_name] = []
-                metrics_full[model_name].append(
-                    _evaluate(
-                        model_name,
-                        self._metrics,
-                        y_train,
-                        y_pred_train,
-                        y_pred_probs_train,
-                        y_test,
-                        y_pred_test,
-                        y_pred_probs_test,
-                        self._logger,
-                        self._problem_type,
-                    )
-                )
-
+                metrics_full[model_name].append(model_metrics)
                 trained_models[model_name].append(model)
+
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
 
         metrics_mean_std = _compute_metrics_mean_std(metrics_full)
         return res, metrics_full, metrics_mean_std, trained_models
@@ -191,53 +222,75 @@ class Learner:
         metrics_full = {}
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
 
+        def _fit_single_model_kfold(
+            model_name: str, params: dict, X_train, X_test, y_train, y_test
+        ):
+            model_res = {}
+            self._logger.info(f"Fitting {model_name}...")
+            model_type = get_model_type(model_name, self._problem_type)
+            model = get_model(model_type, params["params"])
+
+            # Standard model handling
+            model.fit(X_train, y_train)
+            y_pred_train = model.predict(X_train)
+            model_res["y_pred_train"] = y_pred_train
+            y_pred_test = model.predict(X_test)
+            model_res["y_pred_test"] = y_pred_test
+
+            if self._problem_type == ProblemTypes.Classification:
+                y_pred_probs_train = model.predict_proba(X_train)
+                model_res["y_pred_train_proba"] = y_pred_probs_train
+                y_pred_probs_test = model.predict_proba(X_test)
+                model_res["y_pred_test_proba"] = y_pred_probs_test
+            else:
+                y_pred_probs_train = None
+                y_pred_probs_test = None
+
+            model_metrics = _evaluate(
+                model_name,
+                self._metrics,
+                y_train,
+                y_pred_train,
+                y_pred_probs_train,
+                y_test,
+                y_pred_test,
+                y_pred_probs_test,
+                self._logger,
+                self._problem_type,
+            )
+
+            return model_name, model_res, model_metrics, model
+
+        training_start = time()
         for i in range(self._data_split.k_folds):
             self._logger.info(f"Processing test fold sample {i+1}...")
             X_train, X_test = data.X_train[i].to_numpy(), data.X_test[i].to_numpy()
             y_train, y_test = data.y_train[i].to_numpy(), data.y_test[i].to_numpy()
 
             res[i] = {}
-            for model_name, params in self._model_types.items():
 
-                res[i][model_name] = {}
-                self._logger.info(f"Fitting {model_name} for test fold sample {i+1}...")
-                model_type = get_model_type(model_name, self._problem_type)
-                model = get_model(model_type, params["params"])
+            results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
+                delayed(_fit_single_model_kfold)(
+                    model_name, params, X_train, X_test, y_train, y_test
+                )
+                for model_name, params in self._model_types.items()
+            )
 
-                # Standard model handling
-                model.fit(X_train, y_train)
-                y_pred_train = model.predict(X_train)
-                res[i][model_name]["y_pred_train"] = y_pred_train
-                y_pred_test = model.predict(X_test)
-                res[i][model_name]["y_pred_test"] = y_pred_test
-
-                if self._problem_type == ProblemTypes.Classification:
-                    y_pred_probs_train = model.predict_proba(X_train)
-                    res[i][model_name]["y_pred_train_proba"] = y_pred_probs_train
-                    y_pred_probs_test = model.predict_proba(X_test)
-                    res[i][model_name]["y_pred_test_proba"] = y_pred_probs_test
-                else:
-                    y_pred_probs_train = None
-                    y_pred_probs_test = None
-
+            for model_name, model_res, model_metrics, model in results:
+                res[i][model_name] = model_res
                 if model_name not in metrics_full:
                     metrics_full[model_name] = []
-                metrics_full[model_name].append(
-                    _evaluate(
-                        model_name,
-                        self._metrics,
-                        y_train,
-                        y_pred_train,
-                        y_pred_probs_train,
-                        y_test,
-                        y_pred_test,
-                        y_pred_probs_test,
-                        self._logger,
-                        self._problem_type,
-                    )
-                )
-
+                metrics_full[model_name].append(model_metrics)
                 trained_models[model_name].append(model)
+
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
 
         metrics_mean_std = _compute_metrics_mean_std(metrics_full)
         return res, metrics_full, metrics_mean_std, trained_models
@@ -250,12 +303,16 @@ class GridSearchLearner:
         problem_type: ProblemTypes,
         data_split: DataSplitOptions,
         logger: Logger | None = None,
+        n_cpus: int = _MAX_CPUS,
     ) -> None:
         self._logger = logger
         self._model_types: dict[str, Any] = model_types
         self._problem_type = problem_type
         self._data_split = data_split
         self._metrics = get_metrics(self._problem_type, logger=self._logger)
+        self._n_cpus = n_cpus
+
+        self._logger.info(f"Using {self._n_cpus} of {cpu_count()} CPUs for training")
 
     def fit(self, data: TabularData) -> tuple[dict, dict, dict, dict]:
         """Fit models to the data using Grid Search with cross validation. Evaluates them
@@ -313,6 +370,7 @@ class GridSearchLearner:
         trained_models = {model_name: [] for model_name in self._model_types.keys()}
         metrics_mean_std = {model_name: {} for model_name in self._model_types.keys()}
 
+        training_start = time()
         for model_name, params in self._model_types.items():
             res[0][model_name] = {}
             # Set up grid search
@@ -329,6 +387,7 @@ class GridSearchLearner:
                 refit=refit,
                 cv=cv,
                 return_train_score=True,
+                n_jobs=self._n_cpus,
             )
 
             # Fit the model
@@ -364,11 +423,21 @@ class GridSearchLearner:
                     self._problem_type,
                 )
             )
+
             # append the best estimator
             trained_models[model_name].append(gs.best_estimator_)
             metrics_mean_std[model_name].update(
                 self._compute_metrics_statistics(gs.cv_results_, gs.best_index_)
             )
+
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
 
         return res, metrics_full, metrics_mean_std, trained_models
 
@@ -430,7 +499,7 @@ def _evaluate(
         - y_pred_probs_test (np.ndarray): Predicted probabilities for the test set.
         - logger (object): The logger.
     """
-    logger.info(f"Evaluating {model_name}...")
+    logger.info(f"Starting evaluation for {model_name}...")
     eval_res = {}
 
     if y_pred_probs_test is not None and y_pred_probs_test.shape[1] < 3:
@@ -440,7 +509,7 @@ def _evaluate(
 
     for metric_name, metric in metrics.items():
         eval_res[metric_name] = {}
-        logger.info(f"Evaluating {model_name} on {metric_name}...")
+        logger.info(f"Evaluating {model_name} on metric {metric_name} (train/test)...")
 
         # Regression
         if problem_type == ProblemTypes.Regression:
@@ -472,6 +541,7 @@ def _evaluate(
         eval_res[metric_name]["test"] = {
             "value": metric_test,
         }
+    logger.info(f"Finished evaluation for {model_name}.")
     return eval_res
 
 

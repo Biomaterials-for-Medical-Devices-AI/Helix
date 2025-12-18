@@ -27,6 +27,7 @@ from helix.options.file_paths import (
     data_analysis_plots_dir,
     execution_options_path,
     fi_plot_dir,
+    fuzzy_plot_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_metrics_mean_std_path,
@@ -100,9 +101,9 @@ def display_experiment_plots(experiment_path: Path) -> None:
         plot_box_v2(mean_plots, "Feature importance plots")
 
     # # Fuzzy plots
-    # fuzzy_plots = fuzzy_plot_dir(experiment_path)
-    # if fuzzy_plots.exists():
-    #     plot_box(fuzzy_plots, "Fuzzy plots")
+    fuzzy_plots = fuzzy_plot_dir(experiment_path)
+    if fuzzy_plots.exists():
+        plot_box(fuzzy_plots, "Fuzzy plots")
 
 
 def display_experiment_logs(experiment_path: Path) -> None:
