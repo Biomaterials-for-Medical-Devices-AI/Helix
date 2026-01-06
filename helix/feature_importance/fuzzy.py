@@ -232,9 +232,9 @@ class Fuzzy:
                 )
 
             membership_functions[feature] = {
-                "low": low_mf,
-                "medium": medium_mf,
-                "high": high_mf,
+                "small": low_mf,
+                "moderate": medium_mf,
+                "large": high_mf,
             }
         if self._fuzzy_opt.save_fuzzy_set_plots:
             save_fuzzy_sets_plots(
@@ -250,15 +250,15 @@ class Fuzzy:
         new_df_features = []
         for feature in X.columns:
             X.loc[:, f"{feature}_small"] = fuzz.interp_membership(
-                universe[feature], membership_functions[feature]["low"], X[feature]
+                universe[feature], membership_functions[feature]["small"], X[feature]
             )
             new_df_features.append(f"{feature}_small")
             X.loc[:, f"{feature}_mod"] = fuzz.interp_membership(
-                universe[feature], membership_functions[feature]["medium"], X[feature]
+                universe[feature], membership_functions[feature]["moderate"], X[feature]
             )
             new_df_features.append(f"{feature}_mod")
             X.loc[:, f"{feature}_large"] = fuzz.interp_membership(
-                universe[feature], membership_functions[feature]["high"], X[feature]
+                universe[feature], membership_functions[feature]["large"], X[feature]
             )
             new_df_features.append(f"{feature}_large")
         X = X[new_df_features]
@@ -294,11 +294,11 @@ class Fuzzy:
 
         # Return fuzzy set
         if index_of_max == 0:
-            return "low"
+            return "small"
         if index_of_max == 1:
-            return "medium"
+            return "moderate"
         if index_of_max == 2:
-            return "high"
+            return "large"
 
     def _fuzzy_rule_extraction(self, df):
         """
@@ -385,9 +385,9 @@ class Fuzzy:
             high_mf = fuzz.smf(universe[feature], 0.5, 1.00)
 
             membership_functions[feature] = {
-                "low": low_mf,
-                "medium": medium_mf,
-                "high": high_mf,
+                "small": low_mf,
+                "moderate": medium_mf,
+                "large": high_mf,
             }
 
         # Create fuzzy rules
@@ -403,9 +403,9 @@ class Fuzzy:
             for feature in df.columns[:-1]:
                 fuzzy_sets[feature] = self._fuzzyset_selection(
                     universe[feature],
-                    membership_functions[feature]["low"],
-                    membership_functions[feature]["medium"],
-                    membership_functions[feature]["high"],
+                    membership_functions[feature]["small"],
+                    membership_functions[feature]["moderate"],
+                    membership_functions[feature]["large"],
                     df_instance[feature],
                 )
 
@@ -456,12 +456,12 @@ class Fuzzy:
             synergy_features[category] = {}
             for feature in rules.columns[:-2]:
                 unique_values = rules[feature].unique()
-                if "high" in unique_values:
-                    top_value = "high"
-                elif "medium" in unique_values:
-                    top_value = "medium"
+                if "large" in unique_values:
+                    top_value = "large"
+                elif "moderate" in unique_values:
+                    top_value = "moderate"
                 else:
-                    top_value = "low"
+                    top_value = "small"
                 synergy_features[category][feature] = top_value
 
         self._logger.info(f"synergy and impact of features: \n{synergy_features}")
