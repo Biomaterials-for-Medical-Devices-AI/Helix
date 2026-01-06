@@ -293,12 +293,13 @@ class Fuzzy:
         index_of_max = mf_values.index(max(mf_values))
 
         # Return fuzzy set
-        if index_of_max == 0:
-            return "small"
-        if index_of_max == 1:
-            return "moderate"
-        if index_of_max == 2:
-            return "large"
+        match index_of_max:
+            case 0:
+                return "small"
+            case 1:
+                return "moderate"
+            case 2:
+                return "large"
 
     def _fuzzy_rule_extraction(self, df):
         """
