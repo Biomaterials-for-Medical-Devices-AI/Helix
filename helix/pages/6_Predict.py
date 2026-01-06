@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 from scipy.stats import mode
@@ -25,7 +27,7 @@ from helix.services.configuration import (
     load_data_preprocessing_options,
     load_execution_options,
 )
-from helix.services.data import read_uploaded_data
+from helix.services.data import read_data, read_uploaded_data
 from helix.services.experiments import get_experiments
 from helix.services.ml_models import load_models
 from helix.services.preprocessing import find_non_numeric_columns
@@ -145,14 +147,14 @@ if experiment_name:
         preprocessing_options = None
         is_preprocessed = False
         raw_data_path = data_options.data_path
-
     # This is the data that the user provided initially.
     # Having this is useful as it is needed to fit the scalers if needed.
-    raw_data = pd.read_csv(raw_data_path)
+    raw_data = read_data(Path(raw_data_path), None)
 
     # This is the data that was actually used for the training (after preprocessing)
     # This is only needed to get the names of the variables used for model training.
-    independent_variables = pd.read_csv(data_options.data_path).columns[:-1]
+    independent_variables = read_data(Path(data_options.data_path), None).columns[:-1]
+
     st.write(
         "For this experiment, the following columns were used as independent variables:"
     )
