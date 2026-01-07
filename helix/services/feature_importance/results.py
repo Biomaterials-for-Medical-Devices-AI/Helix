@@ -151,19 +151,19 @@ def save_fuzzy_sets_plots(
         fig, ax = plt.subplots(layout="constrained", dpi=plot_opt.dpi)
         ax.plot(
             universe[feature],
-            membership_functions[feature]["low"],
+            membership_functions[feature]["small"],
             "r",
             label="Small",
         )
         ax.plot(
             universe[feature],
-            membership_functions[feature]["medium"],
+            membership_functions[feature]["moderate"],
             "g",
             label="Moderate",
         )
         ax.plot(
             universe[feature],
-            membership_functions[feature]["high"],
+            membership_functions[feature]["large"],
             "b",
             label="Large",
         )
