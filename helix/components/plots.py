@@ -292,3 +292,13 @@ def display_predictions(predictions_df: pd.DataFrame):
     )
 
     st.write(concatenated[ordered_cols])
+
+
+def fuzzy_feature_impacts(impacts_df: pd.DataFrame):
+    """Display the impacts of each feature on each cluster following Fuzzy analysis.
+
+    Args:
+        impacts_df (pd.DataFrame): DataFrame containing the impacts of each feature on each cluster.
+    """
+    with st.expander("Fuzzy Feature Impacts", expanded=True):
+        st.dataframe(impacts_df)
