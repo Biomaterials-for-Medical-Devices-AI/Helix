@@ -301,4 +301,4 @@ def fuzzy_feature_impacts(impacts_df: pd.DataFrame):
         impacts_df (pd.DataFrame): DataFrame containing the impacts of each feature on each cluster.
     """
     with st.expander("Fuzzy Feature Impacts", expanded=True):
-        st.dataframe(impacts_df)
+        st.dataframe(impacts_df, hide_index=True, use_container_width=True)
