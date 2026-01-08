@@ -15,6 +15,7 @@ from helix.components.plot_editor import custom_plot_creator
 from helix.components.plots import (
     display_metrics_table,
     display_predictions,
+    fuzzy_feature_impacts,
     plot_box,
     plot_box_v2,
 )
@@ -28,6 +29,7 @@ from helix.options.file_paths import (
     execution_options_path,
     fi_plot_dir,
     fuzzy_plot_dir,
+    fuzzy_result_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_metrics_mean_std_path,
@@ -102,8 +104,12 @@ def display_experiment_plots(experiment_path: Path) -> None:
 
     # # Fuzzy plots
     fuzzy_plots = fuzzy_plot_dir(experiment_path)
+    fuzzy_impacts = fuzzy_result_dir(experiment_path) / "top contextual rules.csv"
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")
+    if fuzzy_impacts.exists():
+        impacts_df = pd.read_csv(fuzzy_impacts)
+        fuzzy_feature_impacts(impacts_df)
 
 
 def display_experiment_logs(experiment_path: Path) -> None:
