@@ -10,6 +10,7 @@ This page provides options for analyzing feature importance using various method
 from multiprocessing import Process
 from pathlib import Path
 
+import pandas as pd
 import streamlit as st
 
 from helix.components.configuration import display_options
@@ -17,7 +18,7 @@ from helix.components.experiments import experiment_selector, model_selector
 from helix.components.forms.forms_fi import fi_options_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.logs import log_box
-from helix.components.plots import plot_box, plot_box_v2
+from helix.components.plots import fuzzy_feature_impacts, plot_box, plot_box_v2
 from helix.feature_importance import feature_importance, fuzzy_interpretation
 from helix.options.data import DataOptions
 from helix.options.enums import (
@@ -35,6 +36,7 @@ from helix.options.file_paths import (
     fi_plot_dir,
     fuzzy_options_path,
     fuzzy_plot_dir,
+    fuzzy_result_dir,
     helix_experiments_base_dir,
     log_dir,
     ml_model_dir,
@@ -48,7 +50,7 @@ from helix.services.configuration import (
     load_plot_options,
     save_options,
 )
-from helix.services.data import TabularData, ingest_data
+from helix.services.data import TabularData, ingest_data, read_data
 from helix.services.experiments import (
     delete_previous_fi_results,
     find_previous_fi_results,
@@ -269,8 +271,12 @@ def display_fuzzy_plots(experiment_dir: Path) -> None:
         experiment_dir: Path to the experiment directory
     """
     fuzzy_plots = fuzzy_plot_dir(experiment_dir)
+    fuzzy_impacts = fuzzy_result_dir(experiment_dir) / "top contextual rules.csv"
     if fuzzy_plots.exists():
         plot_box(fuzzy_plots, "Fuzzy plots")
+    if fuzzy_impacts.exists():
+        impacts_df = pd.read_csv(fuzzy_impacts)
+        fuzzy_feature_impacts(impacts_df)
 
 
 # Set page contents
