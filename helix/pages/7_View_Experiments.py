@@ -109,6 +109,7 @@ def display_experiment_plots(experiment_path: Path) -> None:
         plot_box(fuzzy_plots, "Fuzzy plots")
     if fuzzy_impacts.exists():
         impacts_df = pd.read_csv(fuzzy_impacts)
+        impacts_df.rename({"Unnamed: 0": ""}, axis=1, inplace=True)
         fuzzy_feature_impacts(impacts_df)
 
 
