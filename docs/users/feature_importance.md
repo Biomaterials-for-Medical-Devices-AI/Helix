@@ -54,6 +54,8 @@ These methods are used to interpret feature importance on a *per prediction* bas
 ![Additional feature importance configuration](../_static/additional-fi-config.png)
 
 ## Fuzzy feature importance
+Outputs of crisp feature importance methods, like those described above, can be dependent on the particular machine learning algorithm being used. Moreover, they are represented as "importance" coefficients that can be harder to interpret by users. Fuzzy feature importance aims to create a more standard interpretation that is independent of the algorithms used, and present it more semantically (i.e. Feature A has a large impact).
+
 Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
 
 - Number of features for fuzzy interpretation
