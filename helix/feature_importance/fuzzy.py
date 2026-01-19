@@ -314,7 +314,10 @@ class Fuzzy:
 
     def _fuzzy_rule_extraction(self, df):
         """
-        Extract fuzzy rules from granular features.
+        Cluster the local feature importance data into the user-defined clusters and then
+        assign the "small", "moderate" and "large" granularities to features within those
+        clusters.
+
         Parameters:
             df (Dataframe): master dataframe of feature importances from local feature importance methods and ML models.
         Returns:
