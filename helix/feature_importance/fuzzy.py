@@ -114,18 +114,19 @@ class Fuzzy:
 
         return df_contextual_rules
 
-    def _select_features(self, majority_vote_results):
+    def _select_features(self, ensemble_results):
         """
-        Select top features from majority vote ensemble feature importance.
+        Select top features from ensemble feature importance. This can be either
+        majority vote-based importance or mean-based importance
         Parameters:
-            majority_vote_results: Dictionary of feature importance results.
+            ensemble_results: Dictionary of feature importance results.
         Returns:
             list: List of top features.
         """
         self._logger.info(
             f"Selecting top {self._fuzzy_opt.number_fuzzy_features} features..."
         )
-        fi = majority_vote_results.sort_values(by=0, ascending=False)
+        fi = ensemble_results.sort_values(by=0, ascending=False)
         # Select top n features for fuzzy interpretation
         topfeatures = fi.index[: self._fuzzy_opt.number_fuzzy_features].tolist()
         return topfeatures
