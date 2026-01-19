@@ -133,7 +133,17 @@ class Fuzzy:
 
     def _fuzzy_granularity(self, X):
         """
-        Assign granularity to features.
+        Generate membership functions for each feature to split them into 3 granularities:
+        "small", "moderate", "large". Then use these membership functions to determine
+        degree membership for each granularity.
+
+        The Z function is used to determine degree membership of the "small" granularity.
+
+        The triangular function is used to determine degree membership of the "moderate"
+        granularity.
+
+        The S function is used to determine degree membership of the "large" granularity.
+
         Parameters:
             X (pd.DataFrame): Features.
         Returns:
