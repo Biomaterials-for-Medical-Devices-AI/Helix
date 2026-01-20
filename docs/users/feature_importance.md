@@ -58,7 +58,7 @@ Outputs of crisp feature importance methods, like those described above, can be 
 
 ### How fuzzy interpretation works
 1. The top *n* features based on ensemble feature importance are selected from the data, which has been pre-processed.
-2. Features are split into different granularities ("small", "moderate" or "high") based on membership functions.
+2. Features are split into different granularities ("small", "moderate" or "high" importance) based on membership functions.
     - the Z membership function is used to determine membership of the "small" granularity.
     - the triangular membership function is used to determine membership of the "moderate" granularity.
     - the S membership function is used to determine membership of the "large" granularity.
