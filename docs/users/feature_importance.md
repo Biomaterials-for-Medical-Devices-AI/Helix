@@ -1,4 +1,6 @@
 # Feature importance
+Not all features influence the output of a machine learning model's predictions equally. Some features are more influential than others. It is important to analyse feature importance to understand your why your model makes its predictions. By measuring the importance of each feature it is possible to explain which has the greatest impact on your model's predictions. This importance is expressed numerically and the interpretation can vary depending on the importance method used.
+
 Once you have trained some models in your experiment, you can then perform feature importance analyses to assess which features more most influential in the models' decision making. You can get to the Feature Importance page by clinking on **Feature Importance** on the left hand side of the page.
 
 ![Feature importance page](../_static/feature-importance-page.png)
