@@ -67,7 +67,7 @@ Outputs of crisp feature importance methods, like those described above, can be 
 3. Local feature importance data is used to create Fuzzy sets based on the number of user-defined clusters. Samples are assigned to each cluster using *c*-means clustering, where *c* is the number of user-defined clusters.
 4. Fuzzy sets are created for the clusters, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
 
-Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
+To use this feature, you must first configure ensemble and local feature importance methods.
 
 - Number of features for fuzzy interpretation
 
