@@ -59,7 +59,7 @@ These methods are used to interpret feature importance on a *per prediction* bas
 Outputs of crisp feature importance methods, like those described above, can be dependent on the particular machine learning algorithm being used. Moreover, they are represented as "importance" coefficients that can be harder to interpret by users. Fuzzy feature importance aims to create a more standard interpretation that is independent of the algorithms used, and present it more semantically (i.e. Feature A has a large impact).
 
 ### How fuzzy interpretation works
-1. The top *n* features based on ensemble feature importance are selected from the data, which has been pre-processed.
+1. The top *n* features based on ensemble feature importance are selected from the data.
 2. Features are split into different granularities ("small", "moderate" or "high" importance) based on membership functions.
     - the Z membership function is used to determine membership of the "small" granularity.
     - the triangular membership function is used to determine membership of the "moderate" granularity.
