@@ -75,8 +75,8 @@ class Fuzzy:
 
         # Step 2: Assign granularity to features e.g. low, medium, high categories
         if self._fuzzy_opt.granular_features:
-            X_train = self._fuzzy_granularity(X_train)
-            X_test = self._fuzzy_granularity(X_test)
+            X_train = self._make_fuzzy_set_mfs(X_train)
+            X_test = self._make_fuzzy_set_mfs(X_test)
 
         # Step 3: Master feature importance dataframe for granular features from local feature importance methods and ML models
         master_importance_df = self._local_feature_importance(
@@ -131,23 +131,23 @@ class Fuzzy:
         topfeatures = fi.index[: self._fuzzy_opt.number_fuzzy_features].tolist()
         return topfeatures
 
-    def _fuzzy_granularity(self, X):
+    def _make_fuzzy_set_mfs(self, X):
         """
-        Generate membership functions for each feature to split them into 3 granularities:
-        "small", "moderate", "large". Then use these membership functions to determine
-        degree membership for each granularity.
+        Generate membership functions for each feature to split them into 3 fuzzy sets:
+        "small", "moderate" and "large". Then use these membership functions to determine
+        degree membership for each fuzzy set.
 
-        The Z function is used to determine degree membership of the "small" granularity.
+        The Z function is used to determine degree membership of the "small" fuzzy set.
 
         The triangular function is used to determine degree membership of the "moderate"
-        granularity.
+        fuzzy set.
 
-        The S function is used to determine degree membership of the "large" granularity.
+        The S function is used to determine degree membership of the "large" fuzzy set.
 
         Parameters:
             X (pd.DataFrame): Features.
         Returns:
-            pd.DataFrame: Features with granularity.
+            pd.DataFrame: Features with fuzzy sets.
         """
         import warnings
 
