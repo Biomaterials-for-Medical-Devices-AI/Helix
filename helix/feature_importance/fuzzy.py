@@ -84,7 +84,7 @@ class Fuzzy:
         )
 
         # Step 4: Extract fuzzy rules from master dataframe
-        fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
+        fuzzy_rules_df = self._make_clustered_fuzzy_sets(master_importance_df)
         save_importance_results(
             feature_importance_df=fuzzy_rules_df,
             model_type=None,
@@ -156,7 +156,7 @@ class Fuzzy:
 
         # Suppress all warnings
         warnings.filterwarnings("ignore")
-        self._logger.info("Assigning granularity to features...")
+        self._logger.info("Assigning features to fuzzy sets...")
         # find interquartile values for each feature
         df_top_qtl = X.quantile([0, 0.25, 0.5, 0.75, 1])
         # Create membership functions based on interquartile values for each feature
@@ -312,10 +312,10 @@ class Fuzzy:
             case 2:
                 return "large"
 
-    def _fuzzy_rule_extraction(self, df):
+    def _make_clustered_fuzzy_sets(self, df):
         """
         Cluster the local feature importance data into the user-defined clusters and then
-        assign the "small", "moderate" and "large" granularities to features within those
+        assign the "small", "moderate" and "large" fuzzy sets to features within those
         clusters.
 
         Parameters:
@@ -326,7 +326,7 @@ class Fuzzy:
         import numpy as np
         import skfuzzy as fuzz
 
-        self._logger.info("Extracting fuzzy rules...")
+        self._logger.info("Making c-means clusters...")
         if self._exec_opt.problem_type == ProblemTypes.Regression:
             target = np.array(df[df.columns[-1]])
             centers, membership_matrix, _, _, _, _, _ = fuzz.cluster.cmeans(
@@ -388,6 +388,7 @@ class Fuzzy:
             df.loc[:, df.columns[-1]] = primary_cluster_assignment
 
         # Create membership functions based on interquartile values for each feature
+        self._logger.info("Creating fuzzy set membership functions for clusters...")
         membership_functions = {}
         universe = {}
         for feature in df.columns[:-1]:
@@ -409,6 +410,7 @@ class Fuzzy:
         fuzzy_rules = []
 
         # Loop through each row in the dataframe and extract fuzzy rules
+        self._logger.info("Assigning clusters to fuzzy sets...")
         for i, _ in df.iterrows():
             df_instance = {}  # Dictionary to store observation values
             fuzzy_sets = {}  # Dictionary to store fuzzy sets
