@@ -42,7 +42,7 @@ class Fuzzy:
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self.importance_type = "local"  # local feature importance
 
-    def interpret(self, models, ensemble_results, data):
+    def interpret(self, ensemble_results, local_results, data):
         """
         Interpret the model results using the selected feature importance methods and ensemble methods.
         Parameters:
@@ -79,9 +79,11 @@ class Fuzzy:
             X_test = self._fuzzy_granularity(X_test)
 
         # Step 3: Master feature importance dataframe for granular features from local feature importance methods and ML models
-        master_importance_df = self._local_feature_importance(
-            models, data.X_train[0], data.y_train[0]
-        )
+        master_importance_df = pd.DataFrame()
+        for _, feature_importance in local_results.items():
+            for _, result in feature_importance.items():
+                master_importance_df = pd.concat([master_importance_df, result], axis=0)
+        master_importance_df.reset_index(drop=True, inplace=True)
 
         # Step 4: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
