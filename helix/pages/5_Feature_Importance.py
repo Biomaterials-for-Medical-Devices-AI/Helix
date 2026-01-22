@@ -239,8 +239,8 @@ def pipeline(
             exec_opt=exec_opts,
             plot_opt=plot_opts,
             data=data,
-            models=trained_models,
             ensemble_results=ensemble_results,
+            local_results=local_importance_results,
             logger=fuzzy_logger,
         )
         close_logger(fuzzy_logger_instance, fuzzy_logger)
