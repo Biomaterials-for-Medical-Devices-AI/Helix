@@ -8,10 +8,6 @@ from helix.options.fi import FeatureImportanceOptions
 from helix.options.fuzzy import FuzzyOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.data import TabularData
-from helix.services.feature_importance.local_methods import (
-    calculate_lime_values,
-    calculate_local_shap_values,
-)
 from helix.services.feature_importance.results import (
     save_fuzzy_sets_plots,
     save_importance_results,
