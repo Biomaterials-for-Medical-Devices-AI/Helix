@@ -227,6 +227,8 @@ class FeatureImportanceEstimator:
         """
         # Get data features
         X = data.iloc[:, :-1]
+        # Get the targets
+        y = data.iloc[:, -1]
 
         # Determine which metric to use
         if self._exec_opt.problem_type == ProblemTypes.Regression:
@@ -309,6 +311,11 @@ class FeatureImportanceEstimator:
                                 / f"local-{feature_importance_type}-{model_type}-violin.png"
                             )
                             close_figure(fig)
+
+                            # Add class to local feature importance for fuzzy
+                            lime_importance_df = pd.concat(
+                                [lime_importance_df, y], axis=1
+                            )
                             feature_importance_results[model_type][
                                 feature_importance_type
                             ] = lime_importance_df
@@ -346,6 +353,9 @@ class FeatureImportanceEstimator:
                                 / f"local-{feature_importance_type}-{value['type']}-{model_type}-beeswarm.png"
                             )
                             close_figure(fig)
+
+                            # Add class to local feature importance for fuzzy
+                            shap_df = pd.concat([shap_df, y], axis=1)
                             feature_importance_results[model_type][
                                 feature_importance_type
                             ] = shap_df
