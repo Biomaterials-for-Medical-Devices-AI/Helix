@@ -78,14 +78,14 @@ class Fuzzy:
             X_train = self._fuzzy_granularity(X_train)
             X_test = self._fuzzy_granularity(X_test)
 
-        # Step 3: Master feature importance dataframe for granular features from local feature importance methods and ML models
+        # Step 3.1: Convert local FI results to a dataframe
         master_importance_df = pd.DataFrame()
         for _, feature_importance in local_results.items():
             for _, result in feature_importance.items():
                 master_importance_df = pd.concat([master_importance_df, result], axis=0)
         master_importance_df.reset_index(drop=True, inplace=True)
 
-        # Step 4: Extract fuzzy rules from master dataframe
+        # Step 3.2: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
         save_importance_results(
             feature_importance_df=fuzzy_rules_df,
@@ -98,7 +98,7 @@ class Fuzzy:
             logger=self._logger,
         )
 
-        # Step 5: Identify the synergy of important features by context (e.g. target category:low, medium, high)
+        # Step 4: Identify the synergy of important features by context (e.g. target category:low, medium, high)
         df_contextual_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
         save_importance_results(
             feature_importance_df=df_contextual_rules,
@@ -111,7 +111,6 @@ class Fuzzy:
             logger=self._logger,
         )
 
-        # local_importance_results = self._local_feature_importance(models, X, y)
         self._logger.info("-------- End of fuzzy interpretation logging--------")
 
         return df_contextual_rules
