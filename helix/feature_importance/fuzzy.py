@@ -7,6 +7,7 @@ from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.fuzzy import FuzzyOptions
 from helix.options.plotting import PlottingOptions
+from helix.services.data import TabularData
 from helix.services.feature_importance.local_methods import (
     calculate_lime_values,
     calculate_local_shap_values,
@@ -42,15 +43,18 @@ class Fuzzy:
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self.importance_type = "local"  # local feature importance
 
-    def interpret(self, ensemble_results, local_results, data):
-        """
-        Interpret the model results using the selected feature importance methods and ensemble methods.
-        Parameters:
-            models (dict): Dictionary of models.
-            data (object): Data object.
+    def interpret(self, ensemble_results: dict, local_results: dict, data: TabularData):
+        """Interpret the model results using the selected feature importance methods and ensemble methods.
+
+        Args:
+            ensemble_results (dict): Ensemble FI results used to select top features.
+            local_results (dict): Local FI results.
+            data (TabularData): The data used in training.
+
         Returns:
             dict: Dictionary of feature importance results.
         """
+
         # create a copy of the data - select first fold of the data
         X_train, X_test = deepcopy(data.X_train[0]), deepcopy(data.X_test[0])
         self._logger.info("-------- Start of fuzzy interpretation logging--------")
