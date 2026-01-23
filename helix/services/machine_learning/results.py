@@ -52,7 +52,7 @@ def _find_closest_bootstrap_index(
         int: Index of the bootstrap closest to the mean
     """
     mean_metric_test = ml_metric_results_stats[model_name]["test"][metric]["mean"]
-    closest_index = -1
+    closest_index = 0
     min_diff = float("inf")
 
     for i, bootstrap in enumerate(ml_metric_results[model_name]):
