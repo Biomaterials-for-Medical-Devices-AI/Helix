@@ -52,13 +52,9 @@ class DataBuilder:
             The training data (X) and the targets (y)
         """
         df = read_data(Path(self._path), self._logger)
-        X = df.loc[:, self._feature_cols]
-        y = df.loc[:, self._target_col]
-        if self._id_col is not None:
-            id_ = df.loc[:, self._id_col]
-        else:
-            id_ = None
-        return X, y, id_
+        X = df.iloc[:, :-1]
+        y = df.iloc[:, -1]
+        return X, y
 
     def _generate_data_splits(
         self, X: pd.DataFrame, y: pd.DataFrame
@@ -75,7 +71,11 @@ class DataBuilder:
         Returns:
             Dict[str, List[pd.DataFrame]]: The bootstrapped data.
         """
-        X_train_list, X_test_list, y_train_list, y_test_list = [], [], [], []
+        X_train_list = []
+        X_test_list = []
+        y_train_list = []
+        y_test_list = []
+        ids_list = []
 
         if (
             self._data_split is not None
@@ -99,10 +99,20 @@ class DataBuilder:
                     stratify=stratify,
                     shuffle=True,
                 )
-                X_train_list.append(X_train)
-                X_test_list.append(X_test)
-                y_train_list.append(y_train)
-                y_test_list.append(y_test)
+                if self._id_col is not None:
+                    X_train_list.append(X_train[self._feature_cols])
+                    X_test_list.append(X_test[self._feature_cols])
+                    y_train_list.append(y_train)
+                    y_test_list.append(y_test)
+
+                    # Combine train and test and select id column
+                    X_train_test = pd.concat([X_train, X_test], ignore_index=True)
+                    ids_list.append(X_train_test[self._id_col])
+                else:
+                    X_train_list.append(X_train)
+                    X_test_list.append(X_test)
+                    y_train_list.append(y_train)
+                    y_test_list.append(y_test)
         elif (
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.KFold
@@ -129,10 +139,20 @@ class DataBuilder:
                 X_train, X_test = X.iloc[train_index], X.iloc[test_index]
                 y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-                X_train_list.append(X_train)
-                X_test_list.append(X_test)
-                y_train_list.append(y_train)
-                y_test_list.append(y_test)
+                if self._id_col is not None:
+                    X_train_list.append(X_train[self._feature_cols])
+                    X_test_list.append(X_test[self._feature_cols])
+                    y_train_list.append(y_train)
+                    y_test_list.append(y_test)
+
+                    # Combine train and test and select id column
+                    X_train_test = pd.concat([X_train, X_test], ignore_index=True)
+                    ids_list.append(X_train_test[self._id_col])
+                else:
+                    X_train_list.append(X_train)
+                    X_test_list.append(X_test)
+                    y_train_list.append(y_train)
+                    y_test_list.append(y_test)
         elif (
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.NoSplit
@@ -148,10 +168,20 @@ class DataBuilder:
                 random_state=self._random_state,
                 stratify=stratify,
             )
-            X_train_list.append(X_train)
-            X_test_list.append(X_test)
-            y_train_list.append(y_train)
-            y_test_list.append(y_test)
+            if self._id_col is not None:
+                X_train_list.append(X_train[self._feature_cols])
+                X_test_list.append(X_test[self._feature_cols])
+                y_train_list.append(y_train)
+                y_test_list.append(y_test)
+
+                # Combine train and test and select id column
+                X_train_test = pd.concat([X_train, X_test], ignore_index=True)
+                ids_list.append(X_train_test[self._id_col])
+            else:
+                X_train_list.append(X_train)
+                X_test_list.append(X_test)
+                y_train_list.append(y_train)
+                y_test_list.append(y_test)
         else:
             raise NotImplementedError(
                 f"Data split type {self._data_split.method} is not implemented"
@@ -162,6 +192,7 @@ class DataBuilder:
             "X_test": X_test_list,
             "y_train": y_train_list,
             "y_test": y_test_list,
+            "id_column": ids_list if ids_list else None,
         }
 
     def _normalise_data(
@@ -204,7 +235,7 @@ class DataBuilder:
         return data
 
     def ingest(self):
-        X, y, id_ = self._load_data()
+        X, y = self._load_data()
         data = self._generate_data_splits(X, y)
 
         return TabularData(
@@ -212,7 +243,7 @@ class DataBuilder:
             X_test=data["X_test"],
             y_train=data["y_train"],
             y_test=data["y_test"],
-            id_column=id_,
+            id_column=data["id_column"],
         )
 
 
@@ -223,7 +254,7 @@ class TabularData:
     X_test: list[pd.DataFrame]
     y_train: list[pd.DataFrame]
     y_test: list[pd.DataFrame]
-    id_column: pd.Series | None
+    id_column: list[pd.Series]
 
 
 @st.cache_data(show_spinner="Loading data...")
