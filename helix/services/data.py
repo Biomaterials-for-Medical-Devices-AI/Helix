@@ -99,20 +99,16 @@ class DataBuilder:
                     stratify=stratify,
                     shuffle=True,
                 )
-                if self._id_col is not None:
-                    X_train_list.append(X_train[self._feature_cols])
-                    X_test_list.append(X_test[self._feature_cols])
-                    y_train_list.append(y_train)
-                    y_test_list.append(y_test)
 
-                    # Combine train and test and select id column
-                    X_train_test = pd.concat([X_train, X_test], ignore_index=True)
-                    ids_list.append(X_train_test[self._id_col])
-                else:
-                    X_train_list.append(X_train)
-                    X_test_list.append(X_test)
-                    y_train_list.append(y_train)
-                    y_test_list.append(y_test)
+                # Assign the data to the lists depending on if there is an ID column
+                X_tr_l, X_te_l, y_tr_l, y_te_l, ids_l = self._assign_splits_to_lists(
+                    X_train, X_test, y_train, y_test
+                )
+                X_train_list.extend(X_tr_l)
+                X_test_list.extend(X_te_l)
+                y_train_list.extend(y_tr_l)
+                y_test_list.extend(y_te_l)
+                ids_list.extend(ids_l)
         elif (
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.KFold
@@ -139,20 +135,15 @@ class DataBuilder:
                 X_train, X_test = X.iloc[train_index], X.iloc[test_index]
                 y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-                if self._id_col is not None:
-                    X_train_list.append(X_train[self._feature_cols])
-                    X_test_list.append(X_test[self._feature_cols])
-                    y_train_list.append(y_train)
-                    y_test_list.append(y_test)
-
-                    # Combine train and test and select id column
-                    X_train_test = pd.concat([X_train, X_test], ignore_index=True)
-                    ids_list.append(X_train_test[self._id_col])
-                else:
-                    X_train_list.append(X_train)
-                    X_test_list.append(X_test)
-                    y_train_list.append(y_train)
-                    y_test_list.append(y_test)
+                # Assign the data to the lists depending on if there is an ID column
+                X_tr_l, X_te_l, y_tr_l, y_te_l, ids_l = self._assign_splits_to_lists(
+                    X_train, X_test, y_train, y_test
+                )
+                X_train_list.extend(X_tr_l)
+                X_test_list.extend(X_te_l)
+                y_train_list.extend(y_tr_l)
+                y_test_list.extend(y_te_l)
+                ids_list.extend(ids_l)
         elif (
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.NoSplit
@@ -168,20 +159,15 @@ class DataBuilder:
                 random_state=self._random_state,
                 stratify=stratify,
             )
-            if self._id_col is not None:
-                X_train_list.append(X_train[self._feature_cols])
-                X_test_list.append(X_test[self._feature_cols])
-                y_train_list.append(y_train)
-                y_test_list.append(y_test)
-
-                # Combine train and test and select id column
-                X_train_test = pd.concat([X_train, X_test], ignore_index=True)
-                ids_list.append(X_train_test[self._id_col])
-            else:
-                X_train_list.append(X_train)
-                X_test_list.append(X_test)
-                y_train_list.append(y_train)
-                y_test_list.append(y_test)
+            # Assign the data to the lists depending on if there is an ID column
+            X_tr_l, X_te_l, y_tr_l, y_te_l, ids_l = self._assign_splits_to_lists(
+                X_train, X_test, y_train, y_test
+            )
+            X_train_list.extend(X_tr_l)
+            X_test_list.extend(X_te_l)
+            y_train_list.extend(y_tr_l)
+            y_test_list.extend(y_te_l)
+            ids_list.extend(ids_l)
         else:
             raise NotImplementedError(
                 f"Data split type {self._data_split.method} is not implemented"
@@ -233,6 +219,31 @@ class DataBuilder:
             raise TypeError("numerical_cols must be a list of columns or 'all'.")
         data[self._numerical_cols] = scaler.fit_transform(data[self._numerical_cols])
         return data
+
+    def _assign_splits_to_lists(self, X_train, X_test, y_train, y_test):
+        X_train_list = []
+        X_test_list = []
+        y_train_list = []
+        y_test_list = []
+        ids_list = []
+
+        if self._id_col is not None:
+            X_train_list.append(X_train[self._feature_cols])
+            X_test_list.append(X_test[self._feature_cols])
+            y_train_list.append(y_train)
+            y_test_list.append(y_test)
+
+            # Combine train and test and select id column
+            X_train_test = pd.concat([X_train, X_test], ignore_index=True)
+            ids_list.append(X_train_test[self._id_col])
+        else:
+            X_train_list.append(X_train)
+            X_test_list.append(X_test)
+            y_train_list.append(y_train)
+            y_test_list.append(y_test)
+            # Don't add it the ID list if the user didn't give an ID column
+
+        return X_train_list, X_test_list, y_train_list, y_test_list, ids_list
 
     def ingest(self):
         X, y = self._load_data()
