@@ -59,6 +59,7 @@ class ExecutionStateKeys(StrEnum):
     DependentVariable = "dependent_variable"
     DependentVariableName = "dependent_variable_name"
     FeatureColumns = "feature_columns"
+    IdColumn = "id_column"
     UploadedFileName = "uploaded_file_name"
     RandomSeed = "random_seed"
     UseHyperParamSearch = "use_hyperparam_search"
@@ -150,7 +151,6 @@ class TransformationsY(StrEnum):
     Log = "log"
     Sqrt = "square-root"
     MinMaxNormalisation = "minmax"
-    # changing spelling to UK here would make this not backwards-compatible
     StandardisationNormalisation = "standardisation"  # to match normalisations
     NoTransformation = "none"
 
