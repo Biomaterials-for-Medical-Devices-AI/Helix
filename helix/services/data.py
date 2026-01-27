@@ -9,7 +9,7 @@ import streamlit as st
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from helix.options.data import DataOptions, DataSplitOptions
+from helix.options.data import DataOptions
 from helix.options.enums import DataSplitMethods, Normalisations, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.utils.logging_utils import Logger
