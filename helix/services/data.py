@@ -58,7 +58,6 @@ class DataBuilder:
             id_ = df.loc[:, self._id_col]
         else:
             id_ = None
-        self._logger.info(f"X: {len(X)}, y: {len(y)}, id: {len(id_)}")
         return X, y, id_
 
     def _generate_data_splits(
