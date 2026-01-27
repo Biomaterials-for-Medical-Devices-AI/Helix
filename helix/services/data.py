@@ -27,20 +27,20 @@ class DataBuilder:
 
     def __init__(
         self,
-        data_path: str,
-        random_state: int,
-        normalisation: str,
+        data_opts: DataOptions,
+        exec_opts: ExecutionOptions,
         logger: object = None,
-        data_split: DataSplitOptions | None = None,
-        problem_type: str = None,
     ) -> None:
-        self._path = data_path
-        self._data_split = data_split
-        self._random_state = random_state
+        self._path = data_opts.data_path
+        self._data_split = data_opts.data_split
+        self._random_state = exec_opts.random_state
         self._logger = logger
-        self._normalization = normalisation
+        self._normalization = data_opts.normalisation
         self._numerical_cols = "all"
-        self._problem_type = problem_type
+        self._problem_type = exec_opts.problem_type
+        self._feature_cols = data_opts.feature_columns
+        self._id_col = data_opts.id_column
+        self._target_col = data_opts.target_column
 
     def _load_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -52,9 +52,14 @@ class DataBuilder:
             The training data (X) and the targets (y)
         """
         df = read_data(Path(self._path), self._logger)
-        X = df.iloc[:, :-1]
-        y = df.iloc[:, -1]
-        return X, y
+        X = df.loc[:, self._feature_cols]
+        y = df.loc[:, self._target_col]
+        if self._id_col is not None:
+            id_ = df.loc[:, self._id_col]
+        else:
+            id_ = None
+        self._logger.info(f"X: {len(X)}, y: {len(y)}, id: {len(id_)}")
+        return X, y, id_
 
     def _generate_data_splits(
         self, X: pd.DataFrame, y: pd.DataFrame
@@ -200,7 +205,7 @@ class DataBuilder:
         return data
 
     def ingest(self):
-        X, y = self._load_data()
+        X, y, id_ = self._load_data()
         data = self._generate_data_splits(X, y)
 
         return TabularData(
@@ -208,6 +213,7 @@ class DataBuilder:
             X_test=data["X_test"],
             y_train=data["y_train"],
             y_test=data["y_test"],
+            id_column=id_,
         )
 
 
@@ -218,6 +224,7 @@ class TabularData:
     X_test: list[pd.DataFrame]
     y_train: list[pd.DataFrame]
     y_test: list[pd.DataFrame]
+    id_column: pd.Series | None
 
 
 @st.cache_data(show_spinner="Loading data...")
@@ -238,12 +245,9 @@ def ingest_data(
         TabularData: The ingested data.
     """
     data = DataBuilder(
-        data_path=data_opts.data_path,
-        random_state=exec_opts.random_state,
-        normalisation=data_opts.normalisation,
+        data_opts=data_opts,
+        exec_opts=exec_opts,
         logger=_logger,
-        data_split=data_opts.data_split,
-        problem_type=exec_opts.problem_type,
     ).ingest()
     return data
 
@@ -319,8 +323,12 @@ def rearrange_data(df: pd.DataFrame, data_opts: DataOptions):
 
     target_col = data_opts.target_column
     feature_cols = data_opts.feature_columns
+    id_col = data_opts.id_column
 
-    cols = feature_cols + [target_col]
+    if id_col is not None:
+        cols = [id_col] + feature_cols + [target_col]
+    else:
+        cols = feature_cols + [target_col]
 
     df = df[cols]
 
