@@ -7,10 +7,7 @@ from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.fuzzy import FuzzyOptions
 from helix.options.plotting import PlottingOptions
-from helix.services.feature_importance.local_methods import (
-    calculate_lime_values,
-    calculate_local_shap_values,
-)
+from helix.services.data import TabularData
 from helix.services.feature_importance.results import (
     save_fuzzy_sets_plots,
     save_importance_results,
@@ -42,15 +39,18 @@ class Fuzzy:
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self.importance_type = "local"  # local feature importance
 
-    def interpret(self, models, ensemble_results, data):
-        """
-        Interpret the model results using the selected feature importance methods and ensemble methods.
-        Parameters:
-            models (dict): Dictionary of models.
-            data (object): Data object.
+    def interpret(self, ensemble_results: dict, local_results: dict, data: TabularData):
+        """Interpret the model results using the selected feature importance methods and ensemble methods.
+
+        Args:
+            ensemble_results (dict): Ensemble FI results used to select top features.
+            local_results (dict): Local FI results.
+            data (TabularData): The data used in training.
+
         Returns:
             dict: Dictionary of feature importance results.
         """
+
         # create a copy of the data - select first fold of the data
         X_train, X_test = deepcopy(data.X_train[0]), deepcopy(data.X_test[0])
         self._logger.info("-------- Start of fuzzy interpretation logging--------")
@@ -78,10 +78,13 @@ class Fuzzy:
             X_train = self._make_fuzzy_set_mfs(X_train)
             X_test = self._make_fuzzy_set_mfs(X_test)
 
-        # Step 3: Master feature importance dataframe for granular features from local feature importance methods and ML models
-        master_importance_df = self._local_feature_importance(
-            models, data.X_train[0], data.y_train[0]
-        )
+        # Step 3.1: Convert local FI results to a dataframe
+        master_importance_df = pd.DataFrame()
+        for _, feature_importance in local_results.items():
+            for _, result in feature_importance.items():
+                master_importance_df = pd.concat([master_importance_df, result], axis=0)
+        master_importance_df.reset_index(drop=True, inplace=True)
+        master_importance_df.to_csv("~/Desktop/fuzzy-master-df.csv")
 
         # Step 4: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._make_clustered_fuzzy_sets(master_importance_df)
@@ -96,7 +99,7 @@ class Fuzzy:
             logger=self._logger,
         )
 
-        # Step 5: Identify the synergy of important features by context (e.g. target category:low, medium, high)
+        # Step 4: Identify the synergy of important features by context (e.g. target category:low, medium, high)
         df_contextual_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
         save_importance_results(
             feature_importance_df=df_contextual_rules,
@@ -109,7 +112,6 @@ class Fuzzy:
             logger=self._logger,
         )
 
-        # local_importance_results = self._local_feature_importance(models, X, y)
         self._logger.info("-------- End of fuzzy interpretation logging--------")
 
         return df_contextual_rules
@@ -485,84 +487,3 @@ class Fuzzy:
         # Convert dictionary to dataframe
         synergy_features_df = pd.DataFrame(synergy_features)
         return synergy_features_df
-
-    def _local_feature_importance(self, models, X, y):
-        """
-        Calculate feature importance for a given model and dataset.
-        Parameters:
-            models (dict): Dictionary of models.
-            X (pd.DataFrame): Features.
-            y (pd.Series): Target.
-        Returns:
-            dict: Dictionary of feature importance results.
-        """
-        self._logger.info("Creating master feature importance dataframe...")
-        feature_importance_results = {}
-
-        if not any(self._local_importance_methods.values()):
-            self._logger.info("No local feature importance methods selected")
-        else:
-            for model_type, model in models.items():
-                self._logger.info(
-                    f"Local feature importance methods for {model_type}..."
-                )
-
-                feature_importance_results[model_type] = {}
-
-                # Run methods with TRUE values in the dictionary of feature importance methods
-                for (
-                    feature_importance_type,
-                    value,
-                ) in self._local_importance_methods.items():
-                    # Select the first model in the list - model[0]
-                    if value["value"]:
-                        if feature_importance_type == "LIME":
-                            # Run LIME importance
-                            lime_importance_df = calculate_lime_values(
-                                model=model[0],
-                                X=X,
-                                problem_type=self._exec_opt.problem_type,
-                                logger=self._logger,
-                            )
-                            # Normalise LIME coefficients between 0 and 1 (0 being the lowest impact and 1 being the highest impact)
-                            lime_importance_df = lime_importance_df.abs()
-                            lime_importance_df_norm = (
-                                lime_importance_df - lime_importance_df.min()
-                            ) / (lime_importance_df.max() - lime_importance_df.min())
-                            # Add class to local feature importance
-                            lime_importance_df_norm = pd.concat(
-                                [lime_importance_df_norm, y], axis=1
-                            )
-                            # lime_importance_df = pd.concat([lime_importance_df, y], axis=1)
-                            feature_importance_results[model_type][
-                                feature_importance_type
-                            ] = lime_importance_df_norm
-
-                        if feature_importance_type == "SHAP":
-                            # Run SHAP
-                            shap_df, shap_values = calculate_local_shap_values(
-                                model=model[0],
-                                X=X,
-                                logger=self._logger,
-                            )
-                            # Normalise SHAP values between 0 and 1 (0 being the lowest impact and 1 being the highest impact)
-                            shap_df = shap_df.abs()
-                            shap_df_norm = (shap_df - shap_df.min()) / (
-                                shap_df.max() - shap_df.min()
-                            )
-                            # Add class to local feature importance
-                            shap_df_norm = pd.concat([shap_df_norm, y], axis=1)
-                            feature_importance_results[model_type][
-                                feature_importance_type
-                            ] = shap_df_norm
-
-        # Concatenate the results
-        master_df = pd.DataFrame()
-        for model_type, feature_importance in feature_importance_results.items():
-            for feature_importance_type, result in feature_importance.items():
-                master_df = pd.concat([master_df, result], axis=0)
-
-        # Reset the index of the master dataframe
-        master_df.reset_index(drop=True, inplace=True)
-
-        return master_df
