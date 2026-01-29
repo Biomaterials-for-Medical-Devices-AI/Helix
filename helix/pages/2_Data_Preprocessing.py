@@ -86,22 +86,19 @@ experiment_name = experiment_selector(choices)
 helix_base_dir = helix_experiments_base_dir()
 
 
-def validate_data(data, has_id_col: bool) -> tuple[list, bool]:
+def validate_data(data, id_col: str | None) -> tuple[list, bool]:
     """Validate data for preprocessing.
 
     Args:
         data: The input data to validate
-        has_id_col: Does the data have an ID column?
+        id_col: The name of the ID column
 
     Returns:
         tuple containing list of non-numeric columns and whether y has non-numeric values
     """
-    if has_id_col:
-        # data are arranged so the ID col is in index 0, so select 1:-1
-        # see `rearrange_data` in `helix.services.data`
-        non_numeric = find_non_numeric_columns(data.iloc[:, 1:-1])
-    else:
-        non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
+    non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
+    if id_col in non_numeric:
+        non_numeric.remove(id_col)
 
     if non_numeric:
         st.warning(
@@ -207,7 +204,7 @@ if experiment_name:
             data = read_data(Path(data_opts.data_path), logger)
 
             # Validate data
-            validate_data(data, has_id_col=data_opts.id_column is not None)
+            validate_data(data, id_col=data_opts.id_column)
             plot_opt = load_plot_options(path_to_plot_opts)
             original_view(data)
             preprocessing_opts_form(data, exec_opts.problem_type)
