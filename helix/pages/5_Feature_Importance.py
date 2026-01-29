@@ -106,6 +106,7 @@ def build_configuration() -> tuple[
     data_options = load_data_options(path_to_data_opts)
 
     # Set up fuzzy options
+    fuzzy_opt = None
     if st.session_state.get(FuzzyStateKeys.FuzzyFeatureSelection, False):
         fuzzy_opt = FuzzyOptions(
             fuzzy_feature_selection=st.session_state[
