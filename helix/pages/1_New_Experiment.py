@@ -303,26 +303,26 @@ if uploaded_file is not None:
         ]
         st.write(f"Using all {len(feature_cols)} feature columns by default.")
 
-if st.toggle(
-    "Select ID column",
-    help="If you have a column containing row IDs, check this box to select it.",
-):
-    id_cols = list(
-        filter(
-            lambda x: not (
-                x in st.session_state[ExecutionStateKeys.FeatureColumns]
-                or x == target_col
-            ),
-            data.columns,
+    if st.toggle(
+        "Select ID column",
+        help="If you have a column containing row IDs, check this box to select it.",
+    ):
+        id_cols = list(
+            filter(
+                lambda x: not (
+                    x in st.session_state[ExecutionStateKeys.FeatureColumns]
+                    or x == target_col
+                ),
+                data.columns,
+            )
         )
-    )
-    st.selectbox(
-        "ID column",
-        options=id_cols,
-        placeholder="Select...",
-        index=None,
-        key=ExecutionStateKeys.IdColumn,
-    )
+        st.selectbox(
+            "ID column",
+            options=id_cols,
+            placeholder="Select...",
+            index=None,
+            key=ExecutionStateKeys.IdColumn,
+        )
 
 st.selectbox(
     "Problem type",
