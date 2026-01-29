@@ -221,6 +221,7 @@ def pipeline(
         fi_opt=fi_opts,
         exec_opt=exec_opts,
         plot_opt=plot_opts,
+        data_opt=data_opts,
         data=data,
         models=trained_models,
         data_path=Path(data_opts.data_path),
