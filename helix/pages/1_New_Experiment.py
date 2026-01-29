@@ -307,9 +307,18 @@ if st.toggle(
     "Select ID column",
     help="If you have a column containing row IDs, check this box to select it.",
 ):
+    id_cols = list(
+        filter(
+            lambda x: not (
+                x in st.session_state[ExecutionStateKeys.FeatureColumns]
+                or x == target_col
+            ),
+            data.columns,
+        )
+    )
     st.selectbox(
         "ID column",
-        options=data.columns,
+        options=id_cols,
         placeholder="Select...",
         index=None,
         key=ExecutionStateKeys.IdColumn,
