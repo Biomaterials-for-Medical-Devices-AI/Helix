@@ -73,7 +73,7 @@ class Fuzzy:
 
             # if error occurs, use Mean ensemble results
 
-        # Step 2: Assign granularity to features e.g. low, medium, high categories
+        # Step 2: Generate fuzzy set (low, medium, high importance) membership functions
         if self._fuzzy_opt.granular_features:
             X_train = self._make_fuzzy_set_mfs(X_train)
             X_test = self._make_fuzzy_set_mfs(X_test)
@@ -86,8 +86,11 @@ class Fuzzy:
         master_importance_df.reset_index(drop=True, inplace=True)
         master_importance_df.to_csv("~/Desktop/fuzzy-master-df.csv")
 
-        # Step 4: Extract fuzzy rules from master dataframe
-        fuzzy_rules_df = self._make_clustered_fuzzy_sets(master_importance_df)
+        # Step 3.2: Create user defined granularities using c-means clustering
+        # (e.g. very low, low, medium, high, very high attachment) and then
+        # create fuzzy sets of low, medium and high importance for each granularity (cluster)
+        # similar to Step 2
+        fuzzy_rules_df = self._make_user_granularity_fuzzy_sets(master_importance_df)
         save_importance_results(
             feature_importance_df=fuzzy_rules_df,
             model_type=None,
@@ -99,7 +102,8 @@ class Fuzzy:
             logger=self._logger,
         )
 
-        # Step 4: Identify the synergy of important features by context (e.g. target category:low, medium, high)
+        # Step 4: Identify the synergy of important features by context
+        # (e.g. target category: very low, low, medium, high, very high attachment)
         df_contextual_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
         save_importance_results(
             feature_importance_df=df_contextual_rules,
@@ -158,7 +162,7 @@ class Fuzzy:
 
         # Suppress all warnings
         warnings.filterwarnings("ignore")
-        self._logger.info("Assigning features to fuzzy sets...")
+        self._logger.info("Creating fuzzy set membership functions for features...")
         # find interquartile values for each feature
         df_top_qtl = X.quantile([0, 0.25, 0.5, 0.75, 1])
         # Create membership functions based on interquartile values for each feature
@@ -314,7 +318,7 @@ class Fuzzy:
             case 2:
                 return "large"
 
-    def _make_clustered_fuzzy_sets(self, df):
+    def _make_user_granularity_fuzzy_sets(self, df):
         """
         Cluster the local feature importance data into the user-defined clusters and then
         assign the "small", "moderate" and "large" fuzzy sets to features within those
@@ -328,7 +332,7 @@ class Fuzzy:
         import numpy as np
         import skfuzzy as fuzz
 
-        self._logger.info("Making c-means clusters...")
+        self._logger.info("Making user-defined granularities...")
         if self._exec_opt.problem_type == ProblemTypes.Regression:
             target = np.array(df[df.columns[-1]])
             centers, membership_matrix, _, _, _, _, _ = fuzz.cluster.cmeans(
