@@ -61,11 +61,11 @@ Outputs of crisp feature importance methods, like those described above, can be 
 ### How fuzzy interpretation works
 1. The top *n* features based on ensemble feature importance are selected from the data.
 2. Features are split into different fuzzy sets that define "low", "medium" or "high" importance, based on the following membership functions.
-    - the Z membership function is used to determine membership of the "low" granularity.
-    - the triangular membership function is used to determine membership of the "medium" granularity.
-    - the S membership function is used to determine membership of the "high" granularity.
-3. Local feature importance data is used to create user-defined clusters. Samples are assigned to each cluster using *c*-means clustering, where *c* is the number of user-defined clusters.
-4. Then, the data within the clusters are assgined to fuzzy sets, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
+    - the Z membership function is used to determine membership of the "low" importance fuzzy set.
+    - the triangular membership function is used to determine membership of the "medium" importance fuzzy set.
+    - the S membership function is used to determine membership of the "high" importance fuzzy set.
+3. Normalised local feature importance data is used to create user-defined granularities with respect to the target variable (e.g. very low, low, medium, high, very high attachment). Samples are assigned to each granularity using *c*-means clustering, where *c* is the number of user-defined granularities.
+4. Then, the data within the granularities are assgined to fuzzy sets, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
 
 To use this feature, you must first configure ensemble and local feature importance methods.
 
