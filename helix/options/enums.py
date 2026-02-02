@@ -78,6 +78,7 @@ class DataAnalysisStateKeys(StrEnum):
     SaveTargetVarDistribution = "save_target_var_distribution"
     CorrelationHeatmap = "correlation_heatmap"
     DescriptorCorrelation = "descriptor_correlation"
+    CalculateCorrelationMatrix = "calculate_correlation_matrix"
     SelectAllDescriptorsCorrelation = "select_all_descriptors_correlation"
     SaveHeatmap = "save_heatmap"
     PairPlot = "pair_plot"
