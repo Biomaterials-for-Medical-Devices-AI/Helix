@@ -167,7 +167,6 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
 
 
 def test_page_produces_correlation_heatmap(new_experiment: str):
-    # Arrange
     at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
@@ -177,27 +176,37 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
 
     expected_file = plot_dir / "correlation_heatmap_raw.png"
 
-    # Act
-    # select the experiment
     select_experiment(at, new_experiment)
-    # select all feature
-    correlation_toggle = get_element_by_key(
-        at, "toggle", f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}"
+
+    for suffix in ("_1", "_2"):
+        correlation_toggle = get_element_by_key(
+            at,
+            "toggle",
+            f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}{suffix}",
+        )
+        assert correlation_toggle is not None, f"Missing toggle key ...{suffix}"
+        correlation_toggle.set_value(True).run()
+
+    at.run()  # helps with experimental_fragment / gated widgets
+
+    calc_corr_checkbox = get_element_by_key(
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.CalculateCorrelationMatrix}"
     )
-    correlation_toggle.set_value(True).run()
-    # check the box to create the plot
+    assert calc_corr_checkbox is not None
+    calc_corr_checkbox.check().run()
+
     create_plot_checkbox = get_element_by_key(
         at, "checkbox", f"raw_{DataAnalysisStateKeys.CorrelationHeatmap}"
     )
+    assert create_plot_checkbox is not None
     create_plot_checkbox.check().run()
-    # save the plot
-    # since we only choose one visualisation, only one button is visible,
+
     button = get_element_by_key(
         at, "button", f"raw_{DataAnalysisStateKeys.SaveHeatmap}"
     )
+    assert button is not None
     button.click().run()
 
-    # Assert
     assert not at.exception
     assert not at.error
     assert expected_file.exists()
