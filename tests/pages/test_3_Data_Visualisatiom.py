@@ -178,6 +178,17 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
 
     select_experiment(at, new_experiment)
 
+    # 1) Enable advanced options so the _1/_2 widgets exist
+    advanced_checkbox = get_element_by_key(
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.AdvancedCorrOptions}"
+    )
+    assert advanced_checkbox is not None
+    advanced_checkbox.check().run()
+
+    # Give the fragment a rerun cycle so gated widgets appear
+    at.run()
+
+    # 2) Select all variables for rows and cols
     for suffix in ("_1", "_2"):
         correlation_toggle = get_element_by_key(
             at,
@@ -187,20 +198,28 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
         assert correlation_toggle is not None, f"Missing toggle key ...{suffix}"
         correlation_toggle.set_value(True).run()
 
-    at.run()  # helps with experimental_fragment / gated widgets
+    at.run()
 
+    # 3) Calculate correlation matrix
+    # NOTE: In your UI it's value=enable_corr_calculation, so it may already be checked.
     calc_corr_checkbox = get_element_by_key(
         at, "checkbox", f"raw_{DataAnalysisStateKeys.CalculateCorrelationMatrix}"
     )
     assert calc_corr_checkbox is not None
-    calc_corr_checkbox.check().run()
+    # Only check if not already checked (more robust)
+    if not getattr(calc_corr_checkbox, "value", False):
+        calc_corr_checkbox.check().run()
+    else:
+        at.run()
 
+    # 4) Create plot
     create_plot_checkbox = get_element_by_key(
         at, "checkbox", f"raw_{DataAnalysisStateKeys.CorrelationHeatmap}"
     )
     assert create_plot_checkbox is not None
     create_plot_checkbox.check().run()
 
+    # 5) Save plot
     button = get_element_by_key(
         at, "button", f"raw_{DataAnalysisStateKeys.SaveHeatmap}"
     )
