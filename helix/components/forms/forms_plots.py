@@ -85,7 +85,8 @@ def correlation_heatmap_form(
     """
 
     advanced_corr_options = st.checkbox(
-        "Advanced correlation heatmap options", key=f"{key_prefix}_AdvancedCorr"
+        "Advanced correlation heatmap options",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.AdvancedCorrOptions}",
     )
 
     if advanced_corr_options:
