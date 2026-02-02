@@ -145,7 +145,7 @@ def correlation_heatmap_form(
 
     if st.checkbox(
         "Calculate Correlation Matrix",
-        key=f"{key_prefix}_",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.CalculateCorrelationMatrix}",
         disabled=not enable_corr_calculation,
     ):
         corr = corr_data.corr()
