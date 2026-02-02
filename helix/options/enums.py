@@ -77,6 +77,7 @@ class DataAnalysisStateKeys(StrEnum):
     NBins = "n_bins"
     SaveTargetVarDistribution = "save_target_var_distribution"
     CorrelationHeatmap = "correlation_heatmap"
+    AdvancedCorrOptions = "advanced_correlation_options"
     DescriptorCorrelation = "descriptor_correlation"
     CalculateCorrelationMatrix = "calculate_correlation_matrix"
     SelectAllDescriptorsCorrelation = "select_all_descriptors_correlation"
