@@ -84,62 +84,94 @@ def correlation_heatmap_form(
     Uses plot-specific settings that are not saved between sessions.
     """
 
-    variables_1, variables_2 = st.columns(2)
-
-    with variables_1:
-
-        st.markdown("###### Select the variables to show in the rows")
-
-        if st.toggle(
-            "Select all independent variables",
-            value=False,
-            key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_1",
-        ):
-            default_corr = list(data.columns)
-        else:
-            default_corr = []
-
-        corr_descriptors_row = st.multiselect(
-            "Select independent variables to include in the correlation heatmap",
-            data.columns,
-            default=default_corr,
-            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_1",
-        )
-
-        if len(corr_descriptors_row) < 1:
-            st.warning(
-                "Please select at least one independent variable to create the correlation heatmap."
-            )
-
-    with variables_2:
-
-        st.markdown("###### Select the variables to show in the columns")
-
-        if st.toggle(
-            "Select all independent variables",
-            value=False,
-            key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_2",
-        ):
-            default_corr = list(data.columns)
-        else:
-            default_corr = []
-
-        corr_descriptors_cols = st.multiselect(
-            "Select independent variables to include in the correlation heatmap",
-            data.columns,
-            default=default_corr,
-            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_2",
-        )
-
-        if len(corr_descriptors_cols) < 1:
-            st.warning(
-                "Please select at least one independent variable to create the correlation heatmap."
-            )
-
-    enable_corr_calculation = (
-        len(corr_descriptors_row) > 0 and len(corr_descriptors_cols) > 0
+    advanced_corr_options = st.checkbox(
+        "Advanced correlation heatmap options", key=f"{key_prefix}_AdvancedCorr"
     )
-    corr_descriptors = list(set(corr_descriptors_row) | set(corr_descriptors_cols))
+
+    if advanced_corr_options:
+        variables_1, variables_2 = st.columns(2)
+
+        with variables_1:
+
+            st.markdown("###### Select the variables to show in the rows")
+
+            if st.toggle(
+                "Select all variables",
+                value=False,
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_1",
+            ):
+                default_corr = list(data.columns)
+            else:
+                default_corr = []
+
+            corr_descriptors_row = st.multiselect(
+                "Select variables to include in the correlation heatmap",
+                data.columns,
+                default=default_corr,
+                key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_1",
+            )
+
+            if len(corr_descriptors_row) < 1:
+                st.warning(
+                    "Please select at least one variable to create the correlation heatmap."
+                )
+
+        with variables_2:
+
+            st.markdown("###### Select the variables to show in the columns")
+
+            if st.toggle(
+                "Select all variables",
+                value=False,
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_2",
+            ):
+                default_corr = list(data.columns)
+            else:
+                default_corr = []
+
+            corr_descriptors_cols = st.multiselect(
+                "Select variables to include in the correlation heatmap",
+                data.columns,
+                default=default_corr,
+                key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_2",
+            )
+
+            if len(corr_descriptors_cols) < 1:
+                st.warning(
+                    "Please select at least one variable to create the correlation heatmap."
+                )
+
+        enable_corr_calculation = (
+            len(corr_descriptors_row) > 0 and len(corr_descriptors_cols) > 0
+        )
+        corr_descriptors = list(set(corr_descriptors_row) | set(corr_descriptors_cols))
+
+    else:
+
+        st.markdown("###### Select the variables to show in the correlation plot")
+
+        if st.toggle(
+            "Select all independent variables",
+            value=False,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}",
+        ):
+            default_corr = list(data.columns)
+        else:
+            default_corr = []
+
+        corr_descriptors = st.multiselect(
+            "Select independent variables to include in the correlation heatmap",
+            data.columns,
+            default=default_corr,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}",
+        )
+
+        if len(corr_descriptors) < 1:
+            st.warning(
+                "Please select at least two variables to create the correlation heatmap."
+            )
+
+        enable_corr_calculation = len(corr_descriptors) > 1
 
     corr_data = data[corr_descriptors]
 
@@ -150,7 +182,9 @@ def correlation_heatmap_form(
         value=enable_corr_calculation,
     ):
         corr = corr_data.corr()
-        corr = corr.loc[corr_descriptors_row, corr_descriptors_cols]
+
+        if advanced_corr_options:
+            corr = corr.loc[corr_descriptors_row, corr_descriptors_cols]
 
         correlation_plot, correlation_dataframe = st.tabs(
             ["Correlation Plot", "Correlation Data"]
