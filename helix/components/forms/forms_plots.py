@@ -84,53 +84,106 @@ def correlation_heatmap_form(
     Uses plot-specific settings that are not saved between sessions.
     """
 
-    if st.toggle(
-        "Select all independent variables",
-        value=False,
-        key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}",
-    ):
-        default_corr = list(data.columns[:-1])
-    else:
-        default_corr = []
+    variables_1, variables_2 = st.columns(2)
 
-    corr_descriptors = st.multiselect(
-        "Select independent variables to include in the correlation heatmap",
-        data.columns[:-1],
-        default=default_corr,
-        key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}",
-    )
+    with variables_1:
 
-    corr_data = data[corr_descriptors + [data.columns[-1]]]
+        st.markdown("###### Select the variables to show in the rows")
 
-    if len(corr_descriptors) < 1:
-        st.warning(
-            "Please select at least one independent variable to create the correlation heatmap."
+        if st.toggle(
+            "Select all independent variables",
+            value=False,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_1",
+        ):
+            default_corr = list(data.columns)
+        else:
+            default_corr = []
+
+        corr_descriptors_row = st.multiselect(
+            "Select independent variables to include in the correlation heatmap",
+            data.columns,
+            default=default_corr,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_1",
         )
 
-    plot_settings = edit_plot_form(
-        plot_opts,
-        PlotTypes.CorrelationHeatmap,
-        key_prefix + PlotTypes.CorrelationHeatmap.value,
-    )
-
-    show_plot = st.checkbox(
-        "Create Correlation Heatmap Plot",
-        key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}",
-    )
-    if show_plot:
-
-        correlation_heatmap = plot_correlation_heatmap(corr_data, plot_settings)
-
-        st.pyplot(correlation_heatmap)
-
-        if st.button(
-            "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}"
-        ):
-            correlation_heatmap.savefig(
-                data_analysis_plot_dir / f"correlation_heatmap_{key_prefix}.png"
+        if len(corr_descriptors_row) < 1:
+            st.warning(
+                "Please select at least one independent variable to create the correlation heatmap."
             )
-            plt.clf()
-            st.success("Plot created and saved successfully.")
+
+    with variables_2:
+
+        st.markdown("###### Select the variables to show in the columns")
+
+        if st.toggle(
+            "Select all independent variables",
+            value=False,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_2",
+        ):
+            default_corr = list(data.columns)
+        else:
+            default_corr = []
+
+        corr_descriptors_cols = st.multiselect(
+            "Select independent variables to include in the correlation heatmap",
+            data.columns,
+            default=default_corr,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_2",
+        )
+
+        if len(corr_descriptors_cols) < 1:
+            st.warning(
+                "Please select at least one independent variable to create the correlation heatmap."
+            )
+
+    enable_corr_calculation = (
+        len(corr_descriptors_row) > 0 and len(corr_descriptors_cols) > 0
+    )
+    corr_descriptors = list(set(corr_descriptors_row) | set(corr_descriptors_cols))
+
+    corr_data = data[corr_descriptors]
+
+    if st.checkbox(
+        "Calculate Correlation Matrix",
+        key=f"{key_prefix}_",
+        disabled=not enable_corr_calculation,
+    ):
+        corr = corr_data.corr()
+        corr = corr.loc[corr_descriptors_row, corr_descriptors_cols]
+
+        correlation_plot, correlation_dataframe = st.tabs(
+            ["Correlation Plot", "Correlation Data"]
+        )
+
+        with correlation_plot:
+
+            plot_settings = edit_plot_form(
+                plot_opts,
+                PlotTypes.CorrelationHeatmap,
+                key_prefix + PlotTypes.CorrelationHeatmap.value,
+            )
+
+            show_plot = st.checkbox(
+                "Create Correlation Heatmap Plot",
+                key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}",
+            )
+            if show_plot:
+
+                correlation_heatmap = plot_correlation_heatmap(corr, plot_settings)
+
+                st.pyplot(correlation_heatmap)
+
+                if st.button(
+                    "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}"
+                ):
+                    correlation_heatmap.savefig(
+                        data_analysis_plot_dir / f"correlation_heatmap_{key_prefix}.png"
+                    )
+                    plt.clf()
+                    st.success("Plot created and saved successfully.")
+
+        with correlation_dataframe:
+            st.dataframe(corr)
 
 
 @st.experimental_fragment
