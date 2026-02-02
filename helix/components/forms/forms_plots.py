@@ -147,6 +147,7 @@ def correlation_heatmap_form(
         "Calculate Correlation Matrix",
         key=f"{key_prefix}_{DataAnalysisStateKeys.CalculateCorrelationMatrix}",
         disabled=not enable_corr_calculation,
+        value=enable_corr_calculation,
     ):
         corr = corr_data.corr()
         corr = corr.loc[corr_descriptors_row, corr_descriptors_cols]
