@@ -1,4 +1,8 @@
+from pathlib import Path
+from typing import List, Tuple
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import streamlit as st
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
@@ -74,152 +78,208 @@ def target_variable_dist_form(
             st.success("Plot created and saved successfully.")
 
 
+def _render_corr_block(
+    *,
+    corr: pd.DataFrame,
+    plot_opts: PlottingOptions,
+    key_prefix: str,
+    mode: str,  # "basic" or "advanced"
+    data_analysis_plot_dir: Path,
+) -> None:
+    """Shared UI for plot+data + save. Keeps keys/filenames stable."""
+    plot_tab, df_tab = st.tabs(
+        [
+            f"{mode.capitalize()} Correlation Plot",
+            f"{mode.capitalize()} Correlation Data",
+        ]
+    )
+
+    with plot_tab:
+        plot_settings = edit_plot_form(
+            plot_opts,
+            PlotTypes.CorrelationHeatmap,
+            key_prefix + PlotTypes.CorrelationHeatmap.value + f"_{mode}",
+        )
+
+        show_plot = st.checkbox(
+            f"Create {mode.capitalize()} Correlation Heatmap Plot",
+            key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}_{mode}",
+        )
+
+        if show_plot:
+            fig = plot_correlation_heatmap(corr, plot_settings)
+            st.pyplot(fig)
+
+            if st.button(
+                f"Save {mode.capitalize()} Plot",
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}_{mode}",
+            ):
+                fig.savefig(
+                    data_analysis_plot_dir
+                    / f"correlation_heatmap_{key_prefix}_{mode}.png"
+                )
+                plt.clf()
+                st.success(f"{mode.capitalize()} plot created and saved successfully.")
+
+    with df_tab:
+        st.dataframe(corr)
+
+
+def _advanced_selectors(
+    data: pd.DataFrame, key_prefix: str
+) -> Tuple[List[str], List[str], bool]:
+    """Row/column selectors for advanced mode; returns (rows, cols, enabled)."""
+    variables_1, variables_2 = st.columns(2)
+
+    with variables_1:
+        st.markdown("###### Variables in the rows")
+
+        default_rows = (
+            list(data.columns)
+            if st.toggle(
+                "Select all variables (rows)",
+                value=False,
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_1",
+            )
+            else []
+        )
+
+        corr_rows = st.multiselect(
+            "Select variables to include in the correlation rows",
+            data.columns,
+            default=default_rows,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_1",
+        )
+
+        if len(corr_rows) < 1:
+            st.warning("Please select at least one row variable.")
+
+    with variables_2:
+        st.markdown("###### Variables in the columns")
+
+        default_cols = (
+            list(data.columns)
+            if st.toggle(
+                "Select all variables (columns)",
+                value=False,
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_2",
+            )
+            else []
+        )
+
+        corr_cols = st.multiselect(
+            "Select variables to include in the correlation columns",
+            data.columns,
+            default=default_cols,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_2",
+        )
+
+        if len(corr_cols) < 1:
+            st.warning("Please select at least one column variable.")
+
+    enable_adv = (len(corr_rows) > 0) and (len(corr_cols) > 0)
+    return corr_rows, corr_cols, enable_adv
+
+
 @st.experimental_fragment
 def correlation_heatmap_form(
     data, data_analysis_plot_dir, plot_opts: PlottingOptions, key_prefix: str = ""
 ):
     """
-    Form to create the correlation heatmap plot.
-
-    Uses plot-specific settings that are not saved between sessions.
+    - Always shows the basic (square) correlation first.
+    - Advanced options are displayed at the end (below basic).
+    - User can generate BOTH basic and advanced plots/data in the same run.
     """
+    st.markdown("### Correlation Heatmap")
 
-    advanced_corr_options = st.checkbox(
-        "Advanced correlation heatmap options",
-        key=f"{key_prefix}_{DataAnalysisStateKeys.AdvancedCorrOptions}",
-    )
+    # ----------------------------
+    # BASIC (non-advanced) section
+    # ----------------------------
+    st.markdown("###### Select the variables to show in the correlation plot")
 
-    if advanced_corr_options:
-        variables_1, variables_2 = st.columns(2)
-
-        with variables_1:
-
-            st.markdown("###### Select the variables to show in the rows")
-
-            if st.toggle(
-                "Select all variables",
-                value=False,
-                key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_1",
-            ):
-                default_corr = list(data.columns)
-            else:
-                default_corr = []
-
-            corr_descriptors_row = st.multiselect(
-                "Select variables to include in the correlation heatmap",
-                data.columns,
-                default=default_corr,
-                key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_1",
-            )
-
-            if len(corr_descriptors_row) < 1:
-                st.warning(
-                    "Please select at least one variable to create the correlation heatmap."
-                )
-
-        with variables_2:
-
-            st.markdown("###### Select the variables to show in the columns")
-
-            if st.toggle(
-                "Select all variables",
-                value=False,
-                key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}_2",
-            ):
-                default_corr = list(data.columns)
-            else:
-                default_corr = []
-
-            corr_descriptors_cols = st.multiselect(
-                "Select variables to include in the correlation heatmap",
-                data.columns,
-                default=default_corr,
-                key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}_2",
-            )
-
-            if len(corr_descriptors_cols) < 1:
-                st.warning(
-                    "Please select at least one variable to create the correlation heatmap."
-                )
-
-        enable_corr_calculation = (
-            len(corr_descriptors_row) > 0 and len(corr_descriptors_cols) > 0
-        )
-        corr_descriptors = list(set(corr_descriptors_row) | set(corr_descriptors_cols))
-
-    else:
-
-        st.markdown("###### Select the variables to show in the correlation plot")
-
+    default_basic = (
+        list(data.columns)
         if st.toggle(
             "Select all independent variables",
             value=False,
             key=f"{key_prefix}_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}",
-        ):
-            default_corr = list(data.columns)
-        else:
-            default_corr = []
+        )
+        else []
+    )
 
-        corr_descriptors = st.multiselect(
-            "Select independent variables to include in the correlation heatmap",
-            data.columns,
-            default=default_corr,
-            key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}",
+    corr_basic_vars = st.multiselect(
+        "Select independent variables to include in the correlation heatmap",
+        data.columns,
+        default=default_basic,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.DescriptorCorrelation}",
+    )
+
+    if len(corr_basic_vars) < 2:
+        st.warning(
+            "Please select at least two variables to create the correlation heatmap."
         )
 
-        if len(corr_descriptors) < 1:
-            st.warning(
-                "Please select at least two variables to create the correlation heatmap."
-            )
+    enable_basic = len(corr_basic_vars) > 1
 
-        enable_corr_calculation = len(corr_descriptors) > 1
+    calc_basic = st.checkbox(
+        "Calculate Correlation Matrix (basic)",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.CalculateCorrelationMatrix}_basic",
+        disabled=not enable_basic,
+        value=enable_basic,
+    )
 
-    corr_data = data[corr_descriptors]
-
-    if st.checkbox(
-        "Calculate Correlation Matrix",
-        key=f"{key_prefix}_{DataAnalysisStateKeys.CalculateCorrelationMatrix}",
-        disabled=not enable_corr_calculation,
-        value=enable_corr_calculation,
-    ):
-        corr = corr_data.corr()
-
-        if advanced_corr_options:
-            corr = corr.loc[corr_descriptors_row, corr_descriptors_cols]
-
-        correlation_plot, correlation_dataframe = st.tabs(
-            ["Correlation Plot", "Correlation Data"]
+    if calc_basic:
+        corr_basic = data[corr_basic_vars].corr()
+        _render_corr_block(
+            corr=corr_basic,
+            plot_opts=plot_opts,
+            key_prefix=key_prefix,
+            mode="basic",
+            data_analysis_plot_dir=data_analysis_plot_dir,
         )
 
-        with correlation_plot:
+    st.divider()
 
-            plot_settings = edit_plot_form(
-                plot_opts,
-                PlotTypes.CorrelationHeatmap,
-                key_prefix + PlotTypes.CorrelationHeatmap.value,
-            )
+    # ----------------------------
+    # ADVANCED section (shown at end)
+    # ----------------------------
+    show_adv = st.checkbox(
+        "Show advanced correlation heatmap options",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.AdvancedCorrOptions}",
+    )
+    if not show_adv:
+        return
 
-            show_plot = st.checkbox(
-                "Create Correlation Heatmap Plot",
-                key=f"{key_prefix}_{DataAnalysisStateKeys.CorrelationHeatmap}",
-            )
-            if show_plot:
+    st.markdown(
+        """
+**What advanced mode does**
+- Lets you choose **different variables for rows vs columns**.
+- Produces a **rectangular correlation matrix** (rows × columns), not necessarily symmetric.
+- Useful when you want to correlate one feature set against another subset.
+        """
+    )
 
-                correlation_heatmap = plot_correlation_heatmap(corr, plot_settings)
+    corr_rows, corr_cols, enable_adv = _advanced_selectors(data, key_prefix=key_prefix)
 
-                st.pyplot(correlation_heatmap)
+    calc_adv = st.checkbox(
+        "Calculate Correlation Matrix (advanced)",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.CalculateCorrelationMatrix}_advanced",
+        disabled=not enable_adv,
+        value=enable_adv,
+    )
 
-                if st.button(
-                    "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveHeatmap}"
-                ):
-                    correlation_heatmap.savefig(
-                        data_analysis_plot_dir / f"correlation_heatmap_{key_prefix}.png"
-                    )
-                    plt.clf()
-                    st.success("Plot created and saved successfully.")
+    if calc_adv:
+        corr_union = list(set(corr_rows) | set(corr_cols))
+        corr_adv_full = data[corr_union].corr()
+        corr_adv = corr_adv_full.loc[corr_rows, corr_cols]
 
-        with correlation_dataframe:
-            st.dataframe(corr)
+        _render_corr_block(
+            corr=corr_adv,
+            plot_opts=plot_opts,
+            key_prefix=key_prefix,
+            mode="advanced",
+            data_analysis_plot_dir=data_analysis_plot_dir,
+        )
 
 
 @st.experimental_fragment
