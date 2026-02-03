@@ -190,7 +190,6 @@ def correlation_heatmap_form(
     - Advanced options are displayed at the end (below basic).
     - User can generate BOTH basic and advanced plots/data in the same run.
     """
-    st.markdown("### Correlation Heatmap")
 
     # ----------------------------
     # BASIC (non-advanced) section
