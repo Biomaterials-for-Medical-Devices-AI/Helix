@@ -472,10 +472,10 @@ class FeatureImportanceEstimator:
 
         This function processes feature importance results through these steps:
             - For each model:
-           - For each importance type (e.g., SHAP, Permutation):
-              - Concatenate all fold results vertically into a single DataFrame
-              - Min-max normalise the importance scores to [0,1] range
-           - Concatenate all normalised importance types horizontally
+            - For each importance type (e.g., SHAP, Permutation):
+                - Concatenate all fold results vertically into a single DataFrame
+                - Min-max normalise the importance scores to [0,1] range
+            - Concatenate all normalised importance types horizontally
 
         Args:
             importances: Nested dictionary structure:
@@ -509,10 +509,10 @@ class FeatureImportanceEstimator:
 
         This function processes feature importance results through these steps:
             - For each model:
-           - For each importance type (e.g., SHAP, Permutation):
-              - Concatenate all fold results vertically into a single DataFrame
-              - Min-max normalise the importance scores to [0,1] range
-           - Concatenate all normalised importance types horizontally
+            - For each importance type (e.g., SHAP, Permutation):
+                - Concatenate all fold results vertically into a single DataFrame
+                - Min-max normalise the importance scores to [0,1] range
+            - Concatenate all normalised importance types vertically
 
         Args:
             importances: Nested dictionary structure:
@@ -535,6 +535,9 @@ class FeatureImportanceEstimator:
                 )
                 importance_type_df_list.append(importance_df)
 
+            # concat on axis = 0 to preserve unique column names
+            # results in n_rows = n_samples * n_models * n_importancnes
+            # and n_columns = n_features + n_targets
             stack_importances[model_name] = pd.concat(importance_type_df_list, axis=0)
 
         return stack_importances
