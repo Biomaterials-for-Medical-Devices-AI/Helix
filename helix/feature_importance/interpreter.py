@@ -536,7 +536,7 @@ class FeatureImportanceEstimator:
                 importance_type_df_list.append(importance_df)
 
             # concat on axis = 0 to preserve unique column names
-            # results in n_rows = n_samples * n_models * n_importancnes
+            # results in n_rows = n_samples * n_models * n_importances
             # and n_columns = n_features + n_targets
             stack_importances[model_name] = pd.concat(importance_type_df_list, axis=0)
 
