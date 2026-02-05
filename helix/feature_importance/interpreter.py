@@ -77,14 +77,18 @@ class FeatureImportanceEstimator:
         """
         self._logger.info("-------- Start of feature importance logging--------")
         global_importance_results = self._global_feature_importance(models, data)
-        global_importance_df_dict = self._stack_importances(global_importance_results)
+        global_importance_df_dict = self._stack_global_importances(
+            global_importance_results
+        )
         # Compute average global importance across all folds for each model type
         self._calculate_mean_global_importance_of_folds(global_importance_results)
 
         # Load the total dataset for the local importance
         total_df = read_data(self._data_path, self._logger)
         local_importance_results = self._local_feature_importance(models, total_df)
-        local_importance_df_dict = self._stack_importances(local_importance_results)
+        local_importance_df_dict = self._stack_global_importances(
+            local_importance_results
+        )
 
         # Calculate ensemble FI from stacked global FI
         ensemble_results = self._ensemble_feature_importance(global_importance_df_dict)
@@ -461,7 +465,7 @@ class FeatureImportanceEstimator:
 
         return ensemble_results
 
-    def _stack_importances(
+    def _stack_global_importances(
         self, importances: dict[str, dict[str, list[pd.DataFrame]]]
     ) -> dict[str, pd.DataFrame]:
         """Stack and normalise feature importance results from different methods.
