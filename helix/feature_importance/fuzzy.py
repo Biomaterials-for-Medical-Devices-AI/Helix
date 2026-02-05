@@ -79,26 +79,12 @@ class Fuzzy:
             X_test = self._fuzzy_granularity(X_test)
 
         # Step 3.1: Convert local FI results to a dataframe
-        master_importance_features = pd.DataFrame()
-        master_importance_target = pd.Series()
-        target_name = None
+        master_importance_df = pd.DataFrame()
         for _, model_local_fi_df in local_results.items():
-            master_importance_features = pd.concat(
-                [master_importance_features, model_local_fi_df.iloc[:, :-1]], axis=0
+            master_importance_df = pd.concat(
+                [master_importance_df, model_local_fi_df], axis=0
             )
-            master_importance_target = pd.concat(
-                [master_importance_target, model_local_fi_df.iloc[:, -1]], axis=0
-            )
-            if target_name is None:
-                target_name = model_local_fi_df.iloc[:, -1].name
-        if target_name is not None:
-            master_importance_features.drop(target_name, axis=1, inplace=True)
-            master_importance_target.rename(target_name, inplace=True)
-        master_importance_features.reset_index(drop=True, inplace=True)
-        master_importance_target.reset_index(drop=True, inplace=True)
-        master_importance_df = pd.concat(
-            [master_importance_features, master_importance_target], axis=1
-        )
+        master_importance_df.reset_index(drop=True, inplace=True)
 
         # Step 3.2: Extract fuzzy rules from master dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
