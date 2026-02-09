@@ -47,10 +47,14 @@ def get_predictions(
     preprocessing_options: PreprocessingOptions | None,
     models: list,
     problem_type: ProblemTypes,
+    id_column: str | None = None,
 ):
 
     X = raw_data[independent_variable_col_names]
     predict_data = predict_data[independent_variable_col_names]
+    target_col = None
+    if id_column is not None:
+        target_col = raw_data[id_column]
 
     # preprocessing_options is None, it means preprocessing wasn't done
     if preprocessing_options is not None and preprocessing_options.data_is_preprocessed:
@@ -103,6 +107,8 @@ def get_predictions(
     predictions_df = pd.concat(
         [predict_data, predictions_df, ensemble_prediction], axis=1
     )
+    if target_col is not None:
+        predictions_df = pd.concat([target_col, predictions_df], axis=1)
 
     st.dataframe(predictions_df)
 
@@ -233,4 +239,5 @@ if experiment_name:
             preprocessing_options=preprocessing_options,
             models=models,
             problem_type=exec_opt.problem_type,
+            id_column=data_options.id_column,
         )
