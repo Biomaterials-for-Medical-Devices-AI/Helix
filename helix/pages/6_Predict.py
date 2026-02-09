@@ -31,6 +31,7 @@ from helix.services.data import read_data, read_uploaded_data
 from helix.services.experiments import get_experiments
 from helix.services.ml_models import load_models
 from helix.services.preprocessing import find_non_numeric_columns
+from helix.utils.logging_utils import Logger
 
 # Set page contents
 st.set_page_config(
@@ -117,6 +118,9 @@ st.write(
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
 base_dir = helix_experiments_base_dir()
+# Create the logger
+logger_instance = Logger()
+logger = logger_instance.make_logger()
 
 
 if experiment_name:
@@ -149,7 +153,7 @@ if experiment_name:
         raw_data_path = data_options.data_path
     # This is the data that the user provided initially.
     # Having this is useful as it is needed to fit the scalers if needed.
-    raw_data = read_data(Path(raw_data_path), None)
+    raw_data = read_data(Path(raw_data_path), logger)
 
     # This is the data that was actually used for the training (after preprocessing)
     # This is only needed to get the names of the variables used for model training.
