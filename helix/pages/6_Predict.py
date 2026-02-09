@@ -40,6 +40,76 @@ st.set_page_config(
 )
 
 
+def preprocess_data(
+    X: pd.DataFrame,
+    predict_data: pd.DataFrame,
+    options: PreprocessingOptions | None,
+) -> pd.DataFrame:
+    if options is None or not options.data_is_preprocessed:
+        return predict_data
+
+    columns_to_drop = find_non_numeric_columns(X)
+    if columns_to_drop:
+        X = X.drop(columns=columns_to_drop)
+        predict_data = predict_data.drop(columns=columns_to_drop)
+
+    scaler = get_scaler(options.independent_variable_normalisation)
+    if scaler is None:
+        return predict_data
+
+    scaler.fit(X)
+    return pd.DataFrame(
+        scaler.transform(predict_data),
+        columns=predict_data.columns,
+        index=predict_data.index,
+    )
+
+
+def get_scaler(normalisation_method):
+    match normalisation_method:
+        case Normalisations.NoNormalisation:
+            return None
+        case Normalisations.Standardisation:
+            return StandardScaler()
+        case Normalisations.MinMax:
+            return MinMaxScaler()
+
+
+def ensemble_predictions(
+    predictions_df: pd.DataFrame,
+    problem_type: ProblemTypes,
+) -> pd.Series:
+    if problem_type == ProblemTypes.Regression:
+        return pd.Series(
+            predictions_df.mean(axis=1),
+            index=predictions_df.index,
+            name="Mean Prediction",
+        )
+
+    if problem_type == ProblemTypes.Classification:
+        values, _ = mode(predictions_df.values, axis=1, keepdims=False)
+        return pd.Series(
+            values,
+            index=predictions_df.index,
+            name="Majority Vote",
+        )
+
+    raise ValueError(f"Unsupported problem type: {problem_type}")
+
+
+def get_model_predictions(models_to_use, trained_models, predict_data):
+    predictions = {}
+
+    for model_name, model in trained_models.items():
+        if model_name not in models_to_use:
+            continue
+
+        display_name = model_name.split(".")[0].replace("-", " ").capitalize()
+        predictions[display_name] = model.predict(predict_data)
+
+    return pd.DataFrame(predictions)
+
+
 def get_predictions(
     raw_data: pd.DataFrame,
     independent_variable_col_names: list,
@@ -52,31 +122,9 @@ def get_predictions(
 
     X = raw_data[independent_variable_col_names]
     predict_data = predict_data[independent_variable_col_names]
-    target_col = None
-    if id_column is not None:
-        target_col = raw_data[id_column]
+    target_col = raw_data[id_column] if id_column else None
 
-    # preprocessing_options is None, it means preprocessing wasn't done
-    if preprocessing_options is not None and preprocessing_options.data_is_preprocessed:
-
-        columns_to_drop = find_non_numeric_columns(X)
-        if columns_to_drop:
-            X = X.drop(columns=columns_to_drop)
-
-        normalisation_method = preprocessing_options.independent_variable_normalisation
-        if normalisation_method == Normalisations.NoNormalisation:
-            scaler = None
-        elif normalisation_method == Normalisations.Standardisation:
-            scaler = StandardScaler()
-        elif normalisation_method == Normalisations.MinMax:
-            scaler = MinMaxScaler()
-
-        if scaler is not None:
-            scaler.fit(X)
-            predict_data = scaler.transform(predict_data)
-            predict_data = pd.DataFrame(
-                predict_data, columns=independent_variable_col_names
-            )
+    predict_data = preprocess_data(X, predict_data, preprocessing_options)
 
     trained_models = load_models(
         ml_model_dir(
@@ -85,32 +133,15 @@ def get_predictions(
         )
     )
 
-    predictions_df = pd.DataFrame()
+    predictions_df = get_model_predictions(models, trained_models, predict_data)
 
-    for model_name, model in trained_models.items():
-        if model_name in models:
-            df_model_name = model_name.split(".")[0].replace("-", " ").capitalize()
-            predictions_df[df_model_name] = model.predict(predict_data)
+    ensemble = ensemble_predictions(predictions_df, problem_type)
 
-    if problem_type == ProblemTypes.Regression:
-        ensemble_prediction = predictions_df.mean(axis=1)
-        method = "Mean Prediction"
-
-    elif problem_type == ProblemTypes.Classification:
-        ensemble_prediction, _ = mode(predictions_df.values, axis=1, keepdims=False)
-        method = "Majority Vote"
-
-    ensemble_prediction = pd.Series(
-        ensemble_prediction, index=predictions_df.index, name=method
-    )
-
-    predictions_df = pd.concat(
-        [predict_data, predictions_df, ensemble_prediction], axis=1
-    )
+    result = pd.concat([predict_data, predictions_df, ensemble], axis=1)
     if target_col is not None:
-        predictions_df = pd.concat([target_col, predictions_df], axis=1)
+        result = pd.concat([target_col, result], axis=1)
 
-    st.dataframe(predictions_df)
+    st.dataframe(result)
 
 
 st.header("Predict")
