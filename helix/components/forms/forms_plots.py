@@ -243,7 +243,7 @@ def correlation_heatmap_form(
     # ADVANCED section (shown at end)
     # ----------------------------
     show_adv = st.checkbox(
-        "Show advanced correlation heatmap options",
+        "Show advanced correlation heatmap options (selected variable to selected variable)",
         key=f"{key_prefix}_{DataAnalysisStateKeys.AdvancedCorrOptions}",
     )
     if not show_adv:
