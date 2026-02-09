@@ -158,7 +158,12 @@ if experiment_name:
 
     # This is the data that was actually used for the training (after preprocessing)
     # This is only needed to get the names of the variables used for model training.
-    independent_variables = read_data(Path(data_options.data_path), None).columns[:-1]
+    if data_options.feature_columns is not None:
+        independent_variables = data_options.feature_columns
+    else:
+        independent_variables = read_data(Path(data_options.data_path), None).columns[
+            :-1
+        ]
 
     st.write(
         "For this experiment, the following columns were used as independent variables:"
