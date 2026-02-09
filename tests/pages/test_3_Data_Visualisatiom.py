@@ -167,7 +167,6 @@ def test_page_produces_kde_plot(new_experiment: str, execution_opts: ExecutionOp
 
 
 def test_page_produces_correlation_heatmap(new_experiment: str):
-    # Arrange
     at = AppTest.from_file("helix/pages/3_Data_Visualisation.py", default_timeout=60)
     at.run()
 
@@ -175,29 +174,63 @@ def test_page_produces_correlation_heatmap(new_experiment: str):
     experiment_dir = base_dir / new_experiment
     plot_dir = data_analysis_plots_dir(experiment_dir)
 
-    expected_file = plot_dir / "correlation_heatmap_raw.png"
+    expected_file = plot_dir / "correlation_heatmap_raw_advanced.png"
 
-    # Act
-    # select the experiment
     select_experiment(at, new_experiment)
-    # select all feature
-    correlation_toggle = get_element_by_key(
-        at, "toggle", f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}"
+
+    # 1) Enable advanced options so the _1/_2 widgets exist
+    advanced_checkbox = get_element_by_key(
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.AdvancedCorrOptions}"
     )
-    correlation_toggle.set_value(True).run()
-    # check the box to create the plot
+    assert advanced_checkbox is not None
+    advanced_checkbox.check().run()
+
+    # fragment/gated widgets often need extra rerun
+    at.run()
+
+    # 2) Select all variables for rows and cols
+    for suffix in ("_1", "_2"):
+        correlation_toggle = get_element_by_key(
+            at,
+            "toggle",
+            f"raw_{DataAnalysisStateKeys.SelectAllDescriptorsCorrelation}{suffix}",
+        )
+        assert correlation_toggle is not None, f"Missing toggle key ...{suffix}"
+        correlation_toggle.set_value(True).run()
+
+    at.run()
+
+    # 3) Calculate correlation matrix (advanced)
+    calc_corr_checkbox = get_element_by_key(
+        at,
+        "checkbox",
+        f"raw_{DataAnalysisStateKeys.CalculateCorrelationMatrix}_advanced",
+    )
+    assert calc_corr_checkbox is not None
+
+    # This checkbox defaults to True when enabled; only check if not already checked
+    if not getattr(calc_corr_checkbox, "value", False):
+        calc_corr_checkbox.check().run()
+    else:
+        at.run()
+
+    # 4) Create plot (advanced)
     create_plot_checkbox = get_element_by_key(
-        at, "checkbox", f"raw_{DataAnalysisStateKeys.CorrelationHeatmap}"
+        at, "checkbox", f"raw_{DataAnalysisStateKeys.CorrelationHeatmap}_advanced"
     )
+    assert create_plot_checkbox is not None
     create_plot_checkbox.check().run()
-    # save the plot
-    # since we only choose one visualisation, only one button is visible,
+
+    # IMPORTANT: button often appears only after another run
+    at.run()
+
+    # 5) Save plot (advanced)
     button = get_element_by_key(
-        at, "button", f"raw_{DataAnalysisStateKeys.SaveHeatmap}"
+        at, "button", f"raw_{DataAnalysisStateKeys.SaveHeatmap}_advanced"
     )
+    assert button is not None
     button.click().run()
 
-    # Assert
     assert not at.exception
     assert not at.error
     assert expected_file.exists()
