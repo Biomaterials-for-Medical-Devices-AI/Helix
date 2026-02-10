@@ -73,10 +73,10 @@ class Fuzzy:
 
             # if error occurs, use Mean ensemble results
 
-        # Step 2: Assign granularity to features e.g. low, medium, high categories
+        # Step 2: Generate fuzzy set (low, medium, high importance) membership functions
         if self._fuzzy_opt.granular_features:
-            X_train = self._fuzzy_granularity(X_train)
-            X_test = self._fuzzy_granularity(X_test)
+            X_train = self._make_fuzzy_set_mfs(X_train)
+            X_test = self._make_fuzzy_set_mfs(X_test)
 
         # Step 3.1: Convert local FI results to a dataframe
         master_importance_df = pd.DataFrame()
@@ -84,9 +84,13 @@ class Fuzzy:
             for _, result in feature_importance.items():
                 master_importance_df = pd.concat([master_importance_df, result], axis=0)
         master_importance_df.reset_index(drop=True, inplace=True)
+        master_importance_df.to_csv("~/Desktop/fuzzy-master-df.csv")
 
-        # Step 3.2: Extract fuzzy rules from master dataframe
-        fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
+        # Step 3.2: Create user defined granularities using c-means clustering
+        # (e.g. very low, low, medium, high, very high attachment) and then
+        # create fuzzy sets of low, medium and high importance for each granularity (cluster)
+        # similar to Step 2
+        fuzzy_rules_df = self._make_user_granularity_fuzzy_sets(master_importance_df)
         save_importance_results(
             feature_importance_df=fuzzy_rules_df,
             model_type=None,
@@ -98,7 +102,8 @@ class Fuzzy:
             logger=self._logger,
         )
 
-        # Step 4: Identify the synergy of important features by context (e.g. target category:low, medium, high)
+        # Step 4: Identify the synergy of important features by context
+        # (e.g. target category: very low, low, medium, high, very high attachment)
         df_contextual_rules = self._contextual_synergy_analysis(fuzzy_rules_df)
         save_importance_results(
             feature_importance_df=df_contextual_rules,
@@ -132,23 +137,23 @@ class Fuzzy:
         topfeatures = fi.index[: self._fuzzy_opt.number_fuzzy_features].tolist()
         return topfeatures
 
-    def _fuzzy_granularity(self, X):
+    def _make_fuzzy_set_mfs(self, X):
         """
-        Generate membership functions for each feature to split them into 3 granularities:
-        "small", "moderate", "large". Then use these membership functions to determine
-        degree membership for each granularity.
+        Generate membership functions for each feature to split them into 3 fuzzy sets:
+        "low", "medium" and "high". Then use these membership functions to determine
+        degree membership for each fuzzy set.
 
-        The Z function is used to determine degree membership of the "small" granularity.
+        The Z function is used to determine degree membership of the "low" fuzzy set.
 
-        The triangular function is used to determine degree membership of the "moderate"
-        granularity.
+        The triangular function is used to determine degree membership of the "medium"
+        fuzzy set.
 
-        The S function is used to determine degree membership of the "large" granularity.
+        The S function is used to determine degree membership of the "high" fuzzy set.
 
         Parameters:
             X (pd.DataFrame): Features.
         Returns:
-            pd.DataFrame: Features with granularity.
+            pd.DataFrame: Features with fuzzy sets.
         """
         import warnings
 
@@ -157,7 +162,7 @@ class Fuzzy:
 
         # Suppress all warnings
         warnings.filterwarnings("ignore")
-        self._logger.info("Assigning granularity to features...")
+        self._logger.info("Creating fuzzy set membership functions for features...")
         # find interquartile values for each feature
         df_top_qtl = X.quantile([0, 0.25, 0.5, 0.75, 1])
         # Create membership functions based on interquartile values for each feature
@@ -244,9 +249,9 @@ class Fuzzy:
                 )
 
             membership_functions[feature] = {
-                "small": low_mf,
-                "moderate": medium_mf,
-                "large": high_mf,
+                "low": low_mf,
+                "medium": medium_mf,
+                "high": high_mf,
             }
         if self._fuzzy_opt.save_fuzzy_set_plots:
             save_fuzzy_sets_plots(
@@ -261,18 +266,18 @@ class Fuzzy:
         # Create granular features using membership values
         new_df_features = []
         for feature in X.columns:
-            X.loc[:, f"{feature}_small"] = fuzz.interp_membership(
-                universe[feature], membership_functions[feature]["small"], X[feature]
+            X.loc[:, f"{feature}_low"] = fuzz.interp_membership(
+                universe[feature], membership_functions[feature]["low"], X[feature]
             )
-            new_df_features.append(f"{feature}_small")
+            new_df_features.append(f"{feature}_low")
             X.loc[:, f"{feature}_mod"] = fuzz.interp_membership(
-                universe[feature], membership_functions[feature]["moderate"], X[feature]
+                universe[feature], membership_functions[feature]["medium"], X[feature]
             )
             new_df_features.append(f"{feature}_mod")
-            X.loc[:, f"{feature}_large"] = fuzz.interp_membership(
-                universe[feature], membership_functions[feature]["large"], X[feature]
+            X.loc[:, f"{feature}_high"] = fuzz.interp_membership(
+                universe[feature], membership_functions[feature]["high"], X[feature]
             )
-            new_df_features.append(f"{feature}_large")
+            new_df_features.append(f"{feature}_high")
         X = X[new_df_features]
 
         return X
@@ -307,16 +312,16 @@ class Fuzzy:
         # Return fuzzy set
         match index_of_max:
             case 0:
-                return "small"
+                return "low"
             case 1:
-                return "moderate"
+                return "medium"
             case 2:
-                return "large"
+                return "high"
 
-    def _fuzzy_rule_extraction(self, df):
+    def _make_user_granularity_fuzzy_sets(self, df):
         """
         Cluster the local feature importance data into the user-defined clusters and then
-        assign the "small", "moderate" and "large" granularities to features within those
+        assign the "low", "medium" and "high" fuzzy sets to features within those
         clusters.
 
         Parameters:
@@ -327,7 +332,7 @@ class Fuzzy:
         import numpy as np
         import skfuzzy as fuzz
 
-        self._logger.info("Extracting fuzzy rules...")
+        self._logger.info("Making user-defined granularities...")
         if self._exec_opt.problem_type == ProblemTypes.Regression:
             target = np.array(df[df.columns[-1]])
             centers, membership_matrix, _, _, _, _, _ = fuzz.cluster.cmeans(
@@ -389,6 +394,7 @@ class Fuzzy:
             df.loc[:, df.columns[-1]] = primary_cluster_assignment
 
         # Create membership functions based on interquartile values for each feature
+        self._logger.info("Creating fuzzy set membership functions for clusters...")
         membership_functions = {}
         universe = {}
         for feature in df.columns[:-1]:
@@ -401,15 +407,16 @@ class Fuzzy:
             high_mf = fuzz.smf(universe[feature], 0.5, 1.00)
 
             membership_functions[feature] = {
-                "small": low_mf,
-                "moderate": medium_mf,
-                "large": high_mf,
+                "low": low_mf,
+                "medium": medium_mf,
+                "high": high_mf,
             }
 
         # Create fuzzy rules
         fuzzy_rules = []
 
         # Loop through each row in the dataframe and extract fuzzy rules
+        self._logger.info("Assigning clusters to fuzzy sets...")
         for i, _ in df.iterrows():
             df_instance = {}  # Dictionary to store observation values
             fuzzy_sets = {}  # Dictionary to store fuzzy sets
@@ -419,9 +426,9 @@ class Fuzzy:
             for feature in df.columns[:-1]:
                 fuzzy_sets[feature] = self._fuzzyset_selection(
                     universe[feature],
-                    membership_functions[feature]["small"],
-                    membership_functions[feature]["moderate"],
-                    membership_functions[feature]["large"],
+                    membership_functions[feature]["low"],
+                    membership_functions[feature]["medium"],
+                    membership_functions[feature]["high"],
                     df_instance[feature],
                 )
 
@@ -472,12 +479,12 @@ class Fuzzy:
             synergy_features[category] = {}
             for feature in rules.columns[:-2]:
                 unique_values = rules[feature].unique()
-                if "large" in unique_values:
-                    top_value = "large"
-                elif "moderate" in unique_values:
-                    top_value = "moderate"
+                if "high" in unique_values:
+                    top_value = "high"
+                elif "medium" in unique_values:
+                    top_value = "medium"
                 else:
-                    top_value = "small"
+                    top_value = "low"
                 synergy_features[category][feature] = top_value
 
         self._logger.info(f"synergy and impact of features: \n{synergy_features}")
