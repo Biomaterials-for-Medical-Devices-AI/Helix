@@ -123,7 +123,11 @@ def get_predictions(
 ):
 
     X = raw_data[independent_variable_col_names]
-    target_col = predict_data[id_column] if id_column else None
+    target_col = (
+        predict_data[id_column]
+        if id_column and id_column in predict_data.columns
+        else predict_data.index.to_series(name=id_column)
+    )
     predict_data = predict_data[independent_variable_col_names]
 
     predict_data = preprocess_data(X, predict_data, preprocessing_options)
