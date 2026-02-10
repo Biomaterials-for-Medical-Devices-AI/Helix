@@ -172,7 +172,6 @@ class FeatureImportanceEstimator:
                         feature_importance_type
                         == FeatureImportanceTypes.PermutationImportance
                     ):
-                        # Run Permutation Importance
                         permutation_importance_df = calculate_permutation_importance(
                             model=model_list[idx],
                             X=X,
@@ -212,7 +211,6 @@ class FeatureImportanceEstimator:
                         ].append(permutation_importance_df)
 
                     elif feature_importance_type == FeatureImportanceTypes.SHAP:
-                        # Run SHAP
                         shap_df, _ = calculate_global_shap_values(
                             model=model_list[idx],
                             X=X,
@@ -320,7 +318,6 @@ class FeatureImportanceEstimator:
                         # TODO: this will change when we work out how to handle all
                         # folds in local importance calculations
                         if feature_importance_type == FeatureImportanceTypes.LIME:
-                            # Run Permutation Importance
                             lime_importance_df = calculate_lime_values(
                                 model[closest_index],
                                 X,
@@ -363,7 +360,6 @@ class FeatureImportanceEstimator:
                             ].append(lime_importance_df)
 
                         if feature_importance_type == FeatureImportanceTypes.SHAP:
-                            # Run SHAP
                             shap_df, shap_values = calculate_local_shap_values(
                                 model=model[closest_index],
                                 X=X,
