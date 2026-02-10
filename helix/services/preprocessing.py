@@ -204,7 +204,8 @@ def run_preprocessing(
         ids = None
 
     try:
-        columns_to_drop = find_non_numeric_columns(X)
+        columns_to_drop = [id_col] if id_col is not None else []
+        columns_to_drop.extend(find_non_numeric_columns(X))
         if columns_to_drop:
             X = X.drop(columns=columns_to_drop)
     except TypeError as e:
@@ -223,11 +224,13 @@ def run_preprocessing(
     X = normalise_independent_variables(config.independent_variable_normalisation, X)
     y = transform_dependent_variable(config.dependent_variable_transformation, y)
 
-    # If there was an ID column, put it back
-    cols = [ids, X, y] if ids is not None else [X, y]
-    normalised_data = pd.concat(cols, axis=1)
+    normalised_data = pd.concat([X, y], axis=1)
 
     processed_data = run_feature_selection(config, normalised_data)
+
+    # If there was an ID column, put it back
+    if id_col is not None:
+        processed_data = pd.concat([ids, processed_data], axis=1)
 
     return processed_data
 

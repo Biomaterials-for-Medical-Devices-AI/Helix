@@ -203,23 +203,23 @@ if experiment_name:
             data_opts.data_path = data_opts.data_path.replace("_preprocessed", "")
             data = read_data(Path(data_opts.data_path), logger)
 
-            # Validate data
-            validate_data(data, id_col=data_opts.id_column)
-            plot_opt = load_plot_options(path_to_plot_opts)
-            original_view(data)
-            preprocessing_opts_form(data, exec_opts.problem_type)
+        # Validate data
+        validate_data(data, id_col=data_opts.id_column)
+        plot_opt = load_plot_options(path_to_plot_opts)
+        original_view(data)
+        preprocessing_opts_form(data, exec_opts.problem_type)
 
-            if st.button("Run Data Preprocessing", type="primary"):
-                config = build_config()
-                run_preprocessing_pipeline(
-                    data,
-                    config,
-                    helix_base_dir / experiment_name,
-                    data_opts,
-                    path_to_data_opts,
-                    path_to_preproc_opts,
-                    logger,
-                )
+        if st.button("Run Data Preprocessing", type="primary"):
+            config = build_config()
+            run_preprocessing_pipeline(
+                data,
+                config,
+                helix_base_dir / experiment_name,
+                data_opts,
+                path_to_data_opts,
+                path_to_preproc_opts,
+                logger,
+            )
 
     except ValueError as e:
         st.error(str(e), icon="🔥")
