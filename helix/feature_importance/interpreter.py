@@ -123,7 +123,8 @@ class FeatureImportanceEstimator:
 
     def _global_feature_importance(self, models: dict, data: TabularData):
         """
-        Calculate global feature importance for a given model and dataset.
+        Calculate global feature importance for each model and for each fold.
+        This is repeated for each selected global feature importance method.
         Parameters:
             models (dict): Dictionary of models.
             data (TabularData): The data to interpret.
