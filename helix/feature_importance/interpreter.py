@@ -76,37 +76,47 @@ class FeatureImportanceEstimator:
             Global, local and ensemble feature importance votes.
         """
         self._logger.info("-------- Start of feature importance logging--------")
-        global_importance_results = self._global_feature_importance(models, data)
+        global_feature_importance_results = self._global_feature_importance(
+            models, data
+        )
         # Create a dict[str, DataFrame] where the keys are the model names and
         # the values are min-max normalised global feature importance values
         # for those models. The data frames combine the data from all folds
         # and all global importance types.
-        global_importance_df_dict = self._stack_global_importances(
-            global_importance_results
+        global_feature_importance_df_dict = self._stack_global_importances(
+            global_feature_importance_results
         )
         # Compute average global importance across all folds for each model type
-        self._calculate_mean_global_importance_of_folds(global_importance_results)
+        self._calculate_mean_global_importance_of_folds(
+            global_feature_importance_results
+        )
 
         # Load the dataset used in the experiment for model training.
         # This can either be the raw data or the preprocessed data, if the user
         # preprocessed the data.
         experiment_data = read_data(self._data_path, self._logger)
-        local_importance_results = self._local_feature_importance(
+        local_feature_importance_results = self._local_feature_importance(
             models, experiment_data
         )
         # Create a dict[str, DataFrame] where the keys are the model names and
         # the values are min-max normalised local feature importance values
         # for those models. The data frames combine the data from all local feature
         # importance types.
-        local_importance_df_dict = self._stack_local_importances(
-            local_importance_results
+        local_feature_importance_df_dict = self._stack_local_importances(
+            local_feature_importance_results
         )
 
         # Calculate ensemble FI from stacked global FI
-        ensemble_results = self._ensemble_feature_importance(global_importance_df_dict)
+        ensemble_feature_importance_results = self._ensemble_feature_importance(
+            global_feature_importance_df_dict
+        )
         self._logger.info("-------- End of feature importance logging--------")
 
-        return global_importance_df_dict, local_importance_df_dict, ensemble_results
+        return (
+            global_feature_importance_df_dict,
+            local_feature_importance_df_dict,
+            ensemble_feature_importance_results,
+        )
 
     def _global_feature_importance(self, models: dict, data: TabularData):
         """
