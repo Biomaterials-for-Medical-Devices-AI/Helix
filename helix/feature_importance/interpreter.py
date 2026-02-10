@@ -77,6 +77,10 @@ class FeatureImportanceEstimator:
         """
         self._logger.info("-------- Start of feature importance logging--------")
         global_importance_results = self._global_feature_importance(models, data)
+        # Create a dict[str, DataFrame] where the keys are the model names and
+        # the values are min-max normalised global feature importance values
+        # for those models. The data frames combine the data from all folds
+        # and all global importance types.
         global_importance_df_dict = self._stack_global_importances(
             global_importance_results
         )
@@ -86,6 +90,10 @@ class FeatureImportanceEstimator:
         # Load the total dataset for the local importance
         total_df = read_data(self._data_path, self._logger)
         local_importance_results = self._local_feature_importance(models, total_df)
+        # Create a dict[str, DataFrame] where the keys are the model names and
+        # the values are min-max normalised local feature importance values
+        # for those models. The data frames combine the data from all local feature
+        # importance types.
         local_importance_df_dict = self._stack_local_importances(
             local_importance_results
         )
