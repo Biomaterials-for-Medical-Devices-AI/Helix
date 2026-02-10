@@ -91,22 +91,23 @@ def plot_target_variable_distribution(
     return displot
 
 
-def plot_correlation_heatmap(
-    corr_data: pd.DataFrame, plot_opts: PlottingOptions
-) -> Figure:
+def plot_correlation_heatmap(corr: pd.DataFrame, plot_opts: PlottingOptions) -> Figure:
     """
-    Create a correlation heatmap for the given DataFrame.
+    Create a correlation heatmap for the given correlations DataFrame.
 
     Args:
-        corr_data (pd.DataFrame): The DataFrame containing the data to plot.
+        corr_data (pd.DataFrame): The DataFrame containing the correlation data to plot.
         plot_opts (PlottingOptions): The plotting options.
 
     Returns:
         Figure: The correlation heatmap figure.
     """
 
-    corr = corr_data.corr()
-    mask = np.triu(np.ones_like(corr, dtype=bool))
+    # Only mask if rows == cols in the same order (true symmetric matrix view)
+    is_square = corr.shape[0] == corr.shape[1]
+    same_labels_same_order = is_square and corr.index.equals(corr.columns)
+
+    mask = np.triu(np.ones_like(corr, dtype=bool)) if same_labels_same_order else None
 
     plt.style.use(plot_opts.plot_colour_scheme)
     fig, ax = plt.subplots(
