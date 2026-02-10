@@ -167,9 +167,12 @@ def pipeline(
                     "Bootstrap": i,
                 }
                 df_test = pd.DataFrame(predictions_test)
-                predictions = pd.concat(
-                    [predictions, df_train, df_test], ignore_index=True
-                )
+                df_whole = pd.concat([df_train, df_test], ignore_index=True)
+                if data.id_column is not None:
+                    df_whole.insert(
+                        loc=0, column=data.id_column[i].name, value=data.id_column[i]
+                    )
+                predictions = pd.concat([predictions, df_whole], ignore_index=True)
         st.session_state[MachineLearningStateKeys.Predictions] = predictions
 
     if ml_opts.use_hyperparam_search:
