@@ -103,6 +103,8 @@ class FeatureImportanceEstimator:
         # the values are min-max normalised local feature importance values
         # for those models. The data frames combine the data from all local feature
         # importance types.
+        # TODO: change this comment when we work out how to handle all folds in the
+        # local importance data
         local_feature_importance_df_dict = self._stack_local_importances(
             local_feature_importance_results
         )
@@ -313,7 +315,10 @@ class FeatureImportanceEstimator:
                         feature_importance_results[model_type][
                             feature_importance_type
                         ] = []
-                        # Select the first model in the list - model[0]
+                        # Select the model with the closest performance to the mean
+                        # performance of all folds.
+                        # TODO: this will change when we work out how to handle all
+                        # folds in local importance calculations
                         if feature_importance_type == FeatureImportanceTypes.LIME:
                             # Run Permutation Importance
                             lime_importance_df = calculate_lime_values(
