@@ -87,9 +87,13 @@ class FeatureImportanceEstimator:
         # Compute average global importance across all folds for each model type
         self._calculate_mean_global_importance_of_folds(global_importance_results)
 
-        # Load the total dataset for the local importance
-        total_df = read_data(self._data_path, self._logger)
-        local_importance_results = self._local_feature_importance(models, total_df)
+        # Load the dataset used in the experiment for model training.
+        # This can either be the raw data or the preprocessed data, if the user
+        # preprocessed the data.
+        experiment_data = read_data(self._data_path, self._logger)
+        local_importance_results = self._local_feature_importance(
+            models, experiment_data
+        )
         # Create a dict[str, DataFrame] where the keys are the model names and
         # the values are min-max normalised local feature importance values
         # for those models. The data frames combine the data from all local feature
