@@ -82,7 +82,6 @@ class FeatureImportanceEstimator:
         global_feature_importance_results = self._global_feature_importance(
             models, data
         )
-        exit()
         # Create a dict[str, DataFrame] where the keys are the model names and
         # the values are min-max normalised global feature importance values
         # for those models. The data frames combine the data from all folds
