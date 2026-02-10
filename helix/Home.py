@@ -36,6 +36,6 @@ st.write(
 """
 )
 st.markdown(
-    '<span style="color:red; font-size:1em;"><i>You are using Helix 1.0.4</i></span>',
+    '<span style="color:red; font-size:1em;"><i>You are using Helix 1.0.5</i></span>',
     unsafe_allow_html=True,
 )
