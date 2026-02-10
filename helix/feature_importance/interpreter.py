@@ -59,9 +59,9 @@ class FeatureImportanceEstimator:
         self._logger = logger
         self._exec_opt = exec_opt
         self._plot_opt = plot_opt
-        self._feature_importance_methods = self._fi_opt.global_importance_methods
+        self._global_importance_methods = self._fi_opt.global_importance_methods
         self._local_importance_methods = self._fi_opt.local_importance_methods
-        self._feature_importance_ensemble = self._fi_opt.feature_importance_ensemble
+        self._ensemble_importance_methods = self._fi_opt.feature_importance_ensemble
         self._data_path = data_path
 
     def interpret(self, models: dict, data: TabularData) -> tuple[dict, dict, dict]:
@@ -79,6 +79,7 @@ class FeatureImportanceEstimator:
         global_feature_importance_results = self._global_feature_importance(
             models, data
         )
+        exit()
         # Create a dict[str, DataFrame] where the keys are the model names and
         # the values are min-max normalised global feature importance values
         # for those models. The data frames combine the data from all folds
@@ -129,7 +130,7 @@ class FeatureImportanceEstimator:
         """
         feature_importance_results = {}
         if not any(
-            sub_dict["value"] for sub_dict in self._feature_importance_methods.values()
+            sub_dict["value"] for sub_dict in self._global_importance_methods.values()
         ):
             self._logger.info("No feature importance methods selected")
             self._logger.info("Skipping global feature importance methods")
@@ -151,7 +152,9 @@ class FeatureImportanceEstimator:
                 for (
                     feature_importance_type,
                     value,
-                ) in self._feature_importance_methods.items():
+                ) in self._global_importance_methods.items():
+                    # This determines whether or not the feature importance method
+                    # has been requested by the user.
                     if not value["value"]:
                         continue
 
@@ -304,6 +307,8 @@ class FeatureImportanceEstimator:
                     feature_importance_type,
                     value,
                 ) in self._local_importance_methods.items():
+                    # This determines whether or not the feature importance method
+                    # has been requested by the user.
                     if value["value"]:
                         feature_importance_results[model_type][
                             feature_importance_type
@@ -404,12 +409,14 @@ class FeatureImportanceEstimator:
         """
         ensemble_results = {}
 
-        if not any(self._feature_importance_ensemble.values()):
+        if not any(self._ensemble_importance_methods.values()):
             self._logger.info("No ensemble feature importance method selected")
             self._logger.info("Skipping ensemble feature importance analysis")
         else:
             self._logger.info("Ensemble feature importance methods...")
-            for ensemble_type, value in self._feature_importance_ensemble.items():
+            for ensemble_type, value in self._ensemble_importance_methods.items():
+                # This determines whether or not the feature importance method
+                # has been requested by the user.
                 if value:
                     if ensemble_type == FeatureImportanceTypes.Mean:
                         # Calculate mean of feature importance results
