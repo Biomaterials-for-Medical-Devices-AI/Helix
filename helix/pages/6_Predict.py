@@ -44,11 +44,13 @@ def preprocess_data(
     X: pd.DataFrame,
     predict_data: pd.DataFrame,
     options: PreprocessingOptions | None,
+    id_col: str | None = None,
 ) -> pd.DataFrame:
     if options is None or not options.data_is_preprocessed:
         return predict_data
 
-    columns_to_drop = find_non_numeric_columns(X)
+    columns_to_drop = [id_col] if id_col is not None else []
+    columns_to_drop.extend(find_non_numeric_columns(X))
     if columns_to_drop:
         X = X.drop(columns=columns_to_drop)
         predict_data = predict_data.drop(columns=columns_to_drop)
@@ -121,8 +123,8 @@ def get_predictions(
 ):
 
     X = raw_data[independent_variable_col_names]
+    target_col = predict_data[id_column] if id_column else None
     predict_data = predict_data[independent_variable_col_names]
-    target_col = raw_data[id_column] if id_column else None
 
     predict_data = preprocess_data(X, predict_data, preprocessing_options)
 
@@ -253,7 +255,6 @@ if experiment_name:
                 "Dependent variables necessary for the prediciton were not found. Please provide the data with all the variables that you provided in your original data."
             )
 
-        predict_data = predict_data[independent_variables]
         st.success(
             "All the needed independent variables for the predictions were found successfully."
         )
