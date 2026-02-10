@@ -186,14 +186,26 @@ def run_feature_selection(
 
 
 def run_preprocessing(
-    data: pd.DataFrame, experiment_path: Path, config: PreprocessingOptions
+    data: pd.DataFrame,
+    experiment_path: Path,
+    config: PreprocessingOptions,
+    id_col: str | None = None,
 ) -> pd.DataFrame:
 
     X = data.iloc[:, :-1]
     y = data.iloc[:, -1]
 
+    # Save the ID column to add back at the end.
+    # Because of how the data are processed on upload, the IDs column
+    # should be at index 0
+    if id_col is not None:
+        ids = X.iloc[:, 0].copy()
+    else:
+        ids = None
+
     try:
-        columns_to_drop = find_non_numeric_columns(X)
+        columns_to_drop = [id_col] if id_col is not None else []
+        columns_to_drop.extend(find_non_numeric_columns(X))
         if columns_to_drop:
             X = X.drop(columns=columns_to_drop)
     except TypeError as e:
@@ -215,6 +227,10 @@ def run_preprocessing(
     normalised_data = pd.concat([X, y], axis=1)
 
     processed_data = run_feature_selection(config, normalised_data)
+
+    # If there was an ID column, put it back
+    if id_col is not None:
+        processed_data = pd.concat([ids, processed_data], axis=1)
 
     return processed_data
 

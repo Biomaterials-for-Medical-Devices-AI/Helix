@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from helix.options.data import DataOptions
 from helix.options.enums import FeatureImportanceTypes, Metrics, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
@@ -52,6 +53,7 @@ class FeatureImportanceEstimator:
         fi_opt: FeatureImportanceOptions,
         exec_opt: ExecutionOptions,
         plot_opt: PlottingOptions,
+        data_opt: DataOptions,
         data_path: Path,
         logger: Logger | None = None,
     ) -> None:
@@ -60,6 +62,7 @@ class FeatureImportanceEstimator:
         self._exec_opt = exec_opt
         self._plot_opt = plot_opt
         self._global_importance_methods = self._fi_opt.global_importance_methods
+        self._data_opt = data_opt
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self._ensemble_importance_methods = self._fi_opt.feature_importance_ensemble
         self._data_path = data_path

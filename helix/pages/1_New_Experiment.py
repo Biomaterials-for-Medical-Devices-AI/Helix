@@ -105,6 +105,8 @@ def _entrypoint(save_dir: Path):
         data_path=str(path_to_data),  # Path objects aren't JSON serialisable
         target_column=st.session_state[ExecutionStateKeys.DependentVariable],
         feature_columns=st.session_state[ExecutionStateKeys.FeatureColumns],
+        # use `.get` as IdColumn is optional and can be None
+        id_column=st.session_state.get(ExecutionStateKeys.IdColumn),
     )
     plot_opts = PlottingOptions(
         plot_axis_font_size=st.session_state[PlotOptionKeys.AxisFontSize],
@@ -300,6 +302,27 @@ if uploaded_file is not None:
             col for col in data.columns if col != target_col
         ]
         st.write(f"Using all {len(feature_cols)} feature columns by default.")
+
+    if st.toggle(
+        "Select ID column",
+        help="If you have a column containing row IDs, check this box to select it.",
+    ):
+        id_cols = list(
+            filter(
+                lambda x: not (
+                    x in st.session_state[ExecutionStateKeys.FeatureColumns]
+                    or x == target_col
+                ),
+                data.columns,
+            )
+        )
+        st.selectbox(
+            "ID column",
+            options=id_cols,
+            placeholder="Select...",
+            index=None,
+            key=ExecutionStateKeys.IdColumn,
+        )
 
 st.selectbox(
     "Problem type",

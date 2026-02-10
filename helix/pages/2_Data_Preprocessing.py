@@ -7,6 +7,7 @@ from helix.components.experiments import experiment_selector
 from helix.components.forms.forms_preprocessing import preprocessing_opts_form
 from helix.components.images.logos import sidebar_logo
 from helix.components.preprocessing import original_view, preprocessed_view
+from helix.options.data import DataOptions
 from helix.options.enums import DataPreprocessingStateKeys, ExecutionStateKeys
 from helix.options.file_paths import (
     data_options_path,
@@ -85,16 +86,19 @@ experiment_name = experiment_selector(choices)
 helix_base_dir = helix_experiments_base_dir()
 
 
-def validate_data(data) -> tuple[list, bool]:
+def validate_data(data, id_col: str | None) -> tuple[list, bool]:
     """Validate data for preprocessing.
 
     Args:
         data: The input data to validate
+        id_col: The name of the ID column
 
     Returns:
         tuple containing list of non-numeric columns and whether y has non-numeric values
     """
     non_numeric = find_non_numeric_columns(data.iloc[:, :-1])
+    if id_col in non_numeric:
+        non_numeric.remove(id_col)
 
     if non_numeric:
         st.warning(
@@ -116,7 +120,7 @@ def run_preprocessing_pipeline(
     data,
     config,
     experiment_dir: Path,
-    data_opts,
+    data_opts: DataOptions,
     path_to_data_opts,
     path_to_preproc_opts,
     logger,
@@ -133,9 +137,7 @@ def run_preprocessing_pipeline(
         logger: Logger instance
     """
     processed_data = run_preprocessing(
-        data,
-        experiment_dir,
-        config,
+        data, experiment_dir, config, id_col=data_opts.id_column
     )
 
     path_to_preprocessed_data = preprocessed_data_path(
@@ -201,23 +203,23 @@ if experiment_name:
             data_opts.data_path = data_opts.data_path.replace("_preprocessed", "")
             data = read_data(Path(data_opts.data_path), logger)
 
-            # Validate data
-            validate_data(data)
-            plot_opt = load_plot_options(path_to_plot_opts)
-            original_view(data)
-            preprocessing_opts_form(data, exec_opts.problem_type)
+        # Validate data
+        validate_data(data, id_col=data_opts.id_column)
+        plot_opt = load_plot_options(path_to_plot_opts)
+        original_view(data)
+        preprocessing_opts_form(data, exec_opts.problem_type)
 
-            if st.button("Run Data Preprocessing", type="primary"):
-                config = build_config()
-                run_preprocessing_pipeline(
-                    data,
-                    config,
-                    helix_base_dir / experiment_name,
-                    data_opts,
-                    path_to_data_opts,
-                    path_to_preproc_opts,
-                    logger,
-                )
+        if st.button("Run Data Preprocessing", type="primary"):
+            config = build_config()
+            run_preprocessing_pipeline(
+                data,
+                config,
+                helix_base_dir / experiment_name,
+                data_opts,
+                path_to_data_opts,
+                path_to_preproc_opts,
+                logger,
+            )
 
     except ValueError as e:
         st.error(str(e), icon="🔥")

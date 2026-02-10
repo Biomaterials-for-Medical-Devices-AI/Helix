@@ -28,3 +28,4 @@ class DataOptions:
     feature_columns: list[str] | None = None
     data_split: DataSplitOptions | None = None
     normalisation: Normalisations = Normalisations.NoNormalisation
+    id_column: str | None = None
