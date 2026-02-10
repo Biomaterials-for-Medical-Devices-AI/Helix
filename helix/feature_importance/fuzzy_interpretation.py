@@ -11,8 +11,8 @@ def run(
     exec_opt: ExecutionOptions,
     plot_opt: PlottingOptions,
     data,
-    models,
     ensemble_results,
+    local_results,
     logger,
 ):
 
@@ -24,6 +24,6 @@ def run(
         plot_opt=plot_opt,
         logger=logger,
     )
-    fuzzy_rules = fuzzy.interpret(models, ensemble_results, data)
+    fuzzy_rules = fuzzy.interpret(ensemble_results, local_results, data)
 
     return fuzzy_rules

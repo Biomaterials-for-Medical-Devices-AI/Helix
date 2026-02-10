@@ -53,7 +53,18 @@ These methods are used to interpret feature importance on a *per prediction* bas
 
 ![Additional feature importance configuration](../_static/additional-fi-config.png)
 
-<!-- ## Fuzzy feature importance
+## Fuzzy feature importance
+Outputs of crisp feature importance methods, like those described above, can be dependent on the particular machine learning algorithm being used. Moreover, they are represented as "importance" coefficients that can be harder to interpret by users. Fuzzy feature importance aims to create a more standard interpretation that is independent of the algorithms used, and present it more semantically (i.e. Feature A has a large impact).
+
+### How fuzzy interpretation works
+1. The top *n* features based on ensemble feature importance are selected from the data, which has been pre-processed.
+2. Features are split into different granularities ("small", "moderate" or "high") based on membership functions.
+    - the Z membership function is used to determine membership of the "small" granularity.
+    - the triangular membership function is used to determine membership of the "moderate" granularity.
+    - the S membership function is used to determine membership of the "large" granularity.
+3. Local feature importance data is used to create Fuzzy sets based on the number of user-defined clusters. Samples are assigned to each cluster using *c*-means clustering, where *c* is the number of user-defined clusters.
+4. Fuzzy sets are created for the clusters, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
+
 Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
 
 - Number of features for fuzzy interpretation
@@ -76,7 +87,7 @@ Convert features to fuzzy features and then perform feature importance analyses 
 
   Set the number of most frequent fuzzy rules for synergy analysis.
 
-![Fuzzy feature selection](../_static/fuzzy-fi.png) -->
+![Fuzzy feature selection](../_static/fuzzy-fi.png)
 
 ## Select outputs to save
 - Save feature importance options

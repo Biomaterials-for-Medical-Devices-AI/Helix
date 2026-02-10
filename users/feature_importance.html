@@ -84,30 +84,44 @@
 </li>
 </ul>
 <p><img alt="Additional feature importance configuration" src="../_images/additional-fi-config.png" /></p>
-<!-- ## Fuzzy feature importance
-Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
-
-- Number of features for fuzzy interpretation
-
-  Select the top number of features to be used for fuzzy interpretation.
-
-- Granular features
-
-  Check this box to perform a granular analysis of fuzzy features.
-
-- Number of clusters for target variable
-
-  Convert the target variable into this many clusters.
-
-- Names of clusters (comma-separated)
-
-  The list of names for the clusters. This should be the same length as number of clusters for target variable. The names should be separated by a comma followed by a single space. *e.g.* very low, low, medium, high, very high.
-
-- Number of top occurring rules for fuzzy synergy analysis
-
-  Set the number of most frequent fuzzy rules for synergy analysis.
-
-![Fuzzy feature selection](../_static/fuzzy-fi.png) -->
+</section>
+<section id="fuzzy-feature-importance">
+<h2>Fuzzy feature importance<a class="headerlink" href="#fuzzy-feature-importance" title="Link to this heading">¶</a></h2>
+<p>Outputs of crisp feature importance methods, like those described above, can be dependent on the particular machine learning algorithm being used. Moreover, they are represented as “importance” coefficients that can be harder to interpret by users. Fuzzy feature importance aims to create a more standard interpretation that is independent of the algorithms used, and present it more semantically (i.e. Feature A has a large impact).</p>
+<section id="how-fuzzy-interpretation-works">
+<h3>How fuzzy interpretation works<a class="headerlink" href="#how-fuzzy-interpretation-works" title="Link to this heading">¶</a></h3>
+<ol class="arabic simple">
+<li><p>The top <em>n</em> features based on ensemble feature importance are selected from the data, which has been pre-processed.</p></li>
+<li><p>Features are split into different granularities (“small”, “moderate” or “high”) based on membership functions.</p>
+<ul class="simple">
+<li><p>the Z membership function is used to determine membership of the “small” granularity.</p></li>
+<li><p>the triangular membership function is used to determine membership of the “moderate” granularity.</p></li>
+<li><p>the S membership function is used to determine membership of the “large” granularity.</p></li>
+</ul>
+</li>
+<li><p>Local feature importance data is used to create Fuzzy sets based on the number of user-defined clusters. Samples are assigned to each cluster using <em>c</em>-means clustering, where <em>c</em> is the number of user-defined clusters.</p></li>
+<li><p>Fuzzy sets are created for the clusters, giving a semanitic description of “<strong>Feature A</strong> had a <strong>low impact</strong> on the target variable”, as an example.</p></li>
+</ol>
+<p>Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.</p>
+<ul>
+<li><p>Number of features for fuzzy interpretation</p>
+<p>Select the top number of features to be used for fuzzy interpretation.</p>
+</li>
+<li><p>Granular features</p>
+<p>Check this box to perform a granular analysis of fuzzy features.</p>
+</li>
+<li><p>Number of clusters for target variable</p>
+<p>Convert the target variable into this many clusters.</p>
+</li>
+<li><p>Names of clusters (comma-separated)</p>
+<p>The list of names for the clusters. This should be the same length as number of clusters for target variable. The names should be separated by a comma followed by a single space. <em>e.g.</em> very low, low, medium, high, very high.</p>
+</li>
+<li><p>Number of top occurring rules for fuzzy synergy analysis</p>
+<p>Set the number of most frequent fuzzy rules for synergy analysis.</p>
+</li>
+</ul>
+<p><img alt="Fuzzy feature selection" src="../_images/fuzzy-fi.png" /></p>
+</section>
 </section>
 <section id="select-outputs-to-save">
 <h2>Select outputs to save<a class="headerlink" href="#select-outputs-to-save" title="Link to this heading">¶</a></h2>
@@ -162,6 +176,7 @@ Convert features to fuzzy features and then perform feature importance analyses 
 <li class="toctree-l2"><a class="reference internal" href="#ensemble-feature-importance-methods">Ensemble feature importance methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#local-feature-importance-methods">Local feature importance methods</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#additional-configuration-options">Additional configuration options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fuzzy-feature-importance">Fuzzy feature importance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#select-outputs-to-save">Select outputs to save</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-the-analysis">Run the analysis</a></li>
 </ul>
