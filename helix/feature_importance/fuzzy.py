@@ -78,15 +78,17 @@ class Fuzzy:
             X_train = self._fuzzy_granularity(X_train)
             X_test = self._fuzzy_granularity(X_test)
 
-        # Step 3.1: Convert local FI results to a dataframe
-        master_importance_df = pd.DataFrame()
-        for _, feature_importance in local_results.items():
-            for _, result in feature_importance.items():
-                master_importance_df = pd.concat([master_importance_df, result], axis=0)
-        master_importance_df.reset_index(drop=True, inplace=True)
+        # Step 3.1: Convert local FI results to a dataframe.
+        # Local FI results come as a dict[str, DataFrame] where the keys are the
+        # model names and the values are data frames of local FI data.
+        # NB: axis=0 stacks the rows of the data frames and ignore_index=True
+        # prevents repeated values in the row index.
+        local_importance_df = pd.concat(
+            [df for df in local_results.values()], axis=0, ignore_index=True
+        )
 
         # Step 3.2: Extract fuzzy rules from master dataframe
-        fuzzy_rules_df = self._fuzzy_rule_extraction(master_importance_df)
+        fuzzy_rules_df = self._fuzzy_rule_extraction(local_importance_df)
         save_importance_results(
             feature_importance_df=fuzzy_rules_df,
             model_type=None,
