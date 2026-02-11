@@ -31,6 +31,7 @@ from helix.services.data import read_data, read_uploaded_data
 from helix.services.experiments import get_experiments
 from helix.services.ml_models import load_models
 from helix.services.preprocessing import find_non_numeric_columns
+from helix.utils.logging_utils import Logger
 
 # Set page contents
 st.set_page_config(
@@ -39,38 +40,97 @@ st.set_page_config(
 )
 
 
+def preprocess_data(
+    X: pd.DataFrame,
+    predict_data: pd.DataFrame,
+    options: PreprocessingOptions | None,
+    id_col: str | None = None,
+) -> pd.DataFrame:
+    if options is None or not options.data_is_preprocessed:
+        return predict_data
+
+    columns_to_drop = [id_col] if id_col is not None else []
+    columns_to_drop.extend(find_non_numeric_columns(X))
+    if columns_to_drop:
+        X = X.drop(columns=columns_to_drop)
+        predict_data = predict_data.drop(columns=columns_to_drop)
+
+    scaler = get_scaler(options.independent_variable_normalisation)
+    if scaler is None:
+        return predict_data
+
+    scaler.fit(X)
+    return pd.DataFrame(
+        scaler.transform(predict_data),
+        columns=predict_data.columns,
+        index=predict_data.index,
+    )
+
+
+def get_scaler(normalisation_method):
+    match normalisation_method:
+        case Normalisations.NoNormalisation:
+            return None
+        case Normalisations.Standardisation:
+            return StandardScaler()
+        case Normalisations.MinMax:
+            return MinMaxScaler()
+
+
+def ensemble_predictions(
+    predictions_df: pd.DataFrame,
+    problem_type: ProblemTypes,
+) -> pd.Series:
+    if problem_type == ProblemTypes.Regression:
+        return pd.Series(
+            predictions_df.mean(axis=1),
+            index=predictions_df.index,
+            name="Mean Prediction",
+        )
+
+    if problem_type == ProblemTypes.Classification:
+        values, _ = mode(predictions_df.values, axis=1, keepdims=False)
+        return pd.Series(
+            values,
+            index=predictions_df.index,
+            name="Majority Vote",
+        )
+
+    raise ValueError(f"Unsupported problem type: {problem_type}")
+
+
+def get_model_predictions(models_to_use, trained_models, predict_data):
+    predictions = {}
+
+    for model_name, model in trained_models.items():
+        if model_name not in models_to_use:
+            continue
+
+        display_name = model_name.split(".")[0].replace("-", " ").capitalize()
+        predictions[display_name] = model.predict(predict_data)
+
+    return pd.DataFrame(predictions)
+
+
 def get_predictions(
     raw_data: pd.DataFrame,
     independent_variable_col_names: list,
     predict_data: pd.DataFrame,
-    preprocessing_options: PreprocessingOptions,
+    preprocessing_options: PreprocessingOptions | None,
     models: list,
     problem_type: ProblemTypes,
+    id_column: str | None = None,
 ):
 
     X = raw_data[independent_variable_col_names]
+    target_col = (
+        predict_data[id_column]
+        if id_column and id_column in predict_data.columns
+        else predict_data.index.to_series(name=id_column)
+    )
     predict_data = predict_data[independent_variable_col_names]
 
-    if preprocessing_options.data_is_preprocessed:
-
-        columns_to_drop = find_non_numeric_columns(X)
-        if columns_to_drop:
-            X = X.drop(columns=columns_to_drop)
-
-        normalisation_method = preprocessing_options.independent_variable_normalisation
-        if normalisation_method == Normalisations.NoNormalisation:
-            scaler = None
-        elif normalisation_method == Normalisations.Standardisation:
-            scaler = StandardScaler()
-        elif normalisation_method == Normalisations.MinMax:
-            scaler = MinMaxScaler()
-
-        if scaler is not None:
-            scaler.fit(X)
-            predict_data = scaler.transform(predict_data)
-            predict_data = pd.DataFrame(
-                predict_data, columns=independent_variable_col_names
-            )
+    predict_data = preprocess_data(X, predict_data, preprocessing_options)
 
     trained_models = load_models(
         ml_model_dir(
@@ -79,30 +139,15 @@ def get_predictions(
         )
     )
 
-    predictions_df = pd.DataFrame()
+    predictions_df = get_model_predictions(models, trained_models, predict_data)
 
-    for model_name, model in trained_models.items():
-        if model_name in models:
-            df_model_name = model_name.split(".")[0].replace("-", " ").capitalize()
-            predictions_df[df_model_name] = model.predict(predict_data)
+    ensemble = ensemble_predictions(predictions_df, problem_type)
 
-    if problem_type == ProblemTypes.Regression:
-        ensemble_prediction = predictions_df.mean(axis=1)
-        method = "Mean Prediction"
+    result = pd.concat([predict_data, predictions_df, ensemble], axis=1)
+    if target_col is not None:
+        result = pd.concat([target_col, result], axis=1)
 
-    elif problem_type == ProblemTypes.Classification:
-        ensemble_prediction, _ = mode(predictions_df.values, axis=1, keepdims=False)
-        method = "Majority Vote"
-
-    ensemble_prediction = pd.Series(
-        ensemble_prediction, index=predictions_df.index, name=method
-    )
-
-    predictions_df = pd.concat(
-        [predict_data, predictions_df, ensemble_prediction], axis=1
-    )
-
-    st.dataframe(predictions_df)
+    st.dataframe(result)
 
 
 st.header("Predict")
@@ -117,6 +162,9 @@ st.write(
 choices = get_experiments()
 experiment_name = experiment_selector(choices)
 base_dir = helix_experiments_base_dir()
+# Create the logger
+logger_instance = Logger()
+logger = logger_instance.make_logger()
 
 
 if experiment_name:
@@ -149,11 +197,16 @@ if experiment_name:
         raw_data_path = data_options.data_path
     # This is the data that the user provided initially.
     # Having this is useful as it is needed to fit the scalers if needed.
-    raw_data = read_data(Path(raw_data_path), None)
+    raw_data = read_data(Path(raw_data_path), logger)
 
     # This is the data that was actually used for the training (after preprocessing)
     # This is only needed to get the names of the variables used for model training.
-    independent_variables = read_data(Path(data_options.data_path), None).columns[:-1]
+    if data_options.feature_columns is not None:
+        independent_variables = data_options.feature_columns
+    else:
+        independent_variables = read_data(Path(data_options.data_path), None).columns[
+            :-1
+        ]
 
     st.write(
         "For this experiment, the following columns were used as independent variables:"
@@ -206,7 +259,6 @@ if experiment_name:
                 "Dependent variables necessary for the prediciton were not found. Please provide the data with all the variables that you provided in your original data."
             )
 
-        predict_data = predict_data[independent_variables]
         st.success(
             "All the needed independent variables for the predictions were found successfully."
         )
@@ -223,4 +275,5 @@ if experiment_name:
             preprocessing_options=preprocessing_options,
             models=models,
             problem_type=exec_opt.problem_type,
+            id_column=data_options.id_column,
         )

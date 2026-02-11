@@ -9,7 +9,7 @@ import streamlit as st
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
-from helix.options.data import DataOptions, DataSplitOptions
+from helix.options.data import DataOptions
 from helix.options.enums import DataSplitMethods, Normalisations, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.utils.logging_utils import Logger
@@ -27,20 +27,20 @@ class DataBuilder:
 
     def __init__(
         self,
-        data_path: str,
-        random_state: int,
-        normalisation: str,
+        data_opts: DataOptions,
+        exec_opts: ExecutionOptions,
         logger: object = None,
-        data_split: DataSplitOptions | None = None,
-        problem_type: str = None,
     ) -> None:
-        self._path = data_path
-        self._data_split = data_split
-        self._random_state = random_state
+        self._path = data_opts.data_path
+        self._data_split = data_opts.data_split
+        self._random_state = exec_opts.random_state
         self._logger = logger
-        self._normalization = normalisation
+        self._normalization = data_opts.normalisation
         self._numerical_cols = "all"
-        self._problem_type = problem_type
+        self._problem_type = exec_opts.problem_type
+        self._feature_cols = data_opts.feature_columns
+        self._id_col = data_opts.id_column
+        self._target_col = data_opts.target_column
 
     def _load_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -71,7 +71,11 @@ class DataBuilder:
         Returns:
             Dict[str, List[pd.DataFrame]]: The bootstrapped data.
         """
-        X_train_list, X_test_list, y_train_list, y_test_list = [], [], [], []
+        X_train_list = []
+        X_test_list = []
+        y_train_list = []
+        y_test_list = []
+        ids_list = []
 
         if (
             self._data_split is not None
@@ -95,10 +99,16 @@ class DataBuilder:
                     stratify=stratify,
                     shuffle=True,
                 )
-                X_train_list.append(X_train)
-                X_test_list.append(X_test)
-                y_train_list.append(y_train)
-                y_test_list.append(y_test)
+
+                # Assign the data to the lists depending on if there is an ID column
+                X_tr_l, X_te_l, y_tr_l, y_te_l, ids_l = self._assign_splits_to_lists(
+                    X_train, X_test, y_train, y_test
+                )
+                X_train_list.extend(X_tr_l)
+                X_test_list.extend(X_te_l)
+                y_train_list.extend(y_tr_l)
+                y_test_list.extend(y_te_l)
+                ids_list.extend(ids_l)
         elif (
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.KFold
@@ -125,10 +135,15 @@ class DataBuilder:
                 X_train, X_test = X.iloc[train_index], X.iloc[test_index]
                 y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-                X_train_list.append(X_train)
-                X_test_list.append(X_test)
-                y_train_list.append(y_train)
-                y_test_list.append(y_test)
+                # Assign the data to the lists depending on if there is an ID column
+                X_tr_l, X_te_l, y_tr_l, y_te_l, ids_l = self._assign_splits_to_lists(
+                    X_train, X_test, y_train, y_test
+                )
+                X_train_list.extend(X_tr_l)
+                X_test_list.extend(X_te_l)
+                y_train_list.extend(y_tr_l)
+                y_test_list.extend(y_te_l)
+                ids_list.extend(ids_l)
         elif (
             self._data_split is not None
             and self._data_split.method.lower() == DataSplitMethods.NoSplit
@@ -144,10 +159,15 @@ class DataBuilder:
                 random_state=self._random_state,
                 stratify=stratify,
             )
-            X_train_list.append(X_train)
-            X_test_list.append(X_test)
-            y_train_list.append(y_train)
-            y_test_list.append(y_test)
+            # Assign the data to the lists depending on if there is an ID column
+            X_tr_l, X_te_l, y_tr_l, y_te_l, ids_l = self._assign_splits_to_lists(
+                X_train, X_test, y_train, y_test
+            )
+            X_train_list.extend(X_tr_l)
+            X_test_list.extend(X_te_l)
+            y_train_list.extend(y_tr_l)
+            y_test_list.extend(y_te_l)
+            ids_list.extend(ids_l)
         else:
             raise NotImplementedError(
                 f"Data split type {self._data_split.method} is not implemented"
@@ -158,6 +178,7 @@ class DataBuilder:
             "X_test": X_test_list,
             "y_train": y_train_list,
             "y_test": y_test_list,
+            "id_column": ids_list if ids_list else None,
         }
 
     def _normalise_data(
@@ -199,6 +220,31 @@ class DataBuilder:
         data[self._numerical_cols] = scaler.fit_transform(data[self._numerical_cols])
         return data
 
+    def _assign_splits_to_lists(self, X_train, X_test, y_train, y_test):
+        X_train_list = []
+        X_test_list = []
+        y_train_list = []
+        y_test_list = []
+        ids_list = []
+
+        if self._id_col is not None:
+            X_train_list.append(X_train[self._feature_cols])
+            X_test_list.append(X_test[self._feature_cols])
+            y_train_list.append(y_train)
+            y_test_list.append(y_test)
+
+            # Combine train and test and select id column
+            X_train_test = pd.concat([X_train, X_test], ignore_index=True)
+            ids_list.append(X_train_test[self._id_col])
+        else:
+            X_train_list.append(X_train)
+            X_test_list.append(X_test)
+            y_train_list.append(y_train)
+            y_test_list.append(y_test)
+            # Don't add it the ID list if the user didn't give an ID column
+
+        return X_train_list, X_test_list, y_train_list, y_test_list, ids_list
+
     def ingest(self):
         X, y = self._load_data()
         data = self._generate_data_splits(X, y)
@@ -208,6 +254,7 @@ class DataBuilder:
             X_test=data["X_test"],
             y_train=data["y_train"],
             y_test=data["y_test"],
+            id_column=data["id_column"],
         )
 
 
@@ -218,6 +265,7 @@ class TabularData:
     X_test: list[pd.DataFrame]
     y_train: list[pd.DataFrame]
     y_test: list[pd.DataFrame]
+    id_column: list[pd.Series]
 
 
 @st.cache_data(show_spinner="Loading data...")
@@ -238,12 +286,9 @@ def ingest_data(
         TabularData: The ingested data.
     """
     data = DataBuilder(
-        data_path=data_opts.data_path,
-        random_state=exec_opts.random_state,
-        normalisation=data_opts.normalisation,
+        data_opts=data_opts,
+        exec_opts=exec_opts,
         logger=_logger,
-        data_split=data_opts.data_split,
-        problem_type=exec_opts.problem_type,
     ).ingest()
     return data
 
@@ -319,8 +364,12 @@ def rearrange_data(df: pd.DataFrame, data_opts: DataOptions):
 
     target_col = data_opts.target_column
     feature_cols = data_opts.feature_columns
+    id_col = data_opts.id_column
 
-    cols = feature_cols + [target_col]
+    if id_col is not None:
+        cols = [id_col] + feature_cols + [target_col]
+    else:
+        cols = feature_cols + [target_col]
 
     df = df[cols]
 

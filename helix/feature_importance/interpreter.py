@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
+from helix.options.data import DataOptions
 from helix.options.enums import FeatureImportanceTypes, Metrics, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
@@ -52,6 +53,7 @@ class FeatureImportanceEstimator:
         fi_opt: FeatureImportanceOptions,
         exec_opt: ExecutionOptions,
         plot_opt: PlottingOptions,
+        data_opt: DataOptions,
         data_path: Path,
         logger: Logger | None = None,
     ) -> None:
@@ -59,6 +61,7 @@ class FeatureImportanceEstimator:
         self._logger = logger
         self._exec_opt = exec_opt
         self._plot_opt = plot_opt
+        self._data_opt = data_opt
         self._feature_importance_methods = self._fi_opt.global_importance_methods
         self._local_importance_methods = self._fi_opt.local_importance_methods
         self._feature_importance_ensemble = self._fi_opt.feature_importance_ensemble
@@ -83,6 +86,8 @@ class FeatureImportanceEstimator:
 
         # Load the total dataset for the local importance
         total_df = read_data(self._data_path, self._logger)
+        if self._data_opt.id_column is not None:
+            total_df.drop(self._data_opt.id_column, axis=1, inplace=True)
         local_importance_results = self._local_feature_importance(models, total_df)
         ensemble_results = self._ensemble_feature_importance(global_importance_df_dict)
         self._logger.info("-------- End of feature importance logging--------")
