@@ -508,7 +508,7 @@ class FeatureImportanceEstimator:
             - For each model:
             - For each importance type (e.g., SHAP, Permutation):
                 - Concatenate all fold results vertically into a single DataFrame
-                - Min-max normalise the importance scores to [0,1] range
+                - Normalise the importance scores to [0,1] range
             - Concatenate all normalised importance types horizontally
 
         Args:
@@ -545,7 +545,7 @@ class FeatureImportanceEstimator:
             - For each model:
             - For each importance type (e.g., SHAP, Permutation):
                 - Concatenate all fold results vertically into a single DataFrame
-                - Min-max normalise the importance scores to [0,1] range
+                - Nnormalise the importance scores to [0,1] range
             - Concatenate all normalised importance types vertically
 
         Args:
