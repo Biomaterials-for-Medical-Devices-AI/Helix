@@ -79,20 +79,21 @@ class Fuzzy:
             X_test = self._fuzzy_granularity(X_test)
 
         # Step 3.1: Convert local FI results to a dataframe.
-        # Local FI results come as a dict[str, list[DataFrame]] where the keys are the
-        # model names and the values are lists of data frames of local FI data.
-        # The number of dataframes in the list for each model corresponds to the number
-        # of local FI methods chosen by the user.
-        # The rows of the final data frame correspond to the local FI of each sample.
-        # The final number of rows is n_samples * n_models * n_fi_types times.
-        # e.g. if 100 samples are used to train 2 models and the user evaluates with
-        # LIME and SHAP, n_rows = 100 * 2 * 2 = 400.
+        # Local FI results come as a dict[str, DataFrame] where the keys are the
+        # model names and the values are data frames of local FI data.
+        # The rows of the final data frame correspond to the local FI of each sample
+        # for each model, for each FI type.
+        # n_rows = n_samples * n_models * n_fi_types.
+        # If there are 100 samples used to train 2 models and they're assessed with LIME
+        # and SHAP, n_rows = 100 * 2 * 2 = 400.
         # The number of columns is the number of features.
         # NB: axis=0 stacks the rows of the data frames and ignore_index=True
         # prevents repeated values in the row index.
         local_importance_df = pd.concat(
             [df for df in local_results.values()], axis=0, ignore_index=True
         )
+        print(local_importance_df.shape)
+        exit()
 
         # Step 3.2: Extract fuzzy rules from local importance dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(local_importance_df)
