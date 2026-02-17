@@ -79,8 +79,10 @@ class Fuzzy:
             X_test = self._fuzzy_granularity(X_test)
 
         # Step 3.1: Convert local FI results to a dataframe.
-        # Local FI results come as a dict[str, DataFrame] where the keys are the
-        # model names and the values are data frames of local FI data.
+        # Local FI results come as a dict[str, list[DataFrame]] where the keys are the
+        # model names and the values are lists of data frames of local FI data.
+        # The number of dataframes in the list for each model corresponds to the number
+        # of local FI methods chosen by the user.
         # NB: axis=0 stacks the rows of the data frames and ignore_index=True
         # prevents repeated values in the row index.
         local_importance_df = pd.concat(
