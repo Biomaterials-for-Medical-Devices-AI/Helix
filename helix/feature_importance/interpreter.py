@@ -103,9 +103,12 @@ class FeatureImportanceEstimator:
             models, experiment_data
         )
         # Create a dict[str, DataFrame] where the keys are the model names and
-        # the values are min-max normalised local feature importance values
-        # for those models. The data frames combine the data from all local feature
-        # importance types.
+        # the values are normalised local feature importance values
+        # for those models. The cells are the FI for each feature (columns) in each
+        # sample (rows).
+        # The data frames combine the data from all local feature
+        # importance types by stacking them vertically.
+        # n_rows = n_samples * n_models * n_fi_types.
         # TODO: change this comment when we work out how to handle all folds in the
         # local importance data
         local_feature_importance_df_dict = self._stack_local_importances(
