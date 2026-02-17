@@ -316,6 +316,8 @@ class FeatureImportanceEstimator:
                 ) in self._local_importance_methods.items():
                     # This determines whether or not the feature importance method
                     # has been requested by the user.
+                    # TODO: Find a way to handle this more generically can scalably.
+                    # Perhaps a handler function that checks the importance type?
                     if value["value"]:
                         feature_importance_results[model_type][
                             feature_importance_type
