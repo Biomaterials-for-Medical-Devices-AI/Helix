@@ -94,9 +94,6 @@ class FeatureImportanceEstimator:
             global_feature_importance_results
         )
 
-        # Load the dataset used in the experiment for model training.
-        # This can either be the raw data or the preprocessed data, if the user
-        # preprocessed the data.
         experiment_data = read_data(self._data_path, self._logger)
         local_feature_importance_results = self._local_feature_importance(
             models, experiment_data
