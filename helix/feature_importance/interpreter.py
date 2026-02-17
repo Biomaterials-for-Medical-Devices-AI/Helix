@@ -423,7 +423,7 @@ class FeatureImportanceEstimator:
         else:
             self._logger.info("Ensemble feature importance methods...")
             for ensemble_type, value in self._ensemble_importance_methods.items():
-                # This determines whether or not the feature importance method
+                # This determines whether or not a feature importance method
                 # has been requested by the user.
                 if value:
                     if ensemble_type == FeatureImportanceTypes.Mean:
