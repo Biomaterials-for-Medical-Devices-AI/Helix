@@ -509,7 +509,7 @@ class FeatureImportanceEstimator:
 
         This function processes feature importance results through these steps:
             - For each model:
-            - For each importance type (e.g., SHAP, Permutation):
+            - For each importance type (e.g., SHAP, Permutation importance):
                 - Concatenate all fold results vertically into a single DataFrame
                 - Normalise the importance scores to [0,1] range
                 - The values of the cells for the normalised FI for the feature in that sample
@@ -547,7 +547,7 @@ class FeatureImportanceEstimator:
 
         This function processes feature importance results through these steps:
             - For each model:
-            - For each importance type (e.g., SHAP, Permutation):
+            - For each importance type (e.g., SHAP, LIME):
                 - Concatenate all fold results vertically into a single DataFrame
                 - Nnormalise the importance scores to [0,1] range
                 - The values of the cells for the normalised FI for the feature in that sample
