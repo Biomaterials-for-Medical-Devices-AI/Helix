@@ -509,6 +509,7 @@ class FeatureImportanceEstimator:
             - For each importance type (e.g., SHAP, Permutation):
                 - Concatenate all fold results vertically into a single DataFrame
                 - Normalise the importance scores to [0,1] range
+                - The values of the cells for the normalised FI for the feature in that sample
             - Concatenate all normalised importance types horizontally
 
         Args:
@@ -546,6 +547,7 @@ class FeatureImportanceEstimator:
             - For each importance type (e.g., SHAP, Permutation):
                 - Concatenate all fold results vertically into a single DataFrame
                 - Nnormalise the importance scores to [0,1] range
+                - The values of the cells for the normalised FI for the feature in that sample
             - Concatenate all normalised importance types vertically
 
         Args:
