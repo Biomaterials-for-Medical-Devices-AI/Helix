@@ -83,6 +83,11 @@ class Fuzzy:
         # model names and the values are lists of data frames of local FI data.
         # The number of dataframes in the list for each model corresponds to the number
         # of local FI methods chosen by the user.
+        # The rows of the final data frame correspond to the local FI of each sample.
+        # The final number of rows is n_samples * n_models * n_fi_types times.
+        # e.g. if 100 samples are used to train 2 models and the user evaluates with
+        # LIME and SHAP, n_rows = 100 * 2 * 2 = 400.
+        # The number of columns is the number of features.
         # NB: axis=0 stacks the rows of the data frames and ignore_index=True
         # prevents repeated values in the row index.
         local_importance_df = pd.concat(
