@@ -92,8 +92,6 @@ class Fuzzy:
         local_importance_df = pd.concat(
             [df for df in local_results.values()], axis=0, ignore_index=True
         )
-        print(local_importance_df.shape)
-        exit()
 
         # Step 3.2: Extract fuzzy rules from local importance dataframe
         fuzzy_rules_df = self._fuzzy_rule_extraction(local_importance_df)
