@@ -61,10 +61,10 @@ class FeatureImportanceEstimator:
         self._logger = logger
         self._exec_opt = exec_opt
         self._plot_opt = plot_opt
+        self._global_importance_methods = self._fi_opt.global_importance_methods
         self._data_opt = data_opt
-        self._feature_importance_methods = self._fi_opt.global_importance_methods
         self._local_importance_methods = self._fi_opt.local_importance_methods
-        self._feature_importance_ensemble = self._fi_opt.feature_importance_ensemble
+        self._ensemble_importance_methods = self._fi_opt.feature_importance_ensemble
         self._data_path = data_path
 
     def interpret(self, models: dict, data: TabularData) -> tuple[dict, dict, dict]:
@@ -79,24 +79,58 @@ class FeatureImportanceEstimator:
             Global, local and ensemble feature importance votes.
         """
         self._logger.info("-------- Start of feature importance logging--------")
-        global_importance_results = self._global_feature_importance(models, data)
-        global_importance_df_dict = self._stack_importances(global_importance_results)
+        global_feature_importance_results = self._global_feature_importance(
+            models, data
+        )
+        # Create a dict[str, DataFrame] where the keys are the model names and
+        # the values are min-max normalised global feature importance values
+        # for those models. The data frames combine the data from all folds
+        # and all global importance types.
+        global_feature_importance_df_dict = self._stack_global_importances(
+            global_feature_importance_results
+        )
         # Compute average global importance across all folds for each model type
-        self._calculate_mean_global_importance_of_folds(global_importance_results)
+        self._calculate_mean_global_importance_of_folds(
+            global_feature_importance_results
+        )
 
-        # Load the total dataset for the local importance
-        total_df = read_data(self._data_path, self._logger)
-        if self._data_opt.id_column is not None:
-            total_df.drop(self._data_opt.id_column, axis=1, inplace=True)
-        local_importance_results = self._local_feature_importance(models, total_df)
-        ensemble_results = self._ensemble_feature_importance(global_importance_df_dict)
+        # Load the dataset that was used in the experiment during model training.
+        # This is required to calculate local FI.
+        # This can either be the raw data or the preprocessed data, if the user
+        # preprocessed the data.
+        experiment_data = read_data(self._data_path, self._logger)
+        local_feature_importance_results = self._local_feature_importance(
+            models, experiment_data
+        )
+        # Create a dict[str, DataFrame] where the keys are the model names and
+        # the values are normalised local feature importance values
+        # for those models. The cells are the FI for each feature (columns) in each
+        # sample (rows).
+        # The data frames combine the data from all local feature
+        # importance types by stacking them vertically.
+        # n_rows = n_samples * n_models * n_fi_types.
+        # TODO: change this comment when we work out how to handle all folds in the
+        # local importance data
+        local_feature_importance_df_dict = self._stack_local_importances(
+            local_feature_importance_results
+        )
+
+        # Calculate ensemble FI from stacked global FI
+        ensemble_feature_importance_results = self._ensemble_feature_importance(
+            global_feature_importance_df_dict
+        )
         self._logger.info("-------- End of feature importance logging--------")
 
-        return global_importance_df_dict, local_importance_results, ensemble_results
+        return (
+            global_feature_importance_df_dict,
+            local_feature_importance_df_dict,
+            ensemble_feature_importance_results,
+        )
 
     def _global_feature_importance(self, models: dict, data: TabularData):
         """
-        Calculate global feature importance for a given model and dataset.
+        Calculate global feature importance for each model and for each fold.
+        This is repeated for each selected global feature importance method.
         Parameters:
             models (dict): Dictionary of models.
             data (TabularData): The data to interpret.
@@ -105,7 +139,7 @@ class FeatureImportanceEstimator:
         """
         feature_importance_results = {}
         if not any(
-            sub_dict["value"] for sub_dict in self._feature_importance_methods.values()
+            sub_dict["value"] for sub_dict in self._global_importance_methods.values()
         ):
             self._logger.info("No feature importance methods selected")
             self._logger.info("Skipping global feature importance methods")
@@ -127,7 +161,9 @@ class FeatureImportanceEstimator:
                 for (
                     feature_importance_type,
                     value,
-                ) in self._feature_importance_methods.items():
+                ) in self._global_importance_methods.items():
+                    # This determines whether or not the feature importance method
+                    # has been requested by the user.
                     if not value["value"]:
                         continue
 
@@ -143,7 +179,6 @@ class FeatureImportanceEstimator:
                         feature_importance_type
                         == FeatureImportanceTypes.PermutationImportance
                     ):
-                        # Run Permutation Importance
                         permutation_importance_df = calculate_permutation_importance(
                             model=model_list[idx],
                             X=X,
@@ -183,7 +218,6 @@ class FeatureImportanceEstimator:
                         ].append(permutation_importance_df)
 
                     elif feature_importance_type == FeatureImportanceTypes.SHAP:
-                        # Run SHAP
                         shap_df, _ = calculate_global_shap_values(
                             model=model_list[idx],
                             X=X,
@@ -280,10 +314,19 @@ class FeatureImportanceEstimator:
                     feature_importance_type,
                     value,
                 ) in self._local_importance_methods.items():
+                    # This determines whether or not the feature importance method
+                    # has been requested by the user.
+                    # TODO: Find a way to handle this more generically can scalably.
+                    # Perhaps a handler function that checks the importance type?
                     if value["value"]:
-                        # Select the first model in the list - model[0]
+                        feature_importance_results[model_type][
+                            feature_importance_type
+                        ] = []
+                        # Select the model with the closest performance to the mean
+                        # performance of all folds.
+                        # TODO: this will change when we work out how to handle all
+                        # folds in local importance calculations
                         if feature_importance_type == FeatureImportanceTypes.LIME:
-                            # Run Permutation Importance
                             lime_importance_df = calculate_lime_values(
                                 model[closest_index],
                                 X,
@@ -323,10 +366,9 @@ class FeatureImportanceEstimator:
                             )
                             feature_importance_results[model_type][
                                 feature_importance_type
-                            ] = lime_importance_df
+                            ].append(lime_importance_df)
 
                         if feature_importance_type == FeatureImportanceTypes.SHAP:
-                            # Run SHAP
                             shap_df, shap_values = calculate_local_shap_values(
                                 model=model[closest_index],
                                 X=X,
@@ -363,7 +405,7 @@ class FeatureImportanceEstimator:
                             shap_df = pd.concat([shap_df, y], axis=1)
                             feature_importance_results[model_type][
                                 feature_importance_type
-                            ] = shap_df
+                            ].append(shap_df)
 
         return feature_importance_results
 
@@ -377,12 +419,14 @@ class FeatureImportanceEstimator:
         """
         ensemble_results = {}
 
-        if not any(self._feature_importance_ensemble.values()):
+        if not any(self._ensemble_importance_methods.values()):
             self._logger.info("No ensemble feature importance method selected")
             self._logger.info("Skipping ensemble feature importance analysis")
         else:
             self._logger.info("Ensemble feature importance methods...")
-            for ensemble_type, value in self._feature_importance_ensemble.items():
+            for ensemble_type, value in self._ensemble_importance_methods.items():
+                # This determines whether or not a feature importance method
+                # has been requested by the user.
                 if value:
                     if ensemble_type == FeatureImportanceTypes.Mean:
                         # Calculate mean of feature importance results
@@ -460,17 +504,18 @@ class FeatureImportanceEstimator:
 
         return ensemble_results
 
-    def _stack_importances(
+    def _stack_global_importances(
         self, importances: dict[str, dict[str, list[pd.DataFrame]]]
     ) -> dict[str, pd.DataFrame]:
         """Stack and normalise feature importance results from different methods.
 
         This function processes feature importance results through these steps:
             - For each model:
-           - For each importance type (e.g., SHAP, Permutation):
-              - Concatenate all fold results vertically into a single DataFrame
-              - Min-max normalise the importance scores to [0,1] range
-           - Concatenate all normalised importance types horizontally
+            - For each importance type (e.g., SHAP, Permutation importance):
+                - Concatenate all fold results vertically into a single DataFrame
+                - Normalise the importance scores to [0,1] range
+                - The values of the cells for the normalised FI for the feature in that sample
+            - Concatenate all normalised importance types horizontally
 
         Args:
             importances: Nested dictionary structure:
@@ -494,6 +539,47 @@ class FeatureImportanceEstimator:
                 importance_type_df_list.append(importance_df)
 
             stack_importances[model_name] = pd.concat(importance_type_df_list, axis=1)
+
+        return stack_importances
+
+    def _stack_local_importances(
+        self, importances: dict[str, dict[str, list[pd.DataFrame]]]
+    ) -> dict[str, pd.DataFrame]:
+        """Stack and normalise feature importance results from different methods.
+
+        This function processes feature importance results through these steps:
+            - For each model:
+            - For each importance type (e.g., SHAP, LIME):
+                - Concatenate all fold results vertically into a single DataFrame
+                - Normalise the importance scores to [0,1] range
+                - The values of the cells for the normalised FI for the feature in that sample
+            - Concatenate all normalised importance types vertically
+
+        Args:
+            importances: Nested dictionary structure:
+                - First level: Model name -> Dictionary of importance types
+                - Second level: Importance type -> List of DataFrames (one per fold)
+                Each DataFrame contains feature importance scores
+
+        Returns:
+            Dictionary mapping model names to their stacked importances.
+            Each DataFrame has features as rows and importance methods as columns,
+            with normalised importance scores as values.
+        """
+        stack_importances = {}
+        for model_name, importance_dict in importances.items():
+            importance_type_df_list = []
+            for importances_dfs in importance_dict.values():
+                importance_df = pd.concat(importances_dfs, axis=0)
+                importance_df = (importance_df - importance_df.min()) / (
+                    importance_df.max() - importance_df.min()
+                )
+                importance_type_df_list.append(importance_df)
+
+            # concat on axis = 0 to preserve unique column names
+            # results in n_rows = n_samples * n_models * n_importances
+            # and n_columns = n_features + n_targets
+            stack_importances[model_name] = pd.concat(importance_type_df_list, axis=0)
 
         return stack_importances
 
