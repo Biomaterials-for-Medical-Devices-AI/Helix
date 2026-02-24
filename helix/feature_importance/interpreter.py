@@ -270,43 +270,23 @@ class FeatureImportanceEstimator:
         elif self._exec_opt.problem_type == ProblemTypes.Classification:
             metric = Metrics.ROC_AUC.value
 
-        # Iterate through all data indices
-        for idx in range(len(data.X_train)):
-            X, y = data.X_train[idx], data.y_train[idx]
-
-        # Load the full ml_metrics
-        path_to_metrics = ml_metrics_full_path(
-            helix_experiments_base_dir() / self._exec_opt.experiment_name
-        )
-        # Load the metrics mean and std from the file
-        with open(path_to_metrics, "r") as f:
-            metrics_full = json.load(f)
-
-        # Load the ml_metrics mean std
-        path_to_metrics = ml_metrics_mean_std_path(
-            helix_experiments_base_dir() / self._exec_opt.experiment_name
-        )
-        # Load the metrics mean and std from the file
-        with open(path_to_metrics, "r") as f:
-            metrics_mean_std = json.load(f)
-
         feature_importance_results = {}
         if not any(
             sub_dict["value"] for sub_dict in self._local_importance_methods.values()
         ):
             self._logger.info("No local feature importance methods selected")
             self._logger.info("Skipping local feature importance methods")
+
+        # Iterate through all data indices
+        for idx in range(len(data.X_train)):
+            X, y = data.X_train[idx], data.y_train[idx]
+
         else:
             for model_type, model in models.items():
                 self._logger.info(
                     f"Local feature importance methods for {model_type}..."
                 )
                 feature_importance_results[model_type] = {}
-
-                # Get the index for the model closest to the mean performance
-                closest_index = find_mean_model_index(
-                    metrics_full, metrics_mean_std, metric
-                )
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for (
@@ -327,7 +307,7 @@ class FeatureImportanceEstimator:
                         # folds in local importance calculations
                         if feature_importance_type == FeatureImportanceTypes.LIME:
                             lime_importance_df = calculate_lime_values(
-                                model[closest_index],
+                                model[idx],
                                 X,
                                 self._exec_opt.problem_type,
                                 self._logger,
@@ -369,7 +349,7 @@ class FeatureImportanceEstimator:
 
                         if feature_importance_type == FeatureImportanceTypes.SHAP:
                             shap_df, shap_values = calculate_local_shap_values(
-                                model=model[closest_index],
+                                model=model[idx],
                                 X=X,
                                 logger=self._logger,
                             )
