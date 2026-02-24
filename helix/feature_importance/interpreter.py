@@ -1,22 +1,19 @@
-import json
 import os
 from pathlib import Path
 
 import pandas as pd
 
 from helix.options.data import DataOptions
-from helix.options.enums import FeatureImportanceTypes, Metrics, ProblemTypes
+from helix.options.enums import FeatureImportanceTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
     fi_plot_dir,
     fi_result_dir,
     helix_experiments_base_dir,
-    ml_metrics_full_path,
-    ml_metrics_mean_std_path,
 )
 from helix.options.plotting import PlottingOptions
-from helix.services.data import TabularData, read_data
+from helix.services.data import TabularData
 from helix.services.feature_importance.ensemble_methods import (
     calculate_ensemble_majorityvote,
     calculate_ensemble_mean,
@@ -29,7 +26,6 @@ from helix.services.feature_importance.local_methods import (
     calculate_lime_values,
     calculate_local_shap_values,
 )
-from helix.services.metrics import find_mean_model_index
 from helix.services.plotting import (
     plot_bar_chart,
     plot_global_shap_importance,
@@ -98,10 +94,7 @@ class FeatureImportanceEstimator:
         # This is required to calculate local FI.
         # This can either be the raw data or the preprocessed data, if the user
         # preprocessed the data.
-        experiment_data = read_data(self._data_path, self._logger)
-        local_feature_importance_results = self._local_feature_importance(
-            models, experiment_data
-        )
+        local_feature_importance_results = self._local_feature_importance(models, data)
         # Create a dict[str, DataFrame] where the keys are the model names and
         # the values are normalised local feature importance values
         # for those models. The cells are the FI for each feature (columns) in each
@@ -264,29 +257,24 @@ class FeatureImportanceEstimator:
         Returns:
             dict: Dictionary of feature importance results.
         """
-        # Determine which metric to use
-        if self._exec_opt.problem_type == ProblemTypes.Regression:
-            metric = Metrics.R2.value
-        elif self._exec_opt.problem_type == ProblemTypes.Classification:
-            metric = Metrics.ROC_AUC.value
-
         feature_importance_results = {}
         if not any(
             sub_dict["value"] for sub_dict in self._local_importance_methods.values()
         ):
             self._logger.info("No local feature importance methods selected")
             self._logger.info("Skipping local feature importance methods")
+            return feature_importance_results
 
         # Iterate through all data indices
         for idx in range(len(data.X_train)):
             X, y = data.X_train[idx], data.y_train[idx]
 
-        else:
             for model_type, model in models.items():
                 self._logger.info(
                     f"Local feature importance methods for {model_type}..."
                 )
-                feature_importance_results[model_type] = {}
+                if model_type not in feature_importance_results:
+                    feature_importance_results[model_type] = {}
 
                 # Run methods with TRUE values in the dictionary of feature importance methods
                 for (
@@ -301,10 +289,6 @@ class FeatureImportanceEstimator:
                         feature_importance_results[model_type][
                             feature_importance_type
                         ] = []
-                        # Select the model with the closest performance to the mean
-                        # performance of all folds.
-                        # TODO: this will change when we work out how to handle all
-                        # folds in local importance calculations
                         if feature_importance_type == FeatureImportanceTypes.LIME:
                             lime_importance_df = calculate_lime_values(
                                 model[idx],
