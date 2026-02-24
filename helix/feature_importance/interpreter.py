@@ -254,26 +254,25 @@ class FeatureImportanceEstimator:
 
         return feature_importance_results
 
-    def _local_feature_importance(self, models, data: pd.DataFrame):
+    def _local_feature_importance(self, models, data: TabularData):
         """
         Calculate local feature importance for a given model and dataset.
         Parameters:
             models (dict): Dictionary of models.
-            data (pd.DataFrame): The data to interpret.
+            data (TabularData): The data to interpret.
             For local interpretation, the entire data is used.
         Returns:
             dict: Dictionary of feature importance results.
         """
-        # Get data features
-        X = data.iloc[:, :-1]
-        # Get the targets
-        y = data.iloc[:, -1]
-
         # Determine which metric to use
         if self._exec_opt.problem_type == ProblemTypes.Regression:
             metric = Metrics.R2.value
         elif self._exec_opt.problem_type == ProblemTypes.Classification:
             metric = Metrics.ROC_AUC.value
+
+        # Iterate through all data indices
+        for idx in range(len(data.X_train)):
+            X, y = data.X_train[idx], data.y_train[idx]
 
         # Load the full ml_metrics
         path_to_metrics = ml_metrics_full_path(
