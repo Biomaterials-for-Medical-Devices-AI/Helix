@@ -271,7 +271,7 @@ class FeatureImportanceEstimator:
 
             for model_type, model in models.items():
                 self._logger.info(
-                    f"Local feature importance methods for {model_type}..."
+                    f"Local feature importance methods for {model_type}, fold: {idx + 1}..."
                 )
                 if model_type not in feature_importance_results:
                     feature_importance_results[model_type] = {}
