@@ -400,9 +400,11 @@ if experiment_name:
                     fuzzy_options_file = fuzzy_options_path(base_dir / experiment_name)
                     save_options(fuzzy_options_file, fuzzy_opts)
 
-                process = Process(
-                    target=pipeline,
-                    args=(
+                with st.spinner(
+                    "Feature Importance pipeline is running in the background. "
+                    "Check the logs for progress."
+                ):
+                    pipeline(
                         fuzzy_opts,
                         fi_opts,
                         exec_opts,
@@ -410,19 +412,7 @@ if experiment_name:
                         exp_name,
                         models_to_explaion,
                         data,
-                    ),
-                    daemon=True,
-                )
-                process.start()
-                cancel_button = st.button(
-                    "Cancel", on_click=cancel_pipeline, args=(process,)
-                )
-                with st.spinner(
-                    "Feature Importance pipeline is running in the background. "
-                    "Check the logs for progress."
-                ):
-                    # wait for the process to finish or be cancelled
-                    process.join()
+                    )
                 try:
                     st.session_state[FeatureImportanceStateKeys.FILogBox] = get_logs(
                         log_dir(base_dir / experiment_name) / "fi"
