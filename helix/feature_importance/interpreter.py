@@ -1,6 +1,7 @@
 from multiprocessing import cpu_count
 import os
 from pathlib import Path
+from time import time
 
 from joblib import Parallel, delayed
 import pandas as pd
@@ -265,7 +266,7 @@ class FeatureImportanceEstimator:
         """
 
         def _single_local_fi(
-            local_importance_methods, model_type, model, X, y
+            local_importance_methods, model_type, model, X, y, idx
         ) -> dict[str, dict[str, list[pd.DataFrame]]]:
             # Outer dict keys are the model types, inner dict keys are feature importance types.
             # Inner dict values are lists of local feature importance dataframes.
@@ -275,6 +276,8 @@ class FeatureImportanceEstimator:
                 feature_importance_type,
                 value,
             ) in local_importance_methods.items():
+                if model_type not in results:
+                    results[model_type] = {}
                 # This determines whether or not the feature importance method
                 # has been requested by the user.
                 # TODO: Find a way to handle this more generically can scalably.
@@ -287,15 +290,6 @@ class FeatureImportanceEstimator:
                             X,
                             self._exec_opt.problem_type,
                             self._logger,
-                        )
-                        results_dir = fi_result_dir(
-                            helix_experiments_base_dir()
-                            / self._exec_opt.experiment_name
-                        )
-                        create_directory(results_dir)
-                        importance_df.to_csv(
-                            results_dir
-                            / f"local-{feature_importance_type} (fold {idx + 1}).csv"
                         )
                         fig = plot_lime_importance(
                             df=importance_df,
@@ -327,15 +321,6 @@ class FeatureImportanceEstimator:
                             model=model,
                             X=X,
                             logger=self._logger,
-                        )
-                        results_dir = fi_result_dir(
-                            helix_experiments_base_dir()
-                            / self._exec_opt.experiment_name
-                        )
-                        create_directory(results_dir)
-                        importance_df.to_csv(
-                            results_dir
-                            / f"local-{feature_importance_type} (fold {idx + 1}).csv"
                         )
                         fig = plot_local_shap_importance(
                             shap_values=shap_values,
@@ -372,22 +357,49 @@ class FeatureImportanceEstimator:
             return feature_importance_results
 
         # Iterate through all data indices
+        training_start = time()
         for idx in range(len(data.X_train)):
             X, y = data.X_train[idx], data.y_train[idx]
 
+            self._logger.info(
+                f"Calculating local feature importances for fold {idx + 1}"
+            )
             results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
                 delayed(_single_local_fi)(
-                    self._local_importance_methods, model_type, model, X, y
+                    self._local_importance_methods, model_type, model[idx], X, y, idx
                 )
                 for model_type, model in models.items()
             )
 
+            # Create directory to save the local feature importance data
+            results_dir = fi_result_dir(
+                helix_experiments_base_dir() / self._exec_opt.experiment_name
+            )
+            create_directory(results_dir)
+
             for model_type, importance_dict in results:
+                # Store the local feature importance results in memory for fuzzy
+                feature_importance_results[model_type] = importance_dict
+                # Iterate through the local feature importances and save the local
+                # feature importance data from each fold.
                 for importance_type, importance_df_list in importance_dict:
-                    results_dir = fi_result_dir(
-                        helix_experiments_base_dir() / self._exec_opt.experiment_name
+                    print(
+                        f"Number of local importances in fold {idx+1}: {len(importance_df_list)}"
                     )
-                    create_directory(results_dir)
+                    for importance_df in importance_df_list:
+                        importance_df.to_csv(
+                            results_dir
+                            / f"local-{importance_type} (fold {idx + 1}).csv"
+                        )
+
+        training_end = time()
+        elapsed = training_end - training_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Training completed in {time_str}")
 
         return feature_importance_results
 
