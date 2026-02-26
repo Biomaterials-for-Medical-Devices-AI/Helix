@@ -1,11 +1,11 @@
+import os
 from itertools import product
 from multiprocessing import cpu_count
-import os
 from pathlib import Path
 from time import time
 
-from joblib import Parallel, delayed
 import pandas as pd
+from joblib import Parallel, delayed
 
 from helix.options.data import DataOptions
 from helix.options.enums import FeatureImportanceTypes
@@ -33,8 +33,8 @@ from helix.services.feature_importance.local_methods import (
 from helix.services.plotting import (
     plot_bar_chart,
     plot_global_shap_importance,
-    plot_most_important_feats_violin,
     plot_local_shap_importance,
+    plot_most_important_feats_violin,
     plot_permutation_importance,
 )
 from helix.utils.logging_utils import Logger

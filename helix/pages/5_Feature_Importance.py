@@ -7,7 +7,6 @@ This page provides options for analyzing feature importance using various method
 - Fuzzy feature importance
 """
 
-from multiprocessing import Process
 from pathlib import Path
 
 import pandas as pd
@@ -59,7 +58,7 @@ from helix.services.experiments import (
 from helix.services.logs import get_logs
 from helix.services.ml_models import load_models_to_explain
 from helix.utils.logging_utils import Logger, close_logger
-from helix.utils.utils import cancel_pipeline, set_seed
+from helix.utils.utils import set_seed
 
 
 def build_configuration() -> tuple[
