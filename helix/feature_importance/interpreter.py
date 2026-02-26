@@ -346,7 +346,11 @@ class FeatureImportanceEstimator:
         # Generate combinations of bootstraps * model type * feature importance types
         bootstraps = list(range(len(data.X_train)))
         model_types = list(models.keys())
-        local_fi_types = list(self._local_importance_methods.keys())
+        local_fi_types = [
+            key
+            for key, value in self._local_importance_methods.items()
+            if value["value"]
+        ]
 
         combinations = list(product(bootstraps, model_types, local_fi_types))
 
