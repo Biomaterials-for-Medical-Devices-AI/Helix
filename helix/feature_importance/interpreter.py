@@ -1,3 +1,4 @@
+from itertools import product
 from multiprocessing import cpu_count
 import os
 from pathlib import Path
@@ -266,87 +267,61 @@ class FeatureImportanceEstimator:
         """
 
         def _single_local_fi(
-            local_importance_methods, model_type, model, X, y, idx
-        ) -> dict[str, dict[str, list[pd.DataFrame]]]:
-            # Outer dict keys are the model types, inner dict keys are feature importance types.
-            # Inner dict values are lists of local feature importance dataframes.
-            results: dict[str, dict[str, list[pd.DataFrame]]] = {}
+            local_importance_method,
+            model_type,
+            model,
+            X,
+            y,
+            fold,
+            plot_dir,
+            logger,
+            problem_type,
+            plot_opt,
+            num_features_to_plot,
+        ) -> tuple[pd.DataFrame, int, str, str]:
 
-            for (
-                feature_importance_type,
-                value,
-            ) in local_importance_methods.items():
-                if model_type not in results:
-                    results[model_type] = {}
-                # This determines whether or not the feature importance method
-                # has been requested by the user.
-                # TODO: Find a way to handle this more generically can scalably.
-                # Perhaps a handler function that checks the importance type?
-                if value["value"]:
-                    results[model_type][feature_importance_type] = []
-                    if feature_importance_type == FeatureImportanceTypes.LIME:
-                        importance_df = calculate_lime_values(
-                            model,
-                            X,
-                            self._exec_opt.problem_type,
-                            self._logger,
-                        )
-                        fig = plot_lime_importance(
-                            df=importance_df,
-                            plot_opts=self._plot_opt,
-                            num_features_to_plot=self._fi_opt.num_features_to_plot,
-                            title=f"{feature_importance_type} - {model_type} (fold {idx + 1})",
-                        )
-                        plot_dir = fi_plot_dir(
-                            helix_experiments_base_dir()
-                            / self._exec_opt.experiment_name
-                        )
-                        create_directory(
-                            plot_dir
-                        )  # will create the directory if it doesn't exist
-                        fig.savefig(
-                            plot_dir
-                            / f"local-{feature_importance_type}-{model_type}-violin (fold {idx + 1}).png"
-                        )
-                        close_figure(fig)
+            if local_importance_method == FeatureImportanceTypes.LIME:
+                importance_df = calculate_lime_values(
+                    model,
+                    X,
+                    problem_type,
+                    logger,
+                )
+                fig = plot_lime_importance(
+                    df=importance_df,
+                    plot_opts=plot_opt,
+                    num_features_to_plot=num_features_to_plot,
+                    title=f"{local_importance_method} - {model_type} (fold {fold + 1})",
+                )
+                fig.savefig(
+                    plot_dir
+                    / f"local-{local_importance_method}-{model_type}-violin (fold {fold + 1}).png"
+                )
+                close_figure(fig)
 
-                        # Add class to local feature importance for fuzzy
-                        importance_df = pd.concat([importance_df, y], axis=1)
-                        results[model_type][feature_importance_type].append(
-                            importance_df
-                        )
+                importance_df = pd.concat([importance_df, y], axis=1)
 
-                    if feature_importance_type == FeatureImportanceTypes.SHAP:
-                        importance_df, shap_values = calculate_local_shap_values(
-                            model=model,
-                            X=X,
-                            logger=self._logger,
-                        )
-                        fig = plot_local_shap_importance(
-                            shap_values=shap_values,
-                            plot_opts=self._plot_opt,
-                            num_features_to_plot=self._fi_opt.num_features_to_plot,
-                            title=f"{feature_importance_type} - {value['type']} - {model_type} (fold {idx + 1})",
-                        )
-                        plot_dir = fi_plot_dir(
-                            helix_experiments_base_dir()
-                            / self._exec_opt.experiment_name
-                        )
-                        create_directory(
-                            plot_dir
-                        )  # will create the directory if it doesn't exist
-                        fig.savefig(
-                            plot_dir
-                            / f"local-{feature_importance_type}-{value['type']}-{model_type}-beeswarm (fold {idx + 1}).png"
-                        )
-                        close_figure(fig)
+            if local_importance_method == FeatureImportanceTypes.SHAP:
+                importance_df, shap_values = calculate_local_shap_values(
+                    model=model,
+                    X=X,
+                    logger=logger,
+                )
+                fig = plot_local_shap_importance(
+                    shap_values=shap_values,
+                    plot_opts=plot_opt,
+                    num_features_to_plot=num_features_to_plot,
+                    title=f"{local_importance_method} - local - {model_type} (fold {fold + 1})",
+                )
+                fig.savefig(
+                    plot_dir
+                    / f"local-{local_importance_method}-{model_type}-beeswarm (fold {fold + 1}).png"
+                )
+                close_figure(fig)
 
-                        # Add class to local feature importance for fuzzy
-                        importance_df = pd.concat([importance_df, y], axis=1)
-                        results[model_type][feature_importance_type].append(
-                            importance_df
-                        )
-            return results
+                importance_df = pd.concat([importance_df, y], axis=1)
+
+            return importance_df, fold, model_type, local_importance_method
 
         feature_importance_results: dict[str, dict[str, list[pd.DataFrame]]] = {}
         if not any(
@@ -356,73 +331,54 @@ class FeatureImportanceEstimator:
             self._logger.info("Skipping local feature importance methods")
             return feature_importance_results
 
-        # Iterate through all data indices
-        # training_start = time()
-        for idx in range(len(data.X_train)):
-            training_start = time()
-            X, y = data.X_train[idx], data.y_train[idx]
+        # Set up results and plot directories
+        results_dir = fi_result_dir(
+            helix_experiments_base_dir() / self._exec_opt.experiment_name
+        )
+        create_directory(results_dir)  # will create the directory if it doesn't exist
+        plot_dir = fi_plot_dir(
+            helix_experiments_base_dir() / self._exec_opt.experiment_name
+        )
+        create_directory(plot_dir)  # will create the directory if it doesn't exist
 
-            self._logger.info(
-                f"Calculating local feature importances for fold {idx + 1}"
+        # Generate combinations of bootstraps * model type * feature importance types
+        bootstraps = list(range(len(data.X_train)))
+        model_types = list(models.keys())
+        local_fi_types = list(self._local_importance_methods.keys())
+
+        combinations = list(product(bootstraps, model_types, local_fi_types))
+
+        # In parallel, iterate through the combinations to produce all the local
+        # feature importances for all bootstraps of all models
+        interpretation_start = time()
+        results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
+            delayed(_single_local_fi)(
+                local_fi_type,
+                model_type,
+                models[model_type][bootstrap],
+                data.X_train[bootstrap],
+                data.y_train[bootstrap],
+                bootstrap,
+                plot_dir,
+                self._logger,
+                self._exec_opt.problem_type,
+                self._plot_opt,
+                self._fi_opt.num_features_to_plot,
             )
-            results = Parallel(n_jobs=self._n_cpus, prefer="processes")(
-                delayed(_single_local_fi)(
-                    self._local_importance_methods, model_type, model[idx], X, y, idx
-                )
-                for model_type, model in models.items()
-            )
+            for bootstrap, model_type, local_fi_type in combinations
+        )
 
-            # Create directory to save the local feature importance data
-            results_dir = fi_result_dir(
-                helix_experiments_base_dir() / self._exec_opt.experiment_name
-            )
-            create_directory(results_dir)
+        interpretation_end = time()
+        elapsed = interpretation_end - interpretation_start
+        hours = int(elapsed) // 3600
+        minutes = (int(elapsed) % 3600) // 60
+        seconds = int(elapsed) % 60
+        # Create format hh:mm:ss
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        self._logger.info(f"Local feature importance completed in {time_str}")
 
-            for res in results:
-                for model_type, importance_dict in res.items():
-                    if model_type not in feature_importance_results:
-                        feature_importance_results[model_type] = {}
-                    for importance_type, importance_dfs in importance_dict.items():
-                        if (
-                            importance_type
-                            not in feature_importance_results[model_type]
-                        ):
-                            feature_importance_results[model_type][importance_type] = []
-                        else:
-                            feature_importance_results[model_type][
-                                importance_type
-                            ].extend(importance_dfs)
-
-            training_end = time()
-            elapsed = training_end - training_start
-            hours = int(elapsed) // 3600
-            minutes = (int(elapsed) % 3600) // 60
-            seconds = int(elapsed) % 60
-            # Create format hh:mm:ss
-            time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-            self._logger.info(f"Local feature importance completed in {time_str}")
-
-            for model_type, importance_dict in feature_importance_results.items():
-                # Iterate through the local feature importances and save the local
-                # feature importance data from each fold.
-                for importance_type, importance_df_list in importance_dict.items():
-                    print(
-                        f"Number of local importances in fold {idx+1}: {len(importance_df_list)}"
-                    )
-                    for importance_df in importance_df_list:
-                        importance_df.to_csv(
-                            results_dir
-                            / f"local-{importance_type} (fold {idx + 1}).csv"
-                        )
-
-        # training_end = time()
-        # elapsed = training_end - training_start
-        # hours = int(elapsed) // 3600
-        # minutes = (int(elapsed) % 3600) // 60
-        # seconds = int(elapsed) % 60
-        # # Create format hh:mm:ss
-        # time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        # self._logger.info(f"Local feature importance completed in {time_str}")
+        # TODO: extract the results from the parallel process
+        # TODO: save the FI results for each fold
 
         return feature_importance_results
 
