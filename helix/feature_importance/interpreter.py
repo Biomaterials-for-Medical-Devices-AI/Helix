@@ -109,12 +109,12 @@ class FeatureImportanceEstimator:
         # sample (rows).
         # The data frames combine the data from all local feature
         # importance types by stacking them vertically.
-        # n_rows = n_samples * n_models * n_fi_types.
-        # TODO: change this comment when we work out how to handle all folds in the
-        # local importance data
+        # n_rows = n_samples * n_models * n_fi_types * n_folds.
         local_feature_importance_df_dict = self._stack_local_importances(
             local_feature_importance_results
         )
+        # Compute average local importance across all folds for each model type
+        self._calculate_mean_local_importance_of_folds(local_feature_importance_results)
 
         # Calculate ensemble FI from stacked global FI
         ensemble_feature_importance_results = self._ensemble_feature_importance(
@@ -614,3 +614,39 @@ class FeatureImportanceEstimator:
                     plot_dir
                 )  # will create the directory if it doesn't exist
                 fig.savefig(plot_dir / f"{fi_type}-{model_name}-all-folds-mean.png")
+
+    def _calculate_mean_local_importance_of_folds(
+        self, local_importances_dict: dict[str, dict[str, list[pd.DataFrame]]]
+    ):
+        """Calculate the mean local importance for all folds through which a model was trained.
+        The all-folds mean for each model and importance type is saved along with a plot.
+
+        Args:
+            local_importances_dict (dict[str, dict[str, list[pd.DataFrame]]]):
+                The local importance results containing the importance calculations for
+                each model type, importance type and folds.
+        """
+        results_dir = fi_result_dir(
+            helix_experiments_base_dir() / self._exec_opt.experiment_name
+        )
+        create_directory(results_dir)  # will create the directory if it doesn't exist
+        plot_dir = fi_plot_dir(
+            helix_experiments_base_dir() / self._exec_opt.experiment_name
+        )
+        create_directory(plot_dir)  # will create the directory if it doesn't exist
+        for model_name, lfi_dict in local_importances_dict.items():
+            for fi_type, importance_dfs in lfi_dict.items():
+                fold_mean_df = pd.concat(importance_dfs).groupby(level=0).mean()
+                fold_mean_df.to_csv(
+                    results_dir / f"local-{fi_type}-{model_name}-all-folds-mean.csv"
+                )
+                fig = plot_lime_importance(
+                    df=fold_mean_df.iloc[:, :-1],
+                    plot_opts=self._plot_opt,
+                    num_features_to_plot=self._fi_opt.num_features_to_plot,
+                    title=f"{fi_type} - {model_name} - all folds mean",
+                )
+                fig.savefig(
+                    plot_dir / f"local-{fi_type}-{model_name}-all-folds-mean.png"
+                )
+                close_figure(fig)
