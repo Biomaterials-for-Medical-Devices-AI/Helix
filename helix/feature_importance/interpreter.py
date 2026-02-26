@@ -33,7 +33,7 @@ from helix.services.feature_importance.local_methods import (
 from helix.services.plotting import (
     plot_bar_chart,
     plot_global_shap_importance,
-    plot_lime_importance,
+    plot_most_important_feats_violin,
     plot_local_shap_importance,
     plot_permutation_importance,
 )
@@ -287,7 +287,7 @@ class FeatureImportanceEstimator:
                     problem_type,
                     logger,
                 )
-                fig = plot_lime_importance(
+                fig = plot_most_important_feats_violin(
                     df=importance_df,
                     plot_opts=plot_opt,
                     num_features_to_plot=num_features_to_plot,
@@ -640,7 +640,7 @@ class FeatureImportanceEstimator:
                 fold_mean_df.to_csv(
                     results_dir / f"local-{fi_type}-{model_name}-all-folds-mean.csv"
                 )
-                fig = plot_lime_importance(
+                fig = plot_most_important_feats_violin(
                     df=fold_mean_df.iloc[:, :-1],
                     plot_opts=self._plot_opt,
                     num_features_to_plot=self._fi_opt.num_features_to_plot,
