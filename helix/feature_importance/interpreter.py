@@ -348,7 +348,7 @@ class FeatureImportanceEstimator:
                         )
             return results
 
-        feature_importance_results = {}
+        feature_importance_results: dict[str, dict[str, list[pd.DataFrame]]] = {}
         if not any(
             sub_dict["value"] for sub_dict in self._local_importance_methods.values()
         ):
@@ -357,8 +357,9 @@ class FeatureImportanceEstimator:
             return feature_importance_results
 
         # Iterate through all data indices
-        training_start = time()
+        # training_start = time()
         for idx in range(len(data.X_train)):
+            training_start = time()
             X, y = data.X_train[idx], data.y_train[idx]
 
             self._logger.info(
@@ -377,12 +378,34 @@ class FeatureImportanceEstimator:
             )
             create_directory(results_dir)
 
-            for model_type, importance_dict in results:
-                # Store the local feature importance results in memory for fuzzy
-                feature_importance_results[model_type] = importance_dict
+            for res in results:
+                for model_type, importance_dict in res.items():
+                    if model_type not in feature_importance_results:
+                        feature_importance_results[model_type] = {}
+                    for importance_type, importance_dfs in importance_dict.items():
+                        if (
+                            importance_type
+                            not in feature_importance_results[model_type]
+                        ):
+                            feature_importance_results[model_type][importance_type] = []
+                        else:
+                            feature_importance_results[model_type][
+                                importance_type
+                            ].extend(importance_dfs)
+
+            training_end = time()
+            elapsed = training_end - training_start
+            hours = int(elapsed) // 3600
+            minutes = (int(elapsed) % 3600) // 60
+            seconds = int(elapsed) % 60
+            # Create format hh:mm:ss
+            time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+            self._logger.info(f"Local feature importance completed in {time_str}")
+
+            for model_type, importance_dict in feature_importance_results.items():
                 # Iterate through the local feature importances and save the local
                 # feature importance data from each fold.
-                for importance_type, importance_df_list in importance_dict:
+                for importance_type, importance_df_list in importance_dict.items():
                     print(
                         f"Number of local importances in fold {idx+1}: {len(importance_df_list)}"
                     )
@@ -392,14 +415,14 @@ class FeatureImportanceEstimator:
                             / f"local-{importance_type} (fold {idx + 1}).csv"
                         )
 
-        training_end = time()
-        elapsed = training_end - training_start
-        hours = int(elapsed) // 3600
-        minutes = (int(elapsed) % 3600) // 60
-        seconds = int(elapsed) % 60
-        # Create format hh:mm:ss
-        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-        self._logger.info(f"Training completed in {time_str}")
+        # training_end = time()
+        # elapsed = training_end - training_start
+        # hours = int(elapsed) // 3600
+        # minutes = (int(elapsed) % 3600) // 60
+        # seconds = int(elapsed) % 60
+        # # Create format hh:mm:ss
+        # time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
+        # self._logger.info(f"Local feature importance completed in {time_str}")
 
         return feature_importance_results
 
