@@ -323,6 +323,8 @@ class FeatureImportanceEstimator:
 
             return importance_df, fold, model_type, local_importance_method
 
+        # Outer dict keys are the model types, inner dict keys are feature importance types.
+        # Inner dict values are lists of local feature importance dataframes.
         feature_importance_results: dict[str, dict[str, list[pd.DataFrame]]] = {}
         if not any(
             sub_dict["value"] for sub_dict in self._local_importance_methods.values()
@@ -377,8 +379,19 @@ class FeatureImportanceEstimator:
         time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
         self._logger.info(f"Local feature importance completed in {time_str}")
 
-        # TODO: extract the results from the parallel process
-        # TODO: save the FI results for each fold
+        # Extract the results from the parallel process
+        for importance_df, bootstrap, model_type, importance_type in results:
+            if model_type not in feature_importance_results:
+                feature_importance_results[model_type] = {}
+            if importance_type not in feature_importance_results[model_type]:
+                feature_importance_results[model_type][importance_type] = []
+            feature_importance_results[model_type][importance_type].append(
+                importance_df
+            )
+            # Save the FI results for each fold
+            importance_df.to_csv(
+                results_dir / f"local-{importance_type} (fold {bootstrap + 1}).csv"
+            )
 
         return feature_importance_results
 
