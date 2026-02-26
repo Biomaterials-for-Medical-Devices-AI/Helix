@@ -259,8 +259,7 @@ def display_feature_importance_plots(experiment_dir: Path) -> None:
         mean_plots = [
             p
             for p in fi_plots.iterdir()
-            if p.name.endswith("-all-folds-mean.png")  # mean global FI
-            or p.name.startswith("local-")  # local plots
+            if p.name.endswith("-all-folds-mean.png")  # mean global and local FI
             or p.name.startswith("ensemble-")  # ensemble plots
         ]
         plot_box_v2(mean_plots, "Feature importance plots")
