@@ -8,7 +8,7 @@ import pandas as pd
 from joblib import Parallel, delayed
 
 from helix.options.data import DataOptions
-from helix.options.enums import FeatureImportanceTypes
+from helix.options.enums import FeatureImportanceTypes, ProblemTypes
 from helix.options.execution import ExecutionOptions
 from helix.options.fi import FeatureImportanceOptions
 from helix.options.file_paths import (
@@ -267,17 +267,17 @@ class FeatureImportanceEstimator:
         """
 
         def _single_local_fi(
-            local_importance_method,
-            model_type,
-            model,
-            X,
-            y,
-            fold,
-            plot_dir,
-            logger,
-            problem_type,
-            plot_opt,
-            num_features_to_plot,
+            local_importance_method: str,
+            model_type: str,
+            model,  # The type can vary but it's the ML model
+            X: pd.DataFrame,
+            y: pd.Series,
+            fold: int,
+            plot_dir: Path,
+            logger: Logger,
+            problem_type: ProblemTypes,
+            plot_opt: PlottingOptions,
+            num_features_to_plot: int,
         ) -> tuple[pd.DataFrame, int, str, str]:
 
             if local_importance_method == FeatureImportanceTypes.LIME:
