@@ -255,7 +255,7 @@ class FeatureImportanceEstimator:
 
         return feature_importance_results
 
-    def _local_feature_importance(self, models, data: TabularData):
+    def _local_feature_importance(self, models: dict, data: TabularData):
         """
         Calculate local feature importance for a given model and dataset.
         Parameters:
