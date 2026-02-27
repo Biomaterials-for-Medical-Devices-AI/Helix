@@ -637,6 +637,13 @@ class FeatureImportanceEstimator:
         create_directory(plot_dir)  # will create the directory if it doesn't exist
         for model_name, lfi_dict in local_importances_dict.items():
             for fi_type, importance_dfs in lfi_dict.items():
+                # Each df in `importance_dfs` is the local feature importance
+                # for each fold during model training. These are stacked vertically
+                # creating an index with repeating values in 0..n_samples.
+                # `groupby(level=0).mean()` combines these such that the final length
+                # of `fold_mean_df` is the same as the original data
+                # and the values in the cells is the mean local feature importance from
+                # all folds.
                 fold_mean_df = pd.concat(importance_dfs).groupby(level=0).mean()
                 fold_mean_df.to_csv(
                     results_dir / f"local-{fi_type}-{model_name}-all-folds-mean.csv"
