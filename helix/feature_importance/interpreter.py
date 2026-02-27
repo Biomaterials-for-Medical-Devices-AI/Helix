@@ -279,6 +279,7 @@ class FeatureImportanceEstimator:
             plot_opt: PlottingOptions,
             num_features_to_plot: int,
         ) -> tuple[pd.DataFrame, int, str, str]:
+            fold_number = fold + 1
 
             if local_importance_method == FeatureImportanceTypes.LIME:
                 importance_df = calculate_lime_values(
@@ -291,11 +292,11 @@ class FeatureImportanceEstimator:
                     df=importance_df,
                     plot_opts=plot_opt,
                     num_features_to_plot=num_features_to_plot,
-                    title=f"{local_importance_method} - {model_type} (fold {fold + 1})",
+                    title=f"{local_importance_method} - {model_type} (fold {fold_number})",
                 )
                 fig.savefig(
                     plot_dir
-                    / f"local-{local_importance_method}-{model_type}-violin (fold {fold + 1}).png"
+                    / f"local-{local_importance_method}-{model_type}-violin (fold {fold_number}).png"
                 )
                 close_figure(fig)
 
@@ -311,11 +312,11 @@ class FeatureImportanceEstimator:
                     shap_values=shap_values,
                     plot_opts=plot_opt,
                     num_features_to_plot=num_features_to_plot,
-                    title=f"{local_importance_method} - local - {model_type} (fold {fold + 1})",
+                    title=f"{local_importance_method} - local - {model_type} (fold {fold_number})",
                 )
                 fig.savefig(
                     plot_dir
-                    / f"local-{local_importance_method}-{model_type}-beeswarm (fold {fold + 1}).png"
+                    / f"local-{local_importance_method}-{model_type}-beeswarm (fold {fold_number}).png"
                 )
                 close_figure(fig)
 
