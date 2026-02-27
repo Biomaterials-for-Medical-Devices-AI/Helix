@@ -271,7 +271,7 @@ class FeatureImportanceEstimator:
             model_type: str,
             model,  # The type can vary but it's the ML model
             X: pd.DataFrame,
-            y: pd.Series,
+            y: pd.DataFrame,
             fold: int,
             plot_dir: Path,
             logger: Logger,
