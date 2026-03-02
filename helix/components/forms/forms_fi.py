@@ -197,7 +197,7 @@ def fi_options_form():
         st.write("#### Granular feature analysis")
         st.write(
             """
-            For **regression** problems, create categories for the target variable and 
+            For **regression** problems, create categories for the target variable and
             assess the importance of each feature within those categories.
 
             For **classification** problems, the categories of the target variable
