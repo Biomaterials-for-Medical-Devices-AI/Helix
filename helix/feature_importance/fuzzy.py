@@ -94,7 +94,7 @@ class Fuzzy:
         )
 
         # Step 3.2: Extract fuzzy rules from local importance dataframe
-        fuzzy_rules_df = self._fuzzy_rule_extraction(local_importance_df)
+        fuzzy_rules_df = self._make_user_granularity_fuzzy_sets(local_importance_df)
         save_importance_results(
             feature_importance_df=fuzzy_rules_df,
             model_type=None,
