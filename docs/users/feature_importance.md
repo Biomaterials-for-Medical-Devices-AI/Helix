@@ -73,17 +73,21 @@ To use this feature, you must first configure ensemble and local feature importa
 
   Select the top number of features to be used for fuzzy interpretation.
 
-- Granular features
+- Fuzzy set analysis
 
-  Check this box to perform a granular analysis of fuzzy features.
+  Create fuzzy sets to determine which features have 'low', 'medium' or 'hgih' importance with respect to the target variable.
 
 - Number of clusters for target variable
 
-  Convert the target variable into this many clusters.
+  Set the number of clusters to categorise the target variable for fuzzy interpretation.
+  
+  Disabled in **classification** problems.
 
 - Names of clusters (comma-separated)
 
   The list of names for the clusters. This should be the same length as number of clusters for target variable. The names should be separated by a comma followed by a single space. *e.g.* very low, low, medium, high, very high.
+  
+  Disabled in **classification** problems.
 
 - Number of top occurring rules for fuzzy synergy analysis
 
