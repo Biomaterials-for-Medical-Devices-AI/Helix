@@ -65,7 +65,7 @@ Outputs of crisp feature importance methods, like those described above, can be 
     - the triangular membership function is used to determine membership of the "medium" importance fuzzy set.
     - the S membership function is used to determine membership of the "high" importance fuzzy set.
 3. Normalised local feature importance data is used to create user-defined granularities with respect to the target variable (e.g. very low, low, medium, high, very high attachment). Samples are assigned to each granularity using *c*-means clustering, where *c* is the number of user-defined granularities.
-4. Then, the data within the granularities are assgined to fuzzy sets, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
+4. Then, the data within the granularities are assgined to fuzzy sets, giving a semantic description of "**Feature A** had a **low impact** on the target variable", as an example. 
 
 To use this feature, you must first configure ensemble and local feature importance methods.
 
