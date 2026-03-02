@@ -1,4 +1,6 @@
 # Feature importance
+Not all features influence the output of a machine learning model's predictions equally. Some features are more influential than others. It is important to analyse feature importance to understand your why your model makes its predictions. By measuring the importance of each feature it is possible to explain which has the greatest impact on your model's predictions. This importance is expressed numerically and the interpretation can vary depending on the importance method used.
+
 Once you have trained some models in your experiment, you can then perform feature importance analyses to assess which features more most influential in the models' decision making. You can get to the Feature Importance page by clinking on **Feature Importance** on the left hand side of the page.
 
 ![Feature importance page](../_static/feature-importance-page.png)
@@ -57,15 +59,15 @@ These methods are used to interpret feature importance on a *per prediction* bas
 Outputs of crisp feature importance methods, like those described above, can be dependent on the particular machine learning algorithm being used. Moreover, they are represented as "importance" coefficients that can be harder to interpret by users. Fuzzy feature importance aims to create a more standard interpretation that is independent of the algorithms used, and present it more semantically (i.e. Feature A has a large impact).
 
 ### How fuzzy interpretation works
-1. The top *n* features based on ensemble feature importance are selected from the data, which has been pre-processed.
-2. Features are split into different granularities ("small", "moderate" or "high") based on membership functions.
-    - the Z membership function is used to determine membership of the "small" granularity.
-    - the triangular membership function is used to determine membership of the "moderate" granularity.
-    - the S membership function is used to determine membership of the "large" granularity.
-3. Local feature importance data is used to create Fuzzy sets based on the number of user-defined clusters. Samples are assigned to each cluster using *c*-means clustering, where *c* is the number of user-defined clusters.
-4. Fuzzy sets are created for the clusters, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
+1. The top *n* features based on ensemble feature importance are selected from the data.
+2. Features are split into different fuzzy sets that define "low", "medium" or "high" importance, based on the following membership functions.
+    - the Z membership function is used to determine membership of the "low" importance fuzzy set.
+    - the triangular membership function is used to determine membership of the "medium" importance fuzzy set.
+    - the S membership function is used to determine membership of the "high" importance fuzzy set.
+3. Normalised local feature importance data is used to create user-defined granularities with respect to the target variable (e.g. very low, low, medium, high, very high attachment). Samples are assigned to each granularity using *c*-means clustering, where *c* is the number of user-defined granularities.
+4. Then, the data within the granularities are assgined to fuzzy sets, giving a semanitic description of "**Feature A** had a **low impact** on the target variable", as an example. 
 
-Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.
+To use this feature, you must first configure ensemble and local feature importance methods.
 
 - Number of features for fuzzy interpretation
 
