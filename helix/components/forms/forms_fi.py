@@ -186,9 +186,23 @@ def fi_options_form():
         )
 
         st.checkbox(
-            "Granular features",
-            help="Divide features into granular categories for in-depth analysis.",
+            "Fuzzy set analysis",
+            help="""
+            Create fuzzy sets to determine which features have 'low', 'medium' or 'hgih' importance
+            with respect to the target variable.
+            """,
             key=FuzzyStateKeys.GranularFeatures,
+        )
+
+        st.write("#### Granular feature analysis")
+        st.write(
+            """
+            For **regression** problems, create categories for the target variable and 
+            assess the importance of each feature within those categories.
+
+            For **classification** problems, the categories of the target variable
+            will be used to assess the importance of each feature within those categories.
+            """
         )
 
         st.number_input(
@@ -197,6 +211,8 @@ def fi_options_form():
             value=5,
             help="Set the number of clusters to categorise the target variable for fuzzy interpretation.",
             key=FuzzyStateKeys.NumberOfClusters,
+            disabled=st.session_state.get(ExecutionStateKeys.ProblemType)
+            != ProblemTypes.Regression,
         )
 
         st.text_input(
@@ -204,6 +220,8 @@ def fi_options_form():
             help="Specify names for each cluster (e.g., Low, Medium, High).",
             key=FuzzyStateKeys.ClusterNames,
             value=", ".join(["very low", "low", "medium", "high", "very high"]),
+            disabled=st.session_state.get(ExecutionStateKeys.ProblemType)
+            != ProblemTypes.Regression,
         )
 
         st.number_input(
