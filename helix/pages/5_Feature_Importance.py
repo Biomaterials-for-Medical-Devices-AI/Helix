@@ -7,7 +7,6 @@ This page provides options for analyzing feature importance using various method
 - Fuzzy feature importance
 """
 
-from multiprocessing import Process
 from pathlib import Path
 
 import pandas as pd
@@ -59,7 +58,7 @@ from helix.services.experiments import (
 from helix.services.logs import get_logs
 from helix.services.ml_models import load_models_to_explain
 from helix.utils.logging_utils import Logger, close_logger
-from helix.utils.utils import cancel_pipeline, set_seed
+from helix.utils.utils import set_seed
 
 
 def build_configuration() -> tuple[
@@ -259,8 +258,7 @@ def display_feature_importance_plots(experiment_dir: Path) -> None:
         mean_plots = [
             p
             for p in fi_plots.iterdir()
-            if p.name.endswith("-all-folds-mean.png")  # mean global FI
-            or p.name.startswith("local-")  # local plots
+            if p.name.endswith("-all-folds-mean.png")  # mean global and local FI
             or p.name.startswith("ensemble-")  # ensemble plots
         ]
         plot_box_v2(mean_plots, "Feature importance plots")
@@ -400,9 +398,11 @@ if experiment_name:
                     fuzzy_options_file = fuzzy_options_path(base_dir / experiment_name)
                     save_options(fuzzy_options_file, fuzzy_opts)
 
-                process = Process(
-                    target=pipeline,
-                    args=(
+                with st.spinner(
+                    "Feature Importance pipeline is running in the background. "
+                    "Check the logs for progress."
+                ):
+                    pipeline(
                         fuzzy_opts,
                         fi_opts,
                         exec_opts,
@@ -410,19 +410,7 @@ if experiment_name:
                         exp_name,
                         models_to_explaion,
                         data,
-                    ),
-                    daemon=True,
-                )
-                process.start()
-                cancel_button = st.button(
-                    "Cancel", on_click=cancel_pipeline, args=(process,)
-                )
-                with st.spinner(
-                    "Feature Importance pipeline is running in the background. "
-                    "Check the logs for progress."
-                ):
-                    # wait for the process to finish or be cancelled
-                    process.join()
+                    )
                 try:
                     st.session_state[FeatureImportanceStateKeys.FILogBox] = get_logs(
                         log_dir(base_dir / experiment_name) / "fi"

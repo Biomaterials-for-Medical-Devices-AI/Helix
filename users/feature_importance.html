@@ -35,6 +35,7 @@
             
   <section id="feature-importance">
 <h1>Feature importance<a class="headerlink" href="#feature-importance" title="Link to this heading">¶</a></h1>
+<p>Not all features influence the output of a machine learning model’s predictions equally. Some features are more influential than others. It is important to analyse feature importance to understand your why your model makes its predictions. By measuring the importance of each feature it is possible to explain which has the greatest impact on your model’s predictions. This importance is expressed numerically and the interpretation can vary depending on the importance method used.</p>
 <p>Once you have trained some models in your experiment, you can then perform feature importance analyses to assess which features more most influential in the models’ decision making. You can get to the Feature Importance page by clinking on <strong>Feature Importance</strong> on the left hand side of the page.</p>
 <p><img alt="Feature importance page" src="../_images/feature-importance-page.png" /></p>
 <p>To begin explaining your models, you can click the <strong>“Explain all models”</strong> toggle and have all your models evaluated…</p>
@@ -91,30 +92,32 @@
 <section id="how-fuzzy-interpretation-works">
 <h3>How fuzzy interpretation works<a class="headerlink" href="#how-fuzzy-interpretation-works" title="Link to this heading">¶</a></h3>
 <ol class="arabic simple">
-<li><p>The top <em>n</em> features based on ensemble feature importance are selected from the data, which has been pre-processed.</p></li>
-<li><p>Features are split into different granularities (“small”, “moderate” or “high”) based on membership functions.</p>
+<li><p>The top <em>n</em> features based on ensemble feature importance are selected from the data.</p></li>
+<li><p>Features are split into different fuzzy sets that define “low”, “medium” or “high” importance, based on the following membership functions.</p>
 <ul class="simple">
-<li><p>the Z membership function is used to determine membership of the “small” granularity.</p></li>
-<li><p>the triangular membership function is used to determine membership of the “moderate” granularity.</p></li>
-<li><p>the S membership function is used to determine membership of the “large” granularity.</p></li>
+<li><p>the Z membership function is used to determine membership of the “low” importance fuzzy set.</p></li>
+<li><p>the triangular membership function is used to determine membership of the “medium” importance fuzzy set.</p></li>
+<li><p>the S membership function is used to determine membership of the “high” importance fuzzy set.</p></li>
 </ul>
 </li>
-<li><p>Local feature importance data is used to create Fuzzy sets based on the number of user-defined clusters. Samples are assigned to each cluster using <em>c</em>-means clustering, where <em>c</em> is the number of user-defined clusters.</p></li>
-<li><p>Fuzzy sets are created for the clusters, giving a semanitic description of “<strong>Feature A</strong> had a <strong>low impact</strong> on the target variable”, as an example.</p></li>
+<li><p>Normalised local feature importance data is used to create user-defined granularities with respect to the target variable (e.g. very low, low, medium, high, very high attachment). Samples are assigned to each granularity using <em>c</em>-means clustering, where <em>c</em> is the number of user-defined granularities.</p></li>
+<li><p>Then, the data within the granularities are assgined to fuzzy sets, giving a semantic description of “<strong>Feature A</strong> had a <strong>low impact</strong> on the target variable”, as an example.</p></li>
 </ol>
-<p>Convert features to fuzzy features and then perform feature importance analyses on the fuzzy features. To use this feature, you must first configure ensemble and local feature importance methods.</p>
+<p>To use this feature, you must first configure ensemble and local feature importance methods.</p>
 <ul>
 <li><p>Number of features for fuzzy interpretation</p>
 <p>Select the top number of features to be used for fuzzy interpretation.</p>
 </li>
-<li><p>Granular features</p>
-<p>Check this box to perform a granular analysis of fuzzy features.</p>
+<li><p>Fuzzy set analysis</p>
+<p>Create fuzzy sets to determine which features have ‘low’, ‘medium’ or ‘hgih’ importance with respect to the target variable.</p>
 </li>
 <li><p>Number of clusters for target variable</p>
-<p>Convert the target variable into this many clusters.</p>
+<p>Set the number of clusters to categorise the target variable for fuzzy interpretation.</p>
+<p>Disabled in <strong>classification</strong> problems.</p>
 </li>
 <li><p>Names of clusters (comma-separated)</p>
 <p>The list of names for the clusters. This should be the same length as number of clusters for target variable. The names should be separated by a comma followed by a single space. <em>e.g.</em> very low, low, medium, high, very high.</p>
+<p>Disabled in <strong>classification</strong> problems.</p>
 </li>
 <li><p>Number of top occurring rules for fuzzy synergy analysis</p>
 <p>Set the number of most frequent fuzzy rules for synergy analysis.</p>

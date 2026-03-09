@@ -408,13 +408,13 @@ def create_tsne_plot(
     return fig
 
 
-def plot_lime_importance(
+def plot_most_important_feats_violin(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,
     num_features_to_plot: int,
     title: str,
 ) -> Figure:
-    """Plot LIME importance.
+    """Plot feature importance data as a violin plot.
 
     Args:
         df (pd.DataFrame): The LIME data to plot
