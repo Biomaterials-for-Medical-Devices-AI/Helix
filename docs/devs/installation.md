@@ -16,7 +16,7 @@ On Windows, this doesn't seem to be a problem. You should be able to proceed wit
 ---
 
 ## Getting the code
-You can obtain the Helix source code by cloning the repository from Github. Git may need to be downloaded onto your machine.
+You can obtain the Helix source code by cloning the repository from Github. Git needs to be installed onto your machine.
 ```shell
 git clone https://github.com/Biomaterials-for-Medical-Devices-AI/Helix.git
 ```
