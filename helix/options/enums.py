@@ -94,6 +94,8 @@ class DataAnalysisStateKeys(StrEnum):
     SelectNormTsne = "select_norm_tsne"
     Perplexity = "perplexity"
     SaveTSNEPlot = "save_tsne_plot"
+    VolcanoPlot = "volcano_plot"
+    SaveVolcanoPlot = "save_volcano_plot"
 
 
 class DataPreprocessingStateKeys(StrEnum):

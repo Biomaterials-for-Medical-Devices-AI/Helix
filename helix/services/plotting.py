@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Any
+from scipy import stats
 
 import numpy as np
 import pandas as pd
@@ -407,7 +408,101 @@ def create_tsne_plot(
 
     return fig
 
+def create_volcano_plot(
+    df: pd.DataFrame,
+    plot_opts: PlottingOptions,
+) -> Figure:
+    """
+    Create a volcano plot of the given DataFrame.
 
+    Args:
+        df (pd.DataFrame): The data to plot. Must have samples as rows,
+            features as columns, with the last column being the group label
+            (either string labels or label-encoded integers, with exactly
+            2 unique values).
+        plot_opts (PlottingOptions): The plotting options.
+
+    Returns:
+        Figure: The volcano plot figure.
+    """
+
+    def split_by_group(df):
+        group_col = df.columns[-1]
+        unique_groups = df[group_col].unique()
+
+        if len(unique_groups) != 3:
+            raise ValueError(
+                f"Volcano plot requires exactly 2 groups, found "
+                f"{len(unique_groups)}: {unique_groups}"
+            )
+
+        group_1_label, group_2_label, invalid_label = unique_groups
+        group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
+        group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
+        return group_1, group_2
+
+    def calc_p_values(group_1, group_2, test=stats.ttest_ind, **test_kwargs):
+        # compare each feature (column) across the two groups of samples (rows)
+        p_values = test(group_1, group_2, axis=0, **test_kwargs).pvalue
+        return p_values
+
+    def calc_q_values(p_values, method='bh'):
+        mask = ~np.isnan(p_values)
+        not_nan_p_values = p_values[mask]
+        not_nan_q_values = stats.false_discovery_control(not_nan_p_values, method=method)
+        q_values = np.full_like(p_values, np.nan, dtype=float)
+        q_values[mask] = not_nan_q_values
+        return q_values
+
+    def calc_y(q_values):
+        y = -np.log10(q_values)
+        return y
+
+    def calc_x(group_1, group_2):
+        # calculate fold change per feature
+        fold_change = group_2.mean(axis=0) / group_1.mean(axis=0)
+        x = np.log2(fold_change)
+        return x
+
+    def volcano_plot(x, y, cmap):
+        fig, ax1 = plt.subplots()
+        plt.axhline(y=1, c='k', linestyle=':')
+        plt.axvline(x=1, c='k', linestyle=':')
+        plt.axvline(x=-1, c='k', linestyle=':')
+
+        title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
+        plt.title(
+            title,
+            fontdict={
+                "family": plot_opts.plot_font_family,
+                "fontsize": plot_opts.plot_title_font_size,
+            },
+        )
+
+        ax1.set_xlabel('log2(FC)')
+        ax1.set_ylabel('-log10(p-value)')
+
+        sizes = y * 90 + 10
+        legend_p_values = np.array([1.0, 0.1, 0.05, 0.01, 0.001])
+        sizes_legend_p_values = -90 * np.log10(legend_p_values) + 10
+        for pval, size in zip(legend_p_values, sizes_legend_p_values):
+            plt.scatter([], [], s=size, color='w', ec='k', label=str(pval))
+
+        scatter = ax1.scatter(x, y, s=sizes, c=x, cmap=cmap, ec='k', linewidth=0.5)
+        fig.colorbar(scatter, ax=ax1, label='log2 Fold Change')
+        plt.legend(title='P-value', labelspacing=1.5)
+
+        return fig
+
+    group_1, group_2 = split_by_group(df)
+    p_values = calc_p_values(group_1, group_2)
+    q_values = calc_q_values(p_values)
+    y = calc_y(q_values)
+    x = calc_x(group_1, group_2)
+    cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else 'viridis'
+    fig = volcano_plot(x, y, cmap)
+    return fig
+    
 def plot_most_important_feats_violin(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,

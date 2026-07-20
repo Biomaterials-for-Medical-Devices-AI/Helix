@@ -12,6 +12,7 @@ from helix.options.plotting import PlottingOptions
 from helix.services.plotting import (
     create_pairplot,
     create_tsne_plot,
+    create_volcano_plot,
     plot_correlation_heatmap,
     plot_target_variable_distribution,
 )
@@ -371,7 +372,6 @@ def tSNE_plot_form(  # noqa: C901
     scaler: Normalisations = None,
     key_prefix: str = "",
 ):
-
     X = data.drop(columns=[data.columns[-1]])
     y = data[data.columns[-1]]
 
@@ -421,5 +421,32 @@ def tSNE_plot_form(  # noqa: C901
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveTSNEPlot}"
         ):
             tsne_plot.savefig(data_analysis_plot_dir / f"tsne_plot_{key_prefix}.png")
+            plt.clf()
+            st.success("Plots created and saved successfully.")
+
+def volcano_plot_form(  # noqa: C901
+    data,
+    data_analysis_plot_dir,
+    plot_opts: PlottingOptions,
+    key_prefix: str = "",
+):
+
+    show_plot = st.checkbox(
+        "Create Volcano Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlot}"
+    )
+    if show_plot:
+
+        volcano_fig = create_volcano_plot(
+            df=data,
+            plot_opts=plot_opts,
+        )
+
+        st.pyplot(volcano_fig)
+        plt.close()
+
+        if st.button(
+            "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
+        ):
+            volcano_fig.savefig(data_analysis_plot_dir / f"volcano_plot_{key_prefix}.png")
             plt.clf()
             st.success("Plots created and saved successfully.")

@@ -9,6 +9,7 @@ from helix.components.forms.forms_plots import (
     pairplot_form,
     target_variable_dist_form,
     tSNE_plot_form,
+    volcano_plot_form
 )
 from helix.components.images.logos import sidebar_logo
 from helix.components.statistical_tests import normality_test_view
@@ -111,6 +112,14 @@ def visualisation_view(data, data_tsne, prefix: str | None = None):
             key_prefix=prefix,
         )
 
+        st.write("#### Volcano plot")
+        volcano_plot_form(
+            data,
+            data_analysis_plot_dir,
+            plot_opt,
+            key_prefix=prefix,
+        )
+
 
 if experiment_name:
     logger_instance = Logger()
@@ -206,11 +215,12 @@ if experiment_name:
             else:
                 st.info("No raw data available.")
 
-    except ValueError:
+    except ValueError as e:
         # When the user uploaded the wrong file type, somehow
+        logger.error(f"ValueError occurred: {e}", exc_info=True)
         st.error("You must upload a .csv or .xlsx file.", icon="🔥")
-    except Exception:
-        # Catch all error
+    except Exception as e:
+        logger.error(f"Something went wrong: {e}", exc_info=True)
         st.error("Something went wrong.", icon="🔥")
 
     finally:
