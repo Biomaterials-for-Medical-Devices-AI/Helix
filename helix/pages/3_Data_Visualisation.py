@@ -9,7 +9,7 @@ from helix.components.forms.forms_plots import (
     pairplot_form,
     target_variable_dist_form,
     tSNE_plot_form,
-    volcano_plot_form
+    volcano_plot_form,
 )
 from helix.components.images.logos import sidebar_logo
 from helix.components.statistical_tests import normality_test_view

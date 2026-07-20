@@ -1,6 +1,5 @@
 from pathlib import Path
 from typing import Any
-from scipy import stats
 
 import numpy as np
 import pandas as pd
@@ -9,6 +8,7 @@ import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
+from scipy import stats
 from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
@@ -408,6 +408,7 @@ def create_tsne_plot(
 
     return fig
 
+
 def create_volcano_plot(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,
@@ -446,10 +447,12 @@ def create_volcano_plot(
         p_values = test(group_1, group_2, axis=0, **test_kwargs).pvalue
         return p_values
 
-    def calc_q_values(p_values, method='bh'):
+    def calc_q_values(p_values, method="bh"):
         mask = ~np.isnan(p_values)
         not_nan_p_values = p_values[mask]
-        not_nan_q_values = stats.false_discovery_control(not_nan_p_values, method=method)
+        not_nan_q_values = stats.false_discovery_control(
+            not_nan_p_values, method=method
+        )
         q_values = np.full_like(p_values, np.nan, dtype=float)
         q_values[mask] = not_nan_q_values
         return q_values
@@ -466,9 +469,9 @@ def create_volcano_plot(
 
     def volcano_plot(x, y, cmap):
         fig, ax1 = plt.subplots()
-        plt.axhline(y=1, c='k', linestyle=':')
-        plt.axvline(x=1, c='k', linestyle=':')
-        plt.axvline(x=-1, c='k', linestyle=':')
+        plt.axhline(y=1, c="k", linestyle=":")
+        plt.axvline(x=1, c="k", linestyle=":")
+        plt.axvline(x=-1, c="k", linestyle=":")
 
         title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
         plt.title(
@@ -479,18 +482,18 @@ def create_volcano_plot(
             },
         )
 
-        ax1.set_xlabel('log2(FC)')
-        ax1.set_ylabel('-log10(p-value)')
+        ax1.set_xlabel("log2(FC)")
+        ax1.set_ylabel("-log10(p-value)")
 
         sizes = y * 90 + 10
         legend_p_values = np.array([1.0, 0.1, 0.05, 0.01, 0.001])
         sizes_legend_p_values = -90 * np.log10(legend_p_values) + 10
         for pval, size in zip(legend_p_values, sizes_legend_p_values):
-            plt.scatter([], [], s=size, color='w', ec='k', label=str(pval))
+            plt.scatter([], [], s=size, color="w", ec="k", label=str(pval))
 
-        scatter = ax1.scatter(x, y, s=sizes, c=x, cmap=cmap, ec='k', linewidth=0.5)
-        fig.colorbar(scatter, ax=ax1, label='log2 Fold Change')
-        plt.legend(title='P-value', labelspacing=1.5)
+        scatter = ax1.scatter(x, y, s=sizes, c=x, cmap=cmap, ec="k", linewidth=0.5)
+        fig.colorbar(scatter, ax=ax1, label="log2 Fold Change")
+        plt.legend(title="P-value", labelspacing=1.5)
 
         return fig
 
@@ -499,10 +502,11 @@ def create_volcano_plot(
     q_values = calc_q_values(p_values)
     y = calc_y(q_values)
     x = calc_x(group_1, group_2)
-    cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else 'viridis'
+    cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
     fig = volcano_plot(x, y, cmap)
     return fig
-    
+
+
 def plot_most_important_feats_violin(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,

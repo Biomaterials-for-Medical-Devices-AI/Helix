@@ -424,6 +424,7 @@ def tSNE_plot_form(  # noqa: C901
             plt.clf()
             st.success("Plots created and saved successfully.")
 
+
 def volcano_plot_form(  # noqa: C901
     data,
     data_analysis_plot_dir,
@@ -447,6 +448,8 @@ def volcano_plot_form(  # noqa: C901
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
         ):
-            volcano_fig.savefig(data_analysis_plot_dir / f"volcano_plot_{key_prefix}.png")
+            volcano_fig.savefig(
+                data_analysis_plot_dir / f"volcano_plot_{key_prefix}.png"
+            )
             plt.clf()
             st.success("Plots created and saved successfully.")
