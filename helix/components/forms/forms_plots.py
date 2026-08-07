@@ -7,7 +7,14 @@ import streamlit as st
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.plot_editor import edit_plot_form
-from helix.options.enums import DataAnalysisStateKeys, Normalisations, PlotTypes
+from helix.options.enums import (
+    DataAnalysisStateKeys,
+    ExecutionStateKeys,
+    Normalisations,
+    PlotTypes,
+    ProblemTypes,
+)
+from helix.options.execution import ExecutionOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.plotting import (
     create_pairplot,
@@ -425,16 +432,21 @@ def tSNE_plot_form(  # noqa: C901
             st.success("Plots created and saved successfully.")
 
 
+@st.experimental_fragment
 def volcano_plot_form(  # noqa: C901
     data,
     data_analysis_plot_dir,
     plot_opts: PlottingOptions,
+    exec_opts: ExecutionOptions,
     key_prefix: str = "",
 ):
-
+    if exec_opts.problem_type == ProblemTypes.Regression:
+        st.warning("Volcano plot is only available for classification problems.")
+        return
     show_plot = st.checkbox(
         "Create Volcano Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlot}"
     )
+
     if show_plot:
 
         volcano_fig = create_volcano_plot(

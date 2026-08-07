@@ -117,6 +117,7 @@ def visualisation_view(data, data_tsne, prefix: str | None = None):
             data,
             data_analysis_plot_dir,
             plot_opt,
+            exec_opt,
             key_prefix=prefix,
         )
 
