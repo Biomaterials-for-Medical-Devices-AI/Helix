@@ -9,7 +9,6 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from helix.components.plot_editor import edit_plot_form
 from helix.options.enums import (
     DataAnalysisStateKeys,
-    ExecutionStateKeys,
     Normalisations,
     PlotTypes,
     ProblemTypes,
