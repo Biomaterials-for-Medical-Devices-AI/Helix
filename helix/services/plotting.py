@@ -411,7 +411,6 @@ def create_tsne_plot(
 
 def volcano_plot_processing(
     df: pd.DataFrame,
-    plot_opts: PlottingOptions,
 ) -> Figure:
     """
     Create a volcano plot of the given DataFrame.
@@ -467,7 +466,6 @@ def volcano_plot_processing(
         return fold_change
 
     def calc_x(fold_change):
-        # calculate fold change per feature
         x = np.log2(fold_change)
         return x
 
@@ -477,11 +475,47 @@ def volcano_plot_processing(
     fold_change = calc_fc(group_1, group_2)
     y = calc_y(q_values)
     x = calc_x(fold_change)
-    lipids = pd.DataFrame(df.columns.values)
-    return lipids, fold_change, x, p_values, y
+    features = pd.DataFrame(df.columns.values)
+    return features, fold_change, x, p_values, y
 
 
-# def create_volcano_table
+def create_volcano_plot_table(
+    df: pd.DataFrame,
+) -> pd.DataFrame:
+    """
+    Create a detailed table showing statistically significant features from the volcano plot analysis.
+    Args:
+            df (pd.DataFrame): The data to tabulate. Must have samples as rows,
+                features as columns, with the last column being the group label
+                (either string labels or label-encoded integers, with exactly
+                2 unique values).
+            plot_opts (PlottingOptions): The plotting options.
+
+        Returns:
+            DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
+            p values and - log 10 p values.
+    """
+    features, fold_change, x, p_values, y = volcano_plot_processing(df)
+    features.drop(features.tail(1).index, inplace=True)  # drops last row
+
+    fold_change = pd.DataFrame(fold_change)
+    x = pd.DataFrame(x)
+    y = pd.DataFrame(y)
+    p_values = pd.DataFrame(p_values)
+
+    fold_change = fold_change.reset_index(drop=True)
+    x = x.reset_index(drop=True)
+
+    volcano_table = pd.concat([features, fold_change, x, p_values, y], axis=1)
+    volcano_table.columns = [
+        "Features",
+        "Fold Change",
+        "log2(FC)",
+        "p-value",
+        "log10(p-value)",
+    ]
+    volcano_table.sort_values(by="p-value", inplace=True, ascending=False)
+    return volcano_table
 
 
 def create_volcano_plot(
@@ -501,7 +535,7 @@ def create_volcano_plot(
     Returns:
         Figure: The volcano plot figure.
     """
-    lipids, fold_change, x, p_values, y = volcano_plot_processing(df, plot_opts)
+    features, fold_change, x, p_values, y = volcano_plot_processing(df)
     cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
     fig, ax1 = plt.subplots()
     plt.axhline(y=1, c="k", linestyle=":")

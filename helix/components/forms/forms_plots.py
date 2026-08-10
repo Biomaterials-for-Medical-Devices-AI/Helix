@@ -19,6 +19,7 @@ from helix.services.plotting import (
     create_pairplot,
     create_tsne_plot,
     create_volcano_plot,
+    create_volcano_plot_table,
     plot_correlation_heatmap,
     plot_target_variable_distribution,
 )
@@ -464,3 +465,23 @@ def volcano_plot_form(  # noqa: C901
             )
             plt.clf()
             st.success("Plots created and saved successfully.")
+        show_table = st.checkbox(
+            "View detailed data table",
+            key=f"{key_prefix}_{DataAnalysisStateKeys.ViewTableVolcanoPlot}",
+        )
+
+        if show_table:
+
+            volcano_table = create_volcano_plot_table(df=data)
+            st.write("#### Volcano plot data table")
+            st.dataframe(volcano_table)
+            plt.close()
+            if st.button(
+                "Save Table",
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlotTable}",
+            ):
+                volcano_table.to_csv(
+                    data_analysis_plot_dir / f"volcano_table_{key_prefix}.csv",
+                    index=False,
+                )
+                st.success("Table saved successfully.")
