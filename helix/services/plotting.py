@@ -409,7 +409,7 @@ def create_tsne_plot(
     return fig
 
 
-def create_volcano_plot(
+def volcano_plot_processing(
     df: pd.DataFrame,
     plot_opts: PlottingOptions,
 ) -> Figure:
@@ -461,49 +461,75 @@ def create_volcano_plot(
         y = -np.log10(q_values)
         return y
 
-    def calc_x(group_1, group_2):
+    def calc_fc(group_1, group_2):
         # calculate fold change per feature
         fold_change = group_2.mean(axis=0) / group_1.mean(axis=0)
+        return fold_change
+
+    def calc_x(fold_change):
+        # calculate fold change per feature
         x = np.log2(fold_change)
         return x
-
-    def volcano_plot(x, y, cmap):
-        fig, ax1 = plt.subplots()
-        plt.axhline(y=1, c="k", linestyle=":")
-        plt.axvline(x=1, c="k", linestyle=":")
-        plt.axvline(x=-1, c="k", linestyle=":")
-
-        title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
-        plt.title(
-            title,
-            fontdict={
-                "family": plot_opts.plot_font_family,
-                "fontsize": plot_opts.plot_title_font_size,
-            },
-        )
-
-        ax1.set_xlabel("log2(FC)")
-        ax1.set_ylabel("-log10(p-value)")
-
-        sizes = y * 90 + 10
-        legend_p_values = np.array([1.0, 0.1, 0.05, 0.01, 0.001])
-        sizes_legend_p_values = -90 * np.log10(legend_p_values) + 10
-        for pval, size in zip(legend_p_values, sizes_legend_p_values):
-            plt.scatter([], [], s=size, color="w", ec="k", label=str(pval))
-
-        scatter = ax1.scatter(x, y, s=sizes, c=x, cmap=cmap, ec="k", linewidth=0.5)
-        fig.colorbar(scatter, ax=ax1, label="log2 Fold Change")
-        plt.legend(title="P-value", labelspacing=1.5)
-
-        return fig
 
     group_1, group_2 = split_by_group(df)
     p_values = calc_p_values(group_1, group_2)
     q_values = calc_q_values(p_values)
+    fold_change = calc_fc(group_1, group_2)
     y = calc_y(q_values)
-    x = calc_x(group_1, group_2)
+    x = calc_x(fold_change)
+    lipids = pd.DataFrame(df.columns.values)
+    return lipids, fold_change, x, p_values, y
+
+
+# def create_volcano_table
+
+
+def create_volcano_plot(
+    df: pd.DataFrame,
+    plot_opts: PlottingOptions,
+) -> Figure:
+    """
+    Create a volcano plot of the given DataFrame.
+
+    Args:
+        df (pd.DataFrame): The data to plot. Must have samples as rows,
+            features as columns, with the last column being the group label
+            (either string labels or label-encoded integers, with exactly
+            2 unique values).
+        plot_opts (PlottingOptions): The plotting options.
+
+    Returns:
+        Figure: The volcano plot figure.
+    """
+    lipids, fold_change, x, p_values, y = volcano_plot_processing(df, plot_opts)
     cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
-    fig = volcano_plot(x, y, cmap)
+    fig, ax1 = plt.subplots()
+    plt.axhline(y=1, c="k", linestyle=":")
+    plt.axvline(x=1, c="k", linestyle=":")
+    plt.axvline(x=-1, c="k", linestyle=":")
+
+    title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
+    plt.title(
+        title,
+        fontdict={
+            "family": plot_opts.plot_font_family,
+            "fontsize": plot_opts.plot_title_font_size,
+        },
+    )
+
+    ax1.set_xlabel("log2(FC)")
+    ax1.set_ylabel("-log10(p-value)")
+
+    sizes = y * 90 + 10
+    legend_p_values = np.array([1.0, 0.1, 0.05, 0.01, 0.001])
+    sizes_legend_p_values = -90 * np.log10(legend_p_values) + 10
+    for pval, size in zip(legend_p_values, sizes_legend_p_values):
+        plt.scatter([], [], s=size, color="w", ec="k", label=str(pval))
+
+    scatter = ax1.scatter(x, y, s=sizes, c=x, cmap=cmap, ec="k", linewidth=0.5)
+    fig.colorbar(scatter, ax=ax1, label="log2 Fold Change")
+    plt.legend(title="P-value", labelspacing=1.5)
+
     return fig
 
 
