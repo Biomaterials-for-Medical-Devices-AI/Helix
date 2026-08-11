@@ -14,6 +14,7 @@ from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
 from helix.options.plotting import PlottingOptions
 
+
 def plot_target_variable_distribution(
     data: pd.DataFrame,
     show_kde: bool,
