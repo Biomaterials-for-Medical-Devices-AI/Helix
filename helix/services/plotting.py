@@ -1,4 +1,6 @@
+from asyncio.log import logger
 from pathlib import Path
+from turtle import st
 from typing import Any
 
 import numpy as np
@@ -11,6 +13,7 @@ from matplotlib.ticker import FormatStrFormatter
 from scipy import stats
 from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
+from streamlit import logger
 
 from helix.options.plotting import PlottingOptions
 
@@ -431,11 +434,7 @@ def volcano_plot_processing(
         unique_groups = df[group_col].unique()
 
         if len(unique_groups) != 3:
-            raise ValueError(
-                f"Volcano plot requires exactly 2 groups, found "
-                f"{len(unique_groups)}: {unique_groups}"
-            )
-
+            raise ValueError
         group_1_label, group_2_label, invalid_label = unique_groups
         group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])

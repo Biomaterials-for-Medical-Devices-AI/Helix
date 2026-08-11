@@ -448,15 +448,20 @@ def volcano_plot_form(  # noqa: C901
     )
 
     if show_plot:
+        try:
+            volcano_fig = create_volcano_plot(
+                df=data,
+                plot_opts=plot_opts,
+            )
 
-        volcano_fig = create_volcano_plot(
-            df=data,
-            plot_opts=plot_opts,
-        )
-
-        st.pyplot(volcano_fig)
-        plt.close()
-
+            st.pyplot(volcano_fig)
+            plt.close()
+        except ValueError:
+            st.error(
+                "Ensure your samples are in rows, features in columns, and the last column is the group label.",
+                icon="🔥",
+            )
+            st.stop()
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
         ):
