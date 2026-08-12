@@ -410,7 +410,7 @@ def create_tsne_plot(
     return fig
 
 
-def volcano_plot_processing(
+def volcano_plot_processing(  # noqa: C901
     df: pd.DataFrame,
     check_normality: bool,
 ) -> Figure:
