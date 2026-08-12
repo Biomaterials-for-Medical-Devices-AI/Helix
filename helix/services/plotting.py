@@ -459,7 +459,7 @@ def volcano_plot_processing(
     def calc_p_values_test_normality(group_1, group_2, is_feature_normal):
         p_values = []
         for i in range(0, len(is_feature_normal)):
-            if is_feature_normal[i] == True:
+            if is_feature_normal[i]:
                 p_value = stats.ttest_ind(group_1.iloc[:, i], group_2.iloc[:, i]).pvalue
             else:
                 p_value = stats.mannwhitneyu(
@@ -497,7 +497,7 @@ def volcano_plot_processing(
         return x
 
     group_1, group_2 = split_by_group(df)
-    if check_normality == True:
+    if check_normality:
         is_feature_normal = test_normality(df)
         p_values = calc_p_values_test_normality(group_1, group_2, is_feature_normal)
     else:
