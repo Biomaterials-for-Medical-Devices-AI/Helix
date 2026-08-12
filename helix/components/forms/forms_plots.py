@@ -443,6 +443,11 @@ def volcano_plot_form(  # noqa: C901
     if exec_opts.problem_type == ProblemTypes.Regression:
         st.warning("Volcano plot is only available for classification problems.")
         return
+    check_normality = st.toggle(
+            "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test)",
+            value=True,
+            key=f"{key_prefix}_{DataAnalysisStateKeys.CheckNormality}",
+        )
     show_plot = st.checkbox(
         "Create Volcano Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlot}"
     )
@@ -451,6 +456,7 @@ def volcano_plot_form(  # noqa: C901
         try:
             volcano_fig = create_volcano_plot(
                 df=data,
+                check_normality=check_normality,
                 plot_opts=plot_opts,
             )
 
@@ -477,7 +483,7 @@ def volcano_plot_form(  # noqa: C901
 
         if show_table:
 
-            volcano_table = create_volcano_plot_table(df=data)
+            volcano_table = create_volcano_plot_table(df=data, check_normality=check_normality)
             st.write("#### Volcano plot data table")
             st.dataframe(volcano_table)
             plt.close()

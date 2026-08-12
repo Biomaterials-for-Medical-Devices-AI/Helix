@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
 from scipy import stats
+from scipy.stats import shapiro
 from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
@@ -411,6 +412,7 @@ def create_tsne_plot(
 
 def volcano_plot_processing(
     df: pd.DataFrame,
+    check_normality: bool,
 ) -> Figure:
     """
     Create a volcano plot of the given DataFrame.
@@ -437,6 +439,32 @@ def volcano_plot_processing(
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
         return group_1, group_2
 
+    def test_normality(df):
+        groups = [group_1, group_2]
+        is_feature_normal = []
+        #repeat for each feature
+        for i in range(0,len(df.columns)-1):
+            #repeat for both healthy and diseased groups
+            feature_p_values = []
+            for group in groups:
+                sample = group.iloc[:,i]
+                p_value = shapiro(sample)[1]
+                feature_p_values.append(p_value)
+            if feature_p_values[0]>0.05 and feature_p_values[1]>0.05:
+                is_feature_normal.append(True)
+            else:
+                is_feature_normal.append(False)
+        return is_feature_normal
+
+    def calc_p_values_test_normality(group_1, group_2, is_feature_normal):
+        p_values = []
+        for i in range(0, len(is_feature_normal)):
+            if is_feature_normal[i] == True:
+                p_value = stats.ttest_ind(group_1.iloc[:,i], group_2.iloc[:,i]).pvalue
+            else:
+                p_value = stats.mannwhitneyu(group_1.iloc[:,i], group_2.iloc[:,i]).pvalue
+            p_values.append(p_value)
+        return np.array(p_values)
     def calc_p_values(group_1, group_2, test=stats.ttest_ind, **test_kwargs):
         # compare each feature (column) across the two groups of samples (rows)
         p_values = test(group_1, group_2, axis=0, **test_kwargs).pvalue
@@ -466,7 +494,11 @@ def volcano_plot_processing(
         return x
 
     group_1, group_2 = split_by_group(df)
-    p_values = calc_p_values(group_1, group_2)
+    if check_normality ==True:
+        is_feature_normal = test_normality(df)
+        p_values = calc_p_values_test_normality(group_1, group_2, is_feature_normal)
+    else:
+        p_values = calc_p_values(group_1, group_2)
     q_values = calc_q_values(p_values)
     fold_change = calc_fc(group_1, group_2)
     y = calc_y(q_values)
@@ -477,6 +509,7 @@ def volcano_plot_processing(
 
 def create_volcano_plot_table(
     df: pd.DataFrame,
+    check_normality: bool,   
 ) -> pd.DataFrame:
     """
     Create a detailed table showing statistically significant features from the volcano plot analysis.
@@ -486,12 +519,13 @@ def create_volcano_plot_table(
                 (either string labels or label-encoded integers, with exactly
                 2 unique values).
             plot_opts (PlottingOptions): The plotting options.
+            check_normality (bool): Whether to check for normality and use appropriate statistical tests.
 
         Returns:
             DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
             p values and - log 10 p values.
     """
-    features, fold_change, x, p_values, y = volcano_plot_processing(df)
+    features, fold_change, x, p_values, y = volcano_plot_processing(df, check_normality=check_normality)
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
     fold_change = pd.DataFrame(fold_change)
@@ -516,6 +550,7 @@ def create_volcano_plot_table(
 
 def create_volcano_plot(
     df: pd.DataFrame,
+    check_normality: bool,
     plot_opts: PlottingOptions,
 ) -> Figure:
     """
@@ -527,11 +562,11 @@ def create_volcano_plot(
             (either string labels or label-encoded integers, with exactly
             2 unique values).
         plot_opts (PlottingOptions): The plotting options.
-
+        check_normality (bool): Whether to check for normality and use appropriate statistical tests.
     Returns:
         Figure: The volcano plot figure.
     """
-    features, fold_change, x, p_values, y = volcano_plot_processing(df)
+    features, fold_change, x, p_values, y = volcano_plot_processing(df, check_normality=check_normality)
     cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
     fig, ax1 = plt.subplots()
     plt.axhline(y=1, c="k", linestyle=":")

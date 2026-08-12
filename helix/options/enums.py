@@ -98,6 +98,7 @@ class DataAnalysisStateKeys(StrEnum):
     SaveVolcanoPlot = "save_volcano_plot"
     ViewTableVolcanoPlot = "view_table_volcano_plot"
     SaveVolcanoPlotTable = "save_volcano_plot_table"
+    CheckNormality = "check_normality"
 
 
 class DataPreprocessingStateKeys(StrEnum):
