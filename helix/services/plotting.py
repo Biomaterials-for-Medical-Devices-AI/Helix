@@ -442,15 +442,15 @@ def volcano_plot_processing(
     def test_normality(df):
         groups = [group_1, group_2]
         is_feature_normal = []
-        #repeat for each feature
-        for i in range(0,len(df.columns)-1):
-            #repeat for both healthy and diseased groups
+        # repeat for each feature
+        for i in range(0, len(df.columns) - 1):
+            # repeat for both healthy and diseased groups
             feature_p_values = []
             for group in groups:
-                sample = group.iloc[:,i]
+                sample = group.iloc[:, i]
                 p_value = shapiro(sample)[1]
                 feature_p_values.append(p_value)
-            if feature_p_values[0]>0.05 and feature_p_values[1]>0.05:
+            if feature_p_values[0] > 0.05 and feature_p_values[1] > 0.05:
                 is_feature_normal.append(True)
             else:
                 is_feature_normal.append(False)
@@ -460,11 +460,14 @@ def volcano_plot_processing(
         p_values = []
         for i in range(0, len(is_feature_normal)):
             if is_feature_normal[i] == True:
-                p_value = stats.ttest_ind(group_1.iloc[:,i], group_2.iloc[:,i]).pvalue
+                p_value = stats.ttest_ind(group_1.iloc[:, i], group_2.iloc[:, i]).pvalue
             else:
-                p_value = stats.mannwhitneyu(group_1.iloc[:,i], group_2.iloc[:,i]).pvalue
+                p_value = stats.mannwhitneyu(
+                    group_1.iloc[:, i], group_2.iloc[:, i]
+                ).pvalue
             p_values.append(p_value)
         return np.array(p_values)
+
     def calc_p_values(group_1, group_2, test=stats.ttest_ind, **test_kwargs):
         # compare each feature (column) across the two groups of samples (rows)
         p_values = test(group_1, group_2, axis=0, **test_kwargs).pvalue
@@ -494,7 +497,7 @@ def volcano_plot_processing(
         return x
 
     group_1, group_2 = split_by_group(df)
-    if check_normality ==True:
+    if check_normality == True:
         is_feature_normal = test_normality(df)
         p_values = calc_p_values_test_normality(group_1, group_2, is_feature_normal)
     else:
@@ -509,7 +512,7 @@ def volcano_plot_processing(
 
 def create_volcano_plot_table(
     df: pd.DataFrame,
-    check_normality: bool,   
+    check_normality: bool,
 ) -> pd.DataFrame:
     """
     Create a detailed table showing statistically significant features from the volcano plot analysis.
@@ -525,7 +528,9 @@ def create_volcano_plot_table(
             DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
             p values and - log 10 p values.
     """
-    features, fold_change, x, p_values, y = volcano_plot_processing(df, check_normality=check_normality)
+    features, fold_change, x, p_values, y = volcano_plot_processing(
+        df, check_normality=check_normality
+    )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
     fold_change = pd.DataFrame(fold_change)
@@ -566,7 +571,9 @@ def create_volcano_plot(
     Returns:
         Figure: The volcano plot figure.
     """
-    features, fold_change, x, p_values, y = volcano_plot_processing(df, check_normality=check_normality)
+    features, fold_change, x, p_values, y = volcano_plot_processing(
+        df, check_normality=check_normality
+    )
     cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
     fig, ax1 = plt.subplots()
     plt.axhline(y=1, c="k", linestyle=":")
