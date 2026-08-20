@@ -443,6 +443,15 @@ def volcano_plot_form(  # noqa: C901
     if exec_opts.problem_type == ProblemTypes.Regression:
         st.warning("Volcano plot is only available for classification problems.")
         return
+    threshold_input = st.number_input(
+        "Enter the Fold Change (FC) Threshold (min value is 1 indicating no change):",
+        min_value=1.0,
+        max_value=10.0,
+        value=2.0,
+        step=0.5,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotThreshold}",
+    )
+    st.write("The Fold Change threshold is set to:", threshold_input)
     check_normality = st.toggle(
         "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test)",
         value=True,
@@ -456,6 +465,7 @@ def volcano_plot_form(  # noqa: C901
         try:
             volcano_fig = create_volcano_plot(
                 df=data,
+                threshold=threshold_input,
                 check_normality=check_normality,
                 plot_opts=plot_opts,
             )

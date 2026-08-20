@@ -555,6 +555,7 @@ def create_volcano_plot_table(
 
 def create_volcano_plot(
     df: pd.DataFrame,
+    threshold: float,
     check_normality: bool,
     plot_opts: PlottingOptions,
 ) -> Figure:
@@ -571,14 +572,16 @@ def create_volcano_plot(
     Returns:
         Figure: The volcano plot figure.
     """
+
     features, fold_change, x, p_values, y = volcano_plot_processing(
         df, check_normality=check_normality
     )
     cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
+    log2_fc_threshold = np.log2(threshold)
     fig, ax1 = plt.subplots()
     plt.axhline(y=1, c="k", linestyle=":")
-    plt.axvline(x=1, c="k", linestyle=":")
-    plt.axvline(x=-1, c="k", linestyle=":")
+    plt.axvline(x=log2_fc_threshold, c="k", linestyle=":")
+    plt.axvline(x=-log2_fc_threshold, c="k", linestyle=":")
 
     title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
     plt.title(
