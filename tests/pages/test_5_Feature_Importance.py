@@ -3,7 +3,6 @@ import pytest
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from streamlit.testing.v1 import AppTest
-from tests.utils import get_element_by_key, get_element_by_label
 
 from helix.options.data import DataOptions, DataSplitOptions
 from helix.options.enums import (
@@ -26,6 +25,7 @@ from helix.options.file_paths import (
 )
 from helix.services.configuration import save_options
 from helix.services.ml_models import save_model
+from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
     classification_data_opts,

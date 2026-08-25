@@ -1,7 +1,7 @@
 from streamlit.testing.v1 import AppTest
-from tests.utils import get_element_by_key
 
 from helix.options.enums import ViewExperimentKeys
+from tests.utils import get_element_by_key
 
 
 def select_experiment(at: AppTest, experiment: str):
