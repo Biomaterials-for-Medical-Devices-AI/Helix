@@ -1,13 +1,15 @@
 from pathlib import Path
 from typing import Any
 
+import matplotlib.cm
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import shap
+from matplotlib import colors
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
-from matplotlib.ticker import FormatStrFormatter
+from matplotlib.ticker import FormatStrFormatter, FuncFormatter
 from scipy import stats
 from scipy.stats import shapiro
 from sklearn.manifold import TSNE
@@ -507,6 +509,9 @@ def volcano_plot_processing(  # noqa: C901
     y = calc_y(q_values)
     x = calc_x(fold_change)
     features = pd.DataFrame(df.columns.values)
+
+    fold_change = pd.DataFrame(fold_change)
+    fold_change = fold_change.reset_index(drop=True)
     return features, fold_change, x, p_values, y
 
 
@@ -533,12 +538,10 @@ def create_volcano_plot_table(
     )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
-    fold_change = pd.DataFrame(fold_change)
     x = pd.DataFrame(x)
     y = pd.DataFrame(y)
     p_values = pd.DataFrame(p_values)
 
-    fold_change = fold_change.reset_index(drop=True)
     x = x.reset_index(drop=True)
 
     volcano_table = pd.concat([features, fold_change, x, p_values, y], axis=1)
@@ -578,7 +581,7 @@ def create_volcano_plot(
     )
     cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
     log2_fc_threshold = np.log2(threshold)
-    fig, ax1 = plt.subplots()
+    fig, ax1 = plt.subplots(constrained_layout=True)
     plt.axhline(y=1, c="k", linestyle=":")
     plt.axvline(x=log2_fc_threshold, c="k", linestyle=":")
     plt.axvline(x=-log2_fc_threshold, c="k", linestyle=":")
@@ -596,7 +599,13 @@ def create_volcano_plot(
     ax1.set_ylabel("-log10(p-value)")
 
     scatter = ax1.scatter(x, y, c=x, cmap=cmap, ec="k", linewidth=0.5)
-    fig.colorbar(scatter, ax=ax1, label="log2 Fold Change")
+
+    finite_x = x[np.isfinite(x)]
+    normalizer = colors.Normalize(vmin=finite_x.min(), vmax=finite_x.max())
+    scatter.set_norm(normalizer)
+    cbar = fig.colorbar(scatter, ax=ax1, orientation="horizontal", label="Fold Change")
+    cbar.formatter = FuncFormatter(lambda t, pos: f"{round(2**t,2)}")
+    cbar.update_ticks()
 
     return fig
 
