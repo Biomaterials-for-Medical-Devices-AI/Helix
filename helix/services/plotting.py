@@ -549,7 +549,7 @@ def create_volcano_plot_table(
         "p-value",
         "log10(p-value)",
     ]
-    volcano_table.sort_values(by="p-value", inplace=True, ascending=False)
+    volcano_table.sort_values(by="p-value", inplace=True, ascending=True)
     return volcano_table
 
 
@@ -595,15 +595,8 @@ def create_volcano_plot(
     ax1.set_xlabel("log2(FC)")
     ax1.set_ylabel("-log10(p-value)")
 
-    sizes = y * 90 + 10
-    legend_p_values = np.array([1.0, 0.1, 0.05, 0.01, 0.001])
-    sizes_legend_p_values = -90 * np.log10(legend_p_values) + 10
-    for pval, size in zip(legend_p_values, sizes_legend_p_values):
-        plt.scatter([], [], s=size, color="w", ec="k", label=str(pval))
-
-    scatter = ax1.scatter(x, y, s=sizes, c=x, cmap=cmap, ec="k", linewidth=0.5)
+    scatter = ax1.scatter(x, y, c=x, cmap=cmap, ec="k", linewidth=0.5)
     fig.colorbar(scatter, ax=ax1, label="log2 Fold Change")
-    plt.legend(title="P-value", labelspacing=1.5)
 
     return fig
 

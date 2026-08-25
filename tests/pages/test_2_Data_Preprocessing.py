@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
+from tests.utils import get_element_by_key, get_element_by_label
 
 from helix.options.choices.ui import NORMALISATIONS
 from helix.options.data import DataOptions
@@ -29,7 +30,6 @@ from helix.options.plotting import PlottingOptions
 from helix.options.preprocessing import PreprocessingOptions
 from helix.services.configuration import load_data_preprocessing_options, save_options
 from helix.utils.utils import create_directory, delete_directory
-from tests.utils import get_element_by_key, get_element_by_label
 
 
 @pytest.fixture

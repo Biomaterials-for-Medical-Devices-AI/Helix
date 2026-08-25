@@ -1,5 +1,7 @@
 import pytest
 from streamlit.testing.v1 import AppTest
+from tests.pages.utils import select_experiment
+from tests.utils import get_element_by_key, get_element_by_label
 
 from helix.options.enums import DataSplitMethods, ExecutionStateKeys, ViewExperimentKeys
 from helix.options.file_paths import (
@@ -10,8 +12,6 @@ from helix.options.file_paths import (
     ml_plot_dir,
     ml_predictions_path,
 )
-from tests.pages.utils import select_experiment
-from tests.utils import get_element_by_key, get_element_by_label
 
 from .fixtures import (
     classification_data_opts,

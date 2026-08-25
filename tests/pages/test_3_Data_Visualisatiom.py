@@ -4,6 +4,8 @@ import numpy as np
 import pytest
 from sklearn.datasets import make_classification
 from streamlit.testing.v1 import AppTest
+from tests.pages.utils import select_experiment
+from tests.utils import get_element_by_key
 
 from helix.options.data import DataOptions
 from helix.options.enums import DataAnalysisStateKeys, Normalisations, ProblemTypes
@@ -18,8 +20,6 @@ from helix.options.file_paths import (
 from helix.options.plotting import PlottingOptions
 from helix.services.configuration import save_options
 from helix.utils.utils import create_directory, delete_directory
-from tests.pages.utils import select_experiment
-from tests.utils import get_element_by_key
 
 
 @pytest.fixture
