@@ -490,7 +490,7 @@ def volcano_plot_processing(  # noqa: C901
 
     def calc_fc(group_1, group_2):
         # calculate fold change per feature
-        fold_change = group_2.mean(axis=0) / group_1.mean(axis=0)
+        fold_change = (group_2.mean(axis=0) + 1e-8) / (group_1.mean(axis=0) + 1e-8)
         return fold_change
 
     def calc_x(fold_change):
@@ -578,7 +578,6 @@ def create_volcano_plot(
     features, fold_change, x, p_values, y = volcano_plot_processing(
         df, check_normality=check_normality
     )
-    cmap = plot_opts.plot_colour_map if plot_opts.plot_colour_map else "viridis"
     log2_fc_threshold = np.log2(threshold)
     fig, ax1 = plt.subplots(constrained_layout=True)
     plt.axhline(y=1, c="k", linestyle=":")
@@ -596,15 +595,14 @@ def create_volcano_plot(
 
     ax1.set_xlabel("log2(FC)")
     ax1.set_ylabel("-log10(p-value)")
-
-    scatter = ax1.scatter(x, y, c=x, cmap=cmap, ec="k", linewidth=0.5)
-
-    finite_x = x[np.isfinite(x)]
-    normalizer = colors.Normalize(vmin=finite_x.min(), vmax=finite_x.max())
-    scatter.set_norm(normalizer)
-    cbar = fig.colorbar(scatter, ax=ax1, orientation="horizontal", label="Fold Change")
-    cbar.formatter = FuncFormatter(lambda t, pos: f"{round(2**t,2)}")
-    cbar.update_ticks()
+    distances = np.sqrt((x) ** 2 + (y) ** 2)
+    maximum_distance = np.max(distances)
+    opacities = distances / maximum_distance
+    # Build RGBA colors
+    colors = np.zeros((len(x), 4))
+    colors[:, :3] = [0.2, 0.5, 0.2]
+    colors[:, 3] = opacities
+    ax1.scatter(x, y, c=colors, linewidth=0.5)
 
     return fig
 
