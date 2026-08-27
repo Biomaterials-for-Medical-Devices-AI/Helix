@@ -5,10 +5,9 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import shap
-from matplotlib import colors
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
-from matplotlib.ticker import FormatStrFormatter, FuncFormatter
+from matplotlib.ticker import FormatStrFormatter
 from scipy import stats
 from scipy.stats import shapiro
 from sklearn.manifold import TSNE
