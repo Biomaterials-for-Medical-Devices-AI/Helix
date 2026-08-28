@@ -452,6 +452,17 @@ def volcano_plot_form(  # noqa: C901
         key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotThreshold}",
     )
     st.write("The Fold Change threshold is set to:", threshold_input)
+
+    p_value_input = st.number_input(
+        "Enter the p-value threshold (min value is 0.001):",
+        min_value=0.001,
+        max_value=1.0,
+        value=0.05,
+        step=0.01,  
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotPValue}",
+    )
+    st.write("The p-value threshold is set to:", p_value_input)
+
     check_normality = st.toggle(
         "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test)",
         value=True,
@@ -466,6 +477,7 @@ def volcano_plot_form(  # noqa: C901
             volcano_fig = create_volcano_plot(
                 df=data,
                 threshold=threshold_input,
+                p_value=p_value_input,
                 check_normality=check_normality,
                 plot_opts=plot_opts,
             )

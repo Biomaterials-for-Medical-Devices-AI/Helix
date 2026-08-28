@@ -99,6 +99,7 @@ class DataAnalysisStateKeys(StrEnum):
     ViewTableVolcanoPlot = "view_table_volcano_plot"
     SaveVolcanoPlotTable = "save_volcano_plot_table"
     VolcanoPlotThreshold = "volcano_plot_threshold"
+    VolcanoPlotPValue = "volcano_plot_p_value"
     CheckNormality = "check_normality"
 
 
