@@ -101,6 +101,7 @@ class DataAnalysisStateKeys(StrEnum):
     VolcanoPlotThreshold = "volcano_plot_threshold"
     VolcanoPlotPValue = "volcano_plot_p_value"
     CheckNormality = "check_normality"
+    UseFDRCorrection = "use_fdr_correction"
 
 
 class DataPreprocessingStateKeys(StrEnum):

@@ -413,6 +413,7 @@ def create_tsne_plot(
 def volcano_plot_processing(  # noqa: C901
     df: pd.DataFrame,
     check_normality: bool,
+    use_fdr_correction: bool,
 ) -> Figure:
     """
     Create a volcano plot of the given DataFrame.
@@ -497,25 +498,30 @@ def volcano_plot_processing(  # noqa: C901
         return x
 
     group_1, group_2 = split_by_group(df)
+    fold_change = calc_fc(group_1, group_2)
+    x = calc_x(fold_change)
+    features = pd.DataFrame(df.columns.values)
+    fold_change = pd.DataFrame(fold_change)
+    fold_change = fold_change.reset_index(drop=True)
     if check_normality:
         is_feature_normal = test_normality(df)
         p_values = calc_p_values_test_normality(group_1, group_2, is_feature_normal)
     else:
         p_values = calc_p_values(group_1, group_2)
-    q_values = calc_q_values(p_values)
-    fold_change = calc_fc(group_1, group_2)
-    y = calc_y(q_values)
-    x = calc_x(fold_change)
-    features = pd.DataFrame(df.columns.values)
 
-    fold_change = pd.DataFrame(fold_change)
-    fold_change = fold_change.reset_index(drop=True)
-    return features, fold_change, x, p_values, y
+    if use_fdr_correction:
+        q_values = calc_q_values(p_values)
+        y = calc_y(q_values)
+        return features, fold_change, x, q_values, y
+    else:
+        y = calc_y(p_values)
+        return features, fold_change, x, p_values, y
 
 
 def create_volcano_plot_table(
     df: pd.DataFrame,
     check_normality: bool,
+    use_fdr_correction: bool,
 ) -> pd.DataFrame:
     """
     Create a detailed table showing statistically significant features from the volcano plot analysis.
@@ -526,13 +532,14 @@ def create_volcano_plot_table(
                 2 unique values).
             plot_opts (PlottingOptions): The plotting options.
             check_normality (bool): Whether to check for normality and use appropriate statistical tests.
+            use_fdr_correction (bool): Whether to use the BH procedure for FDR correction when calculating p-values.
 
         Returns:
             DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
             p values and - log 10 p values.
     """
     features, fold_change, x, p_values, y = volcano_plot_processing(
-        df, check_normality=check_normality
+        df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
     )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
@@ -559,6 +566,7 @@ def create_volcano_plot(
     threshold: float,
     p_value: float,
     check_normality: bool,
+    use_fdr_correction: bool,
     plot_opts: PlottingOptions,
 ) -> Figure:
     """
@@ -571,12 +579,13 @@ def create_volcano_plot(
             2 unique values).
         plot_opts (PlottingOptions): The plotting options.
         check_normality (bool): Whether to check for normality and use appropriate statistical tests.
+        use_fdr_correction (bool): Whether to use the BH procedure for FDR correction when calculating p-values.
     Returns:
         Figure: The volcano plot figure.
     """
 
     features, fold_change, x, p_values, y = volcano_plot_processing(
-        df, check_normality=check_normality
+        df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
     )
     log2_fc_threshold = np.log2(threshold)
     log10_p_threshold = -np.log10(p_value)

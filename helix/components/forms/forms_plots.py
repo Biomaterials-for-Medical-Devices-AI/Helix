@@ -458,7 +458,7 @@ def volcano_plot_form(  # noqa: C901
         min_value=0.001,
         max_value=1.0,
         value=0.05,
-        step=0.01,  
+        step=0.01,
         key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotPValue}",
     )
     st.write("The p-value threshold is set to:", p_value_input)
@@ -467,6 +467,11 @@ def volcano_plot_form(  # noqa: C901
         "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test)",
         value=True,
         key=f"{key_prefix}_{DataAnalysisStateKeys.CheckNormality}",
+    )
+    use_fdr_correction = st.toggle(
+        "Use the BH procedure for FDR correction when calculating p-values?",
+        value=True,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.UseFDRCorrection}",
     )
     show_plot = st.checkbox(
         "Create Volcano Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlot}"
@@ -479,6 +484,7 @@ def volcano_plot_form(  # noqa: C901
                 threshold=threshold_input,
                 p_value=p_value_input,
                 check_normality=check_normality,
+                use_fdr_correction=use_fdr_correction,
                 plot_opts=plot_opts,
             )
 
@@ -506,7 +512,9 @@ def volcano_plot_form(  # noqa: C901
         if show_table:
 
             volcano_table = create_volcano_plot_table(
-                df=data, check_normality=check_normality
+                df=data,
+                check_normality=check_normality,
+                use_fdr_correction=use_fdr_correction,
             )
             st.write("#### Volcano plot data table")
             st.dataframe(volcano_table)
