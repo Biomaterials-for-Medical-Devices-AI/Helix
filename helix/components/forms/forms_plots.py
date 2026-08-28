@@ -492,7 +492,7 @@ def volcano_plot_form(  # noqa: C901
             plt.close()
         except ValueError:
             st.error(
-                "Ensure your samples are in rows, features in columns, and the last column is the group label.",
+                "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
             st.stop()

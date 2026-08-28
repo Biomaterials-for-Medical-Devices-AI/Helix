@@ -430,12 +430,13 @@ def volcano_plot_processing(  # noqa: C901
     """
 
     def split_by_group(df):
+        df = df.dropna(axis=0)
         group_col = df.columns[-1]
         unique_groups = df[group_col].unique()
 
-        if len(unique_groups) != 3:
+        if len(unique_groups) != 2:
             raise ValueError
-        group_1_label, group_2_label, invalid_label = unique_groups
+        group_1_label, group_2_label = unique_groups
         group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
         return group_1, group_2
