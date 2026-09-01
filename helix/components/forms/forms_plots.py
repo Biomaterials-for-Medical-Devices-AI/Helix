@@ -22,6 +22,7 @@ from helix.services.plotting import (
     create_volcano_plot_table,
     plot_correlation_heatmap,
     plot_target_variable_distribution,
+    volcano_plot_processing,
 )
 
 
@@ -487,14 +488,28 @@ def volcano_plot_form(  # noqa: C901
                 use_fdr_correction=use_fdr_correction,
                 plot_opts=plot_opts,
             )
-
             st.pyplot(volcano_fig)
+            features, all_zeros_features, fold_change, x, p_values, y = (
+                volcano_plot_processing(
+                    df=data,
+                    check_normality=check_normality,
+                    use_fdr_correction=use_fdr_correction,
+                )
+            )
+
+            string = (
+                "Please note that the following features were not included in the analysis, as all samples recorded a measurement of zero:"
+                + ", ".join(list(all_zeros_features))
+            )
+            st.error(string)
+
             plt.close()
-        except ValueError:
+        except ValueError as e:
             st.error(
                 "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
+            st.exception(e)
             st.stop()
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
