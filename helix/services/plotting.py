@@ -3,6 +3,8 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 import seaborn as sns
 import shap
 from matplotlib import pyplot as plt
@@ -596,31 +598,37 @@ def create_volcano_plot(
     )
     log2_fc_threshold = np.log2(threshold)
     log10_p_threshold = -np.log10(p_value)
-    fig, ax1 = plt.subplots(constrained_layout=True)
-    plt.axhline(y=log10_p_threshold, c="k", linestyle=":")
-    plt.axvline(x=log2_fc_threshold, c="k", linestyle=":")
-    plt.axvline(x=-log2_fc_threshold, c="k", linestyle=":")
 
     title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
-    plt.title(
-        title,
-        fontdict={
-            "family": plot_opts.plot_font_family,
-            "fontsize": plot_opts.plot_title_font_size,
-        },
-    )
 
-    ax1.set_xlabel("log2(FC)")
-    ax1.set_ylabel("-log10(p-value)")
     distances = np.sqrt((x) ** 2 + (y) ** 2)
     maximum_distance = np.max(distances)
     opacities = distances / maximum_distance
     # Build RGBA colors
-    colors = np.zeros((len(x), 4))
-    colors[:, :3] = [0.2, 0.5, 0.2]
-    colors[:, 3] = opacities
-    ax1.scatter(x, y, c=colors, linewidth=0.5)
+    colors = [f"rgba(51, 128, 128, {opacity})" for opacity in opacities]
 
+    fig = go.Figure(
+        go.Scatter(
+            x=x,
+            y=y,
+            mode="markers",
+            marker=dict(color=colors),
+            text=features,
+            hovertemplate="%{text}<extra></extra>",
+        )
+    )
+
+    fig = fig.update_layout(
+        title=dict(text=title),
+        xaxis=dict(title=dict(text="log2(FC)")),
+        yaxis=dict(
+            title=dict(text="-log10(p-value)"),
+        ),
+    )
+
+    fig = fig.add_hline(y=log10_p_threshold, line_dash="dash")
+    fig = fig.add_vline(x=log2_fc_threshold, line_dash="dash")
+    fig = fig.add_vline(x=-log2_fc_threshold, line_dash="dash")
     return fig
 
 

@@ -488,7 +488,7 @@ def volcano_plot_form(  # noqa: C901
                 use_fdr_correction=use_fdr_correction,
                 plot_opts=plot_opts,
             )
-            st.pyplot(volcano_fig)
+            st.plotly_chart(volcano_fig)
             features, all_zeros_features, fold_change, x, p_values, y = (
                 volcano_plot_processing(
                     df=data,
