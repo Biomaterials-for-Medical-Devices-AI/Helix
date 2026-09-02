@@ -448,35 +448,13 @@ def volcano_plot_processing(  # noqa: C901
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
         return group_1, group_2
 
-    def test_normality(df):
-        groups = [group_1, group_2]
-        is_feature_normal = []
-        # repeat for each feature
-        for i in range(0, len(df.columns) - 1):
-            # repeat for both healthy and diseased groups
-            feature_p_values = []
-            for group in groups:
-                sample = group.iloc[:, i]
-                p_value = shapiro(sample)[1]
-                feature_p_values.append(p_value)
-            if feature_p_values[0] > 0.05 and feature_p_values[1] > 0.05:
-                is_feature_normal.append(True)
-            else:
-                is_feature_normal.append(False)
-        return is_feature_normal
-
-    def calc_p_values_test_normality(group_1, group_2, is_feature_normal):
-        p_values = []
-        for i in range(0, len(is_feature_normal)):
-            if is_feature_normal[i]:
-                p_value = stats.ttest_ind(group_1.iloc[:, i], group_2.iloc[:, i]).pvalue
-            else:
-                p_value = stats.mannwhitneyu(
-                    group_1.iloc[:, i], group_2.iloc[:, i]
-                ).pvalue
-            p_values.append(p_value)
-        return np.array(p_values)
-
+    def check_norm_calc_p_values(group_1, group_2):
+        shapiro_p_values = np.stack((shapiro(group_1, axis=0)[1], shapiro(group_2, axis=0)[1]))
+        p_values = np.where((shapiro_p_values[0]>0.05) & (shapiro_p_values[1]>0.05), 
+                            stats.ttest_ind(group_1, group_2, axis=0).pvalue,
+                            stats.mannwhitneyu(group_1, group_2, axis=0, method='asymptotic').pvalue)
+        return p_values
+    
     def calc_p_values(group_1, group_2):
         # compare each feature (column) across the two groups of samples (rows)
         p_values = stats.ttest_ind(group_1, group_2, axis=0).pvalue
@@ -512,8 +490,7 @@ def volcano_plot_processing(  # noqa: C901
     fold_change = pd.DataFrame(fold_change)
     fold_change = fold_change.reset_index(drop=True)
     if check_normality:
-        is_feature_normal = test_normality(df)
-        p_values = calc_p_values_test_normality(group_1, group_2, is_feature_normal)
+        p_values = check_norm_calc_p_values(group_1, group_2)
     else:
         p_values = calc_p_values(group_1, group_2)
 
