@@ -449,12 +449,16 @@ def volcano_plot_processing(  # noqa: C901
         return group_1, group_2
 
     def check_norm_calc_p_values(group_1, group_2):
-        shapiro_p_values = np.stack((shapiro(group_1, axis=0)[1], shapiro(group_2, axis=0)[1]))
-        p_values = np.where((shapiro_p_values[0]>0.05) & (shapiro_p_values[1]>0.05), 
-                            stats.ttest_ind(group_1, group_2, axis=0).pvalue,
-                            stats.mannwhitneyu(group_1, group_2, axis=0, method='asymptotic').pvalue)
+        shapiro_p_values = np.stack(
+            (shapiro(group_1, axis=0)[1], shapiro(group_2, axis=0)[1])
+        )
+        p_values = np.where(
+            (shapiro_p_values[0] > 0.05) & (shapiro_p_values[1] > 0.05),
+            stats.ttest_ind(group_1, group_2, axis=0).pvalue,
+            stats.mannwhitneyu(group_1, group_2, axis=0, method="asymptotic").pvalue,
+        )
         return p_values
-    
+
     def calc_p_values(group_1, group_2):
         # compare each feature (column) across the two groups of samples (rows)
         p_values = stats.ttest_ind(group_1, group_2, axis=0).pvalue
