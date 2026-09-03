@@ -2,7 +2,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from helix.options.enums import ExecutionStateKeys, ViewExperimentKeys
+from helix.options.enums import ExecutionStateKeys, ViewExperimentKeys, PredictStateKeys
 
 
 def experiment_selector(options: list) -> str:
@@ -37,11 +37,18 @@ def model_selector(options: list, gui_text: str, placeholder: str, key: str) -> 
     Returns:
         Path: The path to the model on disk.
     """
+    select_all = st.checkbox(
+        "Select all models", value=True, key=PredictStateKeys.SelectAllModels
+    )
+    if select_all:
+        default = options
+    else:
+        default = None
 
     return st.multiselect(
         gui_text,
         options=options,
-        default=None,
+        default=default,
         placeholder=placeholder,
         key=key,
     )
