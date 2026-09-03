@@ -4,6 +4,7 @@ from typing import List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
@@ -528,8 +529,8 @@ def volcano_plot_form(  # noqa: C901
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
         ):
-            volcano_fig.savefig(
-                data_analysis_plot_dir / f"volcano_plot_{key_prefix}.png"
+            volcano_fig.write_html(
+                data_analysis_plot_dir / f"volcano_plot_{key_prefix}.html"
             )
             plt.clf()
             st.success("Plots created and saved successfully.")
