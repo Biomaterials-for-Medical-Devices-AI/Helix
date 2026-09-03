@@ -484,7 +484,6 @@ def volcano_plot_processing(  # noqa: C901
         fold_change = (group_2.mean(axis=0) + 1e-8) / (group_1.mean(axis=0) + 1e-8)
         return fold_change
 
-
     def calc_x(fold_change, log_base):
         x = np.log(fold_change) / np.log(log_base)
         return x
@@ -582,12 +581,14 @@ def create_volcano_plot(
 
     features, all_identical_features, fold_change, x, p_values, y = (
         volcano_plot_processing(
-            df, check_normality=check_normality, use_fdr_correction=use_fdr_correction, log_base=log_base
+            df,
+            check_normality=check_normality,
+            use_fdr_correction=use_fdr_correction,
+            log_base=log_base,
         )
     )
     log_fc_threshold = np.log(threshold) / np.log(log_base)
     log10_p_threshold = -np.log10(p_value)
-
 
     title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
 

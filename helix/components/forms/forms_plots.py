@@ -1,11 +1,11 @@
 from pathlib import Path
 from typing import List, Tuple
 
-from altair import Then
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import streamlit as st
+from altair import Then
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.plot_editor import edit_plot_form
@@ -468,7 +468,7 @@ def volcano_plot_form(  # noqa: C901
 
     log_base_input = st.selectbox(
         "Select the logarithm base for the volcano plot",
-        options=[2, 10, "e"],  
+        options=[2, 10, "e"],
         key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotLogBase}",
     )
     if log_base_input == "e":
@@ -508,7 +508,7 @@ def volcano_plot_form(  # noqa: C901
                     df=data,
                     check_normality=check_normality,
                     use_fdr_correction=use_fdr_correction,
-                    log_base=log_base_input
+                    log_base=log_base_input,
                 )
             )
 
