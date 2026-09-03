@@ -474,6 +474,7 @@ def volcano_plot_form(  # noqa: C901
         value=True,
         key=f"{key_prefix}_{DataAnalysisStateKeys.UseFDRCorrection}",
     )
+
     show_plot = st.checkbox(
         "Create Volcano Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlot}"
     )
@@ -489,7 +490,7 @@ def volcano_plot_form(  # noqa: C901
                 plot_opts=plot_opts,
             )
             st.plotly_chart(volcano_fig)
-            features, all_zeros_features, fold_change, x, p_values, y = (
+            features, all_identical_features, fold_change, x, p_values, y = (
                 volcano_plot_processing(
                     df=data,
                     check_normality=check_normality,
@@ -498,10 +499,10 @@ def volcano_plot_form(  # noqa: C901
             )
 
             string = (
-                "Please note that the following features were not included in the analysis, as all samples recorded a measurement of zero:"
-                + ", ".join(list(all_zeros_features))
+                "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
+                + ", ".join(list(all_identical_features))
             )
-            st.error(string)
+            st.warning(string)
 
             plt.close()
         except ValueError as e:
@@ -519,27 +520,27 @@ def volcano_plot_form(  # noqa: C901
             )
             plt.clf()
             st.success("Plots created and saved successfully.")
-        show_table = st.checkbox(
-            "View detailed data table",
-            key=f"{key_prefix}_{DataAnalysisStateKeys.ViewTableVolcanoPlot}",
+    show_table = st.checkbox(
+        "View detailed data table",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.ViewTableVolcanoPlot}",
+    )
+
+    if show_table:
+
+        volcano_table = create_volcano_plot_table(
+            df=data,
+            check_normality=check_normality,
+            use_fdr_correction=use_fdr_correction,
         )
-
-        if show_table:
-
-            volcano_table = create_volcano_plot_table(
-                df=data,
-                check_normality=check_normality,
-                use_fdr_correction=use_fdr_correction,
+        st.write("#### Volcano plot data table")
+        st.dataframe(volcano_table)
+        plt.close()
+        if st.button(
+            "Save Table",
+            key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlotTable}",
+        ):
+            volcano_table.to_csv(
+                data_analysis_plot_dir / f"volcano_table_{key_prefix}.csv",
+                index=False,
             )
-            st.write("#### Volcano plot data table")
-            st.dataframe(volcano_table)
-            plt.close()
-            if st.button(
-                "Save Table",
-                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlotTable}",
-            ):
-                volcano_table.to_csv(
-                    data_analysis_plot_dir / f"volcano_table_{key_prefix}.csv",
-                    index=False,
-                )
-                st.success("Table saved successfully.")
+            st.success("Table saved successfully.")

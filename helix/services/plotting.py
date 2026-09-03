@@ -432,10 +432,10 @@ def volcano_plot_processing(  # noqa: C901
     # Remove empty rows at end of csv file
     df = df.dropna(axis=0)
     # Create dataframe of features where each sample had a measurement of zero
-    all_zeros_df = df.loc[:, (df == 0).all(axis=0)]
-    all_zeros_features = all_zeros_df.columns
+    all_identical_df = df.loc[:, df.nunique() == 1]
+    all_identical_features = all_identical_df.columns
     # Remove features where each sample had a measurement of zero
-    df = df.loc[:, (df != 0).any(axis=0)]
+    df = df.loc[:, df.nunique() > 1]
 
     def split_by_group(df):
         group_col = df.columns[-1]
@@ -501,10 +501,10 @@ def volcano_plot_processing(  # noqa: C901
     if use_fdr_correction:
         q_values = calc_q_values(p_values)
         y = calc_y(q_values)
-        return features, all_zeros_features, fold_change, x, q_values, y
+        return features, all_identical_features, fold_change, x, q_values, y
     else:
         y = calc_y(p_values)
-        return features, all_zeros_features, fold_change, x, p_values, y
+        return features, all_identical_features, fold_change, x, p_values, y
 
 
 def create_volcano_plot_table(
@@ -527,8 +527,10 @@ def create_volcano_plot_table(
             DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
             p values and - log 10 p values.
     """
-    features, all_zeros_features, fold_change, x, p_values, y = volcano_plot_processing(
-        df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
+    features, all_identical_features, fold_change, x, p_values, y = (
+        volcano_plot_processing(
+            df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
+        )
     )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
@@ -573,8 +575,10 @@ def create_volcano_plot(
         Figure: The volcano plot figure.
     """
 
-    features, all_zeros_features, fold_change, x, p_values, y = volcano_plot_processing(
-        df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
+    features, all_identical_features, fold_change, x, p_values, y = (
+        volcano_plot_processing(
+            df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
+        )
     )
     log2_fc_threshold = np.log2(threshold)
     log10_p_threshold = -np.log10(p_value)
