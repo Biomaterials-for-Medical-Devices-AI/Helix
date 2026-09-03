@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-from st_aggrid import AgGrid, GridOptionsBuilder
 
 
 def group_plots_by_model_and_type(plots):
