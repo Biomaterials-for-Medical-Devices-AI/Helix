@@ -246,3 +246,4 @@ class PredictStateKeys(StrEnum):
     PredictFile = "predict_file"
     PredictModels = "predict_models"
     PredictButton = "predict_button"
+    SelectAllModels = "select_all_models"
