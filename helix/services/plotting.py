@@ -415,6 +415,7 @@ def volcano_plot_processing(  # noqa: C901
     df: pd.DataFrame,
     check_normality: bool,
     use_fdr_correction: bool,
+    log_base: int,
 ) -> Figure:
     """
     Create a volcano plot of the given DataFrame.
@@ -501,13 +502,14 @@ def volcano_plot_processing(  # noqa: C901
         fold_change = (group_2.mean(axis=0) + 1e-8) / (group_1.mean(axis=0) + 1e-8)
         return fold_change
 
-    def calc_x(fold_change):
-        x = np.log2(fold_change)
+
+    def calc_x(fold_change, log_base):
+        x = np.log(fold_change) / np.log(log_base)
         return x
 
     group_1, group_2 = split_by_group(df)
     fold_change = calc_fc(group_1, group_2)
-    x = calc_x(fold_change)
+    x = calc_x(fold_change, log_base)
     features = pd.DataFrame(df.columns.values)
     fold_change = pd.DataFrame(fold_change)
     fold_change = fold_change.reset_index(drop=True)
@@ -530,6 +532,7 @@ def create_volcano_plot_table(
     df: pd.DataFrame,
     check_normality: bool,
     use_fdr_correction: bool,
+    log_base: int,
 ) -> pd.DataFrame:
     """
     Create a detailed table showing statistically significant features from the volcano plot analysis.
@@ -541,6 +544,7 @@ def create_volcano_plot_table(
             plot_opts (PlottingOptions): The plotting options.
             check_normality (bool): Whether to check for normality and use appropriate statistical tests.
             use_fdr_correction (bool): Whether to use the BH procedure for FDR correction when calculating p-values.
+            log_base (int): The base of the logarithm to use for the fold change.
 
         Returns:
             DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
@@ -561,7 +565,7 @@ def create_volcano_plot_table(
     volcano_table.columns = [
         "Features",
         "Fold Change",
-        "log2(FC)",
+        "log(FC)",
         "p-value",
         "log10(p-value)",
     ]
@@ -573,6 +577,7 @@ def create_volcano_plot(
     df: pd.DataFrame,
     threshold: float,
     p_value: float,
+    log_base: int,
     check_normality: bool,
     use_fdr_correction: bool,
     plot_opts: PlottingOptions,
@@ -593,10 +598,11 @@ def create_volcano_plot(
     """
 
     features, all_zeros_features, fold_change, x, p_values, y = volcano_plot_processing(
-        df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
+        df, check_normality=check_normality, use_fdr_correction=use_fdr_correction, log_base=log_base
     )
-    log2_fc_threshold = np.log2(threshold)
+    log_fc_threshold = np.log(threshold) / np.log(log_base)
     log10_p_threshold = -np.log10(p_value)
+
 
     title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
 
@@ -619,15 +625,15 @@ def create_volcano_plot(
 
     fig = fig.update_layout(
         title=dict(text=title),
-        xaxis=dict(title=dict(text="log2(FC)")),
+        xaxis=dict(title=dict(text=f"log({log_base})(FC)")),
         yaxis=dict(
             title=dict(text="-log10(p-value)"),
         ),
     )
 
     fig = fig.add_hline(y=log10_p_threshold, line_dash="dash")
-    fig = fig.add_vline(x=log2_fc_threshold, line_dash="dash")
-    fig = fig.add_vline(x=-log2_fc_threshold, line_dash="dash")
+    fig = fig.add_vline(x=log_fc_threshold, line_dash="dash")
+    fig = fig.add_vline(x=-log_fc_threshold, line_dash="dash")
     return fig
 
 

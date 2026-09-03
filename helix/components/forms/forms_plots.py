@@ -1,7 +1,9 @@
 from pathlib import Path
 from typing import List, Tuple
 
+from altair import Then
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
@@ -464,6 +466,16 @@ def volcano_plot_form(  # noqa: C901
     )
     st.write("The p-value threshold is set to:", p_value_input)
 
+    log_base_input = st.selectbox(
+        "Select the logarithm base for the volcano plot",
+        options=[2, 10, "e"],  
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotLogBase}",
+    )
+    if log_base_input == "e":
+        log_base_input = np.e
+
+    st.write("The logarithm base is set to:", log_base_input)
+
     check_normality = st.toggle(
         "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test)",
         value=True,
@@ -486,6 +498,7 @@ def volcano_plot_form(  # noqa: C901
                 p_value=p_value_input,
                 check_normality=check_normality,
                 use_fdr_correction=use_fdr_correction,
+                log_base=log_base_input,
                 plot_opts=plot_opts,
             )
             st.plotly_chart(volcano_fig)
@@ -494,6 +507,7 @@ def volcano_plot_form(  # noqa: C901
                     df=data,
                     check_normality=check_normality,
                     use_fdr_correction=use_fdr_correction,
+                    log_base=log_base_input
                 )
             )
 

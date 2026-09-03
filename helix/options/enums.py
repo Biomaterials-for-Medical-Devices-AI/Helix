@@ -100,6 +100,7 @@ class DataAnalysisStateKeys(StrEnum):
     SaveVolcanoPlotTable = "save_volcano_plot_table"
     VolcanoPlotThreshold = "volcano_plot_threshold"
     VolcanoPlotPValue = "volcano_plot_p_value"
+    VolcanoPlotLogBase = "volcano_plot_log_base"
     CheckNormality = "check_normality"
     UseFDRCorrection = "use_fdr_correction"
 
