@@ -518,7 +518,7 @@ def volcano_plot_form(  # noqa: C901
             st.warning(string)
 
             plt.close()
-        except ValueError as e:
+        except ValueError:
             st.error(
                 "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
                 icon="🔥",
@@ -558,7 +558,7 @@ def volcano_plot_form(  # noqa: C901
                     index=False,
                 )
                 st.success("Table saved successfully.")
-        except PermissionError as e:
+        except PermissionError:
             st.error(
                 "A file with the same name may be open. Close the file, and try again.",
                 icon="🔥",
