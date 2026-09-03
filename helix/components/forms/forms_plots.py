@@ -523,7 +523,6 @@ def volcano_plot_form(  # noqa: C901
                 "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
-            st.exception(e)
             st.stop()
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
@@ -539,22 +538,29 @@ def volcano_plot_form(  # noqa: C901
     )
 
     if show_table:
+        try:
 
-        volcano_table = create_volcano_plot_table(
-            df=data,
-            check_normality=check_normality,
-            use_fdr_correction=use_fdr_correction,
-            log_base=log_base_input,
-        )
-        st.write("#### Volcano plot data table")
-        st.dataframe(volcano_table)
-        plt.close()
-        if st.button(
-            "Save Table",
-            key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlotTable}",
-        ):
-            volcano_table.to_csv(
-                data_analysis_plot_dir / f"volcano_table_{key_prefix}.csv",
-                index=False,
+            volcano_table = create_volcano_plot_table(
+                df=data,
+                check_normality=check_normality,
+                use_fdr_correction=use_fdr_correction,
+                log_base=log_base_input,
             )
-            st.success("Table saved successfully.")
+            st.write("#### Volcano plot data table")
+            st.dataframe(volcano_table)
+            plt.close()
+            if st.button(
+                "Save Table",
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlotTable}",
+            ):
+                volcano_table.to_csv(
+                    data_analysis_plot_dir / f"volcano_table_{key_prefix}.csv",
+                    index=False,
+                )
+                st.success("Table saved successfully.")
+        except PermissionError as e:
+            st.error(
+                "A file with the same name may be open. Close the file, and try again.",
+                icon="🔥",
+            )
+            st.stop()
