@@ -532,7 +532,7 @@ def create_volcano_plot_table(
     """
     features, all_identical_features, fold_change, x, p_values, y = (
         volcano_plot_processing(
-            df, check_normality=check_normality, use_fdr_correction=use_fdr_correction
+            df, check_normality=check_normality, use_fdr_correction=use_fdr_correction, log_base=log_base
         )
     )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
