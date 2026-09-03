@@ -545,8 +545,7 @@ def volcano_plot_form(  # noqa: C901
             df=data,
             check_normality=check_normality,
             use_fdr_correction=use_fdr_correction,
-            log_base=log_base_input
-
+            log_base=log_base_input,
         )
         st.write("#### Volcano plot data table")
         st.dataframe(volcano_table)
