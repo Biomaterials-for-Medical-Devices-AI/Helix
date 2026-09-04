@@ -2,18 +2,29 @@ from pathlib import Path
 from typing import List, Tuple
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import streamlit as st
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.plot_editor import edit_plot_form
-from helix.options.enums import DataAnalysisStateKeys, Normalisations, PlotTypes
+from helix.options.data import DataOptions
+from helix.options.enums import (
+    DataAnalysisStateKeys,
+    Normalisations,
+    PlotTypes,
+    ProblemTypes,
+)
+from helix.options.execution import ExecutionOptions
 from helix.options.plotting import PlottingOptions
 from helix.services.plotting import (
     create_pairplot,
     create_tsne_plot,
+    create_volcano_plot,
+    create_volcano_plot_table,
     plot_correlation_heatmap,
     plot_target_variable_distribution,
+    volcano_plot_processing,
 )
 
 
@@ -371,7 +382,6 @@ def tSNE_plot_form(  # noqa: C901
     scaler: Normalisations = None,
     key_prefix: str = "",
 ):
-
     X = data.drop(columns=[data.columns[-1]])
     y = data[data.columns[-1]]
 
@@ -423,3 +433,145 @@ def tSNE_plot_form(  # noqa: C901
             tsne_plot.savefig(data_analysis_plot_dir / f"tsne_plot_{key_prefix}.png")
             plt.clf()
             st.success("Plots created and saved successfully.")
+
+
+@st.experimental_fragment
+def volcano_plot_form(  # noqa: C901
+    data,
+    data_analysis_plot_dir,
+    plot_opts: PlottingOptions,
+    data_opts: DataOptions,
+    exec_opts: ExecutionOptions,
+    key_prefix: str = "",
+):
+    if exec_opts.problem_type == ProblemTypes.Regression:
+        st.warning("Volcano plot is only available for classification problems.")
+        return
+    threshold_input = st.number_input(
+        "Enter the Fold Change (FC) Threshold (min value is 1 indicating no change):",
+        min_value=1.0,
+        max_value=10.0,
+        value=2.0,
+        step=0.5,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotThreshold}",
+    )
+    st.write("The Fold Change threshold is set to:", threshold_input)
+
+    p_value_input = st.number_input(
+        "Enter the p-value threshold (min value is 0.001):",
+        min_value=0.001,
+        max_value=1.0,
+        value=0.05,
+        step=0.01,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotPValue}",
+    )
+    st.write("The p-value threshold is set to:", p_value_input)
+
+    log_base_input = st.selectbox(
+        "Select the logarithm base for the volcano plot",
+        options=[2, 10, "e"],
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotLogBase}",
+    )
+    if log_base_input == "e":
+        log_base_input = np.e
+
+    st.write("The logarithm base is set to:", log_base_input)
+
+    check_normality = st.toggle(
+        "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test). All p-values calculated with t-test otherwise.",
+        value=True,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.CheckNormality}",
+    )
+    use_fdr_correction = st.toggle(
+        "Use FDR correction (BH procedure) when calculating p-values",
+        value=True,
+        key=f"{key_prefix}_{DataAnalysisStateKeys.UseFDRCorrection}",
+    )
+
+    show_plot = st.checkbox(
+        "Create Volcano Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlot}"
+    )
+
+    if show_plot:
+        try:
+            volcano_fig = create_volcano_plot(
+                df=data,
+                threshold=threshold_input,
+                p_value=p_value_input,
+                check_normality=check_normality,
+                use_fdr_correction=use_fdr_correction,
+                log_base=log_base_input,
+                plot_opts=plot_opts,
+                data_opts=data_opts,
+            )
+            st.plotly_chart(volcano_fig)
+
+            plt.close()
+        except ValueError:
+            st.error(
+                "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
+                icon="🔥",
+            )
+            st.stop()
+        if st.button(
+            "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
+        ):
+            volcano_fig.write_html(
+                data_analysis_plot_dir / f"volcano_plot_{key_prefix}.html"
+            )
+            plt.clf()
+            st.success("Plots created and saved successfully.")
+    show_table = st.checkbox(
+        "View detailed data table",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.ViewTableVolcanoPlot}",
+    )
+
+    if show_table:
+        try:
+
+            volcano_table = create_volcano_plot_table(
+                df=data,
+                check_normality=check_normality,
+                use_fdr_correction=use_fdr_correction,
+                log_base=log_base_input,
+                data_opts=data_opts,
+            )
+            st.write("#### Volcano plot data table")
+            st.dataframe(volcano_table)
+            plt.close()
+            if st.button(
+                "Save Table",
+                key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlotTable}",
+            ):
+                volcano_table.to_csv(
+                    data_analysis_plot_dir / f"volcano_table_{key_prefix}.csv",
+                    index=False,
+                )
+                st.success("Table saved successfully.")
+        except PermissionError:
+            st.error(
+                "A file with the same name may be open. Close the file, and try again.",
+                icon="🔥",
+            )
+            st.stop()
+    if show_plot | show_table:
+        (
+            features,
+            all_identical_df,
+            group_1_label,
+            group_2_label,
+            fold_change,
+            x,
+            p_values,
+            y,
+        ) = volcano_plot_processing(
+            df=data,
+            check_normality=check_normality,
+            use_fdr_correction=use_fdr_correction,
+            log_base=log_base_input,
+            data_opts=data_opts,
+        )
+        st.warning(
+            "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
+        )
+        st.dataframe(all_identical_df)

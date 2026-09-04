@@ -3,14 +3,18 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import seaborn as sns
 import shap
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FormatStrFormatter
+from scipy import stats
+from scipy.stats import shapiro
 from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
+from helix.options.data import DataOptions
 from helix.options.plotting import PlottingOptions
 
 
@@ -405,6 +409,296 @@ def create_tsne_plot(
     # Adjust layout to prevent label cutoff
     plt.tight_layout()
 
+    return fig
+
+
+def volcano_plot_processing(  # noqa: C901
+    df: pd.DataFrame,
+    check_normality: bool,
+    use_fdr_correction: bool,
+    log_base: int,
+    data_opts: DataOptions,
+) -> Figure:
+    """
+    Create a volcano plot of the given DataFrame.
+
+    Args:
+        df (pd.DataFrame): The data to plot. Must have samples as rows,
+            features as columns, with the last column being the group label
+            (either string labels or label-encoded integers, with exactly
+            2 unique values).
+        plot_opts (PlottingOptions): The plotting options.
+
+    Returns:
+        Figure: The volcano plot figure.
+    """
+    # Remove empty rows at end of csv file
+    df = df.dropna(axis=0)
+    # Create dataframe of features where each sample had a measurement of zero
+    all_identical_df = df.loc[:, df.nunique() == 1]
+    all_identical_df = pd.DataFrame(all_identical_df.transpose().iloc[:, [0]])
+    all_identical_df.rename(
+        columns={
+            all_identical_df.columns[0]: "Identical Measurement",
+        },
+        inplace=True,
+    )
+
+    # Remove features where each sample had a measurement of zero
+    df = df.loc[:, df.nunique() > 1]
+
+    def split_by_group(df):
+        group_col = df.columns[-1]
+        unique_groups = df[group_col].unique()
+
+        if len(unique_groups) != 2:
+            raise ValueError
+        group_1_label, group_2_label = unique_groups
+        group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
+        group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
+
+        original_data = pd.read_csv(str(data_opts.data_path))
+        group_col = original_data.columns[-1]
+        unique_groups = original_data[group_col].unique()
+        group_1_label, group_2_label = unique_groups
+        return group_1, group_2, group_1_label, group_2_label
+
+    def check_norm_calc_p_values(group_1, group_2):
+        shapiro_p_values = np.stack(
+            (shapiro(group_1, axis=0)[1], shapiro(group_2, axis=0)[1])
+        )
+        p_values = np.where(
+            (shapiro_p_values[0] > 0.05) & (shapiro_p_values[1] > 0.05),
+            stats.ttest_ind(group_1, group_2, axis=0).pvalue,
+            stats.mannwhitneyu(group_1, group_2, axis=0, method="asymptotic").pvalue,
+        )
+        return p_values
+
+    def calc_p_values(group_1, group_2):
+        # compare each feature (column) across the two groups of samples (rows)
+        p_values = stats.ttest_ind(group_1, group_2, axis=0).pvalue
+        return p_values
+
+    def calc_q_values(p_values, method="bh"):
+        mask = ~np.isnan(p_values)
+        not_nan_p_values = p_values[mask]
+        not_nan_q_values = stats.false_discovery_control(
+            not_nan_p_values, method=method
+        )
+        q_values = np.full_like(p_values, np.nan, dtype=float)
+        q_values[mask] = not_nan_q_values
+        return q_values
+
+    def calc_y(q_values):
+        y = -np.log10(q_values)
+        return y
+
+    def calc_fc(group_1, group_2):
+        # calculate fold change per feature
+        fold_change = (group_2.mean(axis=0) + 1e-8) / (group_1.mean(axis=0) + 1e-8)
+        return fold_change
+
+    def calc_x(fold_change, log_base):
+        x = np.log(fold_change) / np.log(log_base)
+        return x
+
+    group_1, group_2, group_1_label, group_2_label = split_by_group(df)
+    fold_change = calc_fc(group_1, group_2)
+    x = calc_x(fold_change, log_base)
+    features = pd.DataFrame(df.columns.values)
+    fold_change = pd.DataFrame(fold_change)
+    fold_change = fold_change.reset_index(drop=True)
+    if check_normality:
+        p_values = check_norm_calc_p_values(group_1, group_2)
+    else:
+        p_values = calc_p_values(group_1, group_2)
+
+    if use_fdr_correction:
+        q_values = calc_q_values(p_values)
+        y = calc_y(q_values)
+        return (
+            features,
+            all_identical_df,
+            group_1_label,
+            group_2_label,
+            fold_change,
+            x,
+            q_values,
+            y,
+        )
+    else:
+        y = calc_y(p_values)
+        return (
+            features,
+            all_identical_df,
+            group_1_label,
+            group_2_label,
+            fold_change,
+            x,
+            p_values,
+            y,
+        )
+
+
+def create_volcano_plot_table(
+    df: pd.DataFrame,
+    check_normality: bool,
+    use_fdr_correction: bool,
+    log_base: int,
+    data_opts: DataOptions,
+) -> pd.DataFrame:
+    """
+    Create a detailed table showing statistically significant features from the volcano plot analysis.
+    Args:
+            df (pd.DataFrame): The data to tabulate. Must have samples as rows,
+                features as columns, with the last column being the group label
+                (either string labels or label-encoded integers, with exactly
+                2 unique values).
+            check_normality (bool): Whether to check for normality and use appropriate statistical tests.
+            use_fdr_correction (bool): Whether to use the BH procedure for FDR correction when calculating p-values.
+            log_base (int): The base of the logarithm to use for the fold change.
+
+        Returns:
+            DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
+            p values and - log 10 p values.
+    """
+    (
+        features,
+        all_identical_df,
+        group_1_label,
+        group_2_label,
+        fold_change,
+        x,
+        p_values,
+        y,
+    ) = volcano_plot_processing(
+        df,
+        check_normality=check_normality,
+        use_fdr_correction=use_fdr_correction,
+        log_base=log_base,
+        data_opts=data_opts,
+    )
+    features.drop(features.tail(1).index, inplace=True)  # drops last row
+
+    x = pd.DataFrame(x)
+    y = pd.DataFrame(y)
+    p_values = pd.DataFrame(p_values)
+
+    x = x.reset_index(drop=True)
+
+    volcano_table = pd.concat([features, fold_change, x, p_values, y], axis=1)
+    volcano_table.columns = [
+        "Features",
+        "Fold Change",
+        "log(FC)",
+        "p-value",
+        "log10(p-value)",
+    ]
+    volcano_table.sort_values(by="p-value", inplace=True, ascending=True)
+    return volcano_table
+
+
+def create_volcano_plot(
+    df: pd.DataFrame,
+    threshold: float,
+    p_value: float,
+    log_base: int,
+    check_normality: bool,
+    use_fdr_correction: bool,
+    plot_opts: PlottingOptions,
+    data_opts: DataOptions,
+) -> Figure:
+    """
+    Create a volcano plot of the given DataFrame.
+
+    Args:
+        df (pd.DataFrame): The data to plot. Must have samples as rows,
+            features as columns, with the last column being the group label
+            (either string labels or label-encoded integers, with exactly
+            2 unique values).
+        plot_opts (PlottingOptions): The plotting options.
+        check_normality (bool): Whether to check for normality and use appropriate statistical tests.
+        use_fdr_correction (bool): Whether to use the BH procedure for FDR correction when calculating p-values.
+    Returns:
+        Figure: The volcano plot figure.
+    """
+
+    (
+        features,
+        all_identical_df,
+        group_1_label,
+        group_2_label,
+        fold_change,
+        x,
+        p_values,
+        y,
+    ) = volcano_plot_processing(
+        df,
+        check_normality=check_normality,
+        use_fdr_correction=use_fdr_correction,
+        log_base=log_base,
+        data_opts=data_opts,
+    )
+    log_fc_threshold = np.log(threshold) / np.log(log_base)
+    log10_p_threshold = -np.log10(p_value)
+
+    title = plot_opts.plot_title if plot_opts.plot_title else "Volcano Plot"
+
+    distances = np.sqrt((x) ** 2 + (y) ** 2)
+    maximum_distance = np.max(distances)
+    opacities = distances / maximum_distance
+    # Build RGBA colors
+    colors = [f"rgba(51, 128, 128, {opacity})" for opacity in opacities]
+
+    fig = go.Figure(
+        go.Scatter(
+            x=x,
+            y=y,
+            mode="markers",
+            marker=dict(color=colors),
+            text=features,
+            hovertemplate="%{text}<extra></extra>",
+        ),
+    )
+
+    fig = fig.update_layout(
+        title={
+            "text": title,
+            "x": 0.5,
+            "y": 0.9,
+            "xanchor": "center",
+            "yanchor": "top",
+        },
+        xaxis=dict(title=dict(text=f"log({log_base})(FC)")),
+        yaxis=dict(title=dict(text="-log10(p-value)")),
+        font_family=(
+            plot_opts.plot_font_family if plot_opts.plot_font_family else "sans-serif"
+        ),
+    )
+    fig = fig.add_annotation(
+        x=0.02,
+        y=1.06,
+        xref="paper",
+        yref="paper",
+        text=str(group_1_label),
+        showarrow=False,
+        xanchor="left",
+        font=dict(size=13, color="grey"),
+    )
+    fig = fig.add_annotation(
+        x=0.98,
+        y=1.06,
+        xref="paper",
+        yref="paper",
+        text=str(group_2_label),
+        showarrow=False,
+        xanchor="right",
+        font=dict(size=13, color="grey"),
+    )
+
+    fig = fig.add_hline(y=log10_p_threshold, line_dash="dash")
+    fig = fig.add_vline(x=log_fc_threshold, line_dash="dash")
+    fig = fig.add_vline(x=-log_fc_threshold, line_dash="dash")
     return fig
 
 
