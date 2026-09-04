@@ -436,7 +436,14 @@ def volcano_plot_processing(  # noqa: C901
     df = df.dropna(axis=0)
     # Create dataframe of features where each sample had a measurement of zero
     all_identical_df = df.loc[:, df.nunique() == 1]
-    all_identical_features = all_identical_df.columns
+    all_identical_df = pd.DataFrame(all_identical_df.transpose().iloc[:, [0]])
+    all_identical_df.rename(
+        columns={
+            all_identical_df.columns[0]: "Identical Measurement",
+        },
+        inplace=True,
+    )
+
     # Remove features where each sample had a measurement of zero
     df = df.loc[:, df.nunique() > 1]
 
@@ -511,7 +518,7 @@ def volcano_plot_processing(  # noqa: C901
         y = calc_y(q_values)
         return (
             features,
-            all_identical_features,
+            all_identical_df,
             group_1_label,
             group_2_label,
             fold_change,
@@ -523,7 +530,7 @@ def volcano_plot_processing(  # noqa: C901
         y = calc_y(p_values)
         return (
             features,
-            all_identical_features,
+            all_identical_df,
             group_1_label,
             group_2_label,
             fold_change,
@@ -538,6 +545,7 @@ def create_volcano_plot_table(
     check_normality: bool,
     use_fdr_correction: bool,
     log_base: int,
+    data_opts: DataOptions,
 ) -> pd.DataFrame:
     """
     Create a detailed table showing statistically significant features from the volcano plot analysis.
@@ -556,7 +564,7 @@ def create_volcano_plot_table(
     """
     (
         features,
-        all_identical_features,
+        all_identical_df,
         group_1_label,
         group_2_label,
         fold_change,
@@ -568,6 +576,7 @@ def create_volcano_plot_table(
         check_normality=check_normality,
         use_fdr_correction=use_fdr_correction,
         log_base=log_base,
+        data_opts=data_opts,
     )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
@@ -616,7 +625,7 @@ def create_volcano_plot(
 
     (
         features,
-        all_identical_features,
+        all_identical_df,
         group_1_label,
         group_2_label,
         fold_change,

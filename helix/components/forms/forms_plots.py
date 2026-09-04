@@ -478,12 +478,12 @@ def volcano_plot_form(  # noqa: C901
     st.write("The logarithm base is set to:", log_base_input)
 
     check_normality = st.toggle(
-        "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test)",
+        "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test). All p-values calculated with t-test otherwise.",
         value=True,
         key=f"{key_prefix}_{DataAnalysisStateKeys.CheckNormality}",
     )
     use_fdr_correction = st.toggle(
-        "Use the BH procedure for FDR correction when calculating p-values?",
+        "Use FDR correction (BH procedure) when calculating p-values",
         value=True,
         key=f"{key_prefix}_{DataAnalysisStateKeys.UseFDRCorrection}",
     )
@@ -505,28 +505,6 @@ def volcano_plot_form(  # noqa: C901
                 data_opts=data_opts,
             )
             st.plotly_chart(volcano_fig)
-            (
-                features,
-                all_identical_features,
-                group_1_label,
-                group_2_label,
-                fold_change,
-                x,
-                p_values,
-                y,
-            ) = volcano_plot_processing(
-                df=data,
-                check_normality=check_normality,
-                use_fdr_correction=use_fdr_correction,
-                log_base=log_base_input,
-                data_opts=data_opts,
-            )
-
-            string = (
-                "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
-                + ", ".join(list(all_identical_features))
-            )
-            st.warning(string)
 
             plt.close()
         except ValueError as e:
@@ -534,7 +512,6 @@ def volcano_plot_form(  # noqa: C901
                 "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
-            st.exception(e)
             st.stop()
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
@@ -557,6 +534,7 @@ def volcano_plot_form(  # noqa: C901
                 check_normality=check_normality,
                 use_fdr_correction=use_fdr_correction,
                 log_base=log_base_input,
+                data_opts=data_opts,
             )
             st.write("#### Volcano plot data table")
             st.dataframe(volcano_table)
@@ -576,3 +554,24 @@ def volcano_plot_form(  # noqa: C901
                 icon="🔥",
             )
             st.stop()
+    if show_plot | show_table:
+        (
+            features,
+            all_identical_df,
+            group_1_label,
+            group_2_label,
+            fold_change,
+            x,
+            p_values,
+            y,
+        ) = volcano_plot_processing(
+            df=data,
+            check_normality=check_normality,
+            use_fdr_correction=use_fdr_correction,
+            log_base=log_base_input,
+            data_opts=data_opts,
+        )
+        st.warning(
+            "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
+        )
+        st.dataframe(all_identical_df)
