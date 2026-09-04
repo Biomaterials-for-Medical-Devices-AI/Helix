@@ -14,6 +14,7 @@ from scipy.stats import shapiro
 from sklearn.manifold import TSNE
 from sklearn.metrics import ConfusionMatrixDisplay, RocCurveDisplay
 
+from helix.options.data import DataOptions
 from helix.options.plotting import PlottingOptions
 
 
@@ -416,6 +417,7 @@ def volcano_plot_processing(  # noqa: C901
     check_normality: bool,
     use_fdr_correction: bool,
     log_base: int,
+    data_opts: DataOptions,
 ) -> Figure:
     """
     Create a volcano plot of the given DataFrame.
@@ -447,6 +449,11 @@ def volcano_plot_processing(  # noqa: C901
         group_1_label, group_2_label = unique_groups
         group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
+
+        original_data = pd.read_csv(str(data_opts.data_path))
+        group_col = original_data.columns[-1]
+        unique_groups = original_data[group_col].unique()
+        group_1_label, group_2_label = unique_groups
         return group_1, group_2, group_1_label, group_2_label
 
     def check_norm_calc_p_values(group_1, group_2):
@@ -539,7 +546,6 @@ def create_volcano_plot_table(
                 features as columns, with the last column being the group label
                 (either string labels or label-encoded integers, with exactly
                 2 unique values).
-            plot_opts (PlottingOptions): The plotting options.
             check_normality (bool): Whether to check for normality and use appropriate statistical tests.
             use_fdr_correction (bool): Whether to use the BH procedure for FDR correction when calculating p-values.
             log_base (int): The base of the logarithm to use for the fold change.
@@ -591,6 +597,7 @@ def create_volcano_plot(
     check_normality: bool,
     use_fdr_correction: bool,
     plot_opts: PlottingOptions,
+    data_opts: DataOptions,
 ) -> Figure:
     """
     Create a volcano plot of the given DataFrame.
@@ -621,6 +628,7 @@ def create_volcano_plot(
         check_normality=check_normality,
         use_fdr_correction=use_fdr_correction,
         log_base=log_base,
+        data_opts=data_opts,
     )
     log_fc_threshold = np.log(threshold) / np.log(log_base)
     log10_p_threshold = -np.log10(p_value)
@@ -657,6 +665,26 @@ def create_volcano_plot(
         font_family=(
             plot_opts.plot_font_family if plot_opts.plot_font_family else "sans-serif"
         ),
+    )
+    fig = fig.add_annotation(
+        x=0.02,
+        y=1.06,
+        xref="paper",
+        yref="paper",
+        text=str(group_2_label),
+        showarrow=False,
+        xanchor="left",
+        font=dict(size=13, color="grey"),
+    )
+    fig = fig.add_annotation(
+        x=0.98,
+        y=1.06,
+        xref="paper",
+        yref="paper",
+        text=str(group_1_label),
+        showarrow=False,
+        xanchor="right",
+        font=dict(size=13, color="grey"),
     )
 
     fig = fig.add_hline(y=log10_p_threshold, line_dash="dash")

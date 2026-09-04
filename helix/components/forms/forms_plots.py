@@ -8,6 +8,7 @@ import streamlit as st
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
 from helix.components.plot_editor import edit_plot_form
+from helix.options.data import DataOptions
 from helix.options.enums import (
     DataAnalysisStateKeys,
     Normalisations,
@@ -439,6 +440,7 @@ def volcano_plot_form(  # noqa: C901
     data,
     data_analysis_plot_dir,
     plot_opts: PlottingOptions,
+    data_opts: DataOptions,
     exec_opts: ExecutionOptions,
     key_prefix: str = "",
 ):
@@ -500,6 +502,7 @@ def volcano_plot_form(  # noqa: C901
                 use_fdr_correction=use_fdr_correction,
                 log_base=log_base_input,
                 plot_opts=plot_opts,
+                data_opts=data_opts,
             )
             st.plotly_chart(volcano_fig)
             (
@@ -516,6 +519,7 @@ def volcano_plot_form(  # noqa: C901
                 check_normality=check_normality,
                 use_fdr_correction=use_fdr_correction,
                 log_base=log_base_input,
+                data_opts=data_opts,
             )
 
             string = (
@@ -525,11 +529,12 @@ def volcano_plot_form(  # noqa: C901
             st.warning(string)
 
             plt.close()
-        except ValueError:
+        except ValueError as e:
             st.error(
                 "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
+            st.exception(e)
             st.stop()
         if st.button(
             "Save Plot", key=f"{key_prefix}_{DataAnalysisStateKeys.SaveVolcanoPlot}"
