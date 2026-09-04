@@ -659,8 +659,6 @@ def create_volcano_plot(
         ),
     )
 
-    fig = fig.update_layout(subtitle=dict(title=dict(text=group_1_label)))
-
     fig = fig.add_hline(y=log10_p_threshold, line_dash="dash")
     fig = fig.add_vline(x=log_fc_threshold, line_dash="dash")
     fig = fig.add_vline(x=-log_fc_threshold, line_dash="dash")
