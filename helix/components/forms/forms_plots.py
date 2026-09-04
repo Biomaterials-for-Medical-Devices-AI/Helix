@@ -502,13 +502,20 @@ def volcano_plot_form(  # noqa: C901
                 plot_opts=plot_opts,
             )
             st.plotly_chart(volcano_fig)
-            features, all_identical_features, fold_change, x, p_values, y = (
-                volcano_plot_processing(
-                    df=data,
-                    check_normality=check_normality,
-                    use_fdr_correction=use_fdr_correction,
-                    log_base=log_base_input,
-                )
+            (
+                features,
+                all_identical_features,
+                group_1_label,
+                group_2_label,
+                fold_change,
+                x,
+                p_values,
+                y,
+            ) = volcano_plot_processing(
+                df=data,
+                check_normality=check_normality,
+                use_fdr_correction=use_fdr_correction,
+                log_base=log_base_input,
             )
 
             string = (

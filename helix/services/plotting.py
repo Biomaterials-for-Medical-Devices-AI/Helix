@@ -447,7 +447,7 @@ def volcano_plot_processing(  # noqa: C901
         group_1_label, group_2_label = unique_groups
         group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
-        return group_1, group_2
+        return group_1, group_2, group_1_label, group_2_label
 
     def check_norm_calc_p_values(group_1, group_2):
         shapiro_p_values = np.stack(
@@ -488,7 +488,7 @@ def volcano_plot_processing(  # noqa: C901
         x = np.log(fold_change) / np.log(log_base)
         return x
 
-    group_1, group_2 = split_by_group(df)
+    group_1, group_2, group_1_label, group_2_label = split_by_group(df)
     fold_change = calc_fc(group_1, group_2)
     x = calc_x(fold_change, log_base)
     features = pd.DataFrame(df.columns.values)
@@ -502,10 +502,28 @@ def volcano_plot_processing(  # noqa: C901
     if use_fdr_correction:
         q_values = calc_q_values(p_values)
         y = calc_y(q_values)
-        return features, all_identical_features, fold_change, x, q_values, y
+        return (
+            features,
+            all_identical_features,
+            group_1_label,
+            group_2_label,
+            fold_change,
+            x,
+            q_values,
+            y,
+        )
     else:
         y = calc_y(p_values)
-        return features, all_identical_features, fold_change, x, p_values, y
+        return (
+            features,
+            all_identical_features,
+            group_1_label,
+            group_2_label,
+            fold_change,
+            x,
+            p_values,
+            y,
+        )
 
 
 def create_volcano_plot_table(
@@ -530,13 +548,20 @@ def create_volcano_plot_table(
             DataFrame: The volcano plot table. Columns for features, fold change, log 2 fold change,
             p values and - log 10 p values.
     """
-    features, all_identical_features, fold_change, x, p_values, y = (
-        volcano_plot_processing(
-            df,
-            check_normality=check_normality,
-            use_fdr_correction=use_fdr_correction,
-            log_base=log_base,
-        )
+    (
+        features,
+        all_identical_features,
+        group_1_label,
+        group_2_label,
+        fold_change,
+        x,
+        p_values,
+        y,
+    ) = volcano_plot_processing(
+        df,
+        check_normality=check_normality,
+        use_fdr_correction=use_fdr_correction,
+        log_base=log_base,
     )
     features.drop(features.tail(1).index, inplace=True)  # drops last row
 
@@ -582,13 +607,20 @@ def create_volcano_plot(
         Figure: The volcano plot figure.
     """
 
-    features, all_identical_features, fold_change, x, p_values, y = (
-        volcano_plot_processing(
-            df,
-            check_normality=check_normality,
-            use_fdr_correction=use_fdr_correction,
-            log_base=log_base,
-        )
+    (
+        features,
+        all_identical_features,
+        group_1_label,
+        group_2_label,
+        fold_change,
+        x,
+        p_values,
+        y,
+    ) = volcano_plot_processing(
+        df,
+        check_normality=check_normality,
+        use_fdr_correction=use_fdr_correction,
+        log_base=log_base,
     )
     log_fc_threshold = np.log(threshold) / np.log(log_base)
     log10_p_threshold = -np.log10(p_value)
@@ -609,16 +641,25 @@ def create_volcano_plot(
             marker=dict(color=colors),
             text=features,
             hovertemplate="%{text}<extra></extra>",
-        )
+        ),
     )
 
     fig = fig.update_layout(
-        title=dict(text=title),
+        title={
+            "text": title,
+            "x": 0.5,
+            "y": 0.9,
+            "xanchor": "center",
+            "yanchor": "top",
+        },
         xaxis=dict(title=dict(text=f"log({log_base})(FC)")),
-        yaxis=dict(
-            title=dict(text="-log10(p-value)"),
+        yaxis=dict(title=dict(text="-log10(p-value)")),
+        font_family=(
+            plot_opts.plot_font_family if plot_opts.plot_font_family else "sans-serif"
         ),
     )
+
+    fig = fig.update_layout(subtitle=dict(title=dict(text=group_1_label)))
 
     fig = fig.add_hline(y=log10_p_threshold, line_dash="dash")
     fig = fig.add_vline(x=log_fc_threshold, line_dash="dash")
