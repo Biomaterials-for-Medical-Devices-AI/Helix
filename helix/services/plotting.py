@@ -648,7 +648,8 @@ def create_volcano_plot(
     maximum_distance = np.max(distances)
     opacities = distances / maximum_distance
     # Build RGBA colors
-    colors = [f"rgba(51, 128, 128, {opacity})" for opacity in opacities]
+    colors = [f"rgba(255, 0, 0, {opacity})" if xi > log_fc_threshold else f"rgba(0, 0, 255, {opacity})" if xi < -log_fc_threshold 
+              else f"rgba(128, 128, 128, {opacity})" for xi, opacity in zip(x, opacities) if xi]
 
     fig = go.Figure(
         go.Scatter(
