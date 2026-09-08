@@ -509,7 +509,7 @@ def volcano_plot_form(  # noqa: C901
             plt.close()
         except ValueError:
             st.error(
-                "Ensure your samples are in rows, features in columns, the last column is the group label, and there are exactly two different values for the label.",
+                "Ensure your samples are in rows, features in columns, the last column is the sample label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
             st.stop()
@@ -551,6 +551,12 @@ def volcano_plot_form(  # noqa: C901
         except PermissionError:
             st.error(
                 "A file with the same name may be open. Close the file, and try again.",
+                icon="🔥",
+            )
+            st.stop()
+        except ValueError:
+            st.error(
+                "Ensure your samples are in rows, features in columns, the last column is the sample label, and there are exactly two different values for the label.",
                 icon="🔥",
             )
             st.stop()
