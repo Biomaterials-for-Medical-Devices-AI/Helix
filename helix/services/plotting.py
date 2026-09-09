@@ -658,7 +658,7 @@ def create_volcano_plot(
             else (
                 f"rgba(0, 0, 255, {opacity})"
                 if xi < -log_fc_threshold
-                else f"rgba(128, 128, 128, {opacity})"
+                else f"rgba(0, 0, 0, {opacity})"
             )
         )
         for xi, opacity in zip(x, opacities)
@@ -670,7 +670,7 @@ def create_volcano_plot(
             x=x,
             y=y,
             mode="markers",
-            marker=dict(color=colors),
+            marker=dict(color=colors, size=8),
             text=features,
             hovertemplate="%{text}<extra></extra>",
         ),
