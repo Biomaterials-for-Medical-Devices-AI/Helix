@@ -456,11 +456,17 @@ def volcano_plot_processing(  # noqa: C901
         group_1_label, group_2_label = unique_groups
         group_1 = df[df[group_col] == group_1_label].drop(columns=[group_col])
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
+        try:
+            original_data = pd.read_csv(str(data_opts.data_path))
+            group_col = original_data.columns[-1]
+            unique_groups = original_data[group_col].unique()
+            group_1_label, group_2_label = unique_groups
+        except ValueError:
+            original_data = pd.read_excel(str(data_opts.data_path))
+            group_col = original_data.columns[-1]
+            unique_groups = original_data[group_col].unique()
+            group_1_label, group_2_label = unique_groups
 
-        original_data = pd.read_csv(str(data_opts.data_path))
-        group_col = original_data.columns[-1]
-        unique_groups = original_data[group_col].unique()
-        group_1_label, group_2_label = unique_groups
         return group_1, group_2, group_1_label, group_2_label
 
     def check_norm_calc_p_values(group_1, group_2):
@@ -687,6 +693,7 @@ def create_volcano_plot(
             plot_opts.plot_font_family if plot_opts.plot_font_family else "sans-serif"
         ),
     )
+
     fig = fig.add_annotation(
         x=0.02,
         y=1.06,

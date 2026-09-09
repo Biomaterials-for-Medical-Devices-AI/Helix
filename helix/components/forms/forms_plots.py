@@ -560,23 +560,24 @@ def volcano_plot_form(  # noqa: C901
                 icon="🔥",
             )
             st.stop()
-    if show_plot | show_table:
-        (
-            features,
-            all_identical_df,
-            group_1_label,
-            group_2_label,
-            fold_change,
-            x,
-            p_values,
-            y,
-        ) = volcano_plot_processing(
-            df=data,
-            check_normality=check_normality,
-            use_fdr_correction=use_fdr_correction,
-            log_base=log_base_input,
-            data_opts=data_opts,
-        )
+    (
+        features,
+        all_identical_df,
+        group_1_label,
+        group_2_label,
+        fold_change,
+        x,
+        p_values,
+        y,
+    ) = volcano_plot_processing(
+        df=data,
+        check_normality=check_normality,
+        use_fdr_correction=use_fdr_correction,
+        log_base=log_base_input,
+        data_opts=data_opts,
+    )
+    if (show_plot | show_table) and (all_identical_df.empty == False):
+
         st.warning(
             "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
         )
