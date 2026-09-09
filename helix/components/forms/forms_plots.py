@@ -576,7 +576,7 @@ def volcano_plot_form(  # noqa: C901
         log_base=log_base_input,
         data_opts=data_opts,
     )
-    if (show_plot | show_table) and (all_identical_df.empty == False):
+    if (show_plot | show_table) and (not all_identical_df.empty):
 
         st.warning(
             "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
