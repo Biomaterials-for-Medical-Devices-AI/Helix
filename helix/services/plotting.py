@@ -458,14 +458,11 @@ def volcano_plot_processing(  # noqa: C901
         group_2 = df[df[group_col] == group_2_label].drop(columns=[group_col])
         try:
             original_data = pd.read_csv(str(data_opts.data_path))
-            group_col = original_data.columns[-1]
-            unique_groups = original_data[group_col].unique()
-            group_1_label, group_2_label = unique_groups
         except ValueError:
             original_data = pd.read_excel(str(data_opts.data_path))
-            group_col = original_data.columns[-1]
-            unique_groups = original_data[group_col].unique()
-            group_1_label, group_2_label = unique_groups
+        group_col = original_data.columns[-1]
+        unique_groups = original_data[group_col].unique()
+        group_1_label, group_2_label = unique_groups
 
         return group_1, group_2, group_1_label, group_2_label
 
