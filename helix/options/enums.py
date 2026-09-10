@@ -94,6 +94,15 @@ class DataAnalysisStateKeys(StrEnum):
     SelectNormTsne = "select_norm_tsne"
     Perplexity = "perplexity"
     SaveTSNEPlot = "save_tsne_plot"
+    VolcanoPlot = "volcano_plot"
+    SaveVolcanoPlot = "save_volcano_plot"
+    ViewTableVolcanoPlot = "view_table_volcano_plot"
+    SaveVolcanoPlotTable = "save_volcano_plot_table"
+    VolcanoPlotThreshold = "volcano_plot_threshold"
+    VolcanoPlotPValue = "volcano_plot_p_value"
+    VolcanoPlotLogBase = "volcano_plot_log_base"
+    CheckNormality = "check_normality"
+    UseFDRCorrection = "use_fdr_correction"
 
 
 class DataPreprocessingStateKeys(StrEnum):
