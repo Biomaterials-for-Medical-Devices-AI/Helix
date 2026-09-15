@@ -502,7 +502,7 @@ def volcano_plot_processing(  # noqa: C901
         return fold_change
 
     def calc_x(fold_change, log_base):
-        x = np.log(fold_change) / np.log(log_base)
+        x = np.sign(fold_change) * np.log(np.abs(fold_change)) / np.log(log_base)
         return x
 
     group_1, group_2, group_1_label, group_2_label = split_by_group(df)
@@ -594,7 +594,7 @@ def create_volcano_plot_table(
         volcano_table.columns = [
             "Features",
             "Fold Change",
-            "log(FC)",
+            "log(|FC|)",
             "q-value",
             "log10(q-value)",
         ]
@@ -603,7 +603,7 @@ def create_volcano_plot_table(
         volcano_table.columns = [
             "Features",
             "Fold Change",
-            "log(FC)",
+            "log(|FC|)",
             "p-value",
             "log10(p-value)",
         ]
