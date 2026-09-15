@@ -590,14 +590,24 @@ def create_volcano_plot_table(
     x = x.reset_index(drop=True)
 
     volcano_table = pd.concat([features, fold_change, x, p_values, y], axis=1)
-    volcano_table.columns = [
-        "Features",
-        "Fold Change",
-        "log(FC)",
-        "p-value",
-        "log10(p-value)",
-    ]
-    volcano_table.sort_values(by="p-value", inplace=True, ascending=True)
+    if use_fdr_correction:
+        volcano_table.columns = [
+            "Features",
+            "Fold Change",
+            "log(FC)",
+            "q-value",
+            "log10(q-value)",
+        ]
+        volcano_table.sort_values(by="q-value", inplace=True, ascending=True)
+    else:
+        volcano_table.columns = [
+            "Features",
+            "Fold Change",
+            "log(FC)",
+            "p-value",
+            "log10(p-value)",
+        ]
+        volcano_table.sort_values(by="p-value", inplace=True, ascending=True)
     return volcano_table
 
 
@@ -675,21 +685,40 @@ def create_volcano_plot(
             hovertemplate="%{text}<extra></extra>",
         ),
     )
-
-    fig = fig.update_layout(
-        title={
-            "text": title,
-            "x": 0.5,
-            "y": 0.9,
-            "xanchor": "center",
-            "yanchor": "top",
-        },
-        xaxis=dict(title=dict(text=f"log({log_base})(FC)")),
-        yaxis=dict(title=dict(text="-log10(p-value)")),
-        font_family=(
-            plot_opts.plot_font_family if plot_opts.plot_font_family else "sans-serif"
-        ),
-    )
+    if use_fdr_correction:
+        fig = fig.update_layout(
+            title={
+                "text": title,
+                "x": 0.5,
+                "y": 0.9,
+                "xanchor": "center",
+                "yanchor": "top",
+            },
+            xaxis=dict(title=dict(text=f"log({log_base})(FC)")),
+            yaxis=dict(title=dict(text="-log10(q-value)")),
+            font_family=(
+                plot_opts.plot_font_family
+                if plot_opts.plot_font_family
+                else "sans-serif"
+            ),
+        )
+    else:
+        fig = fig.update_layout(
+            title={
+                "text": title,
+                "x": 0.5,
+                "y": 0.9,
+                "xanchor": "center",
+                "yanchor": "top",
+            },
+            xaxis=dict(title=dict(text=f"log({log_base})(FC)")),
+            yaxis=dict(title=dict(text="-log10(p-value)")),
+            font_family=(
+                plot_opts.plot_font_family
+                if plot_opts.plot_font_family
+                else "sans-serif"
+            ),
+        )
 
     fig = fig.add_annotation(
         x=0.02,
