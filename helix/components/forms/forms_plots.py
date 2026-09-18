@@ -480,12 +480,12 @@ def volcano_plot_form(  # noqa: C901
     check_normality = st.toggle(
         "Check each feature for normality and use appropriate statistical test (t-test or Mann-Whitney U test). All p-values calculated with t-test otherwise.",
         value=True,
-        key=f"{key_prefix}_{DataAnalysisStateKeys.CheckNormality}",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoCheckNormality}",
     )
     use_fdr_correction = st.toggle(
         "Use FDR correction (BH procedure) when calculating p-values",
         value=True,
-        key=f"{key_prefix}_{DataAnalysisStateKeys.UseFDRCorrection}",
+        key=f"{key_prefix}_{DataAnalysisStateKeys.VolcanoPlotUseFDRCorrection}",
     )
 
     show_plot = st.checkbox(
@@ -576,7 +576,7 @@ def volcano_plot_form(  # noqa: C901
         log_base=log_base_input,
         data_opts=data_opts,
     )
-    if (show_plot | show_table) and (not all_identical_df.empty):
+    if (show_plot or show_table) and (not all_identical_df.empty):
 
         st.warning(
             "Please note that the following features were not included in the analysis, as all samples recorded an identical measurement:"
