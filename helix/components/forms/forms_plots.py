@@ -505,8 +505,7 @@ def volcano_plot_form(  # noqa: C901
                 data_opts=data_opts,
             )
             st.plotly_chart(volcano_fig)
-
-            plt.close()
+    
         except ValueError:
             st.error(
                 "Ensure your samples are in rows, features in columns, the last column is the sample label, and there are exactly two different values for the label.",
@@ -519,7 +518,7 @@ def volcano_plot_form(  # noqa: C901
             volcano_fig.write_html(
                 data_analysis_plot_dir / f"volcano_plot_{key_prefix}.html"
             )
-            plt.clf()
+        
             st.success("Plots created and saved successfully.")
     show_table = st.checkbox(
         "View detailed data table",
