@@ -40,8 +40,21 @@ Visualise high-dimensional data in two dimensions using t-SNE.
 
 ![t-SNE Plot](../_static/tsne-plot.png)
 
+## Volcano Plot
+Compare statistical significance with fold-change for many labelled samples.
+
+- **Enter the Fold Change (FC) Threshold**: Configure the location of the vertical lines. Represents significant magnitude of change.
+- **Enter the p-value threshold**: Configure the location of the horizontal line. Represents the significance level
+- **Select the logarithm base**: Choice of 2, 10 or e for calculating the logarithm of the fold change.
+- **Check each feature for normality**: If this toggle is on, all features will be checked for normality. If a feature is normal, its p-value will be calculated using a t-test, otherwise, a Mann-Whitney U Test will be used. If this toggle is off, all features are assumed to be normally distributed, and all p-values are calculated using a t-test.
+- **Use FDR correction**: Uses the Benjamini-Hochberg procedure to control the False Discovery Rate (limit number of false positives).
+
+![Volcano Plot](../_static/volcano-plot.png)
+
+![Volcano Plot Data Table](../_static/volcano-plot-table.png)
+
 ## Saving Visualisations
-You can save generated plots to disk for reporting or further analysis. To save a plot, click the **"Save Plot"** button beneath each plot. You can also edit each plot individually by clicking the **"Edit Plot"** button beneath each plot and changing the settings in the panel.
+You can save generated plots and tables to disk for reporting or further analysis. To save a plot, click the **"Save Plot"** button beneath each plot. To save a table, in the case of a Volcano Plot, click the **"Save Table"** button beneath the table. You can also edit each plot individually by clicking the **"Edit Plot"** button beneath each plot and changing the settings in the panel.
 
 ## How to Start
 1. Select an experiment.
@@ -49,4 +62,4 @@ You can save generated plots to disk for reporting or further analysis. To save 
 3. Adjust parameters as needed.
 4. Click the buttons to generate and save visualisations.
 
-Press **"Create and Save"** to save plots for further use.
+Press **"Create and Save"** to save plots or tables for further use.
